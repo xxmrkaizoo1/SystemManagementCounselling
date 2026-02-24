@@ -17,15 +17,25 @@
         </div>
     </div>
 
-    <!-- background blobs -->
+    <!-- modern layered background -->
     <div class="fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
-        <div class="absolute -top-24 -left-24 w-96 h-96 bg-sky-300/40 rounded-full blur-3xl animate-blob-float"></div>
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_#e0f2fe_0%,_#f8fafc_35%,_#f1f5f9_100%)]"></div>
+        <div class="absolute inset-0 bg-grid-pattern opacity-30"></div>
+        <div class="absolute inset-0 bg-noise-layer opacity-15"></div>
+
+        <div class="absolute -top-32 -left-24 w-[34rem] h-[34rem] bg-sky-300/40 rounded-full blur-3xl animate-blob-float"></div>
         <div
-            class="absolute top-40 -right-24 w-[30rem] h-[30rem] bg-indigo-300/30 rounded-full blur-3xl animate-blob-float animation-delay-2">
+            class="absolute top-24 -right-32 w-[36rem] h-[36rem] bg-violet-300/35 rounded-full blur-3xl animate-aurora-drift animation-delay-2">
         </div>
         <div
-            class="absolute -bottom-32 left-1/3 w-[28rem] h-[28rem] bg-emerald-300/25 rounded-full blur-3xl animate-blob-float animation-delay-4">
+            class="absolute -bottom-36 left-1/4 w-[32rem] h-[32rem] bg-emerald-300/30 rounded-full blur-3xl animate-blob-float animation-delay-4">
         </div>
+
+        <div class="absolute top-[18%] right-[10%] w-64 h-64 border border-sky-200/60 rounded-full animate-rotate-slow"></div>
+        <div class="absolute bottom-[14%] left-[8%] w-40 h-40 border border-indigo-200/50 rounded-full animate-rotate-slow animation-delay-4"></div>
+
+        <div class="aurora-band aurora-band--one"></div>
+        <div class="aurora-band aurora-band--two"></div>
     </div>
 
     <!-- decorative moving characters -->
