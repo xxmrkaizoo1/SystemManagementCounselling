@@ -1,25 +1,25 @@
 import './bootstrap';
 import Alpine from 'alpinejs';
-import { gsap } from "gsap";
 
 window.Alpine = Alpine;
 Alpine.start();
 
-window.addEventListener("load", () => {
+window.addEventListener('load', () => {
+    const loader = document.getElementById('loader');
+    const content = document.getElementById('content');
 
-    gsap.to("#loader", {
-        opacity: 0,
-        duration: 0.8,
-        onComplete: () => {
-            document.getElementById("loader").style.display = "none";
-        }
-    });
+    if (loader) {
+        loader.style.transition = 'opacity 0.8s ease';
+        loader.style.opacity = '0';
 
-    gsap.to("#content", {
-        opacity: 1,
-        y: -20,
-        duration: 1,
-        delay: 0.5
-    });
+        window.setTimeout(() => {
+            loader.style.display = 'none';
+        }, 800);
+    }
 
+    if (content) {
+        content.style.transition = 'opacity 1s ease, transform 1s ease';
+        content.style.opacity = '1';
+        content.style.transform = 'translateY(-20px)';
+    }
 });
