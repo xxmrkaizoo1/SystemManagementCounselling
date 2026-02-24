@@ -13,7 +13,7 @@
 
     <div id="circle" class="w-64 h-64 bg-white rounded-full flex items-center justify-center">
         <span id="logoText" class="text-sky-500 font-bold text-2xl">
-            SCHOLA
+            CollegeCare
         </span>
     </div>
 
@@ -34,7 +34,7 @@
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-2xl bg-sky-600 shadow-sm"></div>
                 <div>
-                    <p class="font-bold leading-tight">ScholaCare</p>
+                    <p class="font-bold leading-tight">CollegeCare</p>
                     <p class="text-xs text-slate-500 -mt-0.5">Counselling Booking System</p>
                 </div>
             </div>
@@ -159,13 +159,97 @@
                     </div>
                 </div>
 
+
             </section>
+            <section class="mt-20">
+                <div class="grid lg:grid-cols-2 gap-8">
+
+                    <!-- Announcement Container -->
+                    <div
+                        class="bg-white/70 backdrop-blur-xl border border-slate-200
+                    rounded-3xl p-8 shadow-sm hover:shadow-md
+                    transition-all duration-300 hover:-translate-y-1">
+
+                        <h2 class="text-xl font-semibold text-slate-800 mb-4">
+                            Announcements
+                        </h2>
+
+                        <div class="space-y-4 text-sm text-slate-600">
+                            <p>📌 Counselling sessions available Monday – Friday.</p>
+                            <p>📌 Emergency booking priority available.</p>
+                            <p>📌 Please cancel 24 hours before session.</p>
+                        </div>
+                    </div>
+
+
+                    <!-- Live Available Counsellor Container -->
+                    <div
+                        class="bg-white/70 backdrop-blur-xl border border-slate-200
+                    rounded-3xl p-8 shadow-sm hover:shadow-md
+                    transition-all duration-300 hover:-translate-y-1">
+
+                        <h2 class="text-xl font-semibold text-slate-800 mb-4">
+                            Available Counsellors
+                        </h2>
+
+                        <div class="space-y-4 text-sm">
+
+                            <div
+                                class="flex items-center justify-between bg-slate-50
+                            p-4 rounded-2xl border border-slate-200">
+                                <span class="text-slate-700 font-medium">
+                                    Dr. Ahmad
+                                </span>
+                                <span
+                                    class="text-xs px-3 py-1 rounded-full
+                                 bg-emerald-100 text-emerald-700">
+                                    Available
+                                </span>
+                            </div>
+
+                            <div
+                                class="flex items-center justify-between bg-slate-50
+                            p-4 rounded-2xl border border-slate-200">
+                                <span class="text-slate-700 font-medium">
+                                    Ms. Farah
+                                </span>
+                                <span
+                                    class="text-xs px-3 py-1 rounded-full
+                                 bg-amber-100 text-amber-700">
+                                    Busy
+                                </span>
+                            </div>
+
+                            <div
+                                class="flex items-center justify-between bg-slate-50
+                            p-4 rounded-2xl border border-slate-200">
+                                <span class="text-slate-700 font-medium">
+                                    Mr. Daniel
+                                </span>
+                                <span
+                                    class="text-xs px-3 py-1 rounded-full
+                                 bg-emerald-100 text-emerald-700">
+                                    Available
+                                </span>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+
+
         </div>
     </main>
 
+
+
+
     <!-- FOOTER (BOTTOM) -->
     <footer class="shrink-0 text-center py-5 text-sm text-slate-500">
-        © {{ date('Y') }} ScholaCare • Counselling Booking System
+        © {{ date('Y') }} CollegeCare • Counselling Booking System
     </footer>
 
 </body>
