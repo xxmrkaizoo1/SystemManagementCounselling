@@ -12,7 +12,8 @@
 <body class="min-h-screen flex cursor-none flex-col bg-slate-50 text-slate-700 overflow-x-hidden">
     <!-- Custom Cursor -->
     <div id="cursor-dot" class="fixed top-0 left-0 w-3 h-3 bg-sky-600 rounded-full pointer-events-none z-50"></div>
-    <div id="cursor-ring" class="fixed top-0 left-0 w-8 h-8 border border-sky-500 rounded-full pointer-events-none z-40"></div>
+    <div id="cursor-ring" class="fixed top-0 left-0 w-8 h-8 border border-sky-500 rounded-full pointer-events-none z-40">
+    </div>
     <!-- LOADER -->
     <div id="loader" class="fixed inset-0 bg-sky-500 flex items-center justify-center z-50">
         <div id="circle" class="w-100 h-100 bg-white rounded-full flex items-center justify-center">
@@ -80,7 +81,7 @@
                         class="hidden sm:inline text-sm font-medium text-slate-600 hover:text-sky-600 transition">
                         Get Started
                     </a>
-                    <a href="#"
+                    <a href="{{ route('login') }}"
                         class="px-4 py-2 rounded-xl bg-sky-600 text-white text-sm font-semibold shadow-sm hover:bg-sky-700 transition">
                         Login
                     </a>

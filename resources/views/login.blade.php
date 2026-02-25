@@ -9,21 +9,34 @@
 </head>
 
 <body class="min-h-screen bg-slate-50 text-slate-700 overflow-x-hidden">
+    <!-- Custom Cursor -->
+    <div id="cursor-dot" class="fixed top-0 left-0 w-3 h-3 bg-sky-600 rounded-full pointer-events-none z-50"></div>
+    <div id="cursor-ring" class="fixed top-0 left-0 w-8 h-8 border border-sky-500 rounded-full pointer-events-none z-40">
+    </div>
+
     <div class="fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
-        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_#e0f2fe_0%,_#f8fafc_35%,_#f1f5f9_100%)]"></div>
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_#e0f2fe_0%,_#f8fafc_35%,_#f1f5f9_100%)]">
+        </div>
         <div class="absolute inset-0 bg-grid-pattern opacity-30"></div>
         <div class="absolute inset-0 bg-noise-layer opacity-15"></div>
 
-        <div class="absolute -top-32 -left-24 w-[34rem] h-[34rem] bg-sky-300/40 rounded-full blur-3xl animate-blob-float"></div>
-        <div class="absolute top-24 -right-32 w-[36rem] h-[36rem] bg-violet-300/35 rounded-full blur-3xl animate-aurora-drift animation-delay-2"></div>
-        <div class="absolute -bottom-36 left-1/4 w-[32rem] h-[32rem] bg-emerald-300/30 rounded-full blur-3xl animate-blob-float animation-delay-4"></div>
+        <div
+            class="absolute -top-32 -left-24 w-[34rem] h-[34rem] bg-sky-300/40 rounded-full blur-3xl animate-blob-float">
+        </div>
+        <div
+            class="absolute top-24 -right-32 w-[36rem] h-[36rem] bg-violet-300/35 rounded-full blur-3xl animate-aurora-drift animation-delay-2">
+        </div>
+        <div
+            class="absolute -bottom-36 left-1/4 w-[32rem] h-[32rem] bg-emerald-300/30 rounded-full blur-3xl animate-blob-float animation-delay-4">
+        </div>
 
         <div class="aurora-band aurora-band--one"></div>
         <div class="aurora-band aurora-band--two"></div>
     </div>
 
     <main class="min-h-screen flex items-center justify-center p-4 sm:p-8">
-        <section class="w-full max-w-6xl rounded-[2rem] border border-slate-200/80 bg-white/75 backdrop-blur-xl shadow-2xl overflow-hidden">
+        <section
+            class="w-full max-w-6xl rounded-[2rem] border border-slate-200/80 bg-white/75 backdrop-blur-xl shadow-2xl overflow-hidden">
             <div class="grid lg:grid-cols-[1.35fr_1fr] gap-0">
                 <div class="p-6 sm:p-8 lg:p-10 border-b lg:border-b-0 lg:border-r border-slate-200/80">
                     <div class="flex items-center justify-between gap-3">
@@ -32,13 +45,15 @@
                             <span>←</span>
                             <span>Back</span>
                         </a>
-                        <span class="text-xs px-3 py-1 rounded-full bg-sky-100 text-sky-700 font-medium">Secure Access</span>
+                        <span class="text-xs px-3 py-1 rounded-full bg-sky-100 text-sky-700 font-medium">Secure
+                            Access</span>
                     </div>
 
                     <div class="mt-6 rounded-2xl border border-slate-200 bg-white/80 p-5">
                         <p class="text-xs uppercase tracking-[0.14em] text-slate-500">CollegeCare</p>
                         <h1 class="mt-2 text-2xl sm:text-3xl font-extrabold text-slate-800">Welcome back</h1>
-                        <p class="mt-2 text-sm text-slate-600">Sign in to manage counselling sessions, monitor live slots, and view updates.</p>
+                        <p class="mt-2 text-sm text-slate-600">Sign in to manage counselling sessions, monitor live
+                            slots, and view updates.</p>
                     </div>
 
                     <div class="mt-6 grid sm:grid-cols-3 gap-3">
@@ -56,12 +71,16 @@
                         </div>
                     </div>
 
-                    <div class="mt-6 rounded-3xl border border-slate-200 bg-gradient-to-br from-white via-sky-50 to-indigo-50 p-6 min-h-[15rem] flex flex-col justify-between">
+                    <div
+                        class="mt-6 rounded-3xl border border-slate-200 bg-gradient-to-br from-white via-sky-50 to-indigo-50 p-6 min-h-[15rem] flex flex-col justify-between">
                         <p class="text-sm text-slate-700 leading-relaxed">
-                            “Small daily check-ins with yourself can prevent stress from piling up. Reach out early and stay supported.”
+                            “Small daily check-ins with yourself can prevent stress from piling up. Reach out early and
+                            stay supported.”
                         </p>
                         <div class="mt-6 flex items-center gap-3">
-                            <div class="w-11 h-11 rounded-2xl bg-sky-100 text-sky-700 grid place-items-center font-bold">CC</div>
+                            <div
+                                class="w-11 h-11 rounded-2xl bg-sky-100 text-sky-700 grid place-items-center font-bold">
+                                CC</div>
                             <div>
                                 <p class="text-sm font-semibold text-slate-800">Counsellor On Duty</p>
                                 <p class="text-xs text-slate-500">Mon–Fri, 8:00 AM – 6:00 PM</p>
@@ -78,15 +97,18 @@
 
                         <form class="mt-6 space-y-4" action="#" method="POST">
                             <div>
-                                <label for="email" class="block text-sm font-medium text-slate-700 mb-1.5">Email</label>
+                                <label for="email"
+                                    class="block text-sm font-medium text-slate-700 mb-1.5">Email</label>
                                 <input id="email" name="email" type="email" placeholder="name@college.edu"
                                     class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition" />
                             </div>
 
                             <div>
-                                <label for="password" class="block text-sm font-medium text-slate-700 mb-1.5">Password</label>
+                                <label for="password"
+                                    class="block text-sm font-medium text-slate-700 mb-1.5">Password</label>
                                 <div class="relative">
-                                    <input id="password" name="password" x-bind:type="showPassword ? 'text' : 'password'" placeholder="••••••••"
+                                    <input id="password" name="password"
+                                        x-bind:type="showPassword ? 'text' : 'password'" placeholder="••••••••"
                                         class="w-full rounded-xl border border-slate-300 px-3 py-2.5 pr-12 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition" />
                                     <button type="button" x-on:click="showPassword = !showPassword"
                                         class="absolute inset-y-0 right-2 my-auto h-8 px-2 rounded-lg text-xs font-medium text-slate-500 hover:text-sky-700 hover:bg-sky-50 transition"
@@ -103,7 +125,8 @@
                         <div class="mt-4 text-sm text-center space-y-2">
                             <a href="#" class="text-sky-700 hover:text-sky-800 font-medium">Forgot password?</a>
                             <p class="text-slate-500">Don’t have an account?
-                                <a href="#" class="text-indigo-700 hover:text-indigo-800 font-medium">Create one</a>
+                                <a href="#" class="text-indigo-700 hover:text-indigo-800 font-medium">Create
+                                    one</a>
                             </p>
                         </div>
                     </div>
