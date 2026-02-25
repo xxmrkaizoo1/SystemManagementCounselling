@@ -70,7 +70,7 @@
                     <a href="#roles" class="hidden sm:inline text-sm font-medium text-slate-600 hover:text-sky-600 transition">
                         Get Started
                     </a>
-                    <a href="#"
+                    <a href="{{ route('login') }}"
                         class="px-4 py-2 rounded-xl bg-sky-600 text-white text-sm font-semibold shadow-sm hover:bg-sky-700 transition">
                         Login
                     </a>
@@ -145,11 +145,10 @@
                             </span>
                         </div>
 
-                        <p class="mt-2 text-sm text-slate-600">Choose your role to continue.</p>
+                        <p class="mt-2 text-sm text-slate-600">User types and what each role can do in the system.</p>
 
                         <div id="roles" class="mt-6 grid gap-4">
-                            <a href="#"
-                                class="group rounded-2xl bg-white border border-slate-200 p-5 shadow-sm hover:shadow-md transition hover:-translate-y-0.5">
+                            <div class="rounded-2xl bg-white border border-slate-200 p-5 shadow-sm">
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center gap-3">
                                         <div
@@ -157,15 +156,14 @@
                                             S</div>
                                         <div>
                                             <p class="font-semibold text-slate-800">Student</p>
-                                            <p class="text-sm text-slate-500">Book &amp; track sessions</p>
+                                            <p class="text-sm text-slate-500">Book sessions, follow progress, and get wellbeing support.</p>
                                         </div>
                                     </div>
-                                    <span class="text-slate-400 group-hover:text-sky-600 transition">→</span>
+                                    <span class="text-xs px-2.5 py-1 rounded-full bg-sky-50 border border-sky-200 text-sky-700">User Type</span>
                                 </div>
-                            </a>
+                            </div>
 
-                            <a href="#"
-                                class="group rounded-2xl bg-white border border-slate-200 p-5 shadow-sm hover:shadow-md transition hover:-translate-y-0.5">
+                            <div class="rounded-2xl bg-white border border-slate-200 p-5 shadow-sm">
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center gap-3">
                                         <div
@@ -173,15 +171,14 @@
                                             C</div>
                                         <div>
                                             <p class="font-semibold text-slate-800">Counsellor</p>
-                                            <p class="text-sm text-slate-500">Manage schedule &amp; approvals</p>
+                                            <p class="text-sm text-slate-500">Manage appointments, notes, and student support plans.</p>
                                         </div>
                                     </div>
-                                    <span class="text-slate-400 group-hover:text-indigo-600 transition">→</span>
+                                    <span class="text-xs px-2.5 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700">User Type</span>
                                 </div>
-                            </a>
+                            </div>
 
-                            <a href="#"
-                                class="group rounded-2xl bg-white border border-slate-200 p-5 shadow-sm hover:shadow-md transition hover:-translate-y-0.5">
+                            <div class="rounded-2xl bg-white border border-slate-200 p-5 shadow-sm">
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center gap-3">
                                         <div
@@ -189,12 +186,12 @@
                                             A</div>
                                         <div>
                                             <p class="font-semibold text-slate-800">Admin</p>
-                                            <p class="text-sm text-slate-500">Users, reports &amp; statistics</p>
+                                            <p class="text-sm text-slate-500">Control users, reports, and platform settings.</p>
                                         </div>
                                     </div>
-                                    <span class="text-slate-400 group-hover:text-emerald-600 transition">→</span>
+                                    <span class="text-xs px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700">User Type</span>
                                 </div>
-                            </a>
+                            </div>
                         </div>
 
                         <div class="mt-6 flex gap-3">
