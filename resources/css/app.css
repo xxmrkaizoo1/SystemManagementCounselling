@@ -118,41 +118,56 @@
     animation: bobStep 0.7s ease-in-out infinite;
 }
 
-@media (prefers-reduced-motion: reduce) {
-    .animate-blob-float,
-    .animate-fade-in-up,
-    .dummy-walker,
-    .dummy-body {
-        animation: none !important;
-    }
-}
-
 @keyframes doctorFloat {
     0%,
     100% {
-        transform: translateY(0px);
+        transform: translateY(0);
     }
 
     50% {
-        transform: translateY(-8px);
+        transform: translateY(-10px);
     }
 }
 
-@keyframes tipPulse {
+@keyframes doctorWave {
+    0%,
+    100% {
+        transform: rotate(20deg);
+    }
+
+    50% {
+        transform: rotate(42deg);
+    }
+}
+
+@keyframes blink {
+    0%,
+    45%,
+    100% {
+        transform: scaleY(1);
+    }
+
+    48%,
+    52% {
+        transform: scaleY(0.15);
+    }
+}
+
+@keyframes dialogPulse {
     0%,
     100% {
         transform: scale(1);
     }
 
     50% {
-        transform: scale(1.02);
+        transform: scale(1.015);
     }
 }
 
 @keyframes tipSwap {
     from {
         opacity: 0;
-        transform: translateY(8px);
+        transform: translateY(6px);
     }
 
     to {
@@ -162,97 +177,174 @@
 }
 
 .doctor-tips-card {
-    width: min(100%, 31rem);
+    width: min(100%, 34rem);
     display: flex;
     align-items: center;
     gap: 1rem;
     padding: 1rem;
     border-radius: 1.25rem;
-    border: 1px solid rgb(148 163 184 / 0.35);
-    background: rgb(255 255 255 / 0.72);
+    border: 1px solid rgb(125 211 252 / 0.5);
+    background: linear-gradient(145deg, rgb(255 255 255 / 0.92), rgb(240 249 255 / 0.8));
     backdrop-filter: blur(8px);
-    box-shadow: 0 10px 25px rgb(15 23 42 / 0.08);
+    box-shadow: 0 14px 30px rgb(15 23 42 / 0.1);
     transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
 }
 
 .doctor-tips-card:hover {
-    transform: translateY(-4px) scale(1.01);
-    box-shadow: 0 18px 35px rgb(14 116 144 / 0.18);
-    border-color: rgb(14 116 144 / 0.35);
+    transform: translateY(-5px) scale(1.01);
+    box-shadow: 0 22px 40px rgb(14 116 144 / 0.2);
+    border-color: rgb(2 132 199 / 0.45);
 }
 
-.doctor-character {
+.doctor-scene {
     position: relative;
-    width: 88px;
-    height: 102px;
+    width: 120px;
+    height: 130px;
     flex-shrink: 0;
-    animation: doctorFloat 2.8s ease-in-out infinite;
 }
 
-.doctor-hair {
+.doctor-avatar {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    animation: doctorFloat 2.6s ease-in-out infinite;
+}
+
+.doctor-avatar span {
     position: absolute;
+    display: block;
+}
+
+.doc-shadow {
+    bottom: 8px;
+    left: 22px;
+    width: 74px;
+    height: 12px;
+    border-radius: 999px;
+    background: rgb(15 23 42 / 0.15);
+}
+
+.doc-head {
     top: 8px;
-    left: 19px;
-    width: 50px;
+    left: 38px;
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    background: #fed7aa;
+    border: 2px solid rgb(251 191 36 / 0.35);
+    z-index: 2;
+}
+
+.doc-hair {
+    top: 3px;
+    left: 34px;
+    width: 44px;
+    height: 20px;
+    border-radius: 999px 999px 8px 8px;
+    background: #1e293b;
+    z-index: 3;
+}
+
+.doc-eye {
+    top: 24px;
+    width: 4px;
+    height: 4px;
+    border-radius: 999px;
+    background: #0f172a;
+    z-index: 4;
+    animation: blink 4.5s ease-in-out infinite;
+}
+
+.doc-eye--left { left: 50px; }
+.doc-eye--right { left: 59px; }
+
+.doc-body {
+    top: 40px;
+    left: 30px;
+    width: 52px;
+    height: 58px;
+    border-radius: 16px 16px 12px 12px;
+    background: linear-gradient(180deg, #ffffff 0%, #dbeafe 100%);
+    border: 2px solid rgb(148 163 184 / 0.55);
+}
+
+.doc-arm {
+    top: 49px;
+    width: 14px;
+    height: 36px;
+    border-radius: 999px;
+    background: #f8fafc;
+    border: 2px solid rgb(148 163 184 / 0.45);
+}
+
+.doc-arm--left {
+    left: 20px;
+    transform: rotate(18deg);
+}
+
+.doc-arm--right {
+    left: 78px;
+    transform-origin: top center;
+    transform: rotate(20deg);
+    animation: doctorWave 1.5s ease-in-out infinite;
+}
+
+.doc-leg {
+    top: 92px;
+    width: 12px;
     height: 28px;
     border-radius: 999px;
-    background: rgb(15 23 42);
+    background: #1e293b;
 }
 
-.doctor-head {
-    position: absolute;
-    top: 16px;
-    left: 24px;
-    width: 40px;
-    height: 40px;
-    border-radius: 999px;
-    background: rgb(254 215 170);
-    border: 2px solid rgb(251 191 36 / 0.35);
-}
+.doc-leg--left { left: 45px; }
+.doc-leg--right { left: 59px; }
 
-.doctor-coat {
-    position: absolute;
-    top: 52px;
-    left: 14px;
-    width: 60px;
-    height: 46px;
-    border-radius: 18px 18px 12px 12px;
-    background: linear-gradient(180deg, #ffffff 0%, #e2e8f0 100%);
-    border: 2px solid rgb(148 163 184 / 0.5);
-}
-
-.doctor-stethoscope {
-    position: absolute;
-    top: 60px;
-    left: 24px;
-    width: 40px;
-    height: 30px;
-    border: 3px solid rgb(14 116 144 / 0.5);
-    border-top: none;
-    border-radius: 0 0 999px 999px;
+.doc-clipboard {
+    top: 56px;
+    left: 62px;
+    width: 20px;
+    height: 26px;
+    border-radius: 6px;
+    border: 2px solid rgb(14 116 144 / 0.45);
+    background: rgb(224 242 254 / 0.85);
+    transform: rotate(-12deg);
 }
 
 .doctor-dialog {
     flex: 1;
-    animation: tipPulse 4s ease-in-out infinite;
+    animation: dialogPulse 4.2s ease-in-out infinite;
 }
 
 .tip-swap {
     animation: tipSwap 0.45s ease;
 }
 
-.doctor-tips-card:hover .doctor-character {
-    animation-duration: 1.6s;
+.doctor-tips-card:hover .doctor-avatar {
+    animation-duration: 1.7s;
 }
 
-.doctor-tips-card:hover .doctor-dialog {
-    animation-duration: 2.6s;
+.doctor-tips-card:hover .doc-arm--right {
+    animation-duration: 0.8s;
 }
 
 @media (max-width: 640px) {
     .doctor-tips-card {
         flex-direction: column;
         text-align: center;
+    }
+
+    .doctor-scene {
+        width: 106px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .animate-blob-float,
+    .animate-fade-in-up,
+    .dummy-walker,
+    .dummy-body {
+        animation: none !important;
     }
 }
 

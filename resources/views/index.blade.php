@@ -9,21 +9,27 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="min-h-screen flex flex-col bg-slate-50 text-slate-700 overflow-x-hidden">
+<body class="min-h-screen flex cursor-none flex-col bg-slate-50 text-slate-700 overflow-x-hidden">
+    <!-- Custom Cursor -->
+    <div id="cursor-dot" class="fixed top-0 left-0 w-3 h-3 bg-sky-600 rounded-full pointer-events-none z-50"></div>
+    <div id="cursor-ring" class="fixed top-0 left-0 w-8 h-8 border border-sky-500 rounded-full pointer-events-none z-40"></div>
     <!-- LOADER -->
     <div id="loader" class="fixed inset-0 bg-sky-500 flex items-center justify-center z-50">
-        <div id="circle" class="w-64 h-64 bg-white rounded-full flex items-center justify-center">
-            <span id="logoText" class="text-sky-500 font-bold text-2xl">CollegeCare</span>
+        <div id="circle" class="w-100 h-100 bg-white rounded-full flex items-center justify-center">
+            <span id="logoText" class="text-sky-500 font-bold text-5xl">CollegeCare</span>
         </div>
     </div>
 
     <!-- modern layered background -->
     <div class="fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
-        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_#e0f2fe_0%,_#f8fafc_35%,_#f1f5f9_100%)]"></div>
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_#e0f2fe_0%,_#f8fafc_35%,_#f1f5f9_100%)]">
+        </div>
         <div class="absolute inset-0 bg-grid-pattern opacity-30"></div>
         <div class="absolute inset-0 bg-noise-layer opacity-15"></div>
 
-        <div class="absolute -top-32 -left-24 w-[34rem] h-[34rem] bg-sky-300/40 rounded-full blur-3xl animate-blob-float"></div>
+        <div
+            class="absolute -top-32 -left-24 w-[34rem] h-[34rem] bg-sky-300/40 rounded-full blur-3xl animate-blob-float">
+        </div>
         <div
             class="absolute top-24 -right-32 w-[36rem] h-[36rem] bg-violet-300/35 rounded-full blur-3xl animate-aurora-drift animation-delay-2">
         </div>
@@ -31,8 +37,11 @@
             class="absolute -bottom-36 left-1/4 w-[32rem] h-[32rem] bg-emerald-300/30 rounded-full blur-3xl animate-blob-float animation-delay-4">
         </div>
 
-        <div class="absolute top-[18%] right-[10%] w-64 h-64 border border-sky-200/60 rounded-full animate-rotate-slow"></div>
-        <div class="absolute bottom-[14%] left-[8%] w-40 h-40 border border-indigo-200/50 rounded-full animate-rotate-slow animation-delay-4"></div>
+        <div class="absolute top-[18%] right-[10%] w-64 h-64 border border-sky-200/60 rounded-full animate-rotate-slow">
+        </div>
+        <div
+            class="absolute bottom-[14%] left-[8%] w-40 h-40 border border-indigo-200/50 rounded-full animate-rotate-slow animation-delay-4">
+        </div>
 
         <div class="aurora-band aurora-band--one"></div>
         <div class="aurora-band aurora-band--two"></div>
@@ -67,7 +76,8 @@
                 </div>
 
                 <div class="flex items-center gap-3">
-                    <a href="#roles" class="hidden sm:inline text-sm font-medium text-slate-600 hover:text-sky-600 transition">
+                    <a href="#roles"
+                        class="hidden sm:inline text-sm font-medium text-slate-600 hover:text-sky-600 transition">
                         Get Started
                     </a>
                     <a href="#"
@@ -89,7 +99,8 @@
                             calmly, and securely.
                         </h1>
                         <p class="mt-4 text-slate-600 leading-relaxed max-w-xl mx-auto lg:mx-0">
-                            Students and teachers can book sessions, counsellors manage schedules, and admins track reports
+                            Students and teachers can book sessions, counsellors manage schedules, and admins track
+                            reports
                             — all in one place.
                         </p>
 
@@ -130,7 +141,7 @@
                                 <p id="doctorTipText" class="mt-1 text-sm text-slate-700 leading-relaxed">
                                     Take one slow breath before opening your class portal to calm your body first.
                                 </p>
-                                <p class="mt-2 text-[11px] text-slate-500">Auto tips on loop</p>
+                                <p class="mt-2 text-[11px] text-slate-500">Auto tips </p>
                             </div>
                         </div>
                     </div>
@@ -140,7 +151,8 @@
                         class="mx-auto w-full max-w-xl rounded-3xl bg-white/70 border border-slate-200 shadow-sm p-6 sm:p-8 backdrop-blur-xl animate-fade-in-up animation-delay-2">
                         <div class="flex items-center justify-between">
                             <p class="font-bold text-slate-800">Quick Access</p>
-                            <span class="text-xs px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            <span
+                                class="text-xs px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
                                 Safe &amp; Private
                             </span>
                         </div>
@@ -227,19 +239,25 @@
                             <h2 class="text-xl font-semibold text-slate-800 mb-4">Available Counsellors</h2>
 
                             <div class="space-y-4 text-sm">
-                                <div class="flex items-center justify-between bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                                <div
+                                    class="flex items-center justify-between bg-slate-50 p-4 rounded-2xl border border-slate-200">
                                     <span class="text-slate-700 font-medium">Dr. Ahmad</span>
-                                    <span class="text-xs px-3 py-1 rounded-full bg-emerald-100 text-emerald-700">Available</span>
+                                    <span
+                                        class="text-xs px-3 py-1 rounded-full bg-emerald-100 text-emerald-700">Available</span>
                                 </div>
 
-                                <div class="flex items-center justify-between bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                                <div
+                                    class="flex items-center justify-between bg-slate-50 p-4 rounded-2xl border border-slate-200">
                                     <span class="text-slate-700 font-medium">Ms. Farah</span>
-                                    <span class="text-xs px-3 py-1 rounded-full bg-amber-100 text-amber-700">Busy</span>
+                                    <span
+                                        class="text-xs px-3 py-1 rounded-full bg-amber-100 text-amber-700">Busy</span>
                                 </div>
 
-                                <div class="flex items-center justify-between bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                                <div
+                                    class="flex items-center justify-between bg-slate-50 p-4 rounded-2xl border border-slate-200">
                                     <span class="text-slate-700 font-medium">Mr. Daniel</span>
-                                    <span class="text-xs px-3 py-1 rounded-full bg-emerald-100 text-emerald-700">Available</span>
+                                    <span
+                                        class="text-xs px-3 py-1 rounded-full bg-emerald-100 text-emerald-700">Available</span>
                                 </div>
                             </div>
                         </div>
@@ -252,6 +270,7 @@
             © {{ date('Y') }} CollegeCare • Counselling Booking System
         </footer>
     </div>
+
 </body>
 
 </html>

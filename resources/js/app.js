@@ -54,6 +54,7 @@ window.addEventListener("load", () => {
             "You can ask for help early — booking support is a strength, not a weakness.",
             "A short walk and water break can quickly reset your focus and mood.",
             "Write three worries down, then choose one tiny action you can do today.",
+
         ];
 
         let tipIndex = 0;
@@ -71,6 +72,18 @@ window.addEventListener("load", () => {
 
 
 
+});
+document.addEventListener("mousemove", (e) => {
+
+    const dot = document.getElementById("cursor-dot");
+    const ring = document.getElementById("cursor-ring");
+
+    // Move small dot instantly
+    dot.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+
+    // Move ring smoothly
+    ring.style.transition = "transform 0.15s ease-out";
+    ring.style.transform = `translate(${e.clientX - 12}px, ${e.clientY - 12}px)`;
 });
 
 
