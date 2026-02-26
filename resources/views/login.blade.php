@@ -11,9 +11,6 @@
 
 <body class="min-h-screen bg-slate-50 text-slate-700 overflow-x-hidden">
 
-    {{-- <div id="cursor-dot" class="fixed top-0 left-0 w-3 h-3 bg-sky-600 rounded-full pointer-events-none z-50"></div>
-    <div id="cursor-ring" class="fixed top-0 left-0 w-8 h-8 border border-sky-500 rounded-full pointer-events-none z-40">
-    </div> --}}
 
     <!-- Custom Cursor -->
     <div id="cursor-dot" class="fixed top-0 left-0 w-3 h-3 bg-sky-600 rounded-full pointer-events-none z-50"></div>
