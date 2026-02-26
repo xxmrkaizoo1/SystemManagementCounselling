@@ -23,6 +23,11 @@
     </div>
 
     <main class="min-h-screen flex items-center justify-center p-4 sm:p-8">
+        @if (session('status'))
+            <div class="fixed top-4 left-1/2 -translate-x-1/2 z-50 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-700 shadow-sm">
+                {{ session('status') }}
+            </div>
+        @endif
         <section class="w-full max-w-6xl rounded-[2rem] border border-slate-200/80 bg-white/75 backdrop-blur-xl shadow-2xl overflow-hidden">
             <div class="grid lg:grid-cols-[1.35fr_1fr] gap-0">
                 <div class="p-6 sm:p-8 lg:p-10 border-b lg:border-b-0 lg:border-r border-slate-200/80">
@@ -92,11 +97,15 @@
                         <h2 class="mt-2 text-2xl font-bold text-slate-800">Sign in</h2>
                         <p class="mt-2 text-sm text-slate-600">Use your college email and password.</p>
 
-                        <form class="mt-6 space-y-4" action="#" method="POST">
+                        <form class="mt-6 space-y-4" action="{{ route('login.attempt') }}" method="POST">
+                            @csrf
                             <div>
                                 <label for="email" class="block text-sm font-medium text-slate-700 mb-1.5">Email</label>
-                                <input id="email" name="email" type="email" placeholder="name@college.edu"
+                                <input id="email" name="email" type="email" value="{{ old('email') }}" placeholder="name@college.edu"
                                     class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition" />
+                                @error('email')
+                                    <p class="mt-1 text-xs text-rose-600">{{ $message }}</p>
+                                @enderror
                             </div>
 
                             <div>
@@ -104,11 +113,19 @@
                                 <div class="relative">
                                     <input id="password" name="password" x-bind:type="showPassword ? 'text' : 'password'" placeholder="••••••••"
                                         class="w-full rounded-xl border border-slate-300 px-3 py-2.5 pr-12 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition" />
+                                    @error('password')
+                                        <p class="mt-1 text-xs text-rose-600">{{ $message }}</p>
+                                    @enderror
                                     <button type="button" x-on:click="showPassword = !showPassword"
                                         class="absolute inset-y-0 right-2 my-auto h-8 px-2 rounded-lg text-xs font-medium text-slate-500 hover:text-sky-700 hover:bg-sky-50 transition"
                                         x-text="showPassword ? 'Hide' : 'Show'"></button>
                                 </div>
                             </div>
+
+                            <label class="flex items-center gap-2 text-xs text-slate-600">
+                                <input type="checkbox" name="remember" class="rounded border-slate-300 text-sky-600 focus:ring-sky-500/30" />
+                                Remember me
+                            </label>
 
                             <button type="submit"
                                 class="w-full rounded-xl bg-sky-600 text-white font-semibold py-2.5 hover:bg-sky-700 transition shadow-sm">
