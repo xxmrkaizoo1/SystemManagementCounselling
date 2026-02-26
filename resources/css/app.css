@@ -11,6 +11,7 @@
 }
 
 @keyframes blobFloat {
+
     0%,
     100% {
         transform: translate3d(0, 0, 0) scale(1);
@@ -51,6 +52,7 @@
 }
 
 @keyframes bobStep {
+
     0%,
     100% {
         transform: translateY(0);
@@ -119,6 +121,7 @@
 }
 
 @keyframes doctorFloat {
+
     0%,
     100% {
         transform: translateY(0);
@@ -130,6 +133,7 @@
 }
 
 @keyframes doctorWave {
+
     0%,
     100% {
         transform: rotate(20deg);
@@ -141,6 +145,7 @@
 }
 
 @keyframes blink {
+
     0%,
     45%,
     100% {
@@ -154,6 +159,7 @@
 }
 
 @keyframes dialogPulse {
+
     0%,
     100% {
         transform: scale(1);
@@ -255,8 +261,13 @@
     animation: blink 4.5s ease-in-out infinite;
 }
 
-.doc-eye--left { left: 50px; }
-.doc-eye--right { left: 59px; }
+.doc-eye--left {
+    left: 50px;
+}
+
+.doc-eye--right {
+    left: 59px;
+}
 
 .doc-body {
     top: 40px;
@@ -297,8 +308,13 @@
     background: #1e293b;
 }
 
-.doc-leg--left { left: 45px; }
-.doc-leg--right { left: 59px; }
+.doc-leg--left {
+    left: 45px;
+}
+
+.doc-leg--right {
+    left: 59px;
+}
 
 .doc-clipboard {
     top: 56px;
@@ -340,6 +356,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
     .animate-blob-float,
     .animate-fade-in-up,
     .dummy-walker,
@@ -349,6 +366,7 @@
 }
 
 @keyframes auroraDrift {
+
     0%,
     100% {
         transform: translate3d(0, 0, 0) scale(1);
@@ -429,9 +447,169 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
     .animate-aurora-drift,
     .animate-rotate-slow,
     .aurora-band {
         animation: none !important;
     }
+}
+
+
+@keyframes teacherFloat {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+@keyframes teacherArmWave {
+
+    0%,
+    100% {
+        transform: rotate(24deg);
+    }
+
+    50% {
+        transform: rotate(33deg);
+    }
+}
+
+@keyframes teacherLegStep {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(2px);
+    }
+}
+
+.teacher-figure {
+    animation: teacherFloat 2.6s ease-in-out infinite;
+}
+
+.teacher-arm {
+    transform-origin: top center;
+}
+
+.teacher-arm--left {
+    animation: teacherArmWave 1.6s ease-in-out infinite;
+}
+
+.teacher-arm--right {
+    animation: teacherArmWave 1.6s ease-in-out infinite reverse;
+}
+
+.teacher-leg--left,
+.teacher-leg--right {
+    animation: teacherLegStep 1s ease-in-out infinite;
+}
+
+.teacher-leg--right {
+    animation-delay: 0.15s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .teacher-figure,
+    .teacher-arm--left,
+    .teacher-arm--right,
+    .teacher-leg--left,
+    .teacher-leg--right {
+        animation: none !important;
+    }
+}
+
+
+@keyframes presenterFloat {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-4px);
+    }
+}
+
+@keyframes presenterWave {
+    0%,
+    100% {
+        transform: rotate(-48deg);
+    }
+
+    50% {
+        transform: rotate(-30deg);
+    }
+}
+
+@keyframes presenterStep {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(1px);
+    }
+}
+
+.presenter-figure {
+    animation: presenterFloat 2.8s ease-in-out infinite;
+}
+
+.presenter-arm {
+    transform-origin: top center;
+}
+
+.presenter-arm--right {
+    animation: presenterWave 1.2s ease-in-out infinite;
+}
+
+.presenter-leg--left,
+.presenter-leg--right {
+    animation: presenterStep 0.95s ease-in-out infinite;
+}
+
+.presenter-leg--right {
+    animation-delay: 0.15s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .presenter-figure,
+    .presenter-arm--right,
+    .presenter-leg--left,
+    .presenter-leg--right {
+        animation: none !important;
+    }
+}
+
+
+@keyframes blink {
+  0%, 92%, 100% { height: 16px; }
+  95% { height: 2px; }
+}
+
+@keyframes look {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(2px); }
+  50% { transform: translateX(-2px); }
+  75% { transform: translateX(1px); }
+}
+
+.animate-blink {
+  animation: blink 4s infinite;
+  overflow: hidden;
+}
+
+.animate-look {
+  animation: look 3s infinite ease-in-out;
 }

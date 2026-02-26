@@ -73,7 +73,7 @@ class AuthController extends Controller
 
         $role = Role::firstOrCreate(
             ['name' => $validated['role']],
-            ['description' => ucfirst($validated['role']) . ' role']
+            ['description' => ucfirst($validated['role']).' role']
         );
 
         $user->roles()->attach($role->id, ['assigned_at' => now()]);

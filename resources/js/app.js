@@ -5,56 +5,64 @@ window.Alpine = Alpine;
 
 Alpine.start();
 
+window.addEventListener('load', () => {
+    // Home page loader animation
+    const circle = document.getElementById('circle');
+    const loader = document.getElementById('loader');
+    const content = document.getElementById('content');
+    const logoText = document.getElementById('logoText');
 
+    if (circle && loader && content && logoText) {
+        circle.style.transition = 'transform 1.2s ease-in-out';
+        loader.style.transition = 'opacity 0.8s ease';
+        logoText.style.transition = 'opacity 0.5s ease';
 
-window.addEventListener("load", () => {
+        setTimeout(() => {
+            logoText.style.opacity = '0';
+        }, 500);
 
-    const circle = document.getElementById("circle");
-    const loader = document.getElementById("loader");
-    const content = document.getElementById("content");
-    const logoText = document.getElementById("logoText");
+        setTimeout(() => {
+            circle.style.transform = 'scale(25)';
+        }, 800);
 
-    if (!circle || !loader || !content || !logoText) {
-        return;
+        setTimeout(() => {
+            loader.style.opacity = '0';
+        }, 1600);
+
+        setTimeout(() => {
+            loader.style.display = 'none';
+            content.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+            content.style.opacity = '1';
+            content.style.transform = 'translateY(0px)';
+        }, 2200);
     }
 
-    circle.style.transition = "transform 1.2s ease-in-out";
-    loader.style.transition = "opacity 0.8s ease";
-    logoText.style.transition = "opacity 0.5s ease";
+    // Login page loader animation
+    const loginLoader = document.getElementById('loginLoader');
+    const loginContent = document.getElementById('loginContent');
 
-    // 1️⃣ Fade text first
-    setTimeout(() => {
-        logoText.style.opacity = "0";
-    }, 500);
+    if (loginLoader && loginContent) {
+        window.setTimeout(() => {
+            loginLoader.style.opacity = '0';
+        }, 500);
 
-    // 2️⃣ Then zoom circle
-    setTimeout(() => {
-        circle.style.transform = "scale(25)";
-    }, 800);
+        window.setTimeout(() => {
+            loginLoader.style.display = 'none';
+            loginContent.classList.remove('opacity-0', 'translate-y-2');
+            loginContent.classList.add('opacity-100', 'translate-y-0');
+        }, 1150);
+    }
 
-    // 3️⃣ Fade out loader
-    setTimeout(() => {
-        loader.style.opacity = "0";
-    }, 1600);
-
-    // 4️⃣ Show page
-    setTimeout(() => {
-        loader.style.display = "none";
-        content.style.transition = "opacity 0.8s ease, transform 0.8s ease";
-        content.style.opacity = "1";
-        content.style.transform = "translateY(0px)";
-    }, 2200);
-
-    const doctorTipText = document.getElementById("doctorTipText");
+    // Rotating doctor tips on index page
+    const doctorTipText = document.getElementById('doctorTipText');
 
     if (doctorTipText) {
         const tips = [
-            "Small daily check-ins with yourself can prevent stress from piling up.",
-            "If anxiety feels heavy, try 4-7-8 breathing for one minute before class.",
-            "You can ask for help early — booking support is a strength, not a weakness.",
-            "A short walk and water break can quickly reset your focus and mood.",
-            "Write three worries down, then choose one tiny action you can do today.",
-
+            'Small daily check-ins with yourself can prevent stress from piling up.',
+            'If anxiety feels heavy, try 4-7-8 breathing for one minute before class.',
+            'You can ask for help early — booking support is a strength, not a weakness.',
+            'A short walk and water break can quickly reset your focus and mood.',
+            'Write three worries down, then choose one tiny action you can do today.',
         ];
 
         let tipIndex = 0;
@@ -62,95 +70,10 @@ window.addEventListener("load", () => {
 
         window.setInterval(() => {
             tipIndex = (tipIndex + 1) % tips.length;
-            doctorTipText.classList.remove("tip-swap");
-            // restart animation
+            doctorTipText.classList.remove('tip-swap');
             void doctorTipText.offsetWidth;
             doctorTipText.textContent = tips[tipIndex];
-            doctorTipText.classList.add("tip-swap");
+            doctorTipText.classList.add('tip-swap');
         }, tipLoopMs);
     }
-
-
-
 });
-document.addEventListener("mousemove", (e) => {
-
-    const dot = document.getElementById("cursor-dot");
-    const ring = document.getElementById("cursor-ring");
-
-    // Move small dot instantly
-    dot.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
-
-    // Move ring smoothly
-    ring.style.transition = "transform 0.15s ease-out";
-    ring.style.transform = `translate(${e.clientX - 12}px, ${e.clientY - 12}px)`;
-});
-
-
-
-
-
-// window.addEventListener("load", () => {
-//   const loader = document.getElementById("loader");
-//   const content = document.getElementById("content");
-//   const bar = document.getElementById("bar");
-
-//   // smooth show content
-//   content.style.transition = "opacity 0.8s ease, transform 0.8s ease";
-//   content.style.transform = "translateY(10px)";
-
-//   // progress animation
-//   let progress = 0;
-//   const timer = setInterval(() => {
-//     progress += 5;
-//     bar.style.width = progress + "%";
-
-//     if (progress >= 100) {
-//       clearInterval(timer);
-
-//       // fade out loader
-//       loader.style.transition = "opacity 0.6s ease";
-//       loader.style.opacity = "0";
-
-//       setTimeout(() => {
-//         loader.style.display = "none";
-//         content.style.opacity = "1";
-//         content.style.transform = "translateY(0px)";
-//       }, 650);
-//     }
-//   }, 1000); // <-- speed (80ms) | make bigger = slower
-// });
-
-
-
-
-// window.addEventListener("load", () => {
-//   const loader = document.getElementById("loader");
-//   const content = document.getElementById("content");
-//   const bar = document.getElementById("bar");
-
-//   // smooth show content
-//   content.style.transition = "opacity 0.8s ease, transform 0.8s ease";
-//   content.style.transform = "translateY(10px)";
-
-//   // progress animation
-//   let progress = 0;
-//   const timer = setInterval(() => {
-//     progress += 5;
-//     bar.style.width = progress + "%";
-
-//     if (progress >= 100) {
-//       clearInterval(timer);
-
-//       // fade out loader
-//       loader.style.transition = "opacity 0.6s ease";
-//       loader.style.opacity = "0";
-
-//       setTimeout(() => {
-//         loader.style.display = "none";
-//         content.style.opacity = "1";
-//         content.style.transform = "translateY(0px)";
-//       }, 650);
-//     }
-//   }, 1000); // <-- speed (80ms) | make bigger = slower
-// });
