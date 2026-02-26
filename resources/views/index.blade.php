@@ -195,7 +195,7 @@
                         </div>
 
                         <div class="mt-6 flex gap-3">
-                            <a href="#"
+                            <a href="{{ route('signup') }}"
                                 class="flex-1 text-center px-4 py-2 rounded-xl bg-sky-600 text-white font-semibold shadow-sm hover:bg-sky-700 transition">
                                 Sign Up
                             </a>
