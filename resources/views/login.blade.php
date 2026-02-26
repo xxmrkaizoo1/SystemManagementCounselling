@@ -9,6 +9,12 @@
 </head>
 
 <body class="min-h-screen bg-slate-50 text-slate-700 overflow-x-hidden">
+    <div id="loginLoader" class="fixed inset-0 z-50 flex items-center justify-center bg-sky-500/95 transition-opacity duration-700">
+        <div class="flex flex-col items-center gap-3">
+            <div class="w-16 h-16 rounded-full border-4 border-white/35 border-t-white animate-spin"></div>
+            <p class="text-white font-semibold tracking-wide">Loading secure portal...</p>
+        </div>
+    </div>
     <div class="fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
         <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_#e0f2fe_0%,_#f8fafc_35%,_#f1f5f9_100%)]"></div>
         <div class="absolute inset-0 bg-grid-pattern opacity-30"></div>
@@ -22,7 +28,7 @@
         <div class="aurora-band aurora-band--two"></div>
     </div>
 
-    <main class="min-h-screen flex items-center justify-center p-4 sm:p-8">
+    <main id="loginContent" class="min-h-screen flex items-center justify-center p-4 sm:p-8 opacity-0 translate-y-2 transition-all duration-700">
         @if (session('status'))
             <div class="fixed top-4 left-1/2 -translate-x-1/2 z-50 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-700 shadow-sm">
                 {{ session('status') }}
@@ -63,14 +69,14 @@
 
                     <div class="mt-6 rounded-3xl border border-slate-200 bg-gradient-to-br from-white via-sky-50 to-indigo-50 p-6 min-h-[15rem]">
                         <div class="grid sm:grid-cols-[130px_1fr] items-center gap-4 h-full">
-                            <div class="mx-auto rounded-3xl border border-sky-100 bg-white/90 w-[120px] h-[140px] relative shadow-sm">
-                                <div class="absolute top-5 left-1/2 -translate-x-1/2 w-12 h-12 rounded-full bg-amber-100 border border-amber-200"></div>
+                            <div class="teacher-figure mx-auto rounded-3xl border border-sky-100 bg-white/90 w-[120px] h-[140px] relative shadow-sm">
+                                <div class="teacher-head absolute top-5 left-1/2 -translate-x-1/2 w-12 h-12 rounded-full bg-amber-100 border border-amber-200"></div>
                                 <div class="absolute top-3 left-1/2 -translate-x-1/2 w-14 h-5 rounded-t-full bg-slate-800"></div>
-                                <div class="absolute top-[4.4rem] left-1/2 -translate-x-1/2 w-16 h-12 rounded-2xl bg-white border border-slate-200"></div>
-                                <div class="absolute top-[4.8rem] left-[1.7rem] w-4 h-8 rounded-full border-2 border-slate-300 rotate-[25deg]"></div>
-                                <div class="absolute top-[4.8rem] right-[1.7rem] w-4 h-8 rounded-full border-2 border-slate-300 -rotate-[25deg]"></div>
-                                <div class="absolute top-[6.9rem] left-[2.9rem] w-4 h-9 rounded-full bg-slate-700"></div>
-                                <div class="absolute top-[6.9rem] right-[2.9rem] w-4 h-9 rounded-full bg-slate-700"></div>
+                                <div class="teacher-body absolute top-[4.4rem] left-1/2 -translate-x-1/2 w-16 h-12 rounded-2xl bg-white border border-slate-200"></div>
+                                <div class="teacher-arm teacher-arm--left absolute top-[4.8rem] left-[1.7rem] w-4 h-8 rounded-full border-2 border-slate-300 rotate-[25deg]"></div>
+                                <div class="teacher-arm teacher-arm--right absolute top-[4.8rem] right-[1.7rem] w-4 h-8 rounded-full border-2 border-slate-300 -rotate-[25deg]"></div>
+                                <div class="teacher-leg teacher-leg--left absolute top-[6.9rem] left-[2.9rem] w-4 h-9 rounded-full bg-slate-700"></div>
+                                <div class="teacher-leg teacher-leg--right absolute top-[6.9rem] right-[2.9rem] w-4 h-9 rounded-full bg-slate-700"></div>
                                 <div class="absolute bottom-3 left-1/2 -translate-x-1/2 w-16 h-2.5 rounded-full bg-slate-300/70"></div>
                             </div>
 

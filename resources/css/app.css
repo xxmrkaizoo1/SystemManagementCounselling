@@ -343,3 +343,71 @@
         animation: none !important;
     }
 }
+
+@keyframes teacherFloat {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+@keyframes teacherArmWave {
+    0%,
+    100% {
+        transform: rotate(24deg);
+    }
+
+    50% {
+        transform: rotate(33deg);
+    }
+}
+
+@keyframes teacherLegStep {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(2px);
+    }
+}
+
+.teacher-figure {
+    animation: teacherFloat 2.6s ease-in-out infinite;
+}
+
+.teacher-arm {
+    transform-origin: top center;
+}
+
+.teacher-arm--left {
+    animation: teacherArmWave 1.6s ease-in-out infinite;
+}
+
+.teacher-arm--right {
+    animation: teacherArmWave 1.6s ease-in-out infinite reverse;
+}
+
+.teacher-leg--left,
+.teacher-leg--right {
+    animation: teacherLegStep 1s ease-in-out infinite;
+}
+
+.teacher-leg--right {
+    animation-delay: 0.15s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .teacher-figure,
+    .teacher-arm--left,
+    .teacher-arm--right,
+    .teacher-leg--left,
+    .teacher-leg--right {
+        animation: none !important;
+    }
+}
