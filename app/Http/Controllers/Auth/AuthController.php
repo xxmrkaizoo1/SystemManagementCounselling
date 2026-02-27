@@ -10,9 +10,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use Illuminate\Support\Str;
+use Illuminate\Http\UploadedFile;
 
 class AuthController extends Controller
 {
+    private const DEFAULT_PROFILE_PIC = '/images/default-profile.svg';
     public function showLogin(): View
     {
         return view('login');
@@ -50,6 +53,7 @@ class AuthController extends Controller
             'role' => ['required', Rule::in(['student', 'teacher', 'counsellor'])],
             'years' => ['nullable', 'string', 'max:50'],
             'programme' => ['nullable', 'string', 'max:50'],
+            'profile_pic' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'password' => ['required', 'confirmed', 'min:8'],
         ]);
 
@@ -59,6 +63,7 @@ class AuthController extends Controller
                 'programme' => ['required', 'string', 'max:50'],
             ]);
         }
+        $profilePicPath = $this->storeProfilePicture($request->file('profile_pic'));
 
         $user = User::create([
             'name' => $validated['full_name'],
@@ -68,12 +73,12 @@ class AuthController extends Controller
             'password' => $validated['password'],
             'years' => $validated['role'] === 'student' ? ($validated['years'] ?? null) : null,
             'programme' => $validated['role'] === 'student' ? ($validated['programme'] ?? null) : null,
-            'profile_pic' => null,
+            'profile_pic' => $profilePicPath,
         ]);
 
         $role = Role::firstOrCreate(
             ['name' => $validated['role']],
-            ['description' => ucfirst($validated['role']).' role']
+            ['description' => ucfirst($validated['role']) . ' role']
         );
 
         $user->roles()->attach($role->id, ['assigned_at' => now()]);
@@ -84,6 +89,19 @@ class AuthController extends Controller
         return redirect()->route('home')->with('status', 'Account created successfully.');
     }
 
+    public function updateProfilePicture(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'profile_pic' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+        ]);
+
+        /** @var User $user */
+        $user = $request->user();
+        $user->profile_pic = $this->storeProfilePicture($validated['profile_pic']);
+        $user->save();
+
+        return back()->with('status', 'Profile picture updated successfully.');
+    }
     public function logout(Request $request): RedirectResponse
     {
         Auth::logout();
@@ -92,5 +110,23 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('home');
+    }
+
+       private function storeProfilePicture(?UploadedFile $file): string
+    {
+        if (! $file) {
+            return self::DEFAULT_PROFILE_PIC;
+        }
+
+        $uploadDir = public_path('uploads/profile_pics');
+
+        if (! is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+
+        $filename = Str::uuid()->toString().'.'.$file->getClientOriginalExtension();
+        $file->move($uploadDir, $filename);
+
+        return '/uploads/profile_pics/'.$filename;
     }
 }

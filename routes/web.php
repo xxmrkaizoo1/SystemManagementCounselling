@@ -15,6 +15,11 @@ Route::middleware('guest')->group(function () {
     Route::post('/signup', [AuthController::class, 'register'])->name('signup.store');
 });
 
+Route::post('/profile/picture', [AuthController::class, 'updateProfilePicture'])
+    ->middleware('auth')
+    ->name('profile.picture.update');
+
+    
 Route::post('/logout', [AuthController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
