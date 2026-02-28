@@ -7,15 +7,21 @@ use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
-use Illuminate\Support\Str;
-use Illuminate\Http\UploadedFile;
 
 class AuthController extends Controller
 {
     private const DEFAULT_PROFILE_PIC = '/images/default-profile.svg';
+    private const OTP_TTL_MINUTES = 10;
+    private const SESSION_PENDING_SIGNUP = 'signup.pending';
+    private const SESSION_PENDING_EMAIL = 'signup.otp_email';
+
     public function showLogin(): View
     {
         return view('login');
@@ -24,6 +30,22 @@ class AuthController extends Controller
     public function showSignup(): View
     {
         return view('signup');
+    }
+
+    public function showOtpForm(Request $request): View|RedirectResponse
+    {
+        $pendingSignup = $request->session()->get(self::SESSION_PENDING_SIGNUP);
+
+        if (! $pendingSignup) {
+            return redirect()->route('signup')->withErrors([
+                'email' => 'Please complete the signup form first.',
+            ]);
+        }
+
+        return view('signup-otp', [
+            'pendingEmail' => $request->session()->get(self::SESSION_PENDING_EMAIL),
+            'profilePic' => $pendingSignup['profile_pic'] ?? self::DEFAULT_PROFILE_PIC,
+        ]);
     }
 
     public function login(Request $request): RedirectResponse
@@ -63,30 +85,123 @@ class AuthController extends Controller
                 'programme' => ['required', 'string', 'max:50'],
             ]);
         }
-        $profilePicPath = $this->storeProfilePicture($request->file('profile_pic'));
 
-        $user = User::create([
+        $profilePicPath = $this->storeTemporaryProfilePicture($request->file('profile_pic'));
+        $otp = random_int(100000, 999999);
+
+        $pendingSignup = [
             'name' => $validated['full_name'],
             'full_name' => $validated['full_name'],
             'phone' => $validated['phone'],
             'email' => $validated['email'],
             'password' => $validated['password'],
+            'role' => $validated['role'],
             'years' => $validated['role'] === 'student' ? ($validated['years'] ?? null) : null,
             'programme' => $validated['role'] === 'student' ? ($validated['programme'] ?? null) : null,
+            'profile_pic' => $profilePicPath,
+        ];
+
+        $request->session()->put(self::SESSION_PENDING_SIGNUP, $pendingSignup);
+        $request->session()->put(self::SESSION_PENDING_EMAIL, $validated['email']);
+
+        Cache::put(
+            $this->otpCacheKey($validated['email']),
+            ['otp' => $otp],
+            now()->addMinutes(self::OTP_TTL_MINUTES)
+        );
+
+        $this->sendSignupOtpEmail($validated['email'], $otp);
+
+        return redirect()->route('signup.otp.form')->with('status', 'OTP sent to your email. Please verify to complete signup.');
+    }
+
+    public function verifySignupOtp(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'otp' => ['required', 'integer', 'digits:6'],
+        ]);
+
+        $pendingSignup = $request->session()->get(self::SESSION_PENDING_SIGNUP);
+        $pendingEmail = $request->session()->get(self::SESSION_PENDING_EMAIL);
+
+        if (! $pendingSignup || ! $pendingEmail) {
+            return redirect()->route('signup')->withErrors([
+                'email' => 'Your signup session expired. Please register again.',
+            ]);
+        }
+
+        if (User::where('email', $pendingEmail)->exists()) {
+            $this->clearPendingSignup($request, $pendingEmail);
+
+            return redirect()->route('signup')->withErrors([
+                'email' => 'This email is already registered. Please use another email.',
+            ]);
+        }
+
+        $cachedOtp = Cache::get($this->otpCacheKey($pendingEmail));
+
+        if (! $cachedOtp) {
+            return back()->withErrors([
+                'otp' => 'OTP expired. Please resend a new code.',
+            ]);
+        }
+
+        if ((int) $cachedOtp['otp'] !== (int) $request->integer('otp')) {
+            return back()->withErrors([
+                'otp' => 'Invalid OTP code. Please try again.',
+            ])->withInput();
+        }
+
+        $profilePicPath = $this->promoteTemporaryProfilePicture($pendingSignup['profile_pic'] ?? null);
+
+        $user = User::create([
+            'name' => $pendingSignup['name'],
+            'full_name' => $pendingSignup['full_name'],
+            'phone' => $pendingSignup['phone'],
+            'email' => $pendingSignup['email'],
+            'password' => $pendingSignup['password'],
+            'years' => $pendingSignup['years'],
+            'programme' => $pendingSignup['programme'],
             'profile_pic' => $profilePicPath,
         ]);
 
         $role = Role::firstOrCreate(
-            ['name' => $validated['role']],
-            ['description' => ucfirst($validated['role']) . ' role']
+            ['name' => $pendingSignup['role']],
+            ['description' => ucfirst($pendingSignup['role']).' role']
         );
 
         $user->roles()->attach($role->id, ['assigned_at' => now()]);
+
+        $this->clearPendingSignup($request, $pendingEmail);
 
         Auth::login($user);
         $request->session()->regenerate();
 
         return redirect()->route('home')->with('status', 'Account created successfully.');
+    }
+
+    public function resendSignupOtp(Request $request): RedirectResponse
+    {
+        $pendingEmail = $request->session()->get(self::SESSION_PENDING_EMAIL);
+        $pendingSignup = $request->session()->get(self::SESSION_PENDING_SIGNUP);
+
+        if (! $pendingEmail || ! $pendingSignup) {
+            return redirect()->route('signup')->withErrors([
+                'email' => 'Signup session expired. Please register again.',
+            ]);
+        }
+
+        $otp = random_int(100000, 999999);
+
+        Cache::put(
+            $this->otpCacheKey($pendingEmail),
+            ['otp' => $otp],
+            now()->addMinutes(self::OTP_TTL_MINUTES)
+        );
+
+        $this->sendSignupOtpEmail($pendingEmail, $otp);
+
+        return back()->with('status', 'A new OTP has been sent to your email.');
     }
 
     public function updateProfilePicture(Request $request): RedirectResponse
@@ -102,6 +217,7 @@ class AuthController extends Controller
 
         return back()->with('status', 'Profile picture updated successfully.');
     }
+
     public function logout(Request $request): RedirectResponse
     {
         Auth::logout();
@@ -112,7 +228,7 @@ class AuthController extends Controller
         return redirect()->route('home');
     }
 
-       private function storeProfilePicture(?UploadedFile $file): string
+    private function storeProfilePicture(?UploadedFile $file): string
     {
         if (! $file) {
             return self::DEFAULT_PROFILE_PIC;
@@ -128,5 +244,76 @@ class AuthController extends Controller
         $file->move($uploadDir, $filename);
 
         return '/uploads/profile_pics/'.$filename;
+    }
+
+    private function storeTemporaryProfilePicture(?UploadedFile $file): string
+    {
+        if (! $file) {
+            return self::DEFAULT_PROFILE_PIC;
+        }
+
+        $tempUploadDir = public_path('uploads/profile_pics/temp');
+
+        if (! is_dir($tempUploadDir)) {
+            mkdir($tempUploadDir, 0755, true);
+        }
+
+        $filename = Str::uuid()->toString().'.'.$file->getClientOriginalExtension();
+        $file->move($tempUploadDir, $filename);
+
+        return '/uploads/profile_pics/temp/'.$filename;
+    }
+
+    private function promoteTemporaryProfilePicture(?string $path): string
+    {
+        if (! $path || $path === self::DEFAULT_PROFILE_PIC) {
+            return self::DEFAULT_PROFILE_PIC;
+        }
+
+        if (! str_starts_with($path, '/uploads/profile_pics/temp/')) {
+            return $path;
+        }
+
+        $source = public_path(ltrim($path, '/'));
+
+        if (! file_exists($source)) {
+            return self::DEFAULT_PROFILE_PIC;
+        }
+
+        $finalUploadDir = public_path('uploads/profile_pics');
+
+        if (! is_dir($finalUploadDir)) {
+            mkdir($finalUploadDir, 0755, true);
+        }
+
+        $extension = pathinfo($source, PATHINFO_EXTENSION);
+        $newFilename = Str::uuid()->toString().($extension ? '.'.$extension : '');
+        $destination = $finalUploadDir.DIRECTORY_SEPARATOR.$newFilename;
+
+        rename($source, $destination);
+
+        return '/uploads/profile_pics/'.$newFilename;
+    }
+
+    private function sendSignupOtpEmail(string $email, int $otp): void
+    {
+        Mail::raw(
+            "Your CollegeCare OTP code is: {$otp}. This code expires in ".self::OTP_TTL_MINUTES.' minutes.',
+            function ($message) use ($email) {
+                $message->to($email)
+                    ->subject('CollegeCare Signup OTP Verification');
+            }
+        );
+    }
+
+    private function otpCacheKey(string $email): string
+    {
+        return 'signup_otp_'.sha1(strtolower($email));
+    }
+
+    private function clearPendingSignup(Request $request, string $email): void
+    {
+        $request->session()->forget([self::SESSION_PENDING_SIGNUP, self::SESSION_PENDING_EMAIL]);
+        Cache::forget($this->otpCacheKey($email));
     }
 }

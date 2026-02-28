@@ -64,7 +64,16 @@
 
                             <p class="text-center text-xs text-slate-500">Profile photo (optional)</p>
 
-
+                            <div class="text-center">
+                                <p class="text-sm font-medium text-slate-700 mb-1.5">Add Profile Picture</p>
+                                <button type="button"
+                                    class="inline-flex items-center rounded-xl bg-sky-100 px-4 py-2 text-sm font-medium text-sky-700 hover:bg-sky-200 transition"
+                                    x-on:click="$refs.profilePicInput.click()">
+                                    Choose File
+                                </button>
+                                <span class="ml-2 text-sm text-slate-500"
+                                    x-text="profileFileName || 'No file chosen'"></span>
+                            </div>
 
                             @error('profile_pic')
                                 <p class="text-xs text-rose-600">{{ $message }}</p>

@@ -13,16 +13,20 @@ Route::middleware('guest')->group(function () {
 
     Route::get('/signup', [AuthController::class, 'showSignup'])->name('signup');
     Route::post('/signup', [AuthController::class, 'register'])->name('signup.store');
+
+    Route::get('/signup/otp', [AuthController::class, 'showOtpForm'])->name('signup.otp.form');
+    Route::post('/signup/otp/verify', [AuthController::class, 'verifySignupOtp'])->name('signup.otp.verify');
+    Route::post('/signup/otp/resend', [AuthController::class, 'resendSignupOtp'])->name('signup.otp.resend');
 });
 
 Route::post('/profile/picture', [AuthController::class, 'updateProfilePicture'])
     ->middleware('auth')
     ->name('profile.picture.update');
 
-    
 Route::post('/logout', [AuthController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
+
 
 
 // Route::get('/dashboard', function () {
