@@ -530,6 +530,7 @@
 
 
 @keyframes presenterFloat {
+
     0%,
     100% {
         transform: translateY(0);
@@ -541,6 +542,7 @@
 }
 
 @keyframes presenterWave {
+
     0%,
     100% {
         transform: rotate(-48deg);
@@ -552,6 +554,7 @@
 }
 
 @keyframes presenterStep {
+
     0%,
     100% {
         transform: translateY(0);
@@ -584,6 +587,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
     .presenter-figure,
     .presenter-arm--right,
     .presenter-leg--left,
@@ -594,22 +598,43 @@
 
 
 @keyframes blink {
-  0%, 92%, 100% { height: 16px; }
-  95% { height: 2px; }
+
+    0%,
+    92%,
+    100% {
+        height: 16px;
+    }
+
+    95% {
+        height: 2px;
+    }
 }
 
 @keyframes look {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(2px); }
-  50% { transform: translateX(-2px); }
-  75% { transform: translateX(1px); }
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(2px);
+    }
+
+    50% {
+        transform: translateX(-2px);
+    }
+
+    75% {
+        transform: translateX(1px);
+    }
 }
 
 .animate-blink {
-  animation: blink 4s infinite;
-  overflow: hidden;
+    animation: blink 4s infinite;
+    overflow: hidden;
 }
 
 .animate-look {
-  animation: look 3s infinite ease-in-out;
+    animation: look 3s infinite ease-in-out;
 }
