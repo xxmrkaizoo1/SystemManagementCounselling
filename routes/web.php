@@ -70,6 +70,13 @@ Route::middleware('auth')->group(function () {
         ]);
     })->name('inbox');
 
+    Route::get('/edit-profile', [AuthController::class, 'showEditProfile'])
+        ->name('profile.edit');
+
+    Route::post('/edit-profile', [AuthController::class, 'updateProfileInfo'])
+        ->name('profile.update');
+
+
     Route::post('/profile/picture', [AuthController::class, 'updateProfilePicture'])
         ->name('profile.picture.update');
 

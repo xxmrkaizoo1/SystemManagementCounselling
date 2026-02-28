@@ -41,8 +41,7 @@
                         <a href="{{ route('inbox') }}" class="block rounded-xl bg-sky-600 text-white px-3 py-2 font-medium">Inbox</a>
                         <a href="#" class="block rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-sky-200 hover:text-sky-700 transition">Booking</a>
                         <a href="#" class="block rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-sky-200 hover:text-sky-700 transition">Booking History</a>
-                        <a href="#" class="block rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-sky-200 hover:text-sky-700 transition">Edit Profile</a>
-                    </nav>
+                        <a href="{{ route('profile.edit') }}" class="block rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-sky-200 hover:text-sky-700 transition">Edit Profile</a>                    </nav>
                 </aside>
 
                 <section class="rounded-2xl border border-slate-200 bg-white/90 p-6 sm:p-8 shadow-sm flex items-center justify-center min-h-[26rem]">

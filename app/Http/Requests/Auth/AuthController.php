@@ -237,6 +237,49 @@ class AuthController extends Controller
 
         return back()->with('status', 'Profile picture updated successfully.');
     }
+       public function showEditProfile(Request $request): View
+    {
+        /** @var User $user */
+        $user = $request->user();
+        $role = $user->roles()->value('name');
+
+        return view('edit-profile', [
+            'user' => $user,
+            'role' => $role,
+        ]);
+    }
+
+    public function updateProfileInfo(Request $request): RedirectResponse
+    {
+        /** @var User $user */
+        $user = $request->user();
+        $role = $user->roles()->value('name');
+
+        $validated = $request->validate([
+            'full_name' => ['required', 'string', 'max:255'],
+            'phone' => ['required', 'string', 'max:30'],
+            'years' => ['nullable', 'string', 'max:50'],
+            'programme' => ['nullable', 'string', 'max:50'],
+        ]);
+
+        $user->full_name = $validated['full_name'];
+        $user->name = $validated['full_name'];
+        $user->phone = $validated['phone'];
+
+        if ($role === 'student') {
+            $request->validate([
+                'years' => ['required', 'string', 'max:50'],
+                'programme' => ['required', 'string', 'max:50'],
+            ]);
+
+            $user->years = $validated['years'] ?? null;
+            $user->programme = $validated['programme'] ?? null;
+        }
+
+        $user->save();
+
+        return back()->with('status', 'Profile updated successfully.');
+    }
 
     public function logout(Request $request): RedirectResponse
     {
