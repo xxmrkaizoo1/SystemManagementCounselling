@@ -10,8 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
@@ -123,7 +123,6 @@ class AuthController extends Controller
                 ->withErrors(['email' => 'Unable to send OTP email right now. Please check mail settings and try again.'])
                 ->withInput($request->except(['password', 'password_confirmation', 'profile_pic']));
         }
-
         return redirect()->route('signup.otp.form')->with('status', 'OTP sent to your email. Please verify to complete signup.');
     }
 
@@ -179,7 +178,7 @@ class AuthController extends Controller
 
         $role = Role::firstOrCreate(
             ['name' => $pendingSignup['role']],
-            ['description' => ucfirst($pendingSignup['role']).' role']
+            ['description' => ucfirst($pendingSignup['role']) . ' role']
         );
 
         $user->roles()->attach($role->id, ['assigned_at' => now()]);
@@ -220,7 +219,6 @@ class AuthController extends Controller
                 'otp' => 'Unable to resend OTP right now. Please try again in a moment.',
             ]);
         }
-
         return back()->with('status', 'A new OTP has been sent to your email.');
     }
 
@@ -237,7 +235,8 @@ class AuthController extends Controller
 
         return back()->with('status', 'Profile picture updated successfully.');
     }
-       public function showEditProfile(Request $request): View
+
+    public function showEditProfile(Request $request): View
     {
         /** @var User $user */
         $user = $request->user();
@@ -254,27 +253,20 @@ class AuthController extends Controller
         /** @var User $user */
         $user = $request->user();
         $role = $user->roles()->value('name');
+        $isStudent = $role === 'student';
 
         $validated = $request->validate([
             'full_name' => ['required', 'string', 'max:255'],
             'phone' => ['required', 'string', 'max:30'],
-            'years' => ['nullable', 'string', 'max:50'],
-            'programme' => ['nullable', 'string', 'max:50'],
+            'years' => [Rule::requiredIf($isStudent), 'nullable', 'string', 'max:50'],
+            'programme' => [Rule::requiredIf($isStudent), 'nullable', 'string', 'max:50'],
         ]);
 
         $user->full_name = $validated['full_name'];
         $user->name = $validated['full_name'];
         $user->phone = $validated['phone'];
-
-        if ($role === 'student') {
-            $request->validate([
-                'years' => ['required', 'string', 'max:50'],
-                'programme' => ['required', 'string', 'max:50'],
-            ]);
-
-            $user->years = $validated['years'] ?? null;
-            $user->programme = $validated['programme'] ?? null;
-        }
+        $user->years = $isStudent ? ($validated['years'] ?? null) : null;
+        $user->programme = $isStudent ? ($validated['programme'] ?? null) : null;
 
         $user->save();
 
@@ -303,10 +295,10 @@ class AuthController extends Controller
             mkdir($uploadDir, 0755, true);
         }
 
-        $filename = Str::uuid()->toString().'.'.$file->getClientOriginalExtension();
+        $filename = Str::uuid()->toString() . '.' . $file->getClientOriginalExtension();
         $file->move($uploadDir, $filename);
 
-        return '/uploads/profile_pics/'.$filename;
+        return '/uploads/profile_pics/' . $filename;
     }
 
     private function storeTemporaryProfilePicture(?UploadedFile $file): string
@@ -321,10 +313,10 @@ class AuthController extends Controller
             mkdir($tempUploadDir, 0755, true);
         }
 
-        $filename = Str::uuid()->toString().'.'.$file->getClientOriginalExtension();
+        $filename = Str::uuid()->toString() . '.' . $file->getClientOriginalExtension();
         $file->move($tempUploadDir, $filename);
 
-        return '/uploads/profile_pics/temp/'.$filename;
+        return '/uploads/profile_pics/temp/' . $filename;
     }
 
     private function promoteTemporaryProfilePicture(?string $path): string
@@ -346,22 +338,22 @@ class AuthController extends Controller
         $finalUploadDir = public_path('uploads/profile_pics');
 
         if (! is_dir($finalUploadDir)) {
-            mkdir(e4$finalUploadDir, 0755, true);
+            mkdir($finalUploadDir, 0755, true);
         }
 
         $extension = pathinfo($source, PATHINFO_EXTENSION);
-        $newFilename = Str::uuid()->toString().($extension ? '.'.$extension : '');
-        $destination = $finalUploadDir.DIRECTORY_SEPARATOR.$newFilename;
+        $newFilename = Str::uuid()->toString() . ($extension ? '.' . $extension : '');
+        $destination = $finalUploadDir . DIRECTORY_SEPARATOR . $newFilename;
 
         rename($source, $destination);
 
-        return '/uploads/profile_pics/'.$newFilename;
+        return '/uploads/profile_pics/' . $newFilename;
     }
 
     private function sendSignupOtpEmail(string $email, int $otp): void
     {
         Mail::mailer(config('mail.default', 'failover'))->raw(
-            "Your CollegeCare OTP code is: {$otp}. This code expires in ".self::OTP_TTL_MINUTES.' minutes.',
+            "Your CollegeCare OTP code is: {$otp}. This code expires in " . self::OTP_TTL_MINUTES . ' minutes.',
             function ($message) use ($email) {
                 $message->to($email)
                     ->subject('CollegeCare Signup OTP Verification');
@@ -371,7 +363,7 @@ class AuthController extends Controller
 
     private function otpCacheKey(string $email): string
     {
-        return 'signup_otp_'.sha1(strtolower($email));
+        return 'signup_otp_' . sha1(strtolower($email));
     }
 
     private function clearPendingSignup(Request $request, string $email): void
