@@ -11,9 +11,11 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use Throwable;
 
 class AuthController extends Controller
 {
@@ -94,7 +96,7 @@ class AuthController extends Controller
             'full_name' => $validated['full_name'],
             'phone' => $validated['phone'],
             'email' => $validated['email'],
-            'password' => $validated['password'],
+            'password' => Hash::make($validated['password']),
             'role' => $validated['role'],
             'years' => $validated['role'] === 'student' ? ($validated['years'] ?? null) : null,
             'programme' => $validated['role'] === 'student' ? ($validated['programme'] ?? null) : null,
@@ -110,8 +112,17 @@ class AuthController extends Controller
             now()->addMinutes(self::OTP_TTL_MINUTES)
         );
 
-        $this->sendSignupOtpEmail($validated['email'], $otp);
+        try {
+            $this->sendSignupOtpEmail($validated['email'], $otp);
+        } catch (Throwable $exception) {
+            $this->clearPendingSignup($request, $validated['email']);
 
+            report($exception);
+
+            return back()
+                ->withErrors(['email' => 'Unable to send OTP email right now. Please check mail settings and try again.'])
+                ->withInput($request->except(['password', 'password_confirmation', 'profile_pic']));
+        }
         return redirect()->route('signup.otp.form')->with('status', 'OTP sent to your email. Please verify to complete signup.');
     }
 
@@ -167,7 +178,7 @@ class AuthController extends Controller
 
         $role = Role::firstOrCreate(
             ['name' => $pendingSignup['role']],
-            ['description' => ucfirst($pendingSignup['role']).' role']
+            ['description' => ucfirst($pendingSignup['role']) . ' role']
         );
 
         $user->roles()->attach($role->id, ['assigned_at' => now()]);
@@ -199,8 +210,15 @@ class AuthController extends Controller
             now()->addMinutes(self::OTP_TTL_MINUTES)
         );
 
-        $this->sendSignupOtpEmail($pendingEmail, $otp);
+        try {
+            $this->sendSignupOtpEmail($pendingEmail, $otp);
+        } catch (Throwable $exception) {
+            report($exception);
 
+            return back()->withErrors([
+                'otp' => 'Unable to resend OTP right now. Please try again in a moment.',
+            ]);
+        }
         return back()->with('status', 'A new OTP has been sent to your email.');
     }
 
@@ -240,10 +258,10 @@ class AuthController extends Controller
             mkdir($uploadDir, 0755, true);
         }
 
-        $filename = Str::uuid()->toString().'.'.$file->getClientOriginalExtension();
+        $filename = Str::uuid()->toString() . '.' . $file->getClientOriginalExtension();
         $file->move($uploadDir, $filename);
 
-        return '/uploads/profile_pics/'.$filename;
+        return '/uploads/profile_pics/' . $filename;
     }
 
     private function storeTemporaryProfilePicture(?UploadedFile $file): string
@@ -258,10 +276,10 @@ class AuthController extends Controller
             mkdir($tempUploadDir, 0755, true);
         }
 
-        $filename = Str::uuid()->toString().'.'.$file->getClientOriginalExtension();
+        $filename = Str::uuid()->toString() . '.' . $file->getClientOriginalExtension();
         $file->move($tempUploadDir, $filename);
 
-        return '/uploads/profile_pics/temp/'.$filename;
+        return '/uploads/profile_pics/temp/' . $filename;
     }
 
     private function promoteTemporaryProfilePicture(?string $path): string
@@ -287,18 +305,18 @@ class AuthController extends Controller
         }
 
         $extension = pathinfo($source, PATHINFO_EXTENSION);
-        $newFilename = Str::uuid()->toString().($extension ? '.'.$extension : '');
-        $destination = $finalUploadDir.DIRECTORY_SEPARATOR.$newFilename;
+        $newFilename = Str::uuid()->toString() . ($extension ? '.' . $extension : '');
+        $destination = $finalUploadDir . DIRECTORY_SEPARATOR . $newFilename;
 
         rename($source, $destination);
 
-        return '/uploads/profile_pics/'.$newFilename;
+        return '/uploads/profile_pics/' . $newFilename;
     }
 
     private function sendSignupOtpEmail(string $email, int $otp): void
     {
-        Mail::raw(
-            "Your CollegeCare OTP code is: {$otp}. This code expires in ".self::OTP_TTL_MINUTES.' minutes.',
+        Mail::mailer(config('mail.default', 'failover'))->raw(
+            "Your CollegeCare OTP code is: {$otp}. This code expires in " . self::OTP_TTL_MINUTES . ' minutes.',
             function ($message) use ($email) {
                 $message->to($email)
                     ->subject('CollegeCare Signup OTP Verification');
@@ -308,7 +326,7 @@ class AuthController extends Controller
 
     private function otpCacheKey(string $email): string
     {
-        return 'signup_otp_'.sha1(strtolower($email));
+        return 'signup_otp_' . sha1(strtolower($email));
     }
 
     private function clearPendingSignup(Request $request, string $email): void
