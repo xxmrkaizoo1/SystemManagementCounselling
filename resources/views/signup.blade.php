@@ -44,26 +44,33 @@
                 </a>
             </div>
 
-            <div class="p-6 sm:p-8" x-data="{ role: '{{ old('role', 'student') }}', showPassword: false, showConfirm: false }">
+            <div class="p-6 sm:p-8"
+                x-data="{ role: '{{ old('role', 'student') }}', showPassword: false, showConfirm: false, profilePreview: null, profileFileName: '' }">
                 <div class="mx-auto max-w-3xl rounded-3xl border border-slate-200 bg-white/90 p-6 sm:p-8 shadow-sm">
-                    <div
-                        class="mx-auto w-24 h-24 rounded-full border-2 border-sky-200 bg-sky-50 grid place-items-center text-sky-700 font-bold text-2xl">
-                        +
-                    </div>
-                    <p class="text-center text-xs text-slate-500 mt-2">Profile photo (optional)</p>
-                    <div class="mt-3 max-w-sm mx-auto">
-                        <label for="profile_pic" class="block text-sm font-medium text-slate-700 mb-1.5">Add Profile
-                            Picture</label>
-                        <input id="profile_pic" name="profile_pic" type="file" accept=".jpg,.jpeg,.png,.webp"
-                            class="block w-full text-sm text-slate-600 file:mr-4 file:rounded-xl file:border-0 file:bg-sky-100 file:px-4 file:py-2 file:font-medium file:text-sky-700 hover:file:bg-sky-200" />
-                        @error('profile_pic')
-                            <p class="mt-1 text-xs text-rose-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-
-                    <form class="mt-6 grid gap-4" action="{{ route('signup.store') }}" method="POST"
+                    <form class="mt-1 grid gap-4" action="{{ route('signup.store') }}" method="POST"
                         enctype="multipart/form-data"> @csrf
+                        <div class="flex flex-col items-center gap-2.5">
+                            <input id="profile_pic" name="profile_pic" type="file" accept=".jpg,.jpeg,.png,.webp" class="hidden"
+                                x-ref="profilePicInput"
+                                x-on:change="const file = $event.target.files?.[0]; profileFileName = file ? file.name : ''; if (!file) { profilePreview = null; return; } const reader = new FileReader(); reader.onload = e => profilePreview = e.target?.result; reader.readAsDataURL(file);" />
+
+                            <button type="button"
+                                class="group relative mx-auto w-24 h-24 rounded-full border-2 border-sky-200 bg-sky-50 grid place-items-center text-sky-700 font-bold text-2xl overflow-hidden transition hover:border-sky-300 hover:bg-sky-100"
+                                x-on:click="$refs.profilePicInput.click()" aria-label="Upload profile photo">
+                                <img x-show="profilePreview" x-bind:src="profilePreview" alt="Profile picture preview"
+                                    class="absolute inset-0 w-full h-full object-cover" />
+                                <span x-show="!profilePreview" class="leading-none">+</span>
+                            </button>
+
+                            <p class="text-center text-xs text-slate-500">Profile photo (optional)</p>
+
+
+
+                            @error('profile_pic')
+                                <p class="text-xs text-rose-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
                         <div class="grid sm:grid-cols-2 gap-4">
                             <div>
                                 <label for="full_name" class="block text-sm font-medium text-slate-700 mb-1.5">Full
