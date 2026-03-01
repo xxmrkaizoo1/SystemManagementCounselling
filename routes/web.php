@@ -29,6 +29,10 @@ Route::middleware('guest')->group(function () {
     Route::get('/signup/otp', [AuthController::class, 'showOtpForm'])->name('signup.otp.form');
     Route::post('/signup/otp/verify', [AuthController::class, 'verifySignupOtp'])->name('signup.otp.verify');
     Route::post('/signup/otp/resend', [AuthController::class, 'resendSignupOtp'])->name('signup.otp.resend');
+
+    Route::get('/phone-otp', [AuthController::class, 'showPhoneOtpForm'])->name('phone.otp.form');
+    Route::post('/phone-otp/verify', [AuthController::class, 'verifyPhoneOtp'])->name('phone.otp.verify');
+    Route::post('/phone-otp/resend', [AuthController::class, 'resendPhoneOtp'])->name('phone.otp.resend');
 });
 
 Route::middleware('auth')->group(function () {

@@ -49,6 +49,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'phone_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
@@ -59,7 +60,7 @@ class User extends Authenticatable
             ->withPivot('assigned_at')
             ->withTimestamps();
     }
-        public function inboxNotifications(): HasMany
+    public function inboxNotifications(): HasMany
     {
         return $this->hasMany(InboxNotification::class);
     }

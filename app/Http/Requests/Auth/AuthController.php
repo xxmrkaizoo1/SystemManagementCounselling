@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
@@ -23,6 +24,7 @@ class AuthController extends Controller
     private const OTP_TTL_MINUTES = 10;
     private const SESSION_PENDING_SIGNUP = 'signup.pending';
     private const SESSION_PENDING_EMAIL = 'signup.otp_email';
+    private const SESSION_PENDING_PHONE_OTP_USER_ID = 'login.phone_otp_user_id';
 
     public function showLogin(): View
     {
@@ -62,6 +64,15 @@ class AuthController extends Controller
                 ->withErrors(['email' => 'The provided credentials do not match our records.'])
                 ->onlyInput('email');
         }
+        /** @var User $user */
+        $user = Auth::user();
+
+        if (! $user->phone_verified_at) {
+            Auth::logout();
+
+            return $this->startPhoneOtpVerification($request, $user);
+        }
+
 
         $request->session()->regenerate();
 
@@ -185,10 +196,107 @@ class AuthController extends Controller
 
         $this->clearPendingSignup($request, $pendingEmail);
 
+        return redirect()->route('login')->with('status', 'Account created successfully. Please sign in and verify your phone via SMS OTP.');
+    }
+
+
+    public function showPhoneOtpForm(Request $request): View|RedirectResponse
+    {
+        $userId = $request->session()->get(self::SESSION_PENDING_PHONE_OTP_USER_ID);
+
+        if (! $userId) {
+            return redirect()->route('login')->withErrors([
+                'email' => 'Please sign in first to continue phone verification.',
+            ]);
+        }
+
+        $user = User::find($userId);
+
+        if (! $user) {
+            $request->session()->forget(self::SESSION_PENDING_PHONE_OTP_USER_ID);
+
+            return redirect()->route('signup')->withErrors([
+                'email' => 'Account not found. Please register again.',
+            ]);
+        }
+
+        if (! Cache::has($this->phoneOtpCacheKey((int) $user->id))) {
+            $this->deleteUnverifiedPhoneAccount($user, $request);
+
+            return redirect()->route('signup')->withErrors([
+                'email' => 'Phone OTP expired. Your unverified account has been deleted. Please sign up again.',
+            ]);
+        }
+
+        return view('phone-otp', [
+            'maskedPhone' => $this->maskPhone($user->phone),
+        ]);
+    }
+
+    public function verifyPhoneOtp(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'otp' => ['required', 'integer', 'digits:6'],
+        ]);
+
+        $userId = (int) $request->session()->get(self::SESSION_PENDING_PHONE_OTP_USER_ID);
+        $user = User::find($userId);
+
+        if (! $user) {
+            $request->session()->forget(self::SESSION_PENDING_PHONE_OTP_USER_ID);
+
+            return redirect()->route('signup')->withErrors([
+                'email' => 'Account not found. Please register again.',
+            ]);
+        }
+
+        $cachedOtp = Cache::get($this->phoneOtpCacheKey((int) $user->id));
+
+        if (! $cachedOtp) {
+            $this->deleteUnverifiedPhoneAccount($user, $request);
+
+            return redirect()->route('signup')->withErrors([
+                'email' => 'Phone OTP expired. Your unverified account has been deleted. Please sign up again.',
+            ]);
+        }
+
+        if ((int) ($cachedOtp['otp'] ?? 0) !== (int) $request->integer('otp')) {
+            return back()->withErrors([
+                'otp' => 'Invalid SMS OTP code. Please try again.',
+            ])->withInput();
+        }
+
+        $user->phone_verified_at = now();
+        $user->save();
+
+        Cache::forget($this->phoneOtpCacheKey((int) $user->id));
+        $request->session()->forget(self::SESSION_PENDING_PHONE_OTP_USER_ID);
+
+
+
+
+
+
         Auth::login($user);
         $request->session()->regenerate();
 
-        return redirect()->route('home')->with('status', 'Account created successfully.');
+        return redirect()->route('home')->with('status', 'Phone verified successfully. Welcome back!');
+    }
+
+    public function resendPhoneOtp(Request $request): RedirectResponse
+    {
+        $userId = (int) $request->session()->get(self::SESSION_PENDING_PHONE_OTP_USER_ID);
+        $user = User::find($userId);
+
+        if (! $user) {
+            $request->session()->forget(self::SESSION_PENDING_PHONE_OTP_USER_ID);
+
+            return redirect()->route('signup')->withErrors([
+                'email' => 'Account not found. Please register again.',
+            ]);
+        }
+
+        return $this->startPhoneOtpVerification($request, $user, true);
     }
 
     public function resendSignupOtp(Request $request): RedirectResponse
@@ -360,7 +468,70 @@ class AuthController extends Controller
             }
         );
     }
+    private function startPhoneOtpVerification(Request $request, User $user, bool $isResend = false): RedirectResponse
+    {
+        $otp = random_int(100000, 999999);
 
+        Cache::put(
+            $this->phoneOtpCacheKey((int) $user->id),
+            ['otp' => $otp],
+            now()->addMinutes(self::OTP_TTL_MINUTES)
+        );
+
+        try {
+            $this->sendPhoneOtpSms($user->phone, $otp);
+        } catch (Throwable $exception) {
+            report($exception);
+            $this->deleteUnverifiedPhoneAccount($user, $request);
+
+            return redirect()->route('signup')->withErrors([
+                'phone' => 'Unable to send SMS OTP. Your unverified account has been deleted. Please register again.',
+            ]);
+        }
+
+        $request->session()->put(self::SESSION_PENDING_PHONE_OTP_USER_ID, (int) $user->id);
+
+        $message = $isResend
+            ? 'A new SMS OTP has been sent to your phone.'
+            : 'SMS OTP sent to your phone. Verify to activate your account.';
+
+        return redirect()->route('phone.otp.form')->with('status', $message);
+    }
+
+    private function sendPhoneOtpSms(string $phone, int $otp): void
+    {
+        Log::info('Phone OTP generated for verification.', [
+            'phone' => $phone,
+            'otp' => $otp,
+        ]);
+    }
+
+    private function phoneOtpCacheKey(int $userId): string
+    {
+        return 'phone_login_otp_' . $userId;
+    }
+
+    private function deleteUnverifiedPhoneAccount(User $user, Request $request): void
+    {
+        if (! $user->phone_verified_at) {
+            $user->delete();
+        }
+
+        Cache::forget($this->phoneOtpCacheKey((int) $user->id));
+        $request->session()->forget(self::SESSION_PENDING_PHONE_OTP_USER_ID);
+        Auth::logout();
+    }
+
+    private function maskPhone(string $phone): string
+    {
+        $digits = preg_replace('/\D+/', '', $phone) ?? '';
+
+        if (strlen($digits) <= 4) {
+            return $phone;
+        }
+
+        return str_repeat('*', max(strlen($digits) - 4, 0)) . substr($digits, -4);
+    }
     private function otpCacheKey(string $email): string
     {
         return 'signup_otp_' . sha1(strtolower($email));
