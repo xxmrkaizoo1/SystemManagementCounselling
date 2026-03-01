@@ -15,7 +15,7 @@
             <span id="logoText" class="text-sky-500 font-bold text-2xl">CollegeCare</span>
         </div>
     </div>
-    <div id="content" class="opacity-0 translate-y-2 min-h-screen flex flex-col">
+   <div id="content" class="opacity-0 translate-y-2 min-h-screen flex flex-col">
 
         <div class="fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
             <div
@@ -45,7 +45,7 @@
                     </div>
                     <div class="flex items-center gap-2">
                         <a href="{{ route('home') }}"
-                            class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">Close</a>
+                            class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">Home</a>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit"

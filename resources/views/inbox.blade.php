@@ -52,7 +52,21 @@
                             <p class="mt-2 text-sm text-slate-500">You don’t have notifications yet. Booking updates and reminders will appear here.</p>
                         </div>
                     @else
-                        <div class="w-full">Notifications available.</div>
+                      <div class="w-full space-y-3">
+                            @foreach ($notifications as $notification)
+                                <article class="rounded-xl border border-slate-200 bg-white p-4">
+                                    <div class="flex items-start justify-between gap-3">
+                                        <div>
+                                            <h3 class="font-semibold text-slate-800">{{ $notification['title'] ?? 'Notification' }}</h3>
+                                            <p class="mt-1 text-sm text-slate-600">{{ $notification['message'] ?? '' }}</p>
+                                        </div>
+                                        @if (! empty($notification['created_at']))
+                                            <span class="text-xs text-slate-500 whitespace-nowrap">{{ $notification['created_at'] }}</span>
+                                        @endif
+                                    </div>
+                                </article>
+                            @endforeach
+                        </div>
                     @endif
                 </section>
             </div>

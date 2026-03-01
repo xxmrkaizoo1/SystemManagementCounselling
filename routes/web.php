@@ -67,7 +67,7 @@ Route::middleware('auth')->group(function () {
         return view('inbox', [
             'user' => $user,
             'role' => $role,
-            'notifications' => [],
+            'notifications' => session('inbox.notifications', []),
         ]);
     })->name('inbox');
 

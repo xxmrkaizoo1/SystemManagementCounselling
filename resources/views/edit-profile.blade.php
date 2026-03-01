@@ -9,6 +9,21 @@
 </head>
 
 <body class="min-h-screen bg-slate-50 text-slate-700 overflow-x-hidden">
+    @if (session('status'))
+        <div id="toast-status"
+            class="fixed top-4 right-4 z-50 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 shadow-lg">
+            {{ session('status') }}
+        </div>
+        <script>
+            setTimeout(() => {
+                const toast = document.getElementById('toast-status');
+                if (toast) toast.remove();
+            }, 3500);
+        </script>
+    @endif
+
+
+
     <div class="fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
         <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_#e0f2fe_0%,_#f8fafc_35%,_#f1f5f9_100%)]">
         </div>
@@ -105,10 +120,12 @@
                                 <div>
                                     <label for="programme"
                                         class="block text-sm font-medium text-slate-700 mb-1.5">Programme</label>
-                                        <select id="programme" name="programme" class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition">
+                                    <select id="programme" name="programme"
+                                        class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition">
                                         <option value="">Select programme</option>
                                         @foreach ($programmeOptions as $programmeOption)
-                                            <option value="{{ $programmeOption }}" @selected(old('programme', $user->programme) === $programmeOption)>{{ $programmeOption }}</option>
+                                            <option value="{{ $programmeOption }}" @selected(old('programme', $user->programme) === $programmeOption)>
+                                                {{ $programmeOption }}</option>
                                         @endforeach
                                     </select>
                                 </div>
