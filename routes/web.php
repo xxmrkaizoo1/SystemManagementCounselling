@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -70,10 +71,10 @@ Route::middleware('auth')->group(function () {
         ]);
     })->name('inbox');
 
-    Route::get('/edit-profile', [AuthController::class, 'showEditProfile'])
-        ->name('profile.edit');
+    Route::get('/edit-profile', [ProfileController::class, 'showEditProfile'])
+            ->name('profile.edit');
 
-    Route::post('/edit-profile', [AuthController::class, 'updateProfileInfo'])
+    Route::post('/edit-profile', [ProfileController::class, 'updateProfileInfo'])
         ->name('profile.update');
 
 
