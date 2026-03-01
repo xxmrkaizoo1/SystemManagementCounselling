@@ -5,7 +5,11 @@
     "scripts": {
         "build": "vite build",
         "dev": "vite",
-        "share": "ngrok http 8000"
+        "share": "ngrok http 8000",
+        "postinstall": "node scripts/ensure-rollup-binary.mjs",
+        "repair:rollup": "node scripts/ensure-rollup-binary.mjs",
+        "predev": "npm run repair:rollup",
+        "prebuild": "npm run repair:rollup"
     },
     "devDependencies": {
         "@tailwindcss/forms": "^0.5.2",
