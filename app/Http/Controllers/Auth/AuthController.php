@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\Role;
 use App\Models\User;
-use App\Services\PhoneOtpSmsSender;
+use App\Services\PhoneOtpTelegramSender;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
@@ -243,7 +243,7 @@ class AuthController extends Controller
             $deliveryStatus = $this->issuePhoneOtp($user);
 
             if ($deliveryStatus === 'inbox') {
-                session()->flash('status', 'SMS service is unavailable right now. OTP was sent to your inbox notifications as a fallback. Check Twilio config/verified recipient.');
+                session()->flash('status', 'Telegram service is unavailable right now. OTP was sent to your inbox notifications as a fallback. Check Telegram OTP configuration.');
             }
         }
 
@@ -302,10 +302,10 @@ class AuthController extends Controller
 
         $deliveryStatus = $this->issuePhoneOtp($user);
 
-        if ($deliveryStatus === 'sms') {
-            return back()->with('status', 'A new OTP has been sent to your phone number.');
+        if ($deliveryStatus === 'telegram') {
+            return back()->with('status', 'A new OTP has been sent to your Telegram verification channel.');
         }
-        return back()->with('status', 'SMS service is unavailable. OTP was sent to your inbox notifications as a fallback. Check Twilio config/verified recipient.');
+        return back()->with('status', 'Telegram service is unavailable. OTP was sent to your inbox notifications as a fallback. Check Telegram OTP configuration.');
     }
 
     public function updateProfilePicture(Request $request): RedirectResponse
@@ -442,8 +442,8 @@ class AuthController extends Controller
 
         $this->storePhoneOtp($user, $otp);
         try {
-            $this->sendPhoneOtpSms($user->phone, $otp);
-            return 'sms';
+            $this->sendPhoneOtpTelegram($user->phone, $otp);
+            return 'telegram';
         } catch (Throwable $exception) {
             report($exception);
 
@@ -455,13 +455,13 @@ class AuthController extends Controller
         }
     }
 
-    private function sendPhoneOtpSms(?string $phone, int $otp): void
+    private function sendPhoneOtpTelegram(?string $phone, int $otp): void
     {
         if (! $phone) {
             throw new \RuntimeException('User does not have a phone number configured.');
         }
 
-        app(PhoneOtpSmsSender::class)->send($phone, $otp, self::OTP_TTL_MINUTES);
+        app(PhoneOtpTelegramSender::class)->send($phone, $otp, self::OTP_TTL_MINUTES);
     }
 
     private function maskPhone(?string $phone): string

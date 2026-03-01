@@ -28,12 +28,10 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
-    'twilio' => [
-        'sid' => env('TWILIO_ACCOUNT_SID'),
-        'auth_token' => env('TWILIO_AUTH_TOKEN'),
-        'from' => env('TWILIO_FROM_NUMBER'),
-        'messaging_service_sid' => env('TWILIO_MESSAGING_SERVICE_SID'),
-        'default_country_code' => env('TWILIO_DEFAULT_COUNTRY_CODE', '+60'),
+    'telegram' => [
+        'bot_token' => env('TELEGRAM_BOT_TOKEN'),
+        'otp_endpoint' => env('TELEGRAM_OTP_ENDPOINT'),
+        'default_country_code' => env('TELEGRAM_DEFAULT_COUNTRY_CODE', '+60'),
     ],
 
     'slack' => [
