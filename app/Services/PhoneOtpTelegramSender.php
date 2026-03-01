@@ -9,8 +9,16 @@ class PhoneOtpTelegramSender
 {
     public function send(string $phone, int $otp, int $ttlMinutes): void
     {
-        $endpoint = (string) config('services.telegram.otp_endpoint');
-        $apiKey = (string) config('services.telegram.bot_token');
+        $endpoint = trim((string) config('services.telegram.otp_endpoint'));
+        $botToken = trim((string) config('services.telegram.bot_token'));
+        $chatId = trim((string) config('services.telegram.chat_id'));
+        $authToken = trim((string) config('services.telegram.auth_token'));
+        $message = "Your CollegeCare OTP code is {$otp}. This code expires in {$ttlMinutes} minutes.";
+
+        if ($this->shouldUseTelegramSendMessage($endpoint, $chatId, $botToken)) {
+            $this->sendViaTelegramBotApi($endpoint, $botToken, $chatId, $message);
+            return;
+        }
 
         if ($endpoint === '') {
             throw new RuntimeException('Telegram OTP endpoint is not configured.');
@@ -25,13 +33,13 @@ class PhoneOtpTelegramSender
             'phone' => $toNumber,
             'otp' => $otp,
             'ttl_minutes' => $ttlMinutes,
-            'message' => "Your CollegeCare OTP code is {$otp}. This code expires in {$ttlMinutes} minutes.",
+            'message' => $message,
         ];
 
         $request = Http::acceptJson();
 
-        if ($apiKey !== '') {
-            $request = $request->withToken($apiKey);
+        if ($authToken !== '') {
+            $request = $request->withToken($authToken);
         }
 
         $response = $request->post($endpoint, $payload);
@@ -42,6 +50,42 @@ class PhoneOtpTelegramSender
                 ?: $response->body();
 
             throw new RuntimeException('Telegram OTP API request failed: ' . $errorMessage);
+        }
+    }
+     private function shouldUseTelegramSendMessage(string $endpoint, string $chatId, string $botToken): bool
+    {
+        if ($chatId === '' || $botToken === '') {
+            return false;
+        }
+
+        if ($endpoint === '') {
+            return true;
+        }
+
+        return str_contains($endpoint, 'api.telegram.org') || str_contains($endpoint, '{bot_token}');
+    }
+
+    private function sendViaTelegramBotApi(string $endpoint, string $botToken, string $chatId, string $message): void
+    {
+        $resolvedEndpoint = $endpoint;
+
+        if ($resolvedEndpoint === '') {
+            $resolvedEndpoint = "https://api.telegram.org/bot{$botToken}/sendMessage";
+        } elseif (str_contains($resolvedEndpoint, '{bot_token}')) {
+            $resolvedEndpoint = str_replace('{bot_token}', $botToken, $resolvedEndpoint);
+        }
+
+        $response = Http::acceptJson()->post($resolvedEndpoint, [
+            'chat_id' => $chatId,
+            'text' => $message,
+        ]);
+
+        if (! $response->successful() || $response->json('ok') === false) {
+            $errorMessage = $response->json('description')
+                ?: $response->json('message')
+                ?: $response->body();
+
+            throw new RuntimeException('Telegram Bot API request failed: ' . $errorMessage);
         }
     }
 

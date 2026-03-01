@@ -31,6 +31,8 @@ return [
     'telegram' => [
         'bot_token' => env('TELEGRAM_BOT_TOKEN'),
         'otp_endpoint' => env('TELEGRAM_OTP_ENDPOINT'),
+        'auth_token' => env('TELEGRAM_OTP_AUTH_TOKEN'),
+        'chat_id' => env('TELEGRAM_CHAT_ID'),
         'default_country_code' => env('TELEGRAM_DEFAULT_COUNTRY_CODE', '+60'),
     ],
 
