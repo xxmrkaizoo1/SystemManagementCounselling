@@ -240,14 +240,10 @@ class AuthController extends Controller
         $otpPayload = Cache::get($this->phoneOtpCacheKey($user->id));
 
         if (! $otpPayload) {
-            try {
-                $this->issuePhoneOtp($user);
-            } catch (Throwable $exception) {
-                report($exception);
+            $deliveryStatus = $this->issuePhoneOtp($user);
 
-                return redirect()->route('profile.edit')->withErrors([
-                    'phone' => 'Unable to send OTP to your phone number right now. Please check SMS settings and try again.',
-                ]);
+            if ($deliveryStatus === 'inbox') {
+                session()->flash('status', 'SMS service is unavailable right now. OTP was sent to your inbox notifications as a fallback. Check Twilio config/verified recipient.');
             }
         }
 
@@ -304,16 +300,12 @@ class AuthController extends Controller
             return redirect()->route('profile.edit')->with('status', 'Your phone number is already verified.');
         }
 
-        try {
-            $this->issuePhoneOtp($user);
-        } catch (Throwable $exception) {
-            report($exception);
+        $deliveryStatus = $this->issuePhoneOtp($user);
 
-            return back()->withErrors([
-                'otp' => 'Unable to send OTP to your phone number right now. Please try again in a moment.',
-            ]);
+        if ($deliveryStatus === 'sms') {
+            return back()->with('status', 'A new OTP has been sent to your phone number.');
         }
-        return back()->with('status', 'A new OTP has been sent to your phone number.');
+        return back()->with('status', 'SMS service is unavailable. OTP was sent to your inbox notifications as a fallback. Check Twilio config/verified recipient.');
     }
 
     public function updateProfilePicture(Request $request): RedirectResponse
@@ -444,12 +436,23 @@ class AuthController extends Controller
         );
     }
 
-    private function issuePhoneOtp(User $user): void
+    private function issuePhoneOtp(User $user): string
     {
         $otp = random_int(100000, 999999);
 
         $this->storePhoneOtp($user, $otp);
-        $this->sendPhoneOtpSms($user->phone, $otp);
+        try {
+            $this->sendPhoneOtpSms($user->phone, $otp);
+            return 'sms';
+        } catch (Throwable $exception) {
+            report($exception);
+
+            $user->inboxNotifications()->create([
+                'title' => 'Phone OTP verification code',
+                'message' => "Your phone verification OTP is {$otp}. This code expires in " . self::OTP_TTL_MINUTES . ' minutes.',
+            ]);
+            return 'inbox';
+        }
     }
 
     private function sendPhoneOtpSms(?string $phone, int $otp): void

@@ -12,9 +12,14 @@ class PhoneOtpSmsSender
         $accountSid = (string) config('services.twilio.sid');
         $authToken = (string) config('services.twilio.auth_token');
         $fromNumber = (string) config('services.twilio.from');
+        $messagingServiceSid = (string) config('services.twilio.messaging_service_sid');
 
-        if ($accountSid === '' || $authToken === '' || $fromNumber === '') {
-            throw new RuntimeException('Twilio SMS credentials are not configured.');
+        if ($accountSid === '' || $authToken === '') {
+            throw new RuntimeException('Twilio account credentials are not configured.');
+        }
+
+        if ($fromNumber === '' && $messagingServiceSid === '') {
+            throw new RuntimeException('Set TWILIO_FROM_NUMBER or TWILIO_MESSAGING_SERVICE_SID for SMS delivery.');
         }
 
         $toNumber = $this->normalizePhoneNumber($phone);
@@ -22,17 +27,27 @@ class PhoneOtpSmsSender
         if (! $toNumber) {
             throw new RuntimeException('Phone number format is invalid for SMS delivery.');
         }
+        $payload = [
+            'To' => $toNumber,
+            'Body' => "Your CollegeCare OTP code is {$otp}. This code expires in {$ttlMinutes} minutes.",
+        ];
+
+        if ($messagingServiceSid !== '') {
+            $payload['MessagingServiceSid'] = $messagingServiceSid;
+        } else {
+            $payload['From'] = $fromNumber;
+        }
 
         $response = Http::asForm()
             ->withBasicAuth($accountSid, $authToken)
-            ->post("https://api.twilio.com/2010-04-01/Accounts/{$accountSid}/Messages.json", [
-                'From' => $fromNumber,
-                'To' => $toNumber,
-                'Body' => "Your CollegeCare OTP code is {$otp}. This code expires in {$ttlMinutes} minutes.",
-            ]);
+            ->post("https://api.twilio.com/2010-04-01/Accounts/{$accountSid}/Messages.json", $payload);
 
         if (! $response->successful()) {
-            throw new RuntimeException('Twilio SMS API request failed: ' . $response->body());
+            $errorMessage = $response->json('message') ?: $response->body();
+            $errorCode = $response->json('code');
+            $suffix = $errorCode ? " (Twilio code: {$errorCode})" : '';
+
+            throw new RuntimeException('Twilio SMS API request failed: ' . $errorMessage . $suffix);
         }
     }
 
