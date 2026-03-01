@@ -6,10 +6,12 @@
         "build": "vite build",
         "dev": "vite",
         "share": "ngrok http 8000",
-        "postinstall": "node scripts/ensure-rollup-binary.mjs",
+        "postinstall": "npm run repair:deps",
         "repair:rollup": "node scripts/ensure-rollup-binary.mjs",
-        "predev": "npm run repair:rollup",
-        "prebuild": "npm run repair:rollup"
+        "predev": "npm run repair:deps",
+        "prebuild": "npm run repair:deps",
+        "repair:tailwind": "node scripts/ensure-tailwindcss.mjs",
+        "repair:deps": "npm run repair:rollup && npm run repair:tailwind"
     },
     "devDependencies": {
         "@tailwindcss/forms": "^0.5.2",
