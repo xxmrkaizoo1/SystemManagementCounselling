@@ -3,45 +3,96 @@ import { execSync } from 'node:child_process';
 import os from 'node:os';
 import process from 'node:process';
 
-const platformMap = { win32: 'win32', linux: 'linux', darwin: 'darwin' };
-const archMap = { x64: 'x64', arm64: 'arm64' };
+const platform = os.platform();
+const arch = os.arch();
 
-const platform = platformMap[os.platform()];
-const arch = archMap[os.arch()];
+const isMusl = () => {
+  if (platform !== 'linux') {
+    return false;
+  }
 
-if (!platform || !arch) {
-    console.log(`[rollup-repair] Unsupported platform (${os.platform()}) or arch (${os.arch()}); skipping.`);
-    process.exit(0);
-}
+  if (typeof process.report?.getReport !== 'function') {
+    return false;
+  }
 
-const packageName = `@rollup/rollup-${platform}-${arch}`;
-const modulePath = `node_modules/${packageName}`;
-const installCommand = `npm i -E --no-audit --no-fund --save-optional ${packageName}`;
+  const report = process.report.getReport();
+  return !report.header?.glibcVersionRuntime;
+};
 
-const hasRollupBinary = () => existsSync(modulePath);
+const buildCandidates = () => {
+  if (platform === 'win32') {
+    if (arch === 'x64') return ['@rollup/rollup-win32-x64-msvc', '@rollup/rollup-win32-x64-gnu'];
+    if (arch === 'arm64') return ['@rollup/rollup-win32-arm64-msvc'];
+    if (arch === 'ia32') return ['@rollup/rollup-win32-ia32-msvc'];
+    return [];
+  }
 
-if (hasRollupBinary()) {
-    console.log(`[rollup-repair] ${packageName} already present.`);
-    process.exit(0);
-}
+  if (platform === 'darwin') {
+    if (arch === 'x64') return ['@rollup/rollup-darwin-x64'];
+    if (arch === 'arm64') return ['@rollup/rollup-darwin-arm64'];
+    return [];
+  }
 
-console.log(`[rollup-repair] ${packageName} is missing. Attempting optional install...`);
-
-try {
-    execSync(installCommand, {
-        stdio: 'inherit',
-        timeout: 20_000,
-    });
-    if (hasRollupBinary()) {
-        console.log(`[rollup-repair] Installed ${packageName}.`);
-        process.exit(0);
+  if (platform === 'linux') {
+    if (arch === 'x64') {
+      return isMusl()
+        ? ['@rollup/rollup-linux-x64-musl', '@rollup/rollup-linux-x64-gnu']
+        : ['@rollup/rollup-linux-x64-gnu', '@rollup/rollup-linux-x64-musl'];
     }
 
-    console.warn(`[rollup-repair] npm completed but ${packageName} is still missing.`);
-    console.warn(`[rollup-repair] Please run and verify manually: npm i -E --save-optional ${packageName}`);
+    if (arch === 'arm64') {
+      return isMusl()
+        ? ['@rollup/rollup-linux-arm64-musl', '@rollup/rollup-linux-arm64-gnu']
+        : ['@rollup/rollup-linux-arm64-gnu', '@rollup/rollup-linux-arm64-musl'];
+    }
+
+    if (arch === 'arm') {
+      return isMusl()
+        ? ['@rollup/rollup-linux-arm-musleabihf', '@rollup/rollup-linux-arm-gnueabihf']
+        : ['@rollup/rollup-linux-arm-gnueabihf', '@rollup/rollup-linux-arm-musleabihf'];
+    }
+
+    return [];
+  }
+
+  return [];
+};
+
+const candidates = buildCandidates();
+
+if (candidates.length === 0) {
+  console.log(`[rollup-repair] Unsupported platform (${platform}) or arch (${arch}); skipping.`);
+  process.exit(0);
+}
+
+const hasAnyRollupBinary = () => candidates.some((packageName) => existsSync(`node_modules/${packageName}`));
+
+if (hasAnyRollupBinary()) {
+  console.log(`[rollup-repair] Rollup platform binary already present (${candidates.join(' or ')}).`);
+  process.exit(0);
+}
+
+const packageName = candidates[0];
+const installCommand = `npm i -E --no-audit --no-fund --save-optional ${packageName}`;
+
+console.log(`[rollup-repair] Missing Rollup platform binary. Attempting optional install of ${packageName}...`);
+
+try {
+  execSync(installCommand, {
+    stdio: 'inherit',
+    timeout: 20_000,
+  });
+
+  if (hasAnyRollupBinary()) {
+    console.log('[rollup-repair] Installed Rollup platform binary successfully.');
     process.exit(0);
-} catch (error) {
-    console.warn(`[rollup-repair] Could not auto-install ${packageName}.`);
-    console.warn(`[rollup-repair] Run this command manually, then retry: npm i -E --save-optional ${packageName}`);
-    process.exit(0);
+  }
+
+  console.warn('[rollup-repair] npm completed but no compatible Rollup platform binary is present.');
+  console.warn(`[rollup-repair] Please install one manually (first choice): npm i -E --save-optional ${packageName}`);
+  process.exit(0);
+} catch {
+  console.warn(`[rollup-repair] Could not auto-install ${packageName}.`);
+  console.warn(`[rollup-repair] Run this command manually, then retry: npm i -E --save-optional ${packageName}`);
+  process.exit(0);
 }
