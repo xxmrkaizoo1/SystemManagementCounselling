@@ -23,6 +23,7 @@ class AuthController extends Controller
     private const OTP_TTL_MINUTES = 10;
     private const SESSION_PENDING_SIGNUP = 'signup.pending';
     private const SESSION_PENDING_EMAIL = 'signup.otp_email';
+    private const PHONE_OTP_CACHE_PREFIX = 'phone_otp_';
 
     public function showLogin(): View
     {
@@ -222,6 +223,87 @@ class AuthController extends Controller
         return back()->with('status', 'A new OTP has been sent to your email.');
     }
 
+    public function showPhoneOtpForm(Request $request): View|RedirectResponse
+    {
+        /** @var User $user */
+        $user = $request->user();
+
+        if (! $user) {
+            return redirect()->route('login');
+        }
+
+        if ($user->phone_verified_at) {
+            return redirect()->route('profile.edit')->with('status', 'Your phone number is already verified.');
+        }
+
+        $otpPayload = Cache::get($this->phoneOtpCacheKey($user->id));
+
+        if (! $otpPayload) {
+            $otp = random_int(100000, 999999);
+            $this->storePhoneOtp($user, $otp);
+            $this->notifyPhoneOtp($user, $otp);
+        }
+
+        return view('phone-otp', [
+            'maskedPhone' => $this->maskPhone($user->phone),
+        ]);
+    }
+
+    public function verifyPhoneOtp(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'otp' => ['required', 'integer', 'digits:6'],
+        ]);
+
+        /** @var User $user */
+        $user = $request->user();
+
+        if (! $user) {
+            return redirect()->route('login');
+        }
+
+        $otpPayload = Cache::get($this->phoneOtpCacheKey($user->id));
+
+        if (! $otpPayload) {
+            return back()->withErrors([
+                'otp' => 'OTP expired. Please resend a new code.',
+            ]);
+        }
+
+        if ((int) $otpPayload['otp'] !== (int) $request->integer('otp')) {
+            return back()->withErrors([
+                'otp' => 'Invalid OTP code. Please try again.',
+            ])->withInput();
+        }
+
+        $user->phone_verified_at = now();
+        $user->save();
+
+        Cache::forget($this->phoneOtpCacheKey($user->id));
+
+        return redirect()->route('profile.edit')->with('status', 'Phone number verified successfully.');
+    }
+
+    public function resendPhoneOtp(Request $request): RedirectResponse
+    {
+        /** @var User $user */
+        $user = $request->user();
+
+        if (! $user) {
+            return redirect()->route('login');
+        }
+
+        if ($user->phone_verified_at) {
+            return redirect()->route('profile.edit')->with('status', 'Your phone number is already verified.');
+        }
+
+        $otp = random_int(100000, 999999);
+        $this->storePhoneOtp($user, $otp);
+        $this->notifyPhoneOtp($user, $otp);
+
+        return back()->with('status', 'A new OTP has been sent to your inbox notifications.');
+    }
+
     public function updateProfilePicture(Request $request): RedirectResponse
     {
         $validated = $request->validate([
@@ -333,5 +415,40 @@ class AuthController extends Controller
     {
         $request->session()->forget([self::SESSION_PENDING_SIGNUP, self::SESSION_PENDING_EMAIL]);
         Cache::forget($this->otpCacheKey($email));
+    }
+
+
+    private function phoneOtpCacheKey(int $userId): string
+    {
+        return self::PHONE_OTP_CACHE_PREFIX . $userId;
+    }
+
+    private function storePhoneOtp(User $user, int $otp): void
+    {
+        Cache::put(
+            $this->phoneOtpCacheKey($user->id),
+            ['otp' => $otp],
+            now()->addMinutes(self::OTP_TTL_MINUTES)
+        );
+    }
+
+    private function notifyPhoneOtp(User $user, int $otp): void
+    {
+        $user->inboxNotifications()->create([
+            'title' => 'Phone OTP verification code',
+            'message' => "Your phone verification OTP is {$otp}. It expires in " . self::OTP_TTL_MINUTES . ' minutes.',
+        ]);
+    }
+
+    private function maskPhone(?string $phone): string
+    {
+        if (! $phone) {
+            return 'your registered number';
+        }
+
+        $visibleDigits = 3;
+        $maskedLength = max(strlen($phone) - $visibleDigits, 0);
+
+        return str_repeat('*', $maskedLength) . substr($phone, -$visibleDigits);
     }
 }
