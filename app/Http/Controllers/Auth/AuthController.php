@@ -236,6 +236,43 @@ class AuthController extends Controller
         return back()->with('status', 'Profile picture updated successfully.');
     }
 
+    public function showEditProfile(Request $request): View
+    {
+        /** @var User $user */
+        $user = $request->user();
+        $role = $user->roles()->value('name');
+
+        return view('edit-profile', [
+            'user' => $user,
+            'role' => $role,
+        ]);
+    }
+
+    public function updateProfileInfo(Request $request): RedirectResponse
+    {
+        /** @var User $user */
+        $user = $request->user();
+        $role = $user->roles()->value('name');
+        $isStudent = $role === 'student';
+
+        $validated = $request->validate([
+            'full_name' => ['required', 'string', 'max:255'],
+            'phone' => ['required', 'string', 'max:30'],
+            'years' => [Rule::requiredIf($isStudent), 'nullable', 'string', 'max:50'],
+            'programme' => [Rule::requiredIf($isStudent), 'nullable', 'string', 'max:50'],
+        ]);
+
+        $user->full_name = $validated['full_name'];
+        $user->name = $validated['full_name'];
+        $user->phone = $validated['phone'];
+        $user->years = $isStudent ? ($validated['years'] ?? null) : null;
+        $user->programme = $isStudent ? ($validated['programme'] ?? null) : null;
+
+        $user->save();
+
+        return back()->with('status', 'Profile updated successfully.');
+    }
+
     public function logout(Request $request): RedirectResponse
     {
         Auth::logout();
