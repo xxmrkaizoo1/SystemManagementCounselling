@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\Role;
 use App\Models\User;
+use App\Services\PhoneOtpSmsSender;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
@@ -239,9 +240,15 @@ class AuthController extends Controller
         $otpPayload = Cache::get($this->phoneOtpCacheKey($user->id));
 
         if (! $otpPayload) {
-            $otp = random_int(100000, 999999);
-            $this->storePhoneOtp($user, $otp);
-            $this->notifyPhoneOtp($user, $otp);
+            try {
+                $this->issuePhoneOtp($user);
+            } catch (Throwable $exception) {
+                report($exception);
+
+                return redirect()->route('profile.edit')->withErrors([
+                    'phone' => 'Unable to send OTP to your phone number right now. Please check SMS settings and try again.',
+                ]);
+            }
         }
 
         return view('phone-otp', [
@@ -297,11 +304,16 @@ class AuthController extends Controller
             return redirect()->route('profile.edit')->with('status', 'Your phone number is already verified.');
         }
 
-        $otp = random_int(100000, 999999);
-        $this->storePhoneOtp($user, $otp);
-        $this->notifyPhoneOtp($user, $otp);
+        try {
+            $this->issuePhoneOtp($user);
+        } catch (Throwable $exception) {
+            report($exception);
 
-        return back()->with('status', 'A new OTP has been sent to your inbox notifications.');
+            return back()->withErrors([
+                'otp' => 'Unable to send OTP to your phone number right now. Please try again in a moment.',
+            ]);
+        }
+        return back()->with('status', 'A new OTP has been sent to your phone number.');
     }
 
     public function updateProfilePicture(Request $request): RedirectResponse
@@ -432,12 +444,21 @@ class AuthController extends Controller
         );
     }
 
-    private function notifyPhoneOtp(User $user, int $otp): void
+    private function issuePhoneOtp(User $user): void
     {
-        $user->inboxNotifications()->create([
-            'title' => 'Phone OTP verification code',
-            'message' => "Your phone verification OTP is {$otp}. It expires in " . self::OTP_TTL_MINUTES . ' minutes.',
-        ]);
+        $otp = random_int(100000, 999999);
+
+        $this->storePhoneOtp($user, $otp);
+        $this->sendPhoneOtpSms($user->phone, $otp);
+    }
+
+    private function sendPhoneOtpSms(?string $phone, int $otp): void
+    {
+        if (! $phone) {
+            throw new \RuntimeException('User does not have a phone number configured.');
+        }
+
+        app(PhoneOtpSmsSender::class)->send($phone, $otp, self::OTP_TTL_MINUTES);
     }
 
     private function maskPhone(?string $phone): string
