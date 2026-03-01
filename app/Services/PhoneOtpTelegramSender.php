@@ -14,14 +14,19 @@ class PhoneOtpTelegramSender
         $chatId = trim((string) config('services.telegram.chat_id'));
         $authToken = trim((string) config('services.telegram.auth_token'));
         $message = "Your CollegeCare OTP code is {$otp}. This code expires in {$ttlMinutes} minutes.";
-
-        if ($this->shouldUseTelegramSendMessage($endpoint, $chatId, $botToken)) {
+        // Prefer Telegram Bot API whenever bot token + chat ID are configured.
+        // This avoids accidental fallback to an outdated custom endpoint configuration.
+        if ($botToken !== '' && $chatId !== '') {
             $this->sendViaTelegramBotApi($endpoint, $botToken, $chatId, $message);
             return;
         }
 
         if ($endpoint === '') {
-            throw new RuntimeException('Telegram OTP endpoint is not configured.');
+            if ($botToken !== '' && $chatId === '') {
+                throw new RuntimeException('Telegram chat ID is not configured. Set TELEGRAM_CHAT_ID in your .env file.');
+            }
+
+            throw new RuntimeException('Telegram OTP endpoint is not configured. Set TELEGRAM_OTP_ENDPOINT or configure TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID.');
         }
 
         $toNumber = $this->normalizePhoneNumber($phone);
@@ -52,26 +57,17 @@ class PhoneOtpTelegramSender
             throw new RuntimeException('Telegram OTP API request failed: ' . $errorMessage);
         }
     }
-     private function shouldUseTelegramSendMessage(string $endpoint, string $chatId, string $botToken): bool
-    {
-        if ($chatId === '' || $botToken === '') {
-            return false;
-        }
 
-        if ($endpoint === '') {
-            return true;
-        }
-
-        return str_contains($endpoint, 'api.telegram.org') || str_contains($endpoint, '{bot_token}');
-    }
 
     private function sendViaTelegramBotApi(string $endpoint, string $botToken, string $chatId, string $message): void
     {
         $resolvedEndpoint = $endpoint;
 
-        if ($resolvedEndpoint === '') {
+        if ($resolvedEndpoint === '' || ! str_contains($resolvedEndpoint, 'api.telegram.org')) {
             $resolvedEndpoint = "https://api.telegram.org/bot{$botToken}/sendMessage";
-        } elseif (str_contains($resolvedEndpoint, '{bot_token}')) {
+        }
+
+        if (str_contains($resolvedEndpoint, '{bot_token}')) {
             $resolvedEndpoint = str_replace('{bot_token}', $botToken, $resolvedEndpoint);
         }
 
