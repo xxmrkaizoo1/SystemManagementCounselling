@@ -64,6 +64,19 @@
                     </div>
                 @endif
 
+                @if (!$user->phone_verified_at)
+                    <div
+                        class="rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800 flex items-center justify-between gap-3">
+                        <span>Your phone number is not verified yet. Please verify to confirm this is your real
+                            number.</span>
+                        <a href="{{ route('phone.otp.form') }}"
+                            class="shrink-0 rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-amber-600 transition">Verify
+                            Number</a>
+                    </div>
+                @endif
+
+
+
                 <div class="grid gap-5 lg:grid-cols-[220px_1fr]">
                     <aside class="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-sm">
                         <div class="flex flex-col items-center text-center gap-2">

@@ -24,7 +24,6 @@ class AuthController extends Controller
     private const OTP_TTL_MINUTES = 10;
     private const SESSION_PENDING_SIGNUP = 'signup.pending';
     private const SESSION_PENDING_EMAIL = 'signup.otp_email';
-    private const SESSION_PENDING_PHONE_OTP_USER_ID = 'login.phone_otp_user_id';
 
     public function showLogin(): View
     {
@@ -63,14 +62,6 @@ class AuthController extends Controller
             return back()
                 ->withErrors(['email' => 'The provided credentials do not match our records.'])
                 ->onlyInput('email');
-        }
-        /** @var User $user */
-        $user = Auth::user();
-
-        if (! $user->phone_verified_at) {
-            Auth::logout();
-
-            return $this->startPhoneOtpVerification($request, $user);
         }
 
 
@@ -196,36 +187,30 @@ class AuthController extends Controller
 
         $this->clearPendingSignup($request, $pendingEmail);
 
-        return redirect()->route('login')->with('status', 'Account created successfully. Please sign in and verify your phone via SMS OTP.');
+        Auth::login($user);
+        $request->session()->regenerate();
+
+        return redirect()->route('home')->with('status', 'Account created successfully.');
     }
 
 
     public function showPhoneOtpForm(Request $request): View|RedirectResponse
     {
-        $userId = $request->session()->get(self::SESSION_PENDING_PHONE_OTP_USER_ID);
+        /** @var User|null $user */
+        $user = $request->user();
 
-        if (! $userId) {
+        if (! $user) {
             return redirect()->route('login')->withErrors([
-                'email' => 'Please sign in first to continue phone verification.',
+                'email' => 'Please sign in first to verify your phone number.',
             ]);
         }
 
-        $user = User::find($userId);
-
-        if (! $user) {
-            $request->session()->forget(self::SESSION_PENDING_PHONE_OTP_USER_ID);
-
-            return redirect()->route('signup')->withErrors([
-                'email' => 'Account not found. Please register again.',
-            ]);
+        if ($user->phone_verified_at) {
+            return redirect()->route('profile.edit')->with('status', 'Your phone number is already verified.');
         }
 
         if (! Cache::has($this->phoneOtpCacheKey((int) $user->id))) {
-            $this->deleteUnverifiedPhoneAccount($user, $request);
-
-            return redirect()->route('signup')->withErrors([
-                'email' => 'Phone OTP expired. Your unverified account has been deleted. Please sign up again.',
-            ]);
+            $this->startPhoneOtpVerification($user);
         }
 
         return view('phone-otp', [
@@ -239,24 +224,23 @@ class AuthController extends Controller
             'otp' => ['required', 'integer', 'digits:6'],
         ]);
 
-        $userId = (int) $request->session()->get(self::SESSION_PENDING_PHONE_OTP_USER_ID);
-        $user = User::find($userId);
+        /** @var User|null $user */
+        $user = $request->user();
 
         if (! $user) {
-            $request->session()->forget(self::SESSION_PENDING_PHONE_OTP_USER_ID);
-
-            return redirect()->route('signup')->withErrors([
-                'email' => 'Account not found. Please register again.',
+            return redirect()->route('login')->withErrors([
+                'email' => 'Please sign in first to verify your phone number.',
             ]);
+        }
+        if ($user->phone_verified_at) {
+            return redirect()->route('profile.edit')->with('status', 'Your phone number is already verified.');
         }
 
         $cachedOtp = Cache::get($this->phoneOtpCacheKey((int) $user->id));
 
         if (! $cachedOtp) {
-            $this->deleteUnverifiedPhoneAccount($user, $request);
-
-            return redirect()->route('signup')->withErrors([
-                'email' => 'Phone OTP expired. Your unverified account has been deleted. Please sign up again.',
+            return redirect()->route('phone.otp.form')->withErrors([
+                'otp' => 'OTP expired. Please request a new one.',
             ]);
         }
 
@@ -270,33 +254,33 @@ class AuthController extends Controller
         $user->save();
 
         Cache::forget($this->phoneOtpCacheKey((int) $user->id));
-        $request->session()->forget(self::SESSION_PENDING_PHONE_OTP_USER_ID);
 
 
 
 
 
 
-        Auth::login($user);
-        $request->session()->regenerate();
-
-        return redirect()->route('home')->with('status', 'Phone verified successfully. Welcome back!');
+        return redirect()->route('profile.edit')->with('status', 'Phone verified successfully.');
     }
 
     public function resendPhoneOtp(Request $request): RedirectResponse
     {
-        $userId = (int) $request->session()->get(self::SESSION_PENDING_PHONE_OTP_USER_ID);
-        $user = User::find($userId);
+        /** @var User|null $user */
+        $user = $request->user();
 
         if (! $user) {
-            $request->session()->forget(self::SESSION_PENDING_PHONE_OTP_USER_ID);
-
-            return redirect()->route('signup')->withErrors([
-                'email' => 'Account not found. Please register again.',
+            return redirect()->route('login')->withErrors([
+                'email' => 'Please sign in first to verify your phone number.',
             ]);
         }
 
-        return $this->startPhoneOtpVerification($request, $user, true);
+        if ($user->phone_verified_at) {
+            return redirect()->route('profile.edit')->with('status', 'Your phone number is already verified.');
+        }
+
+        $this->startPhoneOtpVerification($user);
+
+        return back()->with('status', 'A new SMS OTP has been sent to your phone.');
     }
 
     public function resendSignupOtp(Request $request): RedirectResponse
@@ -468,7 +452,7 @@ class AuthController extends Controller
             }
         );
     }
-    private function startPhoneOtpVerification(Request $request, User $user, bool $isResend = false): RedirectResponse
+    private function startPhoneOtpVerification(User $user): void
     {
         $otp = random_int(100000, 999999);
 
@@ -478,24 +462,7 @@ class AuthController extends Controller
             now()->addMinutes(self::OTP_TTL_MINUTES)
         );
 
-        try {
-            $this->sendPhoneOtpSms($user->phone, $otp);
-        } catch (Throwable $exception) {
-            report($exception);
-            $this->deleteUnverifiedPhoneAccount($user, $request);
-
-            return redirect()->route('signup')->withErrors([
-                'phone' => 'Unable to send SMS OTP. Your unverified account has been deleted. Please register again.',
-            ]);
-        }
-
-        $request->session()->put(self::SESSION_PENDING_PHONE_OTP_USER_ID, (int) $user->id);
-
-        $message = $isResend
-            ? 'A new SMS OTP has been sent to your phone.'
-            : 'SMS OTP sent to your phone. Verify to activate your account.';
-
-        return redirect()->route('phone.otp.form')->with('status', $message);
+        $this->sendPhoneOtpSms($user->phone, $otp);
     }
 
     private function sendPhoneOtpSms(string $phone, int $otp): void
@@ -511,16 +478,7 @@ class AuthController extends Controller
         return 'phone_login_otp_' . $userId;
     }
 
-    private function deleteUnverifiedPhoneAccount(User $user, Request $request): void
-    {
-        if (! $user->phone_verified_at) {
-            $user->delete();
-        }
 
-        Cache::forget($this->phoneOtpCacheKey((int) $user->id));
-        $request->session()->forget(self::SESSION_PENDING_PHONE_OTP_USER_ID);
-        Auth::logout();
-    }
 
     private function maskPhone(string $phone): string
     {
