@@ -78,16 +78,23 @@ class ProfileController extends Controller
         $user->save();
 
 
-        $notifications = $request->session()->get('inbox.notifications', []);
-        array_unshift($notifications, [
+
+        $user->inboxNotifications()->create([
             'title' => 'Profile updated',
             'message' => 'Your profile information has been updated successfully.',
-            'created_at' => now()->toDateTimeString(),
         ]);
-        $request->session()->put('inbox.notifications', array_slice($notifications, 0, 20));
 
 
 
+        $staleNotificationIds = $user->inboxNotifications()
+            ->latest('id')
+            ->get(['id'])
+            ->slice(20)
+            ->pluck('id');
+
+        if ($staleNotificationIds->isNotEmpty()) {
+            $user->inboxNotifications()->whereIn('id', $staleNotificationIds)->delete();
+        }
 
         return back()->with('status', 'Profile updated successfully.');
     }

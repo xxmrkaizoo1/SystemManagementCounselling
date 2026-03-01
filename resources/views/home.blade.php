@@ -45,7 +45,7 @@
                     </div>
                     <div class="flex items-center gap-2">
                         <a href="{{ route('home') }}"
-                            class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">Home</a>
+                            class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">Refresh page</a>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit"
@@ -69,7 +69,7 @@
                         <p class="text-xs uppercase tracking-[0.12em] text-slate-500 mb-3">Menu</p>
                         <nav class="space-y-2 text-sm">
                             <a href="{{ route('inbox') }}"
-                                class="block rounded-xl bg-sky-600 text-white px-3 py-2 font-medium">Inbox</a>
+                                 class="block rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-sky-200 hover:text-sky-700 transition">Inbox</a>
                             <a href="#"
                                 class="block rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-sky-200 hover:text-sky-700 transition">Booking</a>
                             <a href="#"

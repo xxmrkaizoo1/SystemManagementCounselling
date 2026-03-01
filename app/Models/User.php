@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -57,5 +58,9 @@ class User extends Authenticatable
         return $this->belongsToMany(Role::class, 'user_role')
             ->withPivot('assigned_at')
             ->withTimestamps();
+    }
+        public function inboxNotifications(): HasMany
+    {
+        return $this->hasMany(InboxNotification::class);
     }
 }

@@ -10,68 +10,113 @@
 
 <body class="min-h-screen bg-slate-50 text-slate-700 overflow-x-hidden">
     <div class="fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
-        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_#e0f2fe_0%,_#f8fafc_35%,_#f1f5f9_100%)]"></div>
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_#e0f2fe_0%,_#f8fafc_35%,_#f1f5f9_100%)]">
+        </div>
         <div class="absolute inset-0 bg-grid-pattern opacity-30"></div>
         <div class="absolute inset-0 bg-noise-layer opacity-15"></div>
-        <div class="absolute -top-32 -left-24 w-[34rem] h-[34rem] bg-sky-300/35 rounded-full blur-3xl animate-blob-float"></div>
-        <div class="absolute top-24 -right-32 w-[36rem] h-[36rem] bg-violet-300/30 rounded-full blur-3xl animate-aurora-drift animation-delay-2"></div>
+        <div
+            class="absolute -top-32 -left-24 w-[34rem] h-[34rem] bg-sky-300/35 rounded-full blur-3xl animate-blob-float">
+        </div>
+        <div
+            class="absolute top-24 -right-32 w-[36rem] h-[36rem] bg-violet-300/30 rounded-full blur-3xl animate-aurora-drift animation-delay-2">
+        </div>
     </div>
 
     <main class="min-h-screen p-4 sm:p-8">
-        <section class="max-w-6xl mx-auto rounded-[2rem] border border-slate-200/80 bg-white/75 backdrop-blur-xl shadow-2xl overflow-hidden">
-            <header class="px-5 sm:px-7 py-4 border-b border-slate-200/80 bg-white/80 flex items-center justify-between gap-4">
+        <section
+            class="max-w-6xl mx-auto rounded-[2rem] border border-slate-200/80 bg-white/75 backdrop-blur-xl shadow-2xl overflow-hidden">
+            <header
+                class="px-5 sm:px-7 py-4 border-b border-slate-200/80 bg-white/80 flex items-center justify-between gap-4">
                 <div>
                     <p class="text-xs uppercase tracking-[0.14em] text-slate-500">CollegeCare</p>
                     <h1 class="text-xl sm:text-2xl font-bold text-slate-800">Student & Teacher Inbox</h1>
-                    <p class="text-sm text-slate-500 mt-1">{{ $user->full_name ?: $user->name }} • {{ ucfirst($role) }}</p>
+                    <p class="text-sm text-slate-500 mt-1">{{ $user->full_name ?: $user->name }} • {{ ucfirst($role) }}
+                    </p>
                 </div>
                 <div class="flex items-center gap-2">
-                    <a href="{{ route('home.session') }}" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">Home Session</a>
+                    <a href="{{ route('home.session') }}"
+                        class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">Home
+                        Session</a>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <button type="submit" class="rounded-xl bg-sky-600 px-3 py-2 text-sm font-semibold text-white hover:bg-sky-700 transition">Logout</button>
+                        <button type="submit"
+                            class="rounded-xl bg-sky-600 px-3 py-2 text-sm font-semibold text-white hover:bg-sky-700 transition">Logout</button>
                     </form>
                 </div>
             </header>
 
-            <div class="p-5 sm:p-7 grid lg:grid-cols-[220px_1fr] gap-5">
-                <aside class="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-sm">
-                    <p class="text-xs uppercase tracking-[0.12em] text-slate-500 mb-3">Menu</p>
-                    <nav class="space-y-2 text-sm">
-                        <a href="{{ route('inbox') }}" class="block rounded-xl bg-sky-600 text-white px-3 py-2 font-medium">Inbox</a>
-                        <a href="#" class="block rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-sky-200 hover:text-sky-700 transition">Booking</a>
-                        <a href="#" class="block rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-sky-200 hover:text-sky-700 transition">Booking History</a>
-                        <a href="{{ route('profile.edit') }}" class="block rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-sky-200 hover:text-sky-700 transition">Edit Profile</a>                    </nav>
-                </aside>
+            <div class="p-5 sm:p-7 space-y-4">
+                @if (session('status'))
+                    <div class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-700">
+                        {{ session('status') }}
+                    </div>
+                @endif
 
-                <section class="rounded-2xl border border-slate-200 bg-white/90 p-6 sm:p-8 shadow-sm flex items-center justify-center min-h-[26rem]">
-                    @if (empty($notifications))
-                        <div class="text-center max-w-md">
-                            <div class="mx-auto w-14 h-14 rounded-2xl bg-sky-100 text-sky-700 grid place-items-center text-2xl">📭</div>
-                            <h2 class="mt-4 text-lg sm:text-xl font-semibold text-slate-800">Inbox is empty</h2>
-                            <p class="mt-2 text-sm text-slate-500">You don’t have notifications yet. Booking updates and reminders will appear here.</p>
-                        </div>
-                    @else
-                      <div class="w-full space-y-3">
-                            @foreach ($notifications as $notification)
-                                <article class="rounded-xl border border-slate-200 bg-white p-4">
-                                    <div class="flex items-start justify-between gap-3">
-                                        <div>
-                                            <h3 class="font-semibold text-slate-800">{{ $notification['title'] ?? 'Notification' }}</h3>
-                                            <p class="mt-1 text-sm text-slate-600">{{ $notification['message'] ?? '' }}</p>
+                <div class="grid lg:grid-cols-[220px_1fr] gap-5">
+                    <aside class="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-sm">
+                        <p class="text-xs uppercase tracking-[0.12em] text-slate-500 mb-3">Menu</p>
+                        <nav class="space-y-2 text-sm">
+                            <a href="{{ route('inbox') }}"
+                                class="block rounded-xl bg-sky-600 text-white px-3 py-2 font-medium">Inbox</a>
+                            <a href="#"
+                                class="block rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-sky-200 hover:text-sky-700 transition">Booking</a>
+                            <a href="#"
+                                class="block rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-sky-200 hover:text-sky-700 transition">Booking
+                                History</a>
+                            <a href="{{ route('profile.edit') }}"
+                                class="block rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-sky-200 hover:text-sky-700 transition">Edit
+                                Profile</a>
+                        </nav>
+                    </aside>
+
+                    <section
+                        class="rounded-2xl border border-slate-200 bg-white/90 p-6 sm:p-8 shadow-sm flex items-center justify-center min-h-[26rem]">
+                        @if ($notifications->isEmpty())
+                            <div class="text-center max-w-md">
+                                <div
+                                    class="mx-auto w-14 h-14 rounded-2xl bg-sky-100 text-sky-700 grid place-items-center text-2xl">
+                                    📭</div>
+                                <h2 class="mt-4 text-lg sm:text-xl font-semibold text-slate-800">There is no message or
+                                    update</h2>
+                                <p class="mt-2 text-sm text-slate-500">You do not have any inbox messages yet. New
+                                    updates will appear here.</p>
+
+                            </div>
+                        @else
+                            <div class="w-full space-y-3">
+                                @foreach ($notifications as $notification)
+                                    <article class="rounded-xl border border-slate-200 bg-white p-4">
+                                        <div class="flex items-start justify-between gap-3">
+                                            <div>
+                                                <h3 class="font-semibold text-slate-800">{{ $notification->title }}</h3>
+                                                <p class="mt-1 text-sm text-slate-600">{{ $notification->message }}</p>
+                                            </div>
+
+                                            <div class="flex items-center gap-2">
+                                                <span
+                                                    class="text-xs text-slate-500 whitespace-nowrap">{{ $notification->created_at?->format('Y-m-d H:i:s') }}</span>
+                                                <form method="POST"
+                                                    action="{{ route('inbox.notification.delete', $notification) }}">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit"
+                                                        class="rounded-lg border border-rose-200 bg-rose-50 px-2 py-1 text-xs font-medium text-rose-700 hover:bg-rose-100 transition"
+                                                        aria-label="Delete notification">
+                                                        Delete
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </div>
-                                        @if (! empty($notification['created_at']))
-                                            <span class="text-xs text-slate-500 whitespace-nowrap">{{ $notification['created_at'] }}</span>
-                                        @endif
-                                    </div>
-                                </article>
-                            @endforeach
-                        </div>
-                    @endif
-                </section>
+                                    </article>
+                                @endforeach
+                            </div>
+                        @endif
+                    </section>
+                </div>
             </div>
 
-            <footer class="px-6 sm:px-8 py-4 border-t border-slate-200/80 text-center text-sm text-slate-500 bg-white/70">
+            <footer
+                class="px-6 sm:px-8 py-4 border-t border-slate-200/80 text-center text-sm text-slate-500 bg-white/70">
                 © {{ date('Y') }} CollegeCare • Counselling Booking System
             </footer>
         </section>

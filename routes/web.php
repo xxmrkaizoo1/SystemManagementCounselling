@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\ProfileController;
+use App\Models\InboxNotification;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -67,12 +68,26 @@ Route::middleware('auth')->group(function () {
         return view('inbox', [
             'user' => $user,
             'role' => $role,
-            'notifications' => session('inbox.notifications', []),
+            'notifications' => $user->inboxNotifications()->latest()->get(),
         ]);
     })->name('inbox');
 
+
+    Route::delete('/inbox/{notification}', function (InboxNotification $notification) {
+        $user = request()->user();
+        $role = $user?->roles()->value('name');
+
+        abort_unless(in_array($role, ['student', 'teacher'], true), 403);
+        abort_unless((int) $notification->user_id === (int) $user?->id, 403);
+
+        $notification->delete();
+
+        return back()->with('status', 'Notification deleted.');
+    })->name('inbox.notification.delete');
+
+
     Route::get('/edit-profile', [ProfileController::class, 'showEditProfile'])
-            ->name('profile.edit');
+        ->name('profile.edit');
 
     Route::post('/edit-profile', [ProfileController::class, 'updateProfileInfo'])
         ->name('profile.update');
