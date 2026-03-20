@@ -44,14 +44,13 @@
                 </a>
             </div>
 
-            <div class="p-6 sm:p-8"
-                x-data="{ role: '{{ old('role', 'student') }}', showPassword: false, showConfirm: false, profilePreview: null, profileFileName: '' }">
+            <div class="p-6 sm:p-8" x-data="{ role: '{{ old('role') === 'teacher' ? 'teacher' : 'student' }}', showPassword: false, showConfirm: false, profilePreview: null, profileFileName: '' }">
                 <div class="mx-auto max-w-3xl rounded-3xl border border-slate-200 bg-white/90 p-6 sm:p-8 shadow-sm">
                     <form class="mt-1 grid gap-4" action="{{ route('signup.store') }}" method="POST"
                         enctype="multipart/form-data"> @csrf
                         <div class="flex flex-col items-center gap-2.5">
-                            <input id="profile_pic" name="profile_pic" type="file" accept=".jpg,.jpeg,.png,.webp" class="hidden"
-                                x-ref="profilePicInput"
+                            <input id="profile_pic" name="profile_pic" type="file" accept=".jpg,.jpeg,.png,.webp"
+                                class="hidden" x-ref="profilePicInput"
                                 x-on:change="const file = $event.target.files?.[0]; profileFileName = file ? file.name : ''; if (!file) { profilePreview = null; return; } const reader = new FileReader(); reader.onload = e => profilePreview = e.target?.result; reader.readAsDataURL(file);" />
 
                             <button type="button"
@@ -120,8 +119,7 @@
                                 <select id="role" name="role" x-model="role"
                                     class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition bg-white">
                                     <option value="student">Student</option>
-                                    <option value="teacher">Teacher</option>
-                                    <option value="counsellor">Counsellor</option>
+                                    <option value="teacher">Teacher</option>/
                                 </select>
                                 @error('role')
                                     <p class="mt-1 text-xs text-rose-600">{{ $message }}</p>

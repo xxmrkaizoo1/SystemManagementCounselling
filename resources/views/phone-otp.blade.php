@@ -22,8 +22,14 @@
             <div>
                 <p class="text-xs uppercase tracking-[0.14em] text-slate-500">CollegeCare</p>
                 <h1 class="text-2xl font-bold text-slate-800 mt-1">Verify Phone Number</h1>
-                <p class="mt-2 text-sm text-slate-600">We sent a Telegram OTP to <span
-                        class="font-semibold">{{ $maskedPhone }}</span>.</p>
+                @if (($deliveryChannel ?? 'telegram') === 'telegram')
+                    <p class="mt-2 text-sm text-slate-600">We sent a Telegram OTP to <span
+                            class="font-semibold">{{ $maskedPhone }}</span>.</p>
+                @else
+                    <p class="mt-2 text-sm text-slate-600">Telegram delivery is currently unavailable. We sent the OTP
+                        to your
+                        inbox notifications as a fallback.</p>
+                @endif
             </div>
 
             @if (session('status'))

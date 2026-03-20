@@ -76,7 +76,7 @@ class AuthController extends Controller
             'full_name' => ['required', 'string', 'max:255'],
             'phone' => ['required', 'string', 'max:30'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
-            'role' => ['required', Rule::in(['student', 'teacher', 'counsellor'])],
+            'role' => ['required', Rule::in(['student', 'teacher'])],
             'years' => ['nullable', 'string', 'max:50'],
             'programme' => ['nullable', 'string', 'max:50'],
             'profile_pic' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
@@ -249,6 +249,7 @@ class AuthController extends Controller
 
         return view('phone-otp', [
             'maskedPhone' => $this->maskPhone($user->phone),
+            'deliveryChannel' => $otpPayload['channel'] ?? 'telegram',
         ]);
     }
 
@@ -427,11 +428,11 @@ class AuthController extends Controller
         return self::PHONE_OTP_CACHE_PREFIX . $userId;
     }
 
-    private function storePhoneOtp(User $user, int $otp): void
+    private function storePhoneOtp(User $user, int $otp, string $channel): void
     {
         Cache::put(
             $this->phoneOtpCacheKey($user->id),
-            ['otp' => $otp],
+            ['otp' => $otp, 'channel' => $channel],
             now()->addMinutes(self::OTP_TTL_MINUTES)
         );
     }
@@ -440,13 +441,13 @@ class AuthController extends Controller
     {
         $otp = random_int(100000, 999999);
 
-        $this->storePhoneOtp($user, $otp);
         try {
             $this->sendPhoneOtpTelegram($user->phone, $otp);
+            $this->storePhoneOtp($user, $otp, 'telegram');
             return 'telegram';
         } catch (Throwable $exception) {
             report($exception);
-
+            $this->storePhoneOtp($user, $otp, 'inbox');
             $user->inboxNotifications()->create([
                 'title' => 'Phone OTP verification code',
                 'message' => "Your phone verification OTP is {$otp}. This code expires in " . self::OTP_TTL_MINUTES . ' minutes.',
