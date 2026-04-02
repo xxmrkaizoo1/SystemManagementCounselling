@@ -81,7 +81,7 @@ class ChatController extends Controller
         abort_unless(in_array($role, ['student', 'teacher'], true), 403);
 
         $validated = $request->validate([
-            'receiver_id' => ['required', 'integer', 'exists:users,id', 'not_in:'.$user->id],
+            'receiver_id' => ['required', 'integer', 'exists:users,id', 'not_in:' . $user->id],
             'message' => ['required', 'string', 'max:3000'],
         ]);
 
@@ -90,6 +90,27 @@ class ChatController extends Controller
             'receiver_id' => $validated['receiver_id'],
             'message' => $validated['message'],
         ]);
+
+        $receiver = User::find($validated['receiver_id']);
+
+        if ($receiver) {
+            $senderName = $user->full_name ?: $user->name;
+
+            $receiver->inboxNotifications()->create([
+                'title' => 'New chat message',
+                'message' => "{$senderName} sent you a new message in Chat Box.",
+            ]);
+
+            $staleNotificationIds = $receiver->inboxNotifications()
+                ->latest('id')
+                ->get(['id'])
+                ->slice(20)
+                ->pluck('id');
+
+            if ($staleNotificationIds->isNotEmpty()) {
+                $receiver->inboxNotifications()->whereIn('id', $staleNotificationIds)->delete();
+            }
+        }
 
         return redirect()->route('chat.index', [
             'user_id' => $validated['receiver_id'],
