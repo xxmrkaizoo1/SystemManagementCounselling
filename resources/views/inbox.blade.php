@@ -58,6 +58,9 @@
                         <nav class="space-y-2 text-sm">
                             <a href="{{ route('inbox') }}"
                                 class="block rounded-xl bg-sky-600 text-white px-3 py-2 font-medium">Inbox</a>
+                            <a href="{{ route('chat.index') }}"
+                                class="block rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-sky-200 hover:text-sky-700 transition">Chat
+                                Box</a>
                             <a href="#"
                                 class="block rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-sky-200 hover:text-sky-700 transition">Booking</a>
                             <a href="#"

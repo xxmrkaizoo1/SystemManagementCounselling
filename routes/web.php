@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\ProfileController;
 use App\Models\InboxNotification;
 use Illuminate\Support\Facades\Route;
@@ -58,6 +59,10 @@ Route::middleware('auth')->group(function () {
             'counsellors' => $counsellors,
         ]);
     })->name('home.session');
+
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+    Route::post('/chat', [ChatController::class, 'store'])->name('chat.store');
+
 
     Route::get('/inbox', function () {
         $user = request()->user();

@@ -15,7 +15,7 @@
             <span id="logoText" class="text-sky-500 font-bold text-2xl">CollegeCare</span>
         </div>
     </div>
-   <div id="content" class="opacity-0 translate-y-2 min-h-screen flex flex-col">
+    <div id="content" class="opacity-0 translate-y-2 min-h-screen flex flex-col">
 
         <div class="fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
             <div
@@ -45,7 +45,8 @@
                     </div>
                     <div class="flex items-center gap-2">
                         <a href="{{ route('home') }}"
-                            class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">Refresh page</a>
+                            class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">Refresh
+                            page</a>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit"
@@ -69,7 +70,11 @@
                         <p class="text-xs uppercase tracking-[0.12em] text-slate-500 mb-3">Menu</p>
                         <nav class="space-y-2 text-sm">
                             <a href="{{ route('inbox') }}"
-                                 class="block rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-sky-200 hover:text-sky-700 transition">Inbox</a>
+                                class="block rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-sky-200 hover:text-sky-700 transition">Inbox</a>
+                            <a href="{{ route('chat.index') }}"
+                                class="block rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-sky-200 hover:text-sky-700 transition">Chat
+                                Box</a>
+
                             <a href="#"
                                 class="block rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-sky-200 hover:text-sky-700 transition">Booking</a>
                             <a href="#"

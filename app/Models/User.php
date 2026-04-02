@@ -64,4 +64,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(InboxNotification::class);
     }
+  public function sentMessages(): HasMany
+    {
+        return $this->hasMany(ChatMessage::class, 'sender_id');
+    }
+
+    public function receivedMessages(): HasMany
+    {
+        return $this->hasMany(ChatMessage::class, 'receiver_id');
+    }
 }
+
