@@ -33,7 +33,7 @@
 
         <main class="min-h-screen p-4 sm:p-8">
             <section
-                class="max-w-6xl mx-auto rounded-[2rem] border border-slate-200/80 bg-white/75 backdrop-blur-xl shadow-2xl overflow-hidden">
+                class="max-w-[96rem] mx-auto rounded-[2rem] border border-slate-200/80 bg-white/75 backdrop-blur-xl shadow-2xl overflow-hidden">
                 <header
                     class="px-5 sm:px-7 py-4 border-b border-slate-200/80 bg-white/80 flex items-center justify-between gap-4">
                     <div>
@@ -125,6 +125,50 @@
                                 @endforeach
                             </div>
                         </div>
+
+                        <div class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <h2 class="text-base sm:text-lg font-semibold text-slate-800">Jadual Kaunselor
+                                        (Calendar)</h2>
+                                    <p class="text-sm text-slate-500">Klik mana-mana tarikh untuk lihat jadual dalam
+                                        bentuk table.</p>
+                                </div>
+                            </div>
+
+                            <div class="grid lg:grid-cols-[1fr_260px] gap-4">
+                                <div class="rounded-2xl border border-slate-200 overflow-hidden">
+                                    <div
+                                        class="px-4 py-3 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+                                        <button id="calendar-prev"
+                                            class="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm hover:border-sky-200 hover:text-sky-700">←</button>
+                                        <h3 id="calendar-title" class="font-semibold text-slate-700">Month Year</h3>
+                                        <button id="calendar-next"
+                                            class="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm hover:border-sky-200 hover:text-sky-700">→</button>
+                                    </div>
+                                    <div class="grid grid-cols-7 text-xs sm:text-sm bg-slate-100 text-slate-600">
+                                        <div class="p-2 text-center font-semibold">Sun</div>
+                                        <div class="p-2 text-center font-semibold">Mon</div>
+                                        <div class="p-2 text-center font-semibold">Tue</div>
+                                        <div class="p-2 text-center font-semibold">Wed</div>
+                                        <div class="p-2 text-center font-semibold">Thu</div>
+                                        <div class="p-2 text-center font-semibold">Fri</div>
+                                        <div class="p-2 text-center font-semibold">Sat</div>
+                                    </div>
+                                    <div id="calendar-grid" class="grid grid-cols-7"></div>
+                                </div>
+
+                                <aside class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                                    <h3 class="font-semibold text-slate-700 mb-3">Ringkasan</h3>
+                                    <ul class="space-y-2 text-sm text-slate-600">
+                                        <li class="rounded-lg border border-slate-200 bg-white p-2">🟢 Slot kosong</li>
+                                        <li class="rounded-lg border border-slate-200 bg-white p-2">🟡 Hampir penuh
+                                        </li>
+                                        <li class="rounded-lg border border-slate-200 bg-white p-2">🔴 Penuh</li>
+                                    </ul>
+                                </aside>
+                            </div>
+                        </div>
                     </section>
                 </div>
 
@@ -138,22 +182,179 @@
         <script>
             document.addEventListener('DOMContentLoaded', () => {
                 const slide = document.getElementById('session-slide');
-                if (!slide) return;
-
                 const items = @json($announcements);
-                if (!Array.isArray(items) || items.length === 0) return;
+                if (slide && Array.isArray(items) && items.length > 0) {
+                    let idx = 0;
+                    window.setInterval(() => {
+                        idx = (idx + 1) % items.length;
+                        slide.classList.remove('tip-swap');
+                        void slide.offsetWidth;
+                        slide.textContent = items[idx];
+                        slide.classList.add('tip-swap');
+                    }, 6000);
+                }
 
-                let idx = 0;
-                window.setInterval(() => {
-                    idx = (idx + 1) % items.length;
-                    slide.classList.remove('tip-swap');
-                    void slide.offsetWidth;
-                    slide.textContent = items[idx];
-                    slide.classList.add('tip-swap');
-                }, 6000);
+                const calendarGrid = document.getElementById('calendar-grid');
+                const calendarTitle = document.getElementById('calendar-title');
+                const prevBtn = document.getElementById('calendar-prev');
+                const nextBtn = document.getElementById('calendar-next');
+
+                const modal = document.getElementById('schedule-modal');
+                const modalTitle = document.getElementById('schedule-modal-title');
+                const modalBody = document.getElementById('schedule-modal-body');
+                const modalClose = document.getElementById('schedule-modal-close');
+
+                if (!calendarGrid || !calendarTitle || !prevBtn || !nextBtn || !modal || !modalTitle || !modalBody ||
+                    !modalClose) {
+                    return;
+                }
+
+                const counsellors = ['Dr. Aina', 'Mr. Hakim', 'Ms. Farah', 'Dr. Daniel'];
+                const statuses = ['Available', 'Booked', 'Pending', 'Full'];
+                const statusClass = {
+                    Available: 'text-emerald-700 bg-emerald-50 border-emerald-200',
+                    Booked: 'text-sky-700 bg-sky-50 border-sky-200',
+                    Pending: 'text-amber-700 bg-amber-50 border-amber-200',
+                    Full: 'text-rose-700 bg-rose-50 border-rose-200',
+                };
+                const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+                const slotTimes = ['08:00 - 09:00', '09:00 - 10:00', '10:00 - 11:00', '11:00 - 12:00', '02:00 - 03:00',
+                    '03:00 - 04:00'
+                ];
+                const subjects = ['DKA2233', 'UMS2112', 'DKA2243', 'UMC2122', 'MPU2172', 'PER', 'COUNS'];
+
+                let activeDate = new Date();
+
+                const seededStatus = (date, index) => {
+                    const seed = date.getFullYear() + (date.getMonth() + 1) * 17 + date.getDate() * 13 + index * 5;
+                    return statuses[seed % statuses.length];
+                };
+
+                const renderScheduleRows = (date) => {
+                    modalBody.innerHTML = '';
+                    weekDays.forEach((day, dayIndex) => {
+                        const tr = document.createElement('tr');
+                        let cells =
+                            `<td class="px-4 py-3 border-b border-slate-100 font-semibold">${day}</td>`;
+
+                        slotTimes.forEach((_, slotIndex) => {
+                            const status = seededStatus(date, dayIndex + slotIndex);
+                            const counsellor = counsellors[(dayIndex + slotIndex) % counsellors
+                                .length];
+                            const subject = subjects[(date.getDate() + dayIndex + slotIndex) %
+                                subjects.length];
+                            cells += `
+                                <td class="px-2 py-3 border-b border-slate-100 align-top">
+                                    <div class="rounded-lg border border-slate-200 p-2 min-w-28">
+                                        <p class="font-semibold text-slate-800 leading-tight">${subject}</p>
+                                        <p class="text-xs text-slate-500 mt-1">${counsellor}</p>
+                                        <span class="mt-2 inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-semibold ${statusClass[status]}">${status}</span>
+                                    </div>
+                                </td>
+                            `;
+                        });
+
+                        tr.innerHTML = cells;
+                        modalBody.appendChild(tr);
+                    });
+                };
+
+                const openModal = (date) => {
+                    modalTitle.textContent =
+                        `Jadual Kaunselor • ${date.toLocaleDateString('en-GB', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}`;
+                    renderScheduleRows(date);
+                    modal.classList.remove('hidden');
+                    modal.classList.add('flex');
+                };
+
+                const closeModal = () => {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                };
+
+                modalClose.addEventListener('click', closeModal);
+                modal.addEventListener('click', (event) => {
+                    if (event.target === modal) closeModal();
+                });
+
+                const renderCalendar = () => {
+                    const year = activeDate.getFullYear();
+                    const month = activeDate.getMonth();
+                    const firstDay = new Date(year, month, 1);
+                    const lastDay = new Date(year, month + 1, 0);
+                    const startOffset = firstDay.getDay();
+
+                    calendarTitle.textContent = firstDay.toLocaleDateString('en-GB', {
+                        month: 'long',
+                        year: 'numeric'
+                    });
+                    calendarGrid.innerHTML = '';
+
+                    for (let i = 0; i < startOffset; i++) {
+                        const pad = document.createElement('div');
+                        pad.className = 'min-h-24 sm:min-h-28 border-r border-b border-slate-200 bg-slate-50/70';
+                        calendarGrid.appendChild(pad);
+                    }
+
+                    for (let day = 1; day <= lastDay.getDate(); day++) {
+                        const cellDate = new Date(year, month, day);
+                        const status = seededStatus(cellDate, day % weekDays.length);
+                        const button = document.createElement('button');
+                        button.type = 'button';
+                        button.className =
+                            'min-h-24 sm:min-h-28 p-2 text-left border-r border-b border-slate-200 hover:bg-sky-50 transition';
+                        button.innerHTML = `
+                            <p class="font-semibold text-slate-700">${day}</p>
+                            <span class="mt-2 inline-flex rounded-full border px-2 py-0.5 text-xs ${statusClass[status]}">${status}</span>
+                        `;
+                        button.addEventListener('click', () => openModal(cellDate));
+                        calendarGrid.appendChild(button);
+                    }
+                };
+
+                prevBtn.addEventListener('click', () => {
+                    activeDate = new Date(activeDate.getFullYear(), activeDate.getMonth() - 1, 1);
+                    renderCalendar();
+                });
+
+                nextBtn.addEventListener('click', () => {
+                    activeDate = new Date(activeDate.getFullYear(), activeDate.getMonth() + 1, 1);
+                    renderCalendar();
+                });
+
+                renderCalendar();
             });
         </script>
 
+    </div>
+
+    <div id="schedule-modal"
+        class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-[70] p-4 sm:p-8">
+        <div class="w-full max-w-5xl bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
+            <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+                <h3 id="schedule-modal-title" class="text-lg font-semibold text-slate-800">Jadual Kaunselor</h3>
+                <button id="schedule-modal-close"
+                    class="rounded-lg border border-slate-200 px-3 py-1.5 text-sm hover:border-sky-200 hover:text-sky-700">
+                    Tutup
+                </button>
+            </div>
+            <div class="overflow-auto">
+                <table class="min-w-full text-sm">
+                    <thead class="bg-slate-100 text-slate-700">
+                        <tr>
+                            <th class="px-4 py-3 text-left border-b border-slate-200">Hari / Slot</th>
+                            <th class="px-4 py-3 text-left border-b border-slate-200">8:00 - 9:00</th>
+                            <th class="px-4 py-3 text-left border-b border-slate-200">9:00 - 10:00</th>
+                            <th class="px-4 py-3 text-left border-b border-slate-200">10:00 - 11:00</th>
+                            <th class="px-4 py-3 text-left border-b border-slate-200">11:00 - 12:00</th>
+                            <th class="px-4 py-3 text-left border-b border-slate-200">2:00 - 3:00</th>
+                            <th class="px-4 py-3 text-left border-b border-slate-200">3:00 - 4:00</th>
+                        </tr>
+                    </thead>
+                    <tbody id="schedule-modal-body" class="text-slate-700"></tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </body>
 
