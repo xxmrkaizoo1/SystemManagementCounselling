@@ -38,6 +38,14 @@
                     <h2 class="mt-1 text-lg font-bold text-slate-800">Sign up counsellor</h2>
                     <p class="mt-1 text-sm text-slate-500">Create a new counsellor user account.</p>
                 </a>
+                <div class="rounded-2xl border border-slate-200 bg-white p-5">
+                    <p class="text-sm font-semibold text-slate-700">Direct URL</p>
+                    <p class="mt-1 text-sm text-slate-500 break-all">{{ url('/admin/counsellors/create') }}</p>
+                    <a href="{{ route('admin.counsellor.signup') }}"
+                        class="mt-3 inline-flex rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">
+                        Open signup form
+                    </a>
+                </div>
             </div>
         </section>
     </main>

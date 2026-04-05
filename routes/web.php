@@ -180,6 +180,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/counsellors/create', [CounsellorController::class, 'create'])
         ->name('admin.counsellor.create');
 
+    Route::get('/admin/signup-counsellor', [CounsellorController::class, 'create'])
+        ->name('admin.counsellor.signup');
+
     Route::post('/admin/counsellors', [CounsellorController::class, 'store'])
         ->name('admin.counsellor.store');
 
