@@ -1,9 +1,13 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Admin\CounsellorController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\ProfileController;
+use App\Models\ChatMessage;
 use App\Models\InboxNotification;
+use App\Models\Role;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -14,6 +18,9 @@ Route::get('/', function () {
 
         if (in_array($role, ['student', 'teacher'], true)) {
             return redirect()->route('home.session');
+        }
+        if ($role === 'admin') {
+            return redirect()->route('admin.dashboard');
         }
     }
 
@@ -63,6 +70,61 @@ Route::middleware('auth')->group(function () {
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
     Route::post('/chat', [ChatController::class, 'store'])->name('chat.store');
 
+    Route::get('/admin', function () {
+        $user = request()->user();
+        $role = $user?->roles()->value('name');
+
+        abort_unless($role === 'admin', 403);
+
+        $userCountsByRole = User::query()
+            ->leftJoin('user_role', 'users.id', '=', 'user_role.user_id')
+            ->leftJoin('roles', 'roles.id', '=', 'user_role.role_id')
+            ->selectRaw("COALESCE(roles.name, 'unassigned') as role_name")
+            ->selectRaw('COUNT(DISTINCT users.id) as total')
+            ->groupBy('role_name')
+            ->orderByDesc('total')
+            ->pluck('total', 'role_name');
+
+        $stats = [
+            'total_users' => User::count(),
+            'total_roles' => Role::count(),
+            'total_messages' => ChatMessage::count(),
+            'total_notifications' => InboxNotification::count(),
+        ];
+
+        return view('admin', [
+            'user' => $user,
+            'stats' => $stats,
+            'userCountsByRole' => $userCountsByRole,
+            'recentUsers' => User::latest()->take(8)->get(),
+            'recentNotifications' => InboxNotification::query()
+                ->with('user:id,name,email')
+                ->latest()
+                ->take(6)
+                ->get(),
+        ]);
+    })->name('admin.dashboard');
+
+
+    Route::get('/booking', function () {
+        $user = request()->user();
+        $role = $user?->roles()->value('name');
+
+        abort_unless(in_array($role, ['student', 'teacher'], true), 403);
+
+        $counsellors = [
+            'Dr. Aina',
+            'Mr. Hakim',
+            'Ms. Farah',
+            'Dr. Daniel',
+        ];
+
+        return view('booking', [
+            'user' => $user,
+            'role' => $role,
+            'counsellors' => $counsellors,
+        ]);
+    })->name('booking.index');
 
     Route::get('/inbox', function () {
         $user = request()->user();
@@ -105,6 +167,13 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/profile/picture', [AuthController::class, 'updateProfilePicture'])
         ->name('profile.picture.update');
+
+
+    Route::get('/admin/counsellors/create', [CounsellorController::class, 'create'])
+        ->name('admin.counsellor.create');
+
+    Route::post('/admin/counsellors', [CounsellorController::class, 'store'])
+        ->name('admin.counsellor.store');
 
     Route::post('/logout', [AuthController::class, 'logout'])
         ->name('logout');

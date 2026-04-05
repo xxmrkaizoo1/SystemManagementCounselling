@@ -55,7 +55,7 @@
                     </div>
                 </header>
 
-                <div class="p-5 sm:p-7 grid lg:grid-cols-[220px_1fr] gap-5">
+                <div class="p-5 sm:p-7 grid lg:grid-cols-[240px_1fr] gap-5">
                     <aside class="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-sm">
                         <div class="flex items-center gap-3 mb-4 pb-3 border-b border-slate-200">
                             <img src="{{ $user->profile_pic ?: '/images/default-profile.svg' }}" alt="Profile"
@@ -75,7 +75,7 @@
                                 class="block rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-sky-200 hover:text-sky-700 transition">Chat
                                 Box</a>
 
-                            <a href="#"
+                            <a href="{{ route('booking.index') }}"
                                 class="block rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-sky-200 hover:text-sky-700 transition">Booking</a>
                             <a href="#"
                                 class="block rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-sky-200 hover:text-sky-700 transition">Booking
@@ -330,7 +330,7 @@
 
     <div id="schedule-modal"
         class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-[70] p-4 sm:p-8">
-        <div class="w-full max-w-5xl bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
+        <div class="w-full max-w-[92rem] bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
             <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
                 <h3 id="schedule-modal-title" class="text-lg font-semibold text-slate-800">Jadual Kaunselor</h3>
                 <button id="schedule-modal-close"

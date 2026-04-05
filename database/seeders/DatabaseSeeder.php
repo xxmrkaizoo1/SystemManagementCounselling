@@ -2,8 +2,9 @@
 
 namespace Database\Seeders;
 
+
+use App\Models\Role;
 use App\Models\User;
-use Database\Seeders\RoleSeeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -18,7 +19,24 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(RoleSeeder::class);
 
-        // User::factory(10)->create();
+        $adminRole = Role::where('name', 'admin')->first();
+
+        $adminUser = User::updateOrCreate(
+            ['email' => 'thehas322@gmail.com'],
+            [
+                'name' => 'System Admin',
+                'full_name' => 'System Administrator',
+                'phone' => '0100000001',
+                'password' => 'password',
+                'profile_pic' => '/images/default-profile.svg',
+            ]
+        );
+
+        if ($adminRole) {
+            $adminUser->roles()->syncWithoutDetaching([
+                $adminRole->id => ['assigned_at' => now()],
+            ]);
+        }
 
         User::factory()->create([
             'name' => 'Test User',
