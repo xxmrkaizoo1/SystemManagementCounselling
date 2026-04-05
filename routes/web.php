@@ -40,6 +40,14 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
+    Route::get('/admin', function () {
+        $role = request()->user()?->roles()->value('name');
+
+        abort_unless($role === 'admin', 403);
+
+        return view('admin.overview');
+    })->name('admin.overview');
+
     Route::get('/home-session', function () {
         $user = request()->user();
         $role = $user?->roles()->value('name');

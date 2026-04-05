@@ -12,12 +12,13 @@
     <main class="min-h-screen p-4 sm:p-8">
         <section
             class="max-w-2xl mx-auto rounded-[2rem] border border-slate-200/80 bg-white/90 backdrop-blur-xl shadow-2xl overflow-hidden">
-            <header class="px-5 sm:px-7 py-4 border-b border-slate-200/80 bg-white/90 flex items-center justify-between gap-4">
+            <header
+                class="px-5 sm:px-7 py-4 border-b border-slate-200/80 bg-white/90 flex items-center justify-between gap-4">
                 <div>
                     <p class="text-xs uppercase tracking-[0.14em] text-slate-500">CollegeCare</p>
                     <h1 class="text-xl sm:text-2xl font-bold text-slate-800">Admin • Create Counsellor</h1>
                 </div>
-                <a href="{{ route('profile.edit') }}"
+                <a href="{{ route('admin.overview') }}"
                     class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">Back</a>
             </header>
 
@@ -57,12 +58,14 @@
 
                     <div class="grid sm:grid-cols-2 gap-4">
                         <div>
-                            <label for="password" class="block text-sm font-medium text-slate-700 mb-1.5">Password</label>
+                            <label for="password"
+                                class="block text-sm font-medium text-slate-700 mb-1.5">Password</label>
                             <input id="password" name="password" type="password"
                                 class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition" />
                         </div>
                         <div>
-                            <label for="password_confirmation" class="block text-sm font-medium text-slate-700 mb-1.5">Confirm Password</label>
+                            <label for="password_confirmation"
+                                class="block text-sm font-medium text-slate-700 mb-1.5">Confirm Password</label>
                             <input id="password_confirmation" name="password_confirmation" type="password"
                                 class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition" />
                         </div>

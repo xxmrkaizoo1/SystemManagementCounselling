@@ -47,7 +47,7 @@
                     <h1 class="text-xl sm:text-2xl font-bold text-slate-800">Edit Profile</h1>
                     <p class="text-sm text-slate-500 mt-1">{{ ucfirst($role) }} account</p>
                 </div>
-                <a href="{{ $role === 'admin' ? route('home') : route('home.session') }}"
+                <a href="{{ in_array($role, ['student', 'teacher'], true) ? route('home.session') : route('home') }}"
                     class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">Back</a>
             </header>
 
@@ -150,9 +150,9 @@
                             Changes</button>
 
                         @if ($role === 'admin')
-                            <a href="{{ route('admin.counsellor.create') }}"
+                            <a href="{{ route('admin.overview') }}"
                                 class="block w-full text-center rounded-xl border border-sky-200 bg-sky-50 px-3 py-2.5 text-sm font-semibold text-sky-700 hover:bg-sky-100 transition">
-                                Create Counsellor User
+                                Admin Dashboard
                             </a>
                         @endif
                     </form>
