@@ -6,45 +6,45 @@ window.Alpine = Alpine;
 Alpine.start();
 
 
-  const cursorDot = document.getElementById('cursor-dot');
-    const cursorRing = document.getElementById('cursor-ring');
+const cursorDot = document.getElementById('cursor-dot');
+const cursorRing = document.getElementById('cursor-ring');
 
-    if (cursorDot && cursorRing && window.matchMedia('(pointer: fine)').matches) {
-        let mouseX = window.innerWidth / 2;
-        let mouseY = window.innerHeight / 2;
-        let ringX = mouseX;
-        let ringY = mouseY;
+if (cursorDot && cursorRing && window.matchMedia('(pointer: fine)').matches) {
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+    let ringX = mouseX;
+    let ringY = mouseY;
 
-        const updateDot = (event) => {
-            mouseX = event.clientX;
-            mouseY = event.clientY;
-            cursorDot.style.transform = `translate(${mouseX}px, ${mouseY}px) translate(-50%, -50%)`;
-        };
+    const updateDot = (event) => {
+        mouseX = event.clientX;
+        mouseY = event.clientY;
+        cursorDot.style.transform = `translate(${mouseX}px, ${mouseY}px) translate(-50%, -50%)`;
+    };
 
-        const animateRing = () => {
-            ringX += (mouseX - ringX) * 0.18;
-            ringY += (mouseY - ringY) * 0.18;
-            cursorRing.style.transform = `translate(${ringX}px, ${ringY}px) translate(-50%, -50%)`;
-            window.requestAnimationFrame(animateRing);
-        };
-
-        document.addEventListener('mousemove', updateDot);
+    const animateRing = () => {
+        ringX += (mouseX - ringX) * 0.18;
+        ringY += (mouseY - ringY) * 0.18;
+        cursorRing.style.transform = `translate(${ringX}px, ${ringY}px) translate(-50%, -50%)`;
         window.requestAnimationFrame(animateRing);
+    };
 
-        const setRingActive = (isActive) => {
-            cursorRing.style.width = isActive ? '2.75rem' : '2rem';
-            cursorRing.style.height = isActive ? '2.75rem' : '2rem';
-            cursorRing.style.borderColor = isActive ? 'rgb(2 132 199 / 0.9)' : 'rgb(14 165 233 / 0.7)';
-        };
+    document.addEventListener('mousemove', updateDot);
+    window.requestAnimationFrame(animateRing);
 
-        document.querySelectorAll('a, button, input, select, textarea, [role="button"]').forEach((el) => {
-            el.addEventListener('mouseenter', () => setRingActive(true));
-            el.addEventListener('mouseleave', () => setRingActive(false));
-        });
-    } else if (cursorDot && cursorRing) {
-        cursorDot.style.display = 'none';
-        cursorRing.style.display = 'none';
-    }
+    const setRingActive = (isActive) => {
+        cursorRing.style.width = isActive ? '2.75rem' : '2rem';
+        cursorRing.style.height = isActive ? '2.75rem' : '2rem';
+        cursorRing.style.borderColor = isActive ? 'rgb(2 132 199 / 0.9)' : 'rgb(14 165 233 / 0.7)';
+    };
+
+    document.querySelectorAll('a, button, input, select, textarea, [role="button"]').forEach((el) => {
+        el.addEventListener('mouseenter', () => setRingActive(true));
+        el.addEventListener('mouseleave', () => setRingActive(false));
+    });
+} else if (cursorDot && cursorRing) {
+    cursorDot.style.display = 'none';
+    cursorRing.style.display = 'none';
+}
 
 
 window.addEventListener('load', () => {
@@ -117,5 +117,19 @@ window.addEventListener('load', () => {
             doctorTipText.textContent = tips[tipIndex];
             doctorTipText.classList.add('tip-swap');
         }, tipLoopMs);
+    }
+
+    // Admin quick action: always expose counsellor signup from /admin pages.
+    if (window.location.pathname.startsWith('/admin')) {
+        const existingQuickLink = document.querySelector('[data-admin-counsellor-link]');
+
+        if (!existingQuickLink) {
+            const quickLink = document.createElement('a');
+            quickLink.href = '/admin/counsellors/create';
+            quickLink.dataset.adminCounsellorLink = 'true';
+            quickLink.textContent = '+ Sign up counsellor';
+            quickLink.className = 'fixed bottom-5 right-5 z-50 rounded-xl bg-sky-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg transition hover:bg-sky-700';
+            document.body.appendChild(quickLink);
+        }
     }
 });
