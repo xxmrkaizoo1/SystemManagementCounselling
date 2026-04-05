@@ -18,7 +18,7 @@
                     <p class="text-xs uppercase tracking-[0.14em] text-slate-500">CollegeCare</p>
                     <h1 class="text-xl sm:text-2xl font-bold text-slate-800">Admin • Create Counsellor</h1>
                 </div>
-                <a href="{{ route('admin.overview') }}"
+                <a href="{{ route('admin.dashboard') }}"
                     class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">Back</a>
             </header>
 

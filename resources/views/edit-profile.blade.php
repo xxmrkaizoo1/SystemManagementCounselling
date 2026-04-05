@@ -150,7 +150,7 @@
                             Changes</button>
 
                         @if ($role === 'admin')
-                            <a href="{{ route('admin.overview') }}"
+                            <a href="{{ route('admin.dashboard') }}"
                                 class="block w-full text-center rounded-xl border border-sky-200 bg-sky-50 px-3 py-2.5 text-sm font-semibold text-sky-700 hover:bg-sky-100 transition">
                                 Admin Dashboard
                             </a>

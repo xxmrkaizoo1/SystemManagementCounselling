@@ -119,17 +119,6 @@ window.addEventListener('load', () => {
         }, tipLoopMs);
     }
 
-    // Admin quick action: always expose counsellor signup from /admin pages.
-    if (window.location.pathname.startsWith('/admin')) {
-        const existingQuickLink = document.querySelector('[data-admin-counsellor-link]');
 
-        if (!existingQuickLink) {
-            const quickLink = document.createElement('a');
-            quickLink.href = '/admin/counsellors/create';
-            quickLink.dataset.adminCounsellorLink = 'true';
-            quickLink.textContent = '+ Sign up counsellor';
-            quickLink.className = 'fixed bottom-5 right-5 z-50 rounded-xl bg-sky-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg transition hover:bg-sky-700';
-            document.body.appendChild(quickLink);
-        }
-    }
+
 });
