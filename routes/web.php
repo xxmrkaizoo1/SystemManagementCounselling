@@ -113,6 +113,27 @@ Route::middleware('auth')->group(function () {
         ]);
     })->name('admin.dashboard');
 
+    Route::get('/admin/manage-accounts', function () {
+        $user = request()->user();
+        $role = $user?->roles()->value('name');
+
+        abort_unless($role === 'admin', 403);
+
+        $managedUsers = User::query()
+            ->leftJoin('user_role', 'users.id', '=', 'user_role.user_id')
+            ->leftJoin('roles', 'roles.id', '=', 'user_role.role_id')
+            ->select('users.id', 'users.name', 'users.email', 'users.phone', 'users.created_at')
+            ->selectRaw("COALESCE(roles.name, 'unassigned') as role_name")
+            ->orderByDesc('users.created_at')
+            ->take(20)
+            ->get();
+
+        return view('admin.manage-accounts', [
+            'user' => $user,
+            'managedUsers' => $managedUsers,
+        ]);
+    })->name('admin.accounts.manage');
+
 
     Route::get('/booking', function () {
         $user = request()->user();

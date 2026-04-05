@@ -51,7 +51,10 @@
 
                     <div class="flex-1">
                         <p class="text-xs uppercase tracking-[0.12em] text-slate-500 mb-2">Admin menu</p>
-                        <p class="text-sm text-slate-500">Use the action below to create a counsellor account.</p>
+                        <a href="{{ route('admin.accounts.manage') }}"
+                            class="block rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:border-sky-200 hover:text-sky-700 transition">
+                            Urus akaun pengguna (pelajar/pensyarah/kaunselor)
+                        </a>
                     </div>
 
                     <div class="mt-5 pt-4 border-t border-slate-200">
