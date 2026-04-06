@@ -8,6 +8,7 @@ use App\Models\ChatMessage;
 use App\Models\InboxNotification;
 use App\Models\Role;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -133,6 +134,62 @@ Route::middleware('auth')->group(function () {
             'managedUsers' => $managedUsers,
         ]);
     })->name('admin.accounts.manage');
+
+    Route::patch('/admin/manage-accounts/{managedUser}', function (Request $request, User $managedUser) {
+        $authUser = $request->user();
+        $authRole = $authUser?->roles()->value('name');
+
+        abort_unless($authRole === 'admin', 403);
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $managedUser->id],
+            'phone' => ['nullable', 'string', 'max:30'],
+            'role' => ['required', 'in:student,teacher,counsellor,admin,unassigned'],
+        ]);
+
+        $managedUser->name = $validated['name'];
+        $managedUser->email = $validated['email'];
+        $managedUser->phone = $validated['phone'] ?: null;
+        $managedUser->save();
+
+        if ($validated['role'] === 'unassigned') {
+            $managedUser->roles()->detach();
+        } else {
+            $roleModel = Role::firstOrCreate(
+                ['name' => $validated['role']],
+                ['description' => ucfirst($validated['role']) . ' user']
+            );
+
+            $managedUser->roles()->sync([
+                $roleModel->id => ['assigned_at' => now()],
+            ]);
+        }
+
+        return redirect()
+            ->route('admin.accounts.manage')
+            ->with('status', 'Akaun pengguna berjaya dikemas kini.');
+    })->name('admin.accounts.update');
+
+    Route::delete('/admin/manage-accounts/{managedUser}', function (Request $request, User $managedUser) {
+        $authUser = $request->user();
+        $authRole = $authUser?->roles()->value('name');
+
+        abort_unless($authRole === 'admin', 403);
+
+        if ($authUser && $authUser->id === $managedUser->id) {
+            return redirect()
+                ->route('admin.accounts.manage')
+                ->with('status', 'Anda tidak boleh padam akaun admin sendiri.');
+        }
+
+        $managedUser->roles()->detach();
+        $managedUser->delete();
+
+        return redirect()
+            ->route('admin.accounts.manage')
+            ->with('status', 'Akaun pengguna berjaya dipadam.');
+    })->name('admin.accounts.delete');
 
 
     Route::get('/booking', function () {
