@@ -23,6 +23,9 @@ Route::get('/', function () {
         if ($role === 'admin') {
             return redirect()->route('admin.dashboard');
         }
+        if ($role === 'counsellor') {
+            return redirect()->route('counsellor.dashboard');
+        }
     }
 
     return view('index');
@@ -191,6 +194,53 @@ Route::middleware('auth')->group(function () {
             ->with('status', 'Akaun pengguna berjaya dipadam.');
     })->name('admin.accounts.delete');
 
+
+    Route::get('/counsellor/dashboard', function () {
+        $user = request()->user();
+        $role = $user?->roles()->value('name');
+
+        abort_unless($role === 'counsellor', 403);
+
+        $applications = [
+            [
+                'student' => 'Aina Syafiqah',
+                'request_date' => '2026-04-07',
+                'topic' => 'Stress akademik',
+                'status' => 'Menunggu',
+            ],
+            [
+                'student' => 'Hakim Danish',
+                'request_date' => '2026-04-08',
+                'topic' => 'Pengurusan masa',
+                'status' => 'Menunggu',
+            ],
+            [
+                'student' => 'Faris Iman',
+                'request_date' => '2026-04-09',
+                'topic' => 'Motivasi belajar',
+                'status' => 'Diluluskan',
+            ],
+        ];
+
+        $scheduleSlots = [
+            ['time' => '09:00 - 10:00', 'date' => 'Isnin, 7 Apr', 'slot_status' => 'Kosong'],
+            ['time' => '10:30 - 11:30', 'date' => 'Isnin, 7 Apr', 'slot_status' => 'Ditempah'],
+            ['time' => '02:00 - 03:00', 'date' => 'Selasa, 8 Apr', 'slot_status' => 'Kosong'],
+            ['time' => '03:30 - 04:30', 'date' => 'Selasa, 8 Apr', 'slot_status' => 'Ditempah'],
+        ];
+
+        $sessionRecords = [
+            ['student' => 'Nurin Sofea', 'date' => '2026-04-04', 'notes' => 'Sesi susulan 30 minit'],
+            ['student' => 'Amirul Azwan', 'date' => '2026-04-03', 'notes' => 'Fokus teknik belajar & rutin harian'],
+        ];
+
+        return view('counsellor', [
+            'user' => $user,
+            'applications' => $applications,
+            'scheduleSlots' => $scheduleSlots,
+            'sessionRecords' => $sessionRecords,
+        ]);
+    })->name('counsellor.dashboard');
 
     Route::get('/booking', function () {
         $user = request()->user();
