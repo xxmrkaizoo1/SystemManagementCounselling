@@ -194,6 +194,9 @@ Route::middleware('auth')->group(function () {
             ->with('status', 'Akaun pengguna berjaya dipadam.');
     })->name('admin.accounts.delete');
 
+    Route::get('/counsellor', function () {
+        return redirect()->route('counsellor.dashboard');
+    })->name('counsellor.index');
 
     Route::get('/counsellor/dashboard', function () {
         $user = request()->user();
