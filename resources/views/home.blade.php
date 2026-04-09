@@ -328,7 +328,7 @@
 
     </div>
 
-    <div id="schedule-modal"
+    {{-- <div id="schedule-modal"
         class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-[70] p-4 sm:p-8">
         <div class="w-full max-w-[92rem] bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
             <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
@@ -355,7 +355,7 @@
                 </table>
             </div>
         </div>
-    </div>
+    </div> --}}
 </body>
 
 </html>
