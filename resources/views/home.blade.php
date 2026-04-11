@@ -37,6 +37,8 @@
             z-index: 70;
             overflow-y: auto;
             border-radius: 0;
+             background: linear-gradient(180deg, rgb(14 116 144 / 0.22) 0%, rgb(14 165 233 / 0.12) 55%, rgb(240 249 255 / 0.95) 100%);
+            backdrop-filter: blur(10px);
         }
 
         .home-sidebar.is-open {
@@ -81,7 +83,7 @@
     </style>
 </head>
 
-    <body class="min-h-screen bg-slate-100 text-slate-700 overflow-x-hidden">
+<body class="min-h-screen bg-slate-100 text-slate-700 overflow-x-hidden">
 
     <div id="loader" class="fixed inset-0 bg-sky-500 flex items-center justify-center z-50">
         <div id="circle" class="w-64 h-64 bg-white rounded-full flex items-center justify-center">
@@ -138,7 +140,8 @@
                 </header>
 
                 <div class="p-5 sm:p-7 home-shell">
-                    <aside id="home-sidebar" class="home-sidebar rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm">
+                    <aside id="home-sidebar"
+                        class="home-sidebar rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm">
                         <div class="flex justify-end xl:hidden mb-2">
                             <button type="button" id="sidebar-close"
                                 class="sidebar-close-btn rounded-lg border border-slate-200 px-2.5 py-1 text-sm text-slate-600 hover:text-sky-700 hover:border-sky-200">
@@ -174,7 +177,8 @@
                         </nav>
                     </aside>
 
-                    <section class="home-main rounded-2xl border border-slate-200 bg-white/90 p-4 sm:p-6 shadow-sm space-y-5">
+                    <section
+                        class="home-main rounded-2xl border border-slate-200 bg-white/90 p-4 sm:p-6 shadow-sm space-y-5">
                         <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:p-6">
                             <div class="flex items-center justify-between gap-3 mb-2">
                                 <p class="text-sm text-slate-500">Slide Show / Animation</p>
@@ -236,19 +240,25 @@
                                     </div>
                                     <div class="overflow-x-auto">
                                         <div class="min-w-[720px]">
-                                            <div
-                                                class="text-xs uppercase tracking-wide bg-slate-100 text-slate-500"
+                                            <div class="text-xs uppercase tracking-wide bg-slate-100 text-slate-500"
                                                 style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));">
-                                                <div class="p-2.5 text-center font-semibold border-r border-slate-200">Sun</div>
-                                                <div class="p-2.5 text-center font-semibold border-r border-slate-200">Mon</div>
-                                                <div class="p-2.5 text-center font-semibold border-r border-slate-200">Tue</div>
-                                                <div class="p-2.5 text-center font-semibold border-r border-slate-200">Wed</div>
-                                                <div class="p-2.5 text-center font-semibold border-r border-slate-200">Thu</div>
-                                                <div class="p-2.5 text-center font-semibold border-r border-slate-200">Fri</div>
+                                                <div class="p-2.5 text-center font-semibold border-r border-slate-200">
+                                                    Sun</div>
+                                                <div class="p-2.5 text-center font-semibold border-r border-slate-200">
+                                                    Mon</div>
+                                                <div class="p-2.5 text-center font-semibold border-r border-slate-200">
+                                                    Tue</div>
+                                                <div class="p-2.5 text-center font-semibold border-r border-slate-200">
+                                                    Wed</div>
+                                                <div class="p-2.5 text-center font-semibold border-r border-slate-200">
+                                                    Thu</div>
+                                                <div class="p-2.5 text-center font-semibold border-r border-slate-200">
+                                                    Fri</div>
                                                 <div class="p-2.5 text-center font-semibold">Sat</div>
                                             </div>
-                                            <div id="calendar-grid" class="gap-px bg-slate-200"
-                                                style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));"></div>
+                                            <div id="calendar-grid" class="gap-2 p-2 bg-slate-100"
+                                                style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -366,7 +376,7 @@
                                 subjects.length];
                             cells += `
                                 <td class="px-2 py-3 border-b border-slate-100 align-top">
-                                    <div class="rounded-lg border border-slate-200 p-2 min-w-28">
+                                    <div class="rounded-lg border border-slate-200 p-2 min-w-0 bg-white">
                                         <p class="font-semibold text-slate-800 leading-tight">${subject}</p>
                                         <p class="text-xs text-slate-500 mt-1">${counsellor}</p>
                                         <span class="mt-2 inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-semibold ${statusClass[status]}">${status}</span>
@@ -421,7 +431,7 @@
 
                     for (let i = 0; i < startOffset; i++) {
                         const pad = document.createElement('div');
-                        pad.className = 'min-h-20 sm:min-h-24 bg-slate-50';
+                        pad.className = 'min-h-42 sm:min-h-46 bg-slate-50 rounded-xl border border-slate-200/70';
                         calendarGrid.appendChild(pad);
                     }
 
@@ -435,10 +445,10 @@
                         const button = document.createElement('button');
                         button.type = 'button';
                         button.className =
-                            'min-h-20 sm:min-h-24 p-2.5 text-left bg-white hover:bg-sky-50 transition';
+                             'min-h-42 sm:min-h-46 p-3 text-left bg-white border border-slate-200 rounded-xl hover:bg-sky-50 transition flex flex-col justify-between';
                         button.innerHTML = `
                             <p class="font-semibold text-base leading-none ${isToday ? 'text-sky-700' : 'text-slate-700'}">${day}</p>
-                            <span class="mt-2 inline-flex rounded-full border px-2 py-0.5 text-[11px] ${statusClass[status]}">${status}</span>
+                                                      <span class="mt-2 inline-flex rounded-full border px-2 py-0.5 text-[11px] ${statusClass[status]}">${status}</span>
                         `;
                         if (isToday) {
                             button.classList.add('ring-2', 'ring-sky-200', 'ring-inset');
@@ -451,7 +461,7 @@
                     const trailingPads = (7 - (totalCells % 7)) % 7;
                     for (let i = 0; i < trailingPads; i++) {
                         const pad = document.createElement('div');
-                        pad.className = 'min-h-20 sm:min-h-24 bg-slate-50';
+                        pad.className = 'min-h-42 sm:min-h-46 bg-slate-50 rounded-xl border border-slate-200/70';
                         calendarGrid.appendChild(pad);
                     }
                 };
@@ -473,8 +483,9 @@
     </div>
 
     <div id="schedule-modal"
-        class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-[70] p-4 sm:p-8">
-        <div class="w-full max-w-[92rem] bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
+        class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-[70] p-3 sm:p-6">
+        <div
+            class="w-full max-w-[96vw] xl:max-w-[88rem] bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
             <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
                 <h3 id="schedule-modal-title" class="text-lg font-semibold text-slate-800">Jadual Kaunselor</h3>
                 <button id="schedule-modal-close"
@@ -482,17 +493,24 @@
                     Tutup
                 </button>
             </div>
-            <div class="overflow-auto">
-                <table class="min-w-full text-sm">
+            <div class="overflow-x-auto">
+                <table class="w-full min-w-[760px] lg:min-w-full text-sm table-fixed">
                     <thead class="bg-slate-100 text-slate-700">
                         <tr>
-                            <th class="px-4 py-3 text-left border-b border-slate-200">Hari / Slot</th>
-                            <th class="px-4 py-3 text-left border-b border-slate-200">8:00 - 9:00</th>
-                            <th class="px-4 py-3 text-left border-b border-slate-200">9:00 - 10:00</th>
-                            <th class="px-4 py-3 text-left border-b border-slate-200">10:00 - 11:00</th>
-                            <th class="px-4 py-3 text-left border-b border-slate-200">11:00 - 12:00</th>
-                            <th class="px-4 py-3 text-left border-b border-slate-200">2:00 - 3:00</th>
-                            <th class="px-4 py-3 text-left border-b border-slate-200">3:00 - 4:00</th>
+                            <th class="px-3 py-3 text-left border-b border-slate-200 whitespace-nowrap">Hari / Slot
+                            </th>
+                            <th class="px-3 py-3 text-left border-b border-slate-200 whitespace-nowrap">8:00 - 9:00
+                            </th>
+                            <th class="px-3 py-3 text-left border-b border-slate-200 whitespace-nowrap">9:00 - 10:00
+                            </th>
+                            <th class="px-3 py-3 text-left border-b border-slate-200 whitespace-nowrap">10:00 - 11:00
+                            </th>
+                            <th class="px-3 py-3 text-left border-b border-slate-200 whitespace-nowrap">11:00 - 12:00
+                            </th>
+                            <th class="px-3 py-3 text-left border-b border-slate-200 whitespace-nowrap">2:00 - 3:00
+                            </th>
+                            <th class="px-3 py-3 text-left border-b border-slate-200 whitespace-nowrap">3:00 - 4:00
+                            </th>
                         </tr>
                     </thead>
                     <tbody id="schedule-modal-body" class="text-slate-700"></tbody>
