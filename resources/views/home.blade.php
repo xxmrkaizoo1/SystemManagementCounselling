@@ -8,7 +8,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="min-h-screen bg-slate-50 text-slate-700 overflow-x-hidden">
+<body class="min-h-screen bg-slate-100 text-slate-700 overflow-x-hidden">
 
     <div id="loader" class="fixed inset-0 bg-sky-500 flex items-center justify-center z-50">
         <div id="circle" class="w-64 h-64 bg-white rounded-full flex items-center justify-center">
@@ -21,8 +21,8 @@
             <div
                 class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_#e0f2fe_0%,_#f8fafc_35%,_#f1f5f9_100%)]">
             </div>
-            <div class="absolute inset-0 bg-grid-pattern opacity-30"></div>
-            <div class="absolute inset-0 bg-noise-layer opacity-15"></div>
+            <div class="absolute inset-0 bg-grid-pattern opacity-10"></div>
+            <div class="absolute inset-0 bg-noise-layer opacity-5"></div>
             <div
                 class="absolute -top-32 -left-24 w-[34rem] h-[34rem] bg-sky-300/35 rounded-full blur-3xl animate-blob-float">
             </div>
@@ -38,7 +38,7 @@
                     $role === 'student' ? 'Pelajar' : ($role === 'teacher' ? 'Pensyarah' : ucfirst($role));
             @endphp
             <section
-                class="max-w-[96rem] mx-auto rounded-[2rem] border border-slate-200/80 bg-white/75 backdrop-blur-xl shadow-2xl overflow-hidden">
+                class="max-w-[96rem] mx-auto rounded-[2rem] border border-slate-200 bg-white/90 backdrop-blur-md shadow-xl overflow-hidden">
                 <header
                     class="px-5 sm:px-7 py-4 border-b border-slate-200/80 bg-white/80 flex items-center justify-between gap-4">
                     <div>
@@ -60,7 +60,7 @@
                     </div>
                 </header>
 
-                <div class="p-5 sm:p-7 grid lg:grid-cols-[240px_1fr] gap-5">
+                <div class="p-5 sm:p-7 grid xl:grid-cols-[240px_minmax(0,1fr)] gap-5">
                     <aside class="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-sm">
                         <div class="flex items-center gap-3 mb-4 pb-3 border-b border-slate-200">
                             <img src="{{ $user->profile_pic ?: '/images/default-profile.svg' }}" alt="Profile"
@@ -151,16 +151,17 @@
                                         <button id="calendar-next"
                                             class="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm hover:border-sky-200 hover:text-sky-700">→</button>
                                     </div>
-                                    <div class="grid grid-cols-7 text-xs sm:text-sm bg-slate-100 text-slate-600">
-                                        <div class="p-2 text-center font-semibold">Sun</div>
-                                        <div class="p-2 text-center font-semibold">Mon</div>
-                                        <div class="p-2 text-center font-semibold">Tue</div>
-                                        <div class="p-2 text-center font-semibold">Wed</div>
-                                        <div class="p-2 text-center font-semibold">Thu</div>
-                                        <div class="p-2 text-center font-semibold">Fri</div>
+                                    <div
+                                        class="grid grid-cols-7 text-[11px] sm:text-xs uppercase tracking-wide bg-slate-100 text-slate-500">
+                                        <div class="p-2 text-center font-semibold border-r border-slate-200">Sun</div>
+                                        <div class="p-2 text-center font-semibold border-r border-slate-200">Mon</div>
+                                        <div class="p-2 text-center font-semibold border-r border-slate-200">Tue</div>
+                                        <div class="p-2 text-center font-semibold border-r border-slate-200">Wed</div>
+                                        <div class="p-2 text-center font-semibold border-r border-slate-200">Thu</div>
+                                        <div class="p-2 text-center font-semibold border-r border-slate-200">Fri</div>
                                         <div class="p-2 text-center font-semibold">Sat</div>
                                     </div>
-                                    <div id="calendar-grid" class="grid grid-cols-7"></div>
+                                    <div id="calendar-grid" class="grid grid-cols-7 gap-px bg-slate-200"></div>
                                 </div>
 
                                 <aside class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
@@ -209,8 +210,7 @@
                 const modalBody = document.getElementById('schedule-modal-body');
                 const modalClose = document.getElementById('schedule-modal-close');
 
-                if (!calendarGrid || !calendarTitle || !prevBtn || !nextBtn || !modal || !modalTitle || !modalBody ||
-                    !modalClose) {
+                if (!calendarGrid || !calendarTitle || !prevBtn || !nextBtn) {
                     return;
                 }
 
@@ -265,6 +265,9 @@
                 };
 
                 const openModal = (date) => {
+                    if (!modal || !modalTitle || !modalBody) {
+                        return;
+                    }
                     modalTitle.textContent =
                         `Jadual Kaunselor • ${date.toLocaleDateString('en-GB', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}`;
                     renderScheduleRows(date);
@@ -273,14 +276,19 @@
                 };
 
                 const closeModal = () => {
+                    if (!modal) {
+                        return;
+                    }
                     modal.classList.add('hidden');
                     modal.classList.remove('flex');
                 };
 
-                modalClose.addEventListener('click', closeModal);
-                modal.addEventListener('click', (event) => {
-                    if (event.target === modal) closeModal();
-                });
+                if (modal && modalClose) {
+                    modalClose.addEventListener('click', closeModal);
+                    modal.addEventListener('click', (event) => {
+                        if (event.target === modal) closeModal();
+                    });
+                }
 
                 const renderCalendar = () => {
                     const year = activeDate.getFullYear();
@@ -297,23 +305,36 @@
 
                     for (let i = 0; i < startOffset; i++) {
                         const pad = document.createElement('div');
-                        pad.className = 'min-h-24 sm:min-h-28 border-r border-b border-slate-200 bg-slate-50/70';
+                        pad.className = 'min-h-24 sm:min-h-28 bg-slate-50';
                         calendarGrid.appendChild(pad);
                     }
+                    const today = new Date();
+                    const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
 
                     for (let day = 1; day <= lastDay.getDate(); day++) {
                         const cellDate = new Date(year, month, day);
                         const status = seededStatus(cellDate, day % weekDays.length);
+                        const isToday = isCurrentMonth && today.getDate() === day;
                         const button = document.createElement('button');
                         button.type = 'button';
                         button.className =
-                            'min-h-24 sm:min-h-28 p-2 text-left border-r border-b border-slate-200 hover:bg-sky-50 transition';
+                            'min-h-24 sm:min-h-28 p-2.5 text-left bg-white hover:bg-sky-50 transition';
                         button.innerHTML = `
-                            <p class="font-semibold text-slate-700">${day}</p>
+                           <p class="font-semibold ${isToday ? 'text-sky-700' : 'text-slate-700'}">${day}</p>
                             <span class="mt-2 inline-flex rounded-full border px-2 py-0.5 text-xs ${statusClass[status]}">${status}</span>
                         `;
+                        if (isToday) {
+                            button.classList.add('ring-2', 'ring-sky-200', 'ring-inset');
+                        }
                         button.addEventListener('click', () => openModal(cellDate));
                         calendarGrid.appendChild(button);
+                    }
+                    const totalCells = startOffset + lastDay.getDate();
+                    const trailingPads = (7 - (totalCells % 7)) % 7;
+                    for (let i = 0; i < trailingPads; i++) {
+                        const pad = document.createElement('div');
+                        pad.className = 'min-h-24 sm:min-h-28 bg-slate-50';
+                        calendarGrid.appendChild(pad);
                     }
                 };
 
