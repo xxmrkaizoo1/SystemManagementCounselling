@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Booking Form • CollegeCare</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -202,12 +203,14 @@
             const requestTime = document.getElementById('request-time');
             const requestCounsellor = document.getElementById('request-counsellor');
             const requestNote = document.getElementById('request-note');
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
 
             if (!calendarGrid || !calendarTitle || !prevBtn || !nextBtn || !scheduleModal || !scheduleModalTitle ||
                 !scheduleModalBody ||
                 !scheduleModalClose || !requestModal || !requestModalClose || !requestCancel || !requestForm || !
                 requestDate || !requestTime ||
-                !requestCounsellor || !requestNote) {
+                !requestCounsellor || !requestNote || !csrfToken) {
                 return;
             }
 
@@ -380,21 +383,49 @@
                 openRequestModal(selectedScheduleDate, time, counsellor, key);
             });
 
-            requestForm.addEventListener('submit', (event) => {
+            requestForm.addEventListener('submit', async (event) => {
                 event.preventDefault();
-                if (!selectedSlotKey) {
+                if (!selectedSlotKey || !selectedScheduleDate) {
                     return;
                 }
 
-                requestedSlots.add(selectedSlotKey);
-                closeRequestModal();
-
-                if (selectedScheduleDate) {
-                    renderTableRows(selectedScheduleDate);
+                const note = requestNote.value.trim();
+                if (!note) {
+                    alert('Sila isi nota untuk kaunselor sebelum submit.');
+                    return;
                 }
 
-                renderCalendar();
-                alert('Request berjaya dihantar kepada kaunselor. Sila semak status di Booking History.');
+                try {
+                    const response = await fetch("{{ route('booking.store') }}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Accept': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            booking_date: selectedScheduleDate.toISOString().slice(0,
+                                10),
+                            booking_time: requestTime.value,
+                            counsellor_name: requestCounsellor.value,
+                            note,
+                        }),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Booking request failed.');
+                    }
+
+                    requestedSlots.add(selectedSlotKey);
+                    closeRequestModal();
+                    renderTableRows(selectedScheduleDate);
+
+
+                    renderCalendar();
+                    alert('Request berjaya dihantar kepada kaunselor. Sila semak status di Inbox.');
+                } catch (error) {
+                    alert('Maaf, request gagal dihantar. Sila cuba lagi.');
+                }
             });
 
             prevBtn.addEventListener('click', () => {

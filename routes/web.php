@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\CounsellorController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\ProfileController;
+use App\Models\BookingRequest;
 use App\Models\ChatMessage;
 use App\Models\InboxNotification;
 use App\Models\Role;
@@ -264,6 +265,39 @@ Route::middleware('auth')->group(function () {
             'counsellors' => $counsellors,
         ]);
     })->name('booking.index');
+
+    Route::post('/booking', function (Request $request) {
+        $user = $request->user();
+        $role = $user?->roles()->value('name');
+
+        abort_unless(in_array($role, ['student', 'teacher'], true), 403);
+
+        $validated = $request->validate([
+            'booking_date' => ['required', 'date', 'after_or_equal:today'],
+            'booking_time' => ['required', 'string', 'max:50'],
+            'counsellor_name' => ['required', 'string', 'max:255'],
+            'note' => ['required', 'string', 'max:500'],
+        ]);
+
+        BookingRequest::create([
+            'user_id' => $user->id,
+            'booking_date' => $validated['booking_date'],
+            'booking_time' => $validated['booking_time'],
+            'counsellor_name' => $validated['counsellor_name'],
+            'note' => $validated['note'],
+            'status' => 'pending',
+        ]);
+
+        $user->inboxNotifications()->create([
+            'title' => 'Booking request sent',
+            'message' => 'Your counselling request for ' . $validated['booking_date'] . ' (' . $validated['booking_time'] . ') with ' . $validated['counsellor_name'] . ' has been submitted.',
+        ]);
+
+        return response()->json([
+            'message' => 'Booking request submitted.',
+        ]);
+    })->name('booking.store');
+
 
     Route::get('/inbox', function () {
         $user = request()->user();

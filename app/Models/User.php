@@ -64,7 +64,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(InboxNotification::class);
     }
-  public function sentMessages(): HasMany
+    public function bookingRequests(): HasMany
+    {
+        return $this->hasMany(BookingRequest::class);
+    }
+
+    public function sentMessages(): HasMany
     {
         return $this->hasMany(ChatMessage::class, 'sender_id');
     }
@@ -74,4 +79,3 @@ class User extends Authenticatable
         return $this->hasMany(ChatMessage::class, 'receiver_id');
     }
 }
-
