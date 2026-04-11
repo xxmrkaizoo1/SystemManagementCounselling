@@ -32,6 +32,11 @@
         </div>
 
         <main class="min-h-screen p-4 sm:p-8">
+            @php
+                $dashboardRoleLabel = $role === 'teacher' ? 'Lecturer' : ucfirst($role);
+                $sidebarRoleLabel =
+                    $role === 'student' ? 'Pelajar' : ($role === 'teacher' ? 'Pensyarah' : ucfirst($role));
+            @endphp
             <section
                 class="max-w-[96rem] mx-auto rounded-[2rem] border border-slate-200/80 bg-white/75 backdrop-blur-xl shadow-2xl overflow-hidden">
                 <header
@@ -39,7 +44,7 @@
                     <div>
                         <p class="text-xs uppercase tracking-[0.14em] text-slate-500">CollegeCare</p>
                         <h1 class="text-xl sm:text-2xl font-bold text-slate-800">Session Dashboard
-                            ({{ ucfirst($role) }})
+                            ({{ $dashboardRoleLabel }})
                         </h1>
                         <p class="text-sm text-slate-500 mt-1">Welcome, {{ $user->full_name ?: $user->name }}</p>
                     </div>
@@ -63,7 +68,7 @@
                             <div>
                                 <p class="text-sm font-semibold text-slate-800">{{ $user->name }}</p>
                                 <p class="text-xs uppercase tracking-wide text-sky-700">
-                                    {{ $role === 'student' ? 'Pelajar' : 'Guru' }}</p>
+                                    {{ $sidebarRoleLabel }}</p>
                             </div>
                         </div>
 
