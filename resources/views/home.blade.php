@@ -224,8 +224,8 @@
                                 </div>
                             </div>
 
-                            <div class="grid lg:grid-cols-[1fr_260px] gap-4">
-                                <div class="rounded-2xl border border-slate-200 overflow-hidden">
+                            <div class="grid xl:grid-cols-[minmax(0,1fr)_240px] gap-4">
+                                <div class="rounded-2xl border border-slate-200 overflow-hidden bg-white">
                                     <div
                                         class="px-4 py-3 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
                                         <button id="calendar-prev"
@@ -234,19 +234,23 @@
                                         <button id="calendar-next"
                                             class="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm hover:border-sky-200 hover:text-sky-700">→</button>
                                     </div>
-                                    <div
-                                        class="text-[11px] sm:text-xs uppercase tracking-wide bg-slate-100 text-slate-500"
-                                        style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));">
-                                        <div class="p-2 text-center font-semibold border-r border-slate-200">Sun</div>
-                                        <div class="p-2 text-center font-semibold border-r border-slate-200">Mon</div>
-                                        <div class="p-2 text-center font-semibold border-r border-slate-200">Tue</div>
-                                        <div class="p-2 text-center font-semibold border-r border-slate-200">Wed</div>
-                                        <div class="p-2 text-center font-semibold border-r border-slate-200">Thu</div>
-                                        <div class="p-2 text-center font-semibold border-r border-slate-200">Fri</div>
-                                        <div class="p-2 text-center font-semibold">Sat</div>
+                                    <div class="overflow-x-auto">
+                                        <div class="min-w-[720px]">
+                                            <div
+                                                class="text-xs uppercase tracking-wide bg-slate-100 text-slate-500"
+                                                style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));">
+                                                <div class="p-2.5 text-center font-semibold border-r border-slate-200">Sun</div>
+                                                <div class="p-2.5 text-center font-semibold border-r border-slate-200">Mon</div>
+                                                <div class="p-2.5 text-center font-semibold border-r border-slate-200">Tue</div>
+                                                <div class="p-2.5 text-center font-semibold border-r border-slate-200">Wed</div>
+                                                <div class="p-2.5 text-center font-semibold border-r border-slate-200">Thu</div>
+                                                <div class="p-2.5 text-center font-semibold border-r border-slate-200">Fri</div>
+                                                <div class="p-2.5 text-center font-semibold">Sat</div>
+                                            </div>
+                                            <div id="calendar-grid" class="gap-px bg-slate-200"
+                                                style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));"></div>
+                                        </div>
                                     </div>
-                                    <div id="calendar-grid" class="gap-px bg-slate-200"
-                                        style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));"></div>
                                 </div>
 
                                 <aside class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
@@ -417,7 +421,7 @@
 
                     for (let i = 0; i < startOffset; i++) {
                         const pad = document.createElement('div');
-                        pad.className = 'min-h-24 sm:min-h-28 bg-slate-50';
+                        pad.className = 'min-h-20 sm:min-h-24 bg-slate-50';
                         calendarGrid.appendChild(pad);
                     }
 
@@ -431,10 +435,10 @@
                         const button = document.createElement('button');
                         button.type = 'button';
                         button.className =
-                            'min-h-24 sm:min-h-28 p-2.5 text-left bg-white hover:bg-sky-50 transition';
+                            'min-h-20 sm:min-h-24 p-2.5 text-left bg-white hover:bg-sky-50 transition';
                         button.innerHTML = `
-                            <p class="font-semibold ${isToday ? 'text-sky-700' : 'text-slate-700'}">${day}</p>
-                            <span class="mt-2 inline-flex rounded-full border px-2 py-0.5 text-xs ${statusClass[status]}">${status}</span>
+                            <p class="font-semibold text-base leading-none ${isToday ? 'text-sky-700' : 'text-slate-700'}">${day}</p>
+                            <span class="mt-2 inline-flex rounded-full border px-2 py-0.5 text-[11px] ${statusClass[status]}">${status}</span>
                         `;
                         if (isToday) {
                             button.classList.add('ring-2', 'ring-sky-200', 'ring-inset');
@@ -447,7 +451,7 @@
                     const trailingPads = (7 - (totalCells % 7)) % 7;
                     for (let i = 0; i < trailingPads; i++) {
                         const pad = document.createElement('div');
-                        pad.className = 'min-h-24 sm:min-h-28 bg-slate-50';
+                        pad.className = 'min-h-20 sm:min-h-24 bg-slate-50';
                         calendarGrid.appendChild(pad);
                     }
                 };
