@@ -12,7 +12,8 @@
     <main class="min-h-screen p-4 sm:p-8">
         <section
             class="max-w-[96rem] mx-auto rounded-[2rem] border border-slate-200/80 bg-white/75 backdrop-blur-xl shadow-2xl overflow-hidden">
-            <header class="px-5 sm:px-7 py-4 border-b border-slate-200/80 bg-white/80 flex items-center justify-between gap-4">
+            <header
+                class="px-5 sm:px-7 py-4 border-b border-slate-200/80 bg-white/80 flex items-center justify-between gap-4">
                 <div>
                     <p class="text-xs uppercase tracking-[0.14em] text-slate-500">CollegeCare</p>
                     <h1 class="text-xl sm:text-2xl font-bold text-slate-800">Booking Form ({{ ucfirst($role) }})</h1>
@@ -40,11 +41,13 @@
                         <a href="{{ route('inbox') }}"
                             class="block rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-sky-200 hover:text-sky-700 transition">Inbox</a>
                         <a href="{{ route('chat.index') }}"
-                            class="block rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-sky-200 hover:text-sky-700 transition">Chat Box</a>
+                            class="block rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-sky-200 hover:text-sky-700 transition">Chat
+                            Box</a>
                         <a href="{{ route('booking.index') }}"
                             class="block rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-sky-700">Booking</a>
                         <a href="{{ route('profile.edit') }}"
-                            class="block rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-sky-200 hover:text-sky-700 transition">Edit Profile</a>
+                            class="block rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-sky-200 hover:text-sky-700 transition">Edit
+                            Profile</a>
                     </nav>
                 </aside>
 
@@ -54,7 +57,8 @@
                         <ol class="text-sm text-slate-600 mt-2 list-decimal pl-5 space-y-1">
                             <li>Klik mana-mana grid tarikh dalam calendar.</li>
                             <li>Table slot harian akan keluar dalam popup.</li>
-                            <li>Klik slot <span class="font-semibold text-emerald-700">Available</span> untuk buka form request.</li>
+                            <li>Klik slot <span class="font-semibold text-emerald-700">Available</span> untuk buka form
+                                request.</li>
                             <li>Isi nota untuk kaunselor dan submit booking request.</li>
                         </ol>
                     </div>
@@ -62,14 +66,16 @@
                     <div class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
                         <div class="grid lg:grid-cols-[1fr_280px] gap-4">
                             <div class="rounded-2xl border border-slate-200 overflow-hidden">
-                                <div class="px-4 py-3 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+                                <div
+                                    class="px-4 py-3 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
                                     <button id="calendar-prev"
                                         class="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm hover:border-sky-200 hover:text-sky-700">←</button>
                                     <h3 id="calendar-title" class="font-semibold text-slate-700">Month Year</h3>
                                     <button id="calendar-next"
                                         class="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm hover:border-sky-200 hover:text-sky-700">→</button>
                                 </div>
-                                <div class="grid grid-cols-7 text-xs sm:text-sm bg-slate-100 text-slate-600">
+                                <div class="grid text-xs sm:text-sm bg-slate-100 text-slate-600"
+                                    style="grid-template-columns: repeat(7, minmax(0, 1fr));">
                                     <div class="p-2 text-center font-semibold">Sun</div>
                                     <div class="p-2 text-center font-semibold">Mon</div>
                                     <div class="p-2 text-center font-semibold">Tue</div>
@@ -78,13 +84,15 @@
                                     <div class="p-2 text-center font-semibold">Fri</div>
                                     <div class="p-2 text-center font-semibold">Sat</div>
                                 </div>
-                                <div id="calendar-grid" class="grid grid-cols-7"></div>
+                                <div id="calendar-grid" class="grid"
+                                    style="grid-template-columns: repeat(7, minmax(0, 1fr));"></div>
                             </div>
 
                             <aside class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                                 <h3 class="font-semibold text-slate-700 mb-3">Status slot</h3>
                                 <ul class="space-y-2 text-sm text-slate-600">
-                                    <li class="rounded-lg border border-emerald-200 bg-emerald-50 p-2">🟢 Available (boleh klik)</li>
+                                    <li class="rounded-lg border border-emerald-200 bg-emerald-50 p-2">🟢 Available
+                                        (boleh klik)</li>
                                     <li class="rounded-lg border border-amber-200 bg-amber-50 p-2">🟡 Pending</li>
                                     <li class="rounded-lg border border-rose-200 bg-rose-50 p-2">🔴 Full</li>
                                     <li class="rounded-lg border border-sky-200 bg-sky-50 p-2">🔵 Booked</li>
@@ -97,21 +105,31 @@
         </section>
     </main>
 
-    <div id="schedule-modal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-[70] p-4 sm:p-8">
-        <div class="w-full max-w-6xl bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
-            <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+    <div id="schedule-modal"
+        class="fixed inset-0 bg-slate-900/55 backdrop-blur-[2px] hidden items-center justify-center z-[70] p-4 sm:p-8">
+        <div class="w-full max-w-5xl bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
+            <div
+                class="px-5 py-4 border-b border-slate-200 bg-gradient-to-r from-slate-50 to-white flex items-center justify-between">
                 <h3 id="schedule-modal-title" class="text-lg font-semibold text-slate-800">Table Slot Harian</h3>
                 <button id="schedule-modal-close"
                     class="rounded-lg border border-slate-200 px-3 py-1.5 text-sm hover:border-sky-200 hover:text-sky-700">Tutup</button>
             </div>
-            <div class="overflow-auto">
-                <table class="min-w-full text-sm">
-                    <thead class="bg-slate-100 text-slate-700">
+            <div class="max-h-[65vh] overflow-auto">
+                <table class="w-full border-separate [border-spacing:0_10px] text-base">
+                    <thead class="sticky top-0 z-10 bg-white/95 text-slate-600 backdrop-blur">
                         <tr>
-                            <th class="px-4 py-3 text-left border-b border-slate-200">Masa</th>
-                            <th class="px-4 py-3 text-left border-b border-slate-200">Kaunselor</th>
-                            <th class="px-4 py-3 text-left border-b border-slate-200">Status</th>
-                            <th class="px-4 py-3 text-left border-b border-slate-200">Action</th>
+                            <th
+                                class="w-[20%] px-6 py-3 text-left border-b border-slate-200 text-[12px] font-bold uppercase tracking-[0.12em]">
+                                Masa</th>
+                            <th
+                                class="w-[30%] px-6 py-3 text-left border-b border-slate-200 text-[12px] font-bold uppercase tracking-[0.12em]">
+                                Kaunselor</th>
+                            <th
+                                class="w-[20%] px-6 py-3 text-center border-b border-slate-200 text-[12px] font-bold uppercase tracking-[0.12em]">
+                                Status</th>
+                            <th
+                                class="w-[30%] px-6 py-3 text-center border-b border-slate-200 text-[12px] font-bold uppercase tracking-[0.12em]">
+                                Action</th>
                         </tr>
                     </thead>
                     <tbody id="schedule-modal-body" class="text-slate-700"></tbody>
@@ -122,7 +140,8 @@
 
     <div id="request-modal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-[80] p-4 sm:p-8">
         <div class="w-full max-w-xl bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
-            <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+            <div
+                class="px-5 py-4 border-b border-slate-200 bg-gradient-to-r from-slate-50 to-white flex items-center justify-between">
                 <h3 class="text-lg font-semibold text-slate-800">Request Kaunselor</h3>
                 <button id="request-modal-close"
                     class="rounded-lg border border-slate-200 px-3 py-1.5 text-sm hover:border-sky-200 hover:text-sky-700">Tutup</button>
@@ -146,7 +165,8 @@
                         class="w-full rounded-xl border-slate-200 bg-slate-50 text-sm" />
                 </div>
                 <div>
-                    <label for="request-note" class="block text-sm font-medium text-slate-700 mb-1">Notes kepada kaunselor</label>
+                    <label for="request-note" class="block text-sm font-medium text-slate-700 mb-1">Notes kepada
+                        kaunselor</label>
                     <textarea id="request-note" rows="4" required maxlength="500"
                         placeholder="Contoh: Saya perlukan sesi berkaitan tekanan akademik dan pengurusan masa."
                         class="w-full rounded-xl border-slate-200 text-sm"></textarea>
@@ -154,7 +174,9 @@
                 <div class="flex justify-end gap-2">
                     <button type="button" id="request-cancel"
                         class="rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600">Cancel</button>
-                    <button type="submit" class="rounded-xl bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700">Submit request</button>
+                    <button type="submit"
+                        class="rounded-xl bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700">Submit
+                        request</button>
                 </div>
             </form>
         </div>
@@ -181,14 +203,35 @@
             const requestCounsellor = document.getElementById('request-counsellor');
             const requestNote = document.getElementById('request-note');
 
-            if (!calendarGrid || !calendarTitle || !prevBtn || !nextBtn || !scheduleModal || !scheduleModalTitle || !scheduleModalBody ||
-                !scheduleModalClose || !requestModal || !requestModalClose || !requestCancel || !requestForm || !requestDate || !requestTime ||
+            if (!calendarGrid || !calendarTitle || !prevBtn || !nextBtn || !scheduleModal || !scheduleModalTitle ||
+                !scheduleModalBody ||
+                !scheduleModalClose || !requestModal || !requestModalClose || !requestCancel || !requestForm || !
+                requestDate || !requestTime ||
                 !requestCounsellor || !requestNote) {
                 return;
             }
 
             const counsellors = @json($counsellors);
-            const slotTimes = ['08:00 - 09:00', '09:00 - 10:00', '10:00 - 11:00', '11:00 - 12:00', '02:00 - 03:00', '03:00 - 04:00'];
+            const buildHourlySlots = (startHour, endHour) => {
+                const slots = [];
+                for (let hour = startHour; hour < endHour; hour++) {
+                    const from = String(hour).padStart(2, '0');
+                    const to = String(hour + 1).padStart(2, '0');
+                    slots.push(`${from}:00 - ${to}:00`);
+                }
+                return slots;
+            };
+
+            const getSlotTimesForDate = (date) => {
+                const day = date.getDay();
+                if (day === 5) {
+                    return buildHourlySlots(8, 12); // Friday: 08:00 - 12:00
+                }
+                if (day >= 1 && day <= 4) {
+                    return buildHourlySlots(8, 17); // Monday-Thursday: 08:00 - 17:00
+                }
+                return buildHourlySlots(8, 17);
+            };
             const statuses = ['Available', 'Pending', 'Full', 'Booked'];
             const statusClass = {
                 Available: 'text-emerald-700 bg-emerald-50 border-emerald-200',
@@ -246,6 +289,7 @@
 
             const renderTableRows = (date) => {
                 scheduleModalBody.innerHTML = '';
+                const slotTimes = getSlotTimesForDate(date);
                 slotTimes.forEach((time, slotIndex) => {
                     const counsellor = counsellors[(date.getDate() + slotIndex) % counsellors.length];
                     const status = computedStatus(date, time, counsellor, slotIndex);
@@ -253,16 +297,17 @@
                     const tr = document.createElement('tr');
 
                     const actionButton = status === 'Available' ?
-                        `<button type="button" data-action="request" data-slot-key="${key}" data-time="${time}" data-counsellor="${counsellor}" class="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-100">Buat Request</button>` :
-                        `<span class="text-xs text-slate-400">Tidak tersedia</span>`;
+                        `<button type="button" data-action="request" data-slot-key="${key}" data-time="${time}" data-counsellor="${counsellor}" class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700 shadow-sm hover:bg-emerald-100 hover:border-emerald-300 transition">Buat Request</button>` :
+                        `<span class="inline-flex items-center rounded-lg bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-500">Tidak tersedia</span>`;
 
+                    tr.className = slotIndex % 2 === 0 ? 'group' : 'group';
                     tr.innerHTML = `
-                        <td class="px-4 py-3 border-b border-slate-100 font-medium">${time}</td>
-                        <td class="px-4 py-3 border-b border-slate-100">${counsellor}</td>
-                        <td class="px-4 py-3 border-b border-slate-100">
-                            <span class="inline-flex rounded-full border px-2 py-0.5 text-xs font-semibold ${statusClass[status]}">${status}</span>
+                        <td class="px-6 py-4 whitespace-nowrap font-semibold text-slate-700 bg-white border-y border-l border-slate-200 rounded-l-xl group-hover:border-sky-200 transition">${time}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-slate-700 bg-white border-y border-slate-200 group-hover:border-sky-200 transition">${counsellor}</td>
+                        <td class="px-6 py-4 text-center bg-white border-y border-slate-200 group-hover:border-sky-200 transition">
+                            <span class="inline-flex min-w-[104px] justify-center rounded-full border px-3 py-1 text-sm font-semibold ${statusClass[status]}">${status}</span>
                         </td>
-                        <td class="px-4 py-3 border-b border-slate-100">${actionButton}</td>
+                        <td class="px-6 py-4 text-center bg-white border-y border-r border-slate-200 rounded-r-xl group-hover:border-sky-200 transition">${actionButton}</td>
                     `;
 
                     scheduleModalBody.appendChild(tr);
@@ -271,7 +316,8 @@
 
             const openScheduleModal = (date) => {
                 selectedScheduleDate = date;
-                scheduleModalTitle.textContent = `Table Slot • ${date.toLocaleDateString('en-GB', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}`;
+                scheduleModalTitle.textContent =
+                    `Table Slot • ${date.toLocaleDateString('en-GB', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}`;
                 renderTableRows(date);
                 scheduleModal.classList.remove('hidden');
                 scheduleModal.classList.add('flex');
@@ -300,11 +346,13 @@
                 for (let day = 1; day <= lastDay.getDate(); day++) {
                     const cellDate = new Date(year, month, day);
                     const previewCounsellor = counsellors[(cellDate.getDate() + day) % counsellors.length];
+                    const slotTimes = getSlotTimesForDate(cellDate);
                     const previewStatus = computedStatus(cellDate, slotTimes[0], previewCounsellor, 0);
 
                     const button = document.createElement('button');
                     button.type = 'button';
-                    button.className = 'min-h-24 sm:min-h-28 p-2 text-left border-r border-b border-slate-200 hover:bg-sky-50 transition';
+                    button.className =
+                        'min-h-24 sm:min-h-28 p-2 text-left border-r border-b border-slate-200 hover:bg-sky-50 transition';
                     button.innerHTML = `
                         <p class="font-semibold text-slate-700">${day}</p>
                         <span class="mt-2 inline-flex rounded-full border px-2 py-0.5 text-xs ${statusClass[previewStatus]}">${previewStatus}</span>
