@@ -6,9 +6,82 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Session Home • CollegeCare</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        .home-shell {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .home-sidebar {
+            width: 100%;
+        }
+
+        .home-main {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        .sidebar-toggle {
+            display: inline-flex;
+        }
+
+        .home-sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: min(18rem, 88vw);
+            transform: translateX(-105%);
+            transition: transform 0.25s ease;
+            z-index: 70;
+            overflow-y: auto;
+            border-radius: 0;
+        }
+
+        .home-sidebar.is-open {
+            transform: translateX(0);
+        }
+
+        .sidebar-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgb(15 23 42 / 0.45);
+            z-index: 60;
+            display: none;
+        }
+
+        .sidebar-backdrop.is-open {
+            display: block;
+        }
+
+        @media (min-width: 1280px) {
+            .home-shell {
+                flex-direction: row;
+                align-items: flex-start;
+            }
+
+            .home-sidebar {
+                width: 16rem;
+                flex: 0 0 16rem;
+                position: sticky;
+                top: 1rem;
+                transform: none;
+                border-radius: 1rem;
+                z-index: auto;
+                overflow: visible;
+            }
+
+            .sidebar-toggle,
+            .sidebar-close-btn,
+            .sidebar-backdrop {
+                display: none !important;
+            }
+        }
+    </style>
 </head>
 
-<body class="min-h-screen bg-slate-100 text-slate-700 overflow-x-hidden">
+    <body class="min-h-screen bg-slate-100 text-slate-700 overflow-x-hidden">
 
     <div id="loader" class="fixed inset-0 bg-sky-500 flex items-center justify-center z-50">
         <div id="circle" class="w-64 h-64 bg-white rounded-full flex items-center justify-center">
@@ -49,6 +122,10 @@
                         <p class="text-sm text-slate-500 mt-1">Welcome, {{ $user->full_name ?: $user->name }}</p>
                     </div>
                     <div class="flex items-center gap-2">
+                        <button type="button" id="sidebar-toggle"
+                            class="sidebar-toggle rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">
+                            Menu
+                        </button>
                         <a href="{{ route('home') }}"
                             class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">Refresh
                             page</a>
@@ -60,8 +137,14 @@
                     </div>
                 </header>
 
-                <div class="p-5 sm:p-7 grid xl:grid-cols-[240px_minmax(0,1fr)] gap-5">
-                    <aside class="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-sm">
+                <div class="p-5 sm:p-7 home-shell">
+                    <aside id="home-sidebar" class="home-sidebar rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm">
+                        <div class="flex justify-end xl:hidden mb-2">
+                            <button type="button" id="sidebar-close"
+                                class="sidebar-close-btn rounded-lg border border-slate-200 px-2.5 py-1 text-sm text-slate-600 hover:text-sky-700 hover:border-sky-200">
+                                ✕
+                            </button>
+                        </div>
                         <div class="flex items-center gap-3 mb-4 pb-3 border-b border-slate-200">
                             <img src="{{ $user->profile_pic ?: '/images/default-profile.svg' }}" alt="Profile"
                                 class="w-11 h-11 rounded-full border border-slate-200 object-cover bg-sky-50" />
@@ -91,7 +174,7 @@
                         </nav>
                     </aside>
 
-                    <section class="rounded-2xl border border-slate-200 bg-white/90 p-4 sm:p-6 shadow-sm space-y-5">
+                    <section class="home-main rounded-2xl border border-slate-200 bg-white/90 p-4 sm:p-6 shadow-sm space-y-5">
                         <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:p-6">
                             <div class="flex items-center justify-between gap-3 mb-2">
                                 <p class="text-sm text-slate-500">Slide Show / Animation</p>
@@ -152,7 +235,8 @@
                                             class="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm hover:border-sky-200 hover:text-sky-700">→</button>
                                     </div>
                                     <div
-                                        class="grid grid-cols-7 text-[11px] sm:text-xs uppercase tracking-wide bg-slate-100 text-slate-500">
+                                        class="text-[11px] sm:text-xs uppercase tracking-wide bg-slate-100 text-slate-500"
+                                        style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));">
                                         <div class="p-2 text-center font-semibold border-r border-slate-200">Sun</div>
                                         <div class="p-2 text-center font-semibold border-r border-slate-200">Mon</div>
                                         <div class="p-2 text-center font-semibold border-r border-slate-200">Tue</div>
@@ -161,7 +245,8 @@
                                         <div class="p-2 text-center font-semibold border-r border-slate-200">Fri</div>
                                         <div class="p-2 text-center font-semibold">Sat</div>
                                     </div>
-                                    <div id="calendar-grid" class="grid grid-cols-7 gap-px bg-slate-200"></div>
+                                    <div id="calendar-grid" class="gap-px bg-slate-200"
+                                        style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));"></div>
                                 </div>
 
                                 <aside class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
@@ -177,6 +262,7 @@
                         </div>
                     </section>
                 </div>
+                <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
 
                 <footer
                     class="px-6 sm:px-8 py-4 border-t border-slate-200/80 text-center text-sm text-slate-500 bg-white/70">
@@ -204,6 +290,10 @@
                 const calendarTitle = document.getElementById('calendar-title');
                 const prevBtn = document.getElementById('calendar-prev');
                 const nextBtn = document.getElementById('calendar-next');
+                const sidebar = document.getElementById('home-sidebar');
+                const sidebarToggle = document.getElementById('sidebar-toggle');
+                const sidebarClose = document.getElementById('sidebar-close');
+                const sidebarBackdrop = document.getElementById('sidebar-backdrop');
 
                 const modal = document.getElementById('schedule-modal');
                 const modalTitle = document.getElementById('schedule-modal-title');
@@ -212,6 +302,28 @@
 
                 if (!calendarGrid || !calendarTitle || !prevBtn || !nextBtn) {
                     return;
+                }
+
+                const closeSidebar = () => {
+                    if (!sidebar || !sidebarBackdrop) return;
+                    sidebar.classList.remove('is-open');
+                    sidebarBackdrop.classList.remove('is-open');
+                };
+
+                const openSidebar = () => {
+                    if (!sidebar || !sidebarBackdrop) return;
+                    sidebar.classList.add('is-open');
+                    sidebarBackdrop.classList.add('is-open');
+                };
+
+                if (sidebarToggle) {
+                    sidebarToggle.addEventListener('click', openSidebar);
+                }
+                if (sidebarClose) {
+                    sidebarClose.addEventListener('click', closeSidebar);
+                }
+                if (sidebarBackdrop) {
+                    sidebarBackdrop.addEventListener('click', closeSidebar);
                 }
 
                 const counsellors = ['Dr. Aina', 'Mr. Hakim', 'Ms. Farah', 'Dr. Daniel'];
@@ -308,6 +420,7 @@
                         pad.className = 'min-h-24 sm:min-h-28 bg-slate-50';
                         calendarGrid.appendChild(pad);
                     }
+
                     const today = new Date();
                     const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
 
@@ -320,7 +433,7 @@
                         button.className =
                             'min-h-24 sm:min-h-28 p-2.5 text-left bg-white hover:bg-sky-50 transition';
                         button.innerHTML = `
-                           <p class="font-semibold ${isToday ? 'text-sky-700' : 'text-slate-700'}">${day}</p>
+                            <p class="font-semibold ${isToday ? 'text-sky-700' : 'text-slate-700'}">${day}</p>
                             <span class="mt-2 inline-flex rounded-full border px-2 py-0.5 text-xs ${statusClass[status]}">${status}</span>
                         `;
                         if (isToday) {
@@ -329,6 +442,7 @@
                         button.addEventListener('click', () => openModal(cellDate));
                         calendarGrid.appendChild(button);
                     }
+
                     const totalCells = startOffset + lastDay.getDate();
                     const trailingPads = (7 - (totalCells % 7)) % 7;
                     for (let i = 0; i < trailingPads; i++) {
