@@ -12,7 +12,7 @@
     @php
         $pendingCount = collect($applications)->where('status', 'Menunggu')->count();
         $approvedCount = collect($applications)->where('status', 'Diluluskan')->count();
-        $openSlots = collect($scheduleSlots)->where('slot_status', 'Kosong')->count();
+        $bookedSlots = collect($scheduleSlots)->where('slot_status', 'Ditempah')->count();
     @endphp
 
     <main class="mx-auto w-full max-w-7xl px-4 py-6 sm:px-8">
@@ -25,7 +25,8 @@
                         {{ strtoupper(substr($user->name ?? 'C', 0, 1)) }}
                     </div>
 
-                    <div class="min-w-[180px] flex-1 rounded-xl border border-white/30 bg-white/20 px-4 py-2 backdrop-blur">
+                    <div
+                        class="min-w-[180px] flex-1 rounded-xl border border-white/30 bg-white/20 px-4 py-2 backdrop-blur">
                         <p class="text-xs uppercase tracking-[0.2em] text-cyan-100">Text Title</p>
                         <h1 class="text-lg font-bold sm:text-xl">Sessions => Counsellor</h1>
                     </div>
@@ -53,7 +54,8 @@
             <section class="mt-6 grid gap-5 lg:grid-cols-2">
                 <article class="rounded-2xl border border-sky-200 bg-slate-50 p-5 shadow-sm">
                     <div class="mx-auto h-20 w-20 rounded-full border-2 border-sky-500 bg-white"></div>
-                    <div class="mt-4 rounded-lg border border-slate-300 bg-white px-4 py-2 text-center text-sm font-semibold text-slate-700">
+                    <div
+                        class="mt-4 rounded-lg border border-slate-300 bg-white px-4 py-2 text-center text-sm font-semibold text-slate-700">
                         Pending Applications: {{ $pendingCount }}
                     </div>
 
@@ -83,7 +85,8 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="3" class="px-3 py-4 text-center text-slate-500">Tiada permohonan setakat ini.</td>
+                                        <td colspan="3" class="px-3 py-4 text-center text-slate-500">Tiada permohonan
+                                            setakat ini.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -98,8 +101,9 @@
 
                 <article class="rounded-2xl border border-sky-200 bg-slate-50 p-5 shadow-sm">
                     <div class="mx-auto h-20 w-20 rounded-full border-2 border-indigo-500 bg-white"></div>
-                    <div class="mt-4 rounded-lg border border-slate-300 bg-white px-4 py-2 text-center text-sm font-semibold text-slate-700">
-                        Approved: {{ $approvedCount }} • Open Slots: {{ $openSlots }}
+                    <div
+                        class="mt-4 rounded-lg border border-slate-300 bg-white px-4 py-2 text-center text-sm font-semibold text-slate-700">
+                        Approved: {{ $approvedCount }} • Booked Slots: {{ $bookedSlots }}
                     </div>
 
                     <ul class="mt-4 space-y-3">
@@ -113,7 +117,8 @@
                                 <p class="mt-2 text-slate-700">{{ $record['notes'] }}</p>
                             </li>
                         @empty
-                            <li class="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500">Tiada rekod sesi tersedia.
+                            <li class="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500">
+                                Tiada rekod sesi tersedia.
                             </li>
                         @endforelse
                     </ul>
@@ -139,7 +144,8 @@
 
                     <div class="flex flex-wrap items-center gap-2">
                         @foreach ($scheduleSlots as $slot)
-                            <span class="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-600 ring-1 ring-slate-200">
+                            <span
+                                class="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-600 ring-1 ring-slate-200">
                                 {{ $slot['time'] }} • {{ $slot['slot_status'] }}
                             </span>
                         @endforeach

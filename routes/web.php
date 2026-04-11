@@ -9,6 +9,7 @@ use App\Models\ChatMessage;
 use App\Models\InboxNotification;
 use App\Models\Role;
 use App\Models\User;
+use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -103,6 +104,8 @@ Route::middleware('auth')->group(function () {
             'total_roles' => Role::count(),
             'total_messages' => ChatMessage::count(),
             'total_notifications' => InboxNotification::count(),
+            'total_bookings' => BookingRequest::count(),
+            'pending_bookings' => BookingRequest::where('status', 'pending')->count(),
         ];
 
         return view('admin', [
@@ -205,38 +208,67 @@ Route::middleware('auth')->group(function () {
 
         abort_unless($role === 'counsellor', 403);
 
-        $applications = [
-            [
-                'student' => 'Aina Syafiqah',
-                'request_date' => '2026-04-07',
-                'topic' => 'Stress akademik',
-                'status' => 'Menunggu',
-            ],
-            [
-                'student' => 'Hakim Danish',
-                'request_date' => '2026-04-08',
-                'topic' => 'Pengurusan masa',
-                'status' => 'Menunggu',
-            ],
-            [
-                'student' => 'Faris Iman',
-                'request_date' => '2026-04-09',
-                'topic' => 'Motivasi belajar',
-                'status' => 'Diluluskan',
-            ],
-        ];
+        $counsellorNames = array_values(array_filter([
+            $user->full_name,
+            $user->name,
+        ]));
 
-        $scheduleSlots = [
-            ['time' => '09:00 - 10:00', 'date' => 'Isnin, 7 Apr', 'slot_status' => 'Kosong'],
-            ['time' => '10:30 - 11:30', 'date' => 'Isnin, 7 Apr', 'slot_status' => 'Ditempah'],
-            ['time' => '02:00 - 03:00', 'date' => 'Selasa, 8 Apr', 'slot_status' => 'Kosong'],
-            ['time' => '03:30 - 04:30', 'date' => 'Selasa, 8 Apr', 'slot_status' => 'Ditempah'],
-        ];
+        $bookingsQuery = BookingRequest::query()
+            ->with('user:id,name,full_name')
+            ->whereIn('counsellor_name', $counsellorNames)
+            ->latest('booking_date')
+            ->latest('booking_time');
 
-        $sessionRecords = [
-            ['student' => 'Nurin Sofea', 'date' => '2026-04-04', 'notes' => 'Sesi susulan 30 minit'],
-            ['student' => 'Amirul Azwan', 'date' => '2026-04-03', 'notes' => 'Fokus teknik belajar & rutin harian'],
-        ];
+        $bookings = $bookingsQuery->get();
+
+        $statusLabel = static fn(string $status): string => match ($status) {
+            'approved' => 'Diluluskan',
+            'completed' => 'Selesai',
+            'rejected' => 'Ditolak',
+            default => 'Menunggu',
+        };
+
+        $applications = $bookings
+            ->whereIn('status', ['pending', 'approved'])
+            ->values()
+            ->map(static function (BookingRequest $booking) use ($statusLabel): array {
+                return [
+                    'student' => $booking->user?->full_name ?: $booking->user?->name ?: 'Pelajar',
+                    'request_date' => (string) $booking->booking_date,
+                    'topic' => $booking->note,
+                    'status' => $statusLabel($booking->status),
+                ];
+            })
+            ->all();
+
+        $scheduleSlots = $bookings
+            ->whereIn('status', ['approved', 'completed'])
+            ->sortBy(['booking_date', 'booking_time'])
+            ->values()
+            ->take(12)
+            ->map(static function (BookingRequest $booking): array {
+                $bookingDate = Carbon::parse($booking->booking_date);
+
+                return [
+                    'time' => $booking->booking_time,
+                    'date' => $bookingDate->translatedFormat('l, j M'),
+                    'slot_status' => $booking->status === 'completed' ? 'Selesai' : 'Ditempah',
+                ];
+            })
+            ->all();
+
+        $sessionRecords = $bookings
+            ->where('status', 'completed')
+            ->values()
+            ->take(10)
+            ->map(static function (BookingRequest $booking): array {
+                return [
+                    'student' => $booking->user?->full_name ?: $booking->user?->name ?: 'Pelajar',
+                    'date' => (string) $booking->booking_date,
+                    'notes' => $booking->note,
+                ];
+            })
+            ->all();
 
         return view('counsellor', [
             'user' => $user,
@@ -252,12 +284,16 @@ Route::middleware('auth')->group(function () {
 
         abort_unless(in_array($role, ['student', 'teacher'], true), 403);
 
-        $counsellors = [
-            'Dr. Aina',
-            'Mr. Hakim',
-            'Ms. Farah',
-            'Dr. Daniel',
-        ];
+        $counsellors = User::query()
+            ->whereHas('roles', static fn($query) => $query->where('name', 'counsellor'))
+            ->orderBy('full_name')
+            ->orderBy('name')
+            ->get()
+            ->map(static fn(User $counsellor) => $counsellor->full_name ?: $counsellor->name)
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
 
         return view('booking', [
             'user' => $user,
@@ -279,6 +315,20 @@ Route::middleware('auth')->group(function () {
             'note' => ['required', 'string', 'max:500'],
         ]);
 
+        $isValidCounsellor = User::query()
+            ->whereHas('roles', static fn($query) => $query->where('name', 'counsellor'))
+            ->where(static function ($query) use ($validated): void {
+                $query
+                    ->where('name', $validated['counsellor_name'])
+                    ->orWhere('full_name', $validated['counsellor_name']);
+            })
+            ->exists();
+
+        if (! $isValidCounsellor) {
+            return response()->json([
+                'message' => 'Selected counsellor is not available.',
+            ], 422);
+        }
         BookingRequest::create([
             'user_id' => $user->id,
             'booking_date' => $validated['booking_date'],

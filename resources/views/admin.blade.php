@@ -66,7 +66,7 @@
                 </aside>
 
                 <section class="space-y-5">
-                    <div id="overview" class="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
+                    <div id="overview" class="grid sm:grid-cols-2 xl:grid-cols-6 gap-4">
                         <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
                             <p class="text-sm text-slate-500">Total users</p>
                             <p class="text-2xl font-bold text-slate-800 mt-2">{{ $stats['total_users'] }}</p>
@@ -82,6 +82,14 @@
                         <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
                             <p class="text-sm text-slate-500">Inbox notifications</p>
                             <p class="text-2xl font-bold text-slate-800 mt-2">{{ $stats['total_notifications'] }}</p>
+                        </article>
+                        <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                            <p class="text-sm text-slate-500">Total bookings</p>
+                            <p class="text-2xl font-bold text-slate-800 mt-2">{{ $stats['total_bookings'] }}</p>
+                        </article>
+                        <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                            <p class="text-sm text-slate-500">Pending bookings</p>
+                            <p class="text-2xl font-bold text-amber-600 mt-2">{{ $stats['pending_bookings'] }}</p>
                         </article>
                     </div>
 
