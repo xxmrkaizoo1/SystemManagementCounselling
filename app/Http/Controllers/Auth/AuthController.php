@@ -80,6 +80,7 @@ class AuthController extends Controller
             'years' => ['nullable', 'string', 'max:50'],
             'programme' => ['nullable', 'string', 'max:50'],
             'profile_pic' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'lecturer_access_code' => ['nullable', 'string', 'max:100'],
             'password' => ['required', 'confirmed', 'min:8'],
         ]);
 
@@ -87,6 +88,21 @@ class AuthController extends Controller
             $request->validate([
                 'years' => ['required', 'string', 'max:50'],
                 'programme' => ['required', 'string', 'max:50'],
+            ]);
+        }
+        if ($validated['role'] === 'teacher') {
+            $request->validate([
+                'lecturer_access_code' => [
+                    'required',
+                    'string',
+                    static function (string $attribute, mixed $value, \Closure $fail): void {
+                        $expectedCode = (string) config('auth_signup.teacher_access_code', '');
+
+                        if ($expectedCode === '' || ! hash_equals($expectedCode, (string) $value)) {
+                            $fail('Invalid lecturer access code.');
+                        }
+                    },
+                ],
             ]);
         }
 
