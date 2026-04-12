@@ -213,7 +213,8 @@
                 return;
             }
 
-            const counsellors = @json($counsellors);
+            const counsellors = @json($counsellors ?? []);
+            const bookingSlots = @json($bookingSlots ?? []);
             const bookingSlots = @json($bookingSlots);
             const buildHourlySlots = (startHour, endHour) => {
                 const slots = [];
@@ -235,6 +236,7 @@
                 }
                 return buildHourlySlots(8, 17);
             };
+            const availableCounsellors = counsellors.length ? counsellors : ['Counsellor'];
             const statuses = ['Available', 'Pending', 'Full', 'Booked'];
             const statusClass = {
                 Available: 'text-emerald-700 bg-emerald-50 border-emerald-200',
@@ -243,7 +245,10 @@
                 Booked: 'text-sky-700 bg-sky-50 border-sky-200',
             };
 
-            const requestedSlots = new Set();
+            const requestedSlots = new Set(
+                bookingSlots.map((slot) => `${slot.date}|${slot.time}|${slot.counsellor}`)
+            );
+
             let activeDate = new Date();
             let selectedScheduleDate = null;
             let selectedSlotKey = null;
@@ -266,7 +271,8 @@
             const getDailyStatus = (date) => {
                 const slotTimes = getSlotTimesForDate(date);
                 const slotStatuses = slotTimes.map((time, slotIndex) => {
-                    const counsellor = counsellors[(date.getDate() + slotIndex) % counsellors.length];
+                    const counsellor = availableCounsellors[(date.getDate() + slotIndex) %
+                        availableCounsellors.length];
                     return computedStatus(date, time, counsellor, slotIndex);
                 });
 
@@ -312,7 +318,8 @@
                 scheduleModalBody.innerHTML = '';
                 const slotTimes = getSlotTimesForDate(date);
                 slotTimes.forEach((time, slotIndex) => {
-                    const counsellor = counsellors[(date.getDate() + slotIndex) % counsellors.length];
+                    const counsellor = availableCounsellors[(date.getDate() + slotIndex) %
+                        availableCounsellors.length];
                     const status = computedStatus(date, time, counsellor, slotIndex);
                     const key = slotKey(date, time, counsellor);
                     const tr = document.createElement('tr');

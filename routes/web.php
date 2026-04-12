@@ -294,11 +294,21 @@ Route::middleware('auth')->group(function () {
             ->unique()
             ->values()
             ->all();
+        $bookingSlots = BookingRequest::query()
+            ->whereIn('status', ['pending', 'approved'])
+            ->get(['booking_date', 'booking_time', 'counsellor_name'])
+            ->map(static fn(BookingRequest $booking): array => [
+                'date' => (string) $booking->booking_date,
+                'time' => $booking->booking_time,
+                'counsellor' => $booking->counsellor_name,
+            ])
+            ->all();
 
         return view('booking', [
             'user' => $user,
             'role' => $role,
             'counsellors' => $counsellors,
+            'bookingSlots' => $bookingSlots,
         ]);
     })->name('booking.index');
 
