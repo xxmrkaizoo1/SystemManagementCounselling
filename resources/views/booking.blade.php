@@ -96,7 +96,6 @@
                                         (boleh klik)</li>
                                     <li class="rounded-lg border border-amber-200 bg-amber-50 p-2">🟡 Pending</li>
                                     <li class="rounded-lg border border-rose-200 bg-rose-50 p-2">🔴 Full</li>
-                                    <li class="rounded-lg border border-sky-200 bg-sky-50 p-2">🔵 Booked</li>
                                 </ul>
                             </aside>
                         </div>
@@ -215,6 +214,7 @@
             }
 
             const counsellors = @json($counsellors);
+            const bookingSlots = @json($bookingSlots);
             const buildHourlySlots = (startHour, endHour) => {
                 const slots = [];
                 for (let hour = startHour; hour < endHour; hour++) {
@@ -263,7 +263,25 @@
                 const base = seededStatus(date, index);
                 return base === 'Booked' ? 'Pending' : base;
             };
+            const getDailyStatus = (date) => {
+                const slotTimes = getSlotTimesForDate(date);
+                const slotStatuses = slotTimes.map((time, slotIndex) => {
+                    const counsellor = counsellors[(date.getDate() + slotIndex) % counsellors.length];
+                    return computedStatus(date, time, counsellor, slotIndex);
+                });
 
+                const isFullyOccupied = slotStatuses.every((status) => status === 'Full' || status ===
+                    'Booked');
+                if (isFullyOccupied) {
+                    return 'Full';
+                }
+
+                if (slotStatuses.some((status) => status === 'Available')) {
+                    return 'Available';
+                }
+
+                return 'Pending';
+            };
             const openRequestModal = (date, time, counsellor, key) => {
                 selectedSlotKey = key;
                 requestDate.value = date.toLocaleDateString('en-GB', {
@@ -348,9 +366,7 @@
 
                 for (let day = 1; day <= lastDay.getDate(); day++) {
                     const cellDate = new Date(year, month, day);
-                    const previewCounsellor = counsellors[(cellDate.getDate() + day) % counsellors.length];
-                    const slotTimes = getSlotTimesForDate(cellDate);
-                    const previewStatus = computedStatus(cellDate, slotTimes[0], previewCounsellor, 0);
+                    const previewStatus = getDailyStatus(cellDate);
 
                     const button = document.createElement('button');
                     button.type = 'button';
