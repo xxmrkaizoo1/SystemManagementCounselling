@@ -209,7 +209,7 @@
                 !scheduleModalBody ||
                 !scheduleModalClose || !requestModal || !requestModalClose || !requestCancel || !requestForm || !
                 requestDate || !requestTime ||
-                !requestCounsellor || !requestNote || !csrfToken) {
+                !requestCounsellor || !requestNote) {
                 return;
             }
 
@@ -419,6 +419,9 @@
                 }
 
                 try {
+                    if (!csrfToken) {
+                        throw new Error('Missing CSRF token. Please refresh the page.');
+                    }
                     const response = await fetch("{{ route('booking.store') }}", {
                         method: 'POST',
                         headers: {
