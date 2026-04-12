@@ -278,6 +278,82 @@ Route::middleware('auth')->group(function () {
         ]);
     })->name('counsellor.dashboard');
 
+    Route::get('/counsellor/pending-requests', function () {
+        $user = request()->user();
+        $role = $user?->roles()->value('name');
+
+        abort_unless($role === 'counsellor', 403);
+
+        $counsellorNames = array_values(array_filter([
+            $user->full_name,
+            $user->name,
+        ]));
+
+        $pendingRequests = BookingRequest::query()
+            ->with('user:id,name,full_name')
+            ->whereIn('counsellor_name', $counsellorNames)
+            ->where('status', 'pending')
+            ->latest('booking_date')
+            ->latest('booking_time')
+            ->get()
+            ->map(static function (BookingRequest $booking): array {
+                return [
+                    'student' => $booking->user?->full_name ?: $booking->user?->name ?: 'Pelajar',
+                    'date' => (string) $booking->booking_date,
+                    'time' => $booking->booking_time,
+                    'topic' => $booking->note,
+                ];
+            })
+            ->all();
+
+        return view('counsellor-pending-requests', [
+            'user' => $user,
+            'pendingRequests' => $pendingRequests,
+        ]);
+    })->name('counsellor.pending-requests');
+
+    Route::get('/counsellor/session-status-list', function () {
+        $user = request()->user();
+        $role = $user?->roles()->value('name');
+
+        abort_unless($role === 'counsellor', 403);
+
+        $counsellorNames = array_values(array_filter([
+            $user->full_name,
+            $user->name,
+        ]));
+
+        $statusLabel = static fn(string $status): string => match ($status) {
+            'approved' => 'Approved',
+            'completed' => 'Completed',
+            default => 'Booked',
+        };
+
+        $sessions = BookingRequest::query()
+            ->with('user:id,name,full_name')
+            ->whereIn('counsellor_name', $counsellorNames)
+            ->whereIn('status', ['approved', 'completed'])
+            ->latest('booking_date')
+            ->latest('booking_time')
+            ->get()
+            ->map(static function (BookingRequest $booking) use ($statusLabel): array {
+                return [
+                    'student' => $booking->user?->full_name ?: $booking->user?->name ?: 'Pelajar',
+                    'date' => (string) $booking->booking_date,
+                    'time' => $booking->booking_time,
+                    'status' => $statusLabel($booking->status),
+                    'topic' => $booking->note,
+                ];
+            })
+            ->all();
+
+        return view('counsellor-session-status-list', [
+            'user' => $user,
+            'sessions' => $sessions,
+        ]);
+    })->name('counsellor.session-status-list');
+
+
     Route::get('/booking', function () {
         $user = request()->user();
         $role = $user?->roles()->value('name');
