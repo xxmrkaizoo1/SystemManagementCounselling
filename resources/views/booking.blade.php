@@ -256,6 +256,8 @@
             let activeDate = new Date();
             let selectedScheduleDate = null;
             let selectedRequestTime = null;
+            const todayStart = new Date();
+            todayStart.setHours(0, 0, 0, 0);
 
             const slotKey = (date, time, counsellor) => `${date.toISOString().slice(0, 10)}|${time}|${counsellor}`;
 
@@ -354,6 +356,12 @@
 
             const openScheduleModal = (date) => {
                 if (!hasScheduleModal) return;
+                if (date < todayStart) {
+                    alert(
+                        'Tarikh lepas tidak boleh dibuat booking. Sila pilih hari ini atau tarikh akan datang.'
+                    );
+                    return;
+                }
                 selectedScheduleDate = date;
                 scheduleModalTitle.textContent =
                     `Table Slot • ${date.toLocaleDateString('en-GB', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}`;
@@ -384,17 +392,24 @@
                 for (let day = 1; day <= lastDay.getDate(); day++) {
                     const cellDate = new Date(year, month, day);
                     const previewStatus = getDailyStatus(cellDate);
+                    const isPastDate = cellDate < todayStart;
 
                     const button = document.createElement('button');
                     button.type = 'button';
                     button.className =
-                        'min-h-24 sm:min-h-28 p-2 text-left border-r border-b border-slate-200 hover:bg-sky-50 transition';
+                        `min-h-24 sm:min-h-28 p-2 text-left border-r border-b border-slate-200 transition ${
+                            isPastDate ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'hover:bg-sky-50'
+                        }`;
                     button.innerHTML = `
                         <p class="font-semibold text-slate-700">${day}</p>
                         <span class="mt-2 inline-flex rounded-full border px-2 py-0.5 text-xs ${statusClass[previewStatus]}">${previewStatus}</span>
-                        <p class="text-[11px] text-slate-500 mt-1">Klik untuk buka table</p>
+                       <p class="text-[11px] text-slate-500 mt-1">${isPastDate ? 'Tarikh lepas' : 'Klik untuk buka table'}</p>
                     `;
-                    button.addEventListener('click', () => openScheduleModal(cellDate));
+                    if (!isPastDate) {
+                        button.addEventListener('click', () => openScheduleModal(cellDate));
+                    } else {
+                        button.disabled = true;
+                    }
                     calendarGrid.appendChild(button);
                 }
             };
@@ -426,6 +441,12 @@
                     }
 
                     const requestDateValue = selectedScheduleDate.toISOString().slice(0, 10);
+                    if (selectedScheduleDate < todayStart) {
+                        alert(
+                            'Tarikh lepas tidak boleh dibuat booking. Sila pilih hari ini atau tarikh akan datang.'
+                            );
+                        return;
+                    }
                     const selectedCounsellor = requestCounsellor.value;
                     const requestSlotKey =
                         `${requestDateValue}|${selectedRequestTime}|${selectedCounsellor}`;
@@ -466,7 +487,8 @@
                         renderCalendar();
                         alert('Request berjaya dihantar kepada kaunselor. Sila semak status di Inbox.');
                     } catch (error) {
-                        alert('Maaf, request gagal dihantar. Sila cuba lagi.');
+                        alert(error instanceof Error ? error.message :
+                            'Maaf, request gagal dihantar. Sila cuba lagi.');
                     }
                 });
             }
