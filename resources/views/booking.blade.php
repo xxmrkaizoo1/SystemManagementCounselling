@@ -453,8 +453,7 @@
                             }),
                         });
 
-                        alert(responsePayload?.message ?? 'Request berjaya dihantar kepada kaunselor. Sila semak status di Inbox.');
-                            //VALIDATE FOR RESPONSE FROM SERVEE
+
                         const responsePayload = await response.json().catch(() => null);
 
                         if (!response.ok) {
