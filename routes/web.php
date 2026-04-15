@@ -289,18 +289,20 @@ Route::middleware('auth')->group(function () {
 
         abort_unless($role === 'counsellor', 403);
 
+        $normalizeCounsellorName = static fn(?string $name): string => preg_replace('/\s+/', '', mb_strtolower(trim((string) $name)));
+
         $counsellorNames = array_values(array_filter([
             $user->full_name,
             $user->name,
         ]));
         $normalizedCounsellorNames = array_values(array_unique(array_map(
-            static fn(string $name): string => mb_strtolower(trim($name)),
+            $normalizeCounsellorName,
             $counsellorNames
         )));
 
         $pendingRequests = BookingRequest::query()
             ->with('user:id,name,full_name')
-            ->whereIn(DB::raw('LOWER(TRIM(counsellor_name))'), $normalizedCounsellorNames)
+            ->whereIn(DB::raw("LOWER(REPLACE(TRIM(counsellor_name), ' ', ''))"), $normalizedCounsellorNames)
             ->where('status', 'pending')
             ->latest('booking_date')
             ->latest('booking_time')
@@ -396,7 +398,7 @@ Route::middleware('auth')->group(function () {
 
         $sessions = BookingRequest::query()
             ->with('user:id,name,full_name')
-                        ->whereIn(DB::raw('LOWER(TRIM(counsellor_name))'), $normalizedCounsellorNames)
+            ->whereIn(DB::raw('LOWER(TRIM(counsellor_name))'), $normalizedCounsellorNames)
             ->whereIn('status', ['approved', 'completed'])
             ->latest('booking_date')
             ->latest('booking_time')
@@ -469,16 +471,20 @@ Route::middleware('auth')->group(function () {
             'note' => ['required', 'string', 'max:500'],
         ]);
 
-        $isValidCounsellor = User::query()
-            ->whereHas('roles', static fn($query) => $query->where('name', 'counsellor'))
-            ->where(static function ($query) use ($validated): void {
-                $query
-                    ->where('name', $validated['counsellor_name'])
-                    ->orWhere('full_name', $validated['counsellor_name']);
-            })
-            ->exists();
+        $normalizeCounsellorName = static fn(?string $name): string => preg_replace('/\s+/', '', mb_strtolower(trim((string) $name)));
+        $normalizedRequestedCounsellor = $normalizeCounsellorName($validated['counsellor_name']);
 
-        if (! $isValidCounsellor) {
+        $selectedCounsellor = User::query()
+            ->whereHas('roles', static fn($query) => $query->where('name', 'counsellor'))
+            ->get(['id', 'name', 'full_name'])
+            ->first(static function (User $counsellor) use ($normalizeCounsellorName, $normalizedRequestedCounsellor): bool {
+                return in_array($normalizedRequestedCounsellor, [
+                    $normalizeCounsellorName($counsellor->name),
+                    $normalizeCounsellorName($counsellor->full_name),
+                ], true);
+            });
+
+        if (! $selectedCounsellor) {
             return response()->json([
                 'message' => 'Selected counsellor is not available.',
             ], 422);
@@ -508,6 +514,10 @@ Route::middleware('auth')->group(function () {
         $user->inboxNotifications()->create([
             'title' => 'Booking request sent',
             'message' => 'Your counselling request for ' . $validated['booking_date'] . ' (' . $validated['booking_time'] . ') with ' . $validated['counsellor_name'] . ' has been submitted.',
+        ]);
+        $selectedCounsellor->inboxNotifications()->create([
+            'title' => 'New counselling request',
+            'message' => ($user->full_name ?: $user->name ?: 'A student') . ' submitted a counselling request for ' . $validated['booking_date'] . ' (' . $validated['booking_time'] . ').',
         ]);
 
         return response()->json([
