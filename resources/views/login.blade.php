@@ -216,7 +216,8 @@
                         </form>
 
                         <div class="mt-4 text-sm text-center space-y-2">
-                            <a href="#" class="text-sky-700 hover:text-sky-800 font-medium">Forgot password?</a>
+                            <a href="{{ route('password.request') }}"
+                                class="text-sky-700 hover:text-sky-800 font-medium">Forgot password?</a>
                             <p class="text-slate-500">Don’t have an account?
                                 <a href="{{ route('signup') }}"
                                     class="text-indigo-700 hover:text-indigo-800 font-medium">Create one</a>
