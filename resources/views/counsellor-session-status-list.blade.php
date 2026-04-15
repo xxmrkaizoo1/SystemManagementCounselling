@@ -24,6 +24,12 @@
             </header>
 
             <div class="p-5 sm:p-7">
+                @if (session('status'))
+                    <div
+                        class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+                        {{ session('status') }}
+                    </div>
+                @endif
                 <div class="overflow-auto rounded-2xl border border-slate-200">
                     <table class="w-full text-sm">
                         <thead class="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
@@ -33,6 +39,7 @@
                                 <th class="px-4 py-3 font-semibold">Time</th>
                                 <th class="px-4 py-3 font-semibold">Status</th>
                                 <th class="px-4 py-3 font-semibold">Topic</th>
+                                <th class="px-4 py-3 font-semibold text-center">Action</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 bg-white">
@@ -47,11 +54,29 @@
                                             {{ $session['status'] }}
                                         </span>
                                     </td>
-                                    <td class="px-4 py-3 text-slate-600">{{ $session['topic'] ?: 'General support' }}</td>
+                                    <td class="px-4 py-3 text-slate-600">{{ $session['topic'] ?: 'General support' }}
+                                    </td>
+                                    <td class="px-4 py-3 text-center">
+                                        @if ($session['status_value'] === 'approved')
+                                            <form method="POST"
+                                                action="{{ route('counsellor.booking-request.status', $session['id']) }}">
+                                                @csrf
+                                                @method('PATCH')
+                                                <input type="hidden" name="status" value="completed">
+                                                <button type="submit"
+                                                    class="rounded-lg border border-violet-200 bg-violet-50 px-3 py-1.5 text-xs font-semibold text-violet-700 hover:bg-violet-100">
+                                                    Mark Completed
+                                                </button>
+                                            </form>
+                                        @else
+                                            <span class="text-xs text-slate-400">-</span>
+                                        @endif
+                                    </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="px-4 py-8 text-center text-slate-500">No approved/booked/completed sessions available.</td>
+                                    <td colspan="6" class="px-4 py-8 text-center text-slate-500">No
+                                        approved/booked/completed sessions available.</td>
                                 </tr>
                             @endforelse
                         </tbody>

@@ -24,6 +24,12 @@
             </header>
 
             <div class="p-5 sm:p-7">
+                @if (session('status'))
+                    <div
+                        class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+                        {{ session('status') }}
+                    </div>
+                @endif
                 <div class="overflow-auto rounded-2xl border border-slate-200">
                     <table class="w-full text-sm">
                         <thead class="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
@@ -31,7 +37,9 @@
                                 <th class="px-4 py-3 font-semibold">Student</th>
                                 <th class="px-4 py-3 font-semibold">Date</th>
                                 <th class="px-4 py-3 font-semibold">Time</th>
+                                <th class="px-4 py-3 font-semibold">Status</th>s
                                 <th class="px-4 py-3 font-semibold">Topic</th>
+                                <th class="px-4 py-3 font-semibold text-center">Action</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 bg-white">
@@ -40,11 +48,43 @@
                                     <td class="px-4 py-3 font-medium text-slate-700">{{ $request['student'] }}</td>
                                     <td class="px-4 py-3 text-slate-600">{{ $request['date'] }}</td>
                                     <td class="px-4 py-3 text-slate-600">{{ $request['time'] }}</td>
-                                    <td class="px-4 py-3 text-slate-600">{{ $request['topic'] ?: 'General support' }}</td>
+                                    <td class="px-4 py-3">
+                                        <span
+                                            class="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-700">
+                                            {{ ucfirst($request['status']) }}
+                                        </span>
+                                    </td>
+                                    <td class="px-4 py-3 text-slate-600">{{ $request['topic'] ?: 'General support' }}
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <form method="POST"
+                                                action="{{ route('counsellor.booking-request.status', $request['id']) }}">
+                                                @csrf
+                                                @method('PATCH')
+                                                <input type="hidden" name="status" value="approved">
+                                                <button type="submit"
+                                                    class="rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-100">
+                                                    Approve
+                                                </button>
+                                            </form>
+                                            <form method="POST"
+                                                action="{{ route('counsellor.booking-request.status', $request['id']) }}">
+                                                @csrf
+                                                @method('PATCH')
+                                                <input type="hidden" name="status" value="rejected">
+                                                <button type="submit"
+                                                    class="rounded-lg border border-rose-200 bg-rose-50 px-2.5 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-100">
+                                                    Reject
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="4" class="px-4 py-8 text-center text-slate-500">No pending requests available.</td>
+                                    <td colspan="6" class="px-4 py-8 text-center text-slate-500">No pending requests
+                                        available.</td>
                                 </tr>
                             @endforelse
                         </tbody>

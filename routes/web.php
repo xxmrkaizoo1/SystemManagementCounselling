@@ -11,6 +11,7 @@ use App\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -212,10 +213,14 @@ Route::middleware('auth')->group(function () {
             $user->full_name,
             $user->name,
         ]));
+        $normalizedCounsellorNames = array_values(array_unique(array_map(
+            static fn(string $name): string => mb_strtolower(trim($name)),
+            $counsellorNames
+        )));
 
         $bookingsQuery = BookingRequest::query()
             ->with('user:id,name,full_name')
-            ->whereIn('counsellor_name', $counsellorNames)
+            ->whereIn(DB::raw('LOWER(TRIM(counsellor_name))'), $normalizedCounsellorNames)
             ->latest('booking_date')
             ->latest('booking_time');
 
@@ -288,20 +293,26 @@ Route::middleware('auth')->group(function () {
             $user->full_name,
             $user->name,
         ]));
+        $normalizedCounsellorNames = array_values(array_unique(array_map(
+            static fn(string $name): string => mb_strtolower(trim($name)),
+            $counsellorNames
+        )));
 
         $pendingRequests = BookingRequest::query()
             ->with('user:id,name,full_name')
-            ->whereIn('counsellor_name', $counsellorNames)
+            ->whereIn(DB::raw('LOWER(TRIM(counsellor_name))'), $normalizedCounsellorNames)
             ->where('status', 'pending')
             ->latest('booking_date')
             ->latest('booking_time')
             ->get()
             ->map(static function (BookingRequest $booking): array {
                 return [
+                    'id' => $booking->id,
                     'student' => $booking->user?->full_name ?: $booking->user?->name ?: 'Pelajar',
                     'date' => (string) $booking->booking_date,
                     'time' => $booking->booking_time,
                     'topic' => $booking->note,
+                    'status' => $booking->status,
                 ];
             })
             ->all();
@@ -311,6 +322,60 @@ Route::middleware('auth')->group(function () {
             'pendingRequests' => $pendingRequests,
         ]);
     })->name('counsellor.pending-requests');
+
+    Route::patch('/counsellor/booking-requests/{bookingRequest}/status', function (Request $request, BookingRequest $bookingRequest) {
+        $user = $request->user();
+        $role = $user?->roles()->value('name');
+
+        abort_unless($role === 'counsellor', 403);
+
+        $counsellorNames = array_values(array_filter([
+            $user?->full_name,
+            $user?->name,
+        ]));
+        $normalizedCounsellorNames = array_values(array_unique(array_map(
+            static fn(string $name): string => mb_strtolower(trim($name)),
+            $counsellorNames
+        )));
+        abort_unless(
+            in_array(mb_strtolower(trim($bookingRequest->counsellor_name)), $normalizedCounsellorNames, true),
+            403
+        );
+
+        $validated = $request->validate([
+            'status' => ['required', 'in:approved,rejected,completed'],
+        ]);
+
+        if ($bookingRequest->status === 'rejected' && $validated['status'] !== 'rejected') {
+            return back()->with('status', 'Rejected request cannot be changed.');
+        }
+
+        if ($bookingRequest->status === 'completed' && $validated['status'] !== 'completed') {
+            return back()->with('status', 'Completed session cannot be changed.');
+        }
+
+        if ($validated['status'] === 'completed' && $bookingRequest->status !== 'approved') {
+            return back()->with('status', 'Only approved sessions can be marked as completed.');
+        }
+
+        $bookingRequest->update([
+            'status' => $validated['status'],
+        ]);
+
+        $statusMessage = match ($validated['status']) {
+            'approved' => 'approved',
+            'rejected' => 'rejected',
+            'completed' => 'completed',
+            default => $validated['status'],
+        };
+
+        $bookingRequest->user?->inboxNotifications()->create([
+            'title' => 'Booking status updated',
+            'message' => 'Your counselling session on ' . $bookingRequest->booking_date . ' at ' . $bookingRequest->booking_time . ' with ' . $bookingRequest->counsellor_name . ' was ' . $statusMessage . '.',
+        ]);
+
+        return back()->with('status', 'Booking status updated successfully.');
+    })->name('counsellor.booking-request.status');
 
     Route::get('/counsellor/session-status-list', function () {
         $user = request()->user();
@@ -331,17 +396,19 @@ Route::middleware('auth')->group(function () {
 
         $sessions = BookingRequest::query()
             ->with('user:id,name,full_name')
-            ->whereIn('counsellor_name', $counsellorNames)
+                        ->whereIn(DB::raw('LOWER(TRIM(counsellor_name))'), $normalizedCounsellorNames)
             ->whereIn('status', ['approved', 'completed'])
             ->latest('booking_date')
             ->latest('booking_time')
             ->get()
             ->map(static function (BookingRequest $booking) use ($statusLabel): array {
                 return [
+                    'id' => $booking->id,
                     'student' => $booking->user?->full_name ?: $booking->user?->name ?: 'Pelajar',
                     'date' => (string) $booking->booking_date,
                     'time' => $booking->booking_time,
                     'status' => $statusLabel($booking->status),
+                    'status_value' => $booking->status,
                     'topic' => $booking->note,
                 ];
             })
@@ -372,11 +439,12 @@ Route::middleware('auth')->group(function () {
             ->all();
         $bookingSlots = BookingRequest::query()
             ->whereIn('status', ['pending', 'approved'])
-            ->get(['booking_date', 'booking_time', 'counsellor_name'])
+            ->get(['booking_date', 'booking_time', 'counsellor_name', 'status'])
             ->map(static fn(BookingRequest $booking): array => [
                 'date' => (string) $booking->booking_date,
                 'time' => $booking->booking_time,
                 'counsellor' => $booking->counsellor_name,
+                'status' => $booking->status,
             ])
             ->all();
 
@@ -415,6 +483,19 @@ Route::middleware('auth')->group(function () {
                 'message' => 'Selected counsellor is not available.',
             ], 422);
         }
+        $existingSlot = BookingRequest::query()
+            ->whereDate('booking_date', $validated['booking_date'])
+            ->where('booking_time', $validated['booking_time'])
+            ->where('counsellor_name', $validated['counsellor_name'])
+            ->whereIn('status', ['pending', 'approved'])
+            ->exists();
+
+        if ($existingSlot) {
+            return response()->json([
+                'message' => 'This slot is no longer available. Please choose another slot.',
+            ], 422);
+        }
+
         BookingRequest::create([
             'user_id' => $user->id,
             'booking_date' => $validated['booking_date'],

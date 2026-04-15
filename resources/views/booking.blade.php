@@ -95,7 +95,6 @@
                                     <li class="rounded-lg border border-emerald-200 bg-emerald-50 p-2">🟢 Available
                                         (boleh klik)</li>
                                     <li class="rounded-lg border border-amber-200 bg-amber-50 p-2">🟡 Pending</li>
-                                    <li class="rounded-lg border border-rose-200 bg-rose-50 p-2">🔴 Full</li>
                                     <li class="rounded-lg border border-sky-200 bg-sky-50 p-2">🔵 Booked</li>
                                 </ul>
                             </aside>
@@ -161,9 +160,10 @@
                     </div>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Kaunselor</label>
-                    <input id="request-counsellor" type="text" readonly
-                        class="w-full rounded-xl border-slate-200 bg-slate-50 text-sm" />
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Pilih kaunselor</label>
+                    <select id="request-counsellor" required
+                        class="w-full rounded-xl border-slate-200 bg-white text-sm">
+                    </select>
                 </div>
                 <div>
                     <label for="request-note" class="block text-sm font-medium text-slate-700 mb-1">Notes kepada
@@ -212,11 +212,15 @@
 
             const rawCounsellors = @json($counsellors ?? []);
             const rawBookingSlots = @json($bookingSlots ?? []);
-            const counsellors = Array.isArray(rawCounsellors) ? rawCounsellors : Object.values(rawCounsellors || {});
-            const bookingSlots = Array.isArray(rawBookingSlots) ? rawBookingSlots : Object.values(rawBookingSlots || {});
+            const counsellors = Array.isArray(rawCounsellors) ? rawCounsellors : Object.values(rawCounsellors ||
+            {});
+            const bookingSlots = Array.isArray(rawBookingSlots) ? rawBookingSlots : Object.values(rawBookingSlots ||
+            {});
             const normalizedCounsellors = counsellors.filter(Boolean);
-            const hasScheduleModal = Boolean(scheduleModal && scheduleModalTitle && scheduleModalBody && scheduleModalClose);
-            const hasRequestModal = Boolean(requestModal && requestModalClose && requestCancel && requestForm && requestDate && requestTime && requestCounsellor && requestNote);
+            const hasScheduleModal = Boolean(scheduleModal && scheduleModalTitle && scheduleModalBody &&
+                scheduleModalClose);
+            const hasRequestModal = Boolean(requestModal && requestModalClose && requestCancel && requestForm &&
+                requestDate && requestTime && requestCounsellor && requestNote);
 
             const buildHourlySlots = (startHour, endHour) => {
                 const slots = [];
@@ -236,52 +240,62 @@
             };
 
             const availableCounsellors = normalizedCounsellors.length ? normalizedCounsellors : ['Counsellor'];
-            const statuses = ['Available', 'Pending', 'Full', 'Booked'];
             const statusClass = {
                 Available: 'text-emerald-700 bg-emerald-50 border-emerald-200',
                 Pending: 'text-amber-700 bg-amber-50 border-amber-200',
-                Full: 'text-rose-700 bg-rose-50 border-rose-200',
                 Booked: 'text-sky-700 bg-sky-50 border-sky-200',
             };
 
-            const requestedSlots = new Set(
-                bookingSlots.map((slot) => `${slot.date}|${slot.time}|${slot.counsellor}`)
+            const bookedSlotsByKey = new Map(
+                bookingSlots.map((slot) => [
+                    `${slot.date}|${slot.time}|${slot.counsellor}`,
+                    slot.status === 'pending' ? 'Pending' : 'Booked'
+                ])
             );
 
             let activeDate = new Date();
             let selectedScheduleDate = null;
-            let selectedSlotKey = null;
+            let selectedRequestTime = null;
 
             const slotKey = (date, time, counsellor) => `${date.toISOString().slice(0, 10)}|${time}|${counsellor}`;
 
-            const seededStatus = (date, index) => {
-                const seed = date.getFullYear() + (date.getMonth() + 1) * 11 + date.getDate() * 7 + index * 3;
-                return statuses[seed % statuses.length];
-            };
-
-            const computedStatus = (date, time, counsellor, index) => {
+            const computedStatus = (date, time, counsellor) => {
                 const key = slotKey(date, time, counsellor);
-                if (requestedSlots.has(key)) return 'Booked';
-                const base = seededStatus(date, index);
-                return base === 'Booked' ? 'Pending' : base;
+                return bookedSlotsByKey.get(key) ?? 'Available';
             };
 
             const getDailyStatus = (date) => {
                 const slotTimes = getSlotTimesForDate(date);
                 const slotStatuses = slotTimes.map((time, slotIndex) => {
-                    const counsellor = availableCounsellors[(date.getDate() + slotIndex) % availableCounsellors.length];
-                    return computedStatus(date, time, counsellor, slotIndex);
+                    const counsellor = availableCounsellors[(date.getDate() + slotIndex) %
+                        availableCounsellors.length];
+                    return computedStatus(date, time, counsellor);
                 });
 
-                const isFullyOccupied = slotStatuses.every((status) => status === 'Full' || status === 'Booked');
-                if (isFullyOccupied) return 'Full';
                 if (slotStatuses.some((status) => status === 'Available')) return 'Available';
-                return 'Pending';
+                if (slotStatuses.some((status) => status === 'Pending')) return 'Pending';
+                return 'Booked';
             };
 
-            const openRequestModal = (date, time, counsellor, key) => {
+            const renderCounsellorOptions = (selectedCounsellor = null) => {
+                if (!requestCounsellor) return;
+
+                requestCounsellor.innerHTML = '';
+
+                availableCounsellors.forEach((name) => {
+                    const option = document.createElement('option');
+                    option.value = name;
+                    option.textContent = name;
+                    if (selectedCounsellor && name === selectedCounsellor) {
+                        option.selected = true;
+                    }
+                    requestCounsellor.appendChild(option);
+                });
+            };
+
+            const openRequestModal = (date, time, counsellor) => {
                 if (!hasRequestModal) return;
-                selectedSlotKey = key;
+                selectedRequestTime = time;
                 requestDate.value = date.toLocaleDateString('en-GB', {
                     weekday: 'long',
                     day: '2-digit',
@@ -289,7 +303,7 @@
                     year: 'numeric'
                 });
                 requestTime.value = time;
-                requestCounsellor.value = counsellor;
+                renderCounsellorOptions(counsellor);
                 requestNote.value = '';
                 requestModal.classList.remove('hidden');
                 requestModal.classList.add('flex');
@@ -299,7 +313,7 @@
                 if (!hasRequestModal) return;
                 requestModal.classList.add('hidden');
                 requestModal.classList.remove('flex');
-                selectedSlotKey = null;
+                selectedRequestTime = null;
             };
 
             const closeScheduleModal = () => {
@@ -314,19 +328,21 @@
                 const slotTimes = getSlotTimesForDate(date);
 
                 slotTimes.forEach((time, slotIndex) => {
-                    const counsellor = availableCounsellors[(date.getDate() + slotIndex) % availableCounsellors.length];
-                    const status = computedStatus(date, time, counsellor, slotIndex);
+                    const counsellor = availableCounsellors[(date.getDate() + slotIndex) %
+                        availableCounsellors.length];
+                    const status = computedStatus(date, time, counsellor);
                     const key = slotKey(date, time, counsellor);
+                    const counsellorLabel = status === 'Available' ? '-' : counsellor;
                     const tr = document.createElement('tr');
 
-                    const actionButton = status === 'Available'
-                        ? `<button type="button" data-action="request" data-slot-key="${key}" data-time="${time}" data-counsellor="${counsellor}" class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700 shadow-sm hover:bg-emerald-100 hover:border-emerald-300 transition">Buat Request</button>`
-                        : `<span class="inline-flex items-center rounded-lg bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-500">Tidak tersedia</span>`;
+                    const actionButton = status === 'Available' ?
+                        `<button type="button" data-action="request" data-slot-key="${key}" data-time="${time}" data-counsellor="${counsellor}" class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700 shadow-sm hover:bg-emerald-100 hover:border-emerald-300 transition">Buat Request</button>` :
+                        `<span class="inline-flex items-center rounded-lg bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-500">Tidak tersedia</span>`;
 
                     tr.className = 'group';
                     tr.innerHTML = `
                         <td class="px-6 py-4 whitespace-nowrap font-semibold text-slate-700 bg-white border-y border-l border-slate-200 rounded-l-xl group-hover:border-sky-200 transition">${time}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-slate-700 bg-white border-y border-slate-200 group-hover:border-sky-200 transition">${counsellor}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-slate-700 bg-white border-y border-slate-200 group-hover:border-sky-200 transition">${counsellorLabel}</td>
                         <td class="px-6 py-4 text-center bg-white border-y border-slate-200 group-hover:border-sky-200 transition">
                             <span class="inline-flex min-w-[104px] justify-center rounded-full border px-3 py-1 text-sm font-semibold ${statusClass[status]}">${status}</span>
                         </td>
@@ -339,7 +355,8 @@
             const openScheduleModal = (date) => {
                 if (!hasScheduleModal) return;
                 selectedScheduleDate = date;
-                scheduleModalTitle.textContent = `Table Slot • ${date.toLocaleDateString('en-GB', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}`;
+                scheduleModalTitle.textContent =
+                    `Table Slot • ${date.toLocaleDateString('en-GB', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}`;
                 renderTableRows(date);
                 scheduleModal.classList.remove('hidden');
                 scheduleModal.classList.add('flex');
@@ -352,7 +369,10 @@
                 const lastDay = new Date(year, month + 1, 0);
                 const startOffset = firstDay.getDay();
 
-                calendarTitle.textContent = firstDay.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+                calendarTitle.textContent = firstDay.toLocaleDateString('en-GB', {
+                    month: 'long',
+                    year: 'numeric'
+                });
                 calendarGrid.innerHTML = '';
 
                 for (let i = 0; i < startOffset; i++) {
@@ -367,7 +387,8 @@
 
                     const button = document.createElement('button');
                     button.type = 'button';
-                    button.className = 'min-h-24 sm:min-h-28 p-2 text-left border-r border-b border-slate-200 hover:bg-sky-50 transition';
+                    button.className =
+                        'min-h-24 sm:min-h-28 p-2 text-left border-r border-b border-slate-200 hover:bg-sky-50 transition';
                     button.innerHTML = `
                         <p class="font-semibold text-slate-700">${day}</p>
                         <span class="mt-2 inline-flex rounded-full border px-2 py-0.5 text-xs ${statusClass[previewStatus]}">${previewStatus}</span>
@@ -388,18 +409,29 @@
                     const key = target.dataset.slotKey;
 
                     if (!time || !counsellor || !key || !selectedScheduleDate) return;
-                    openRequestModal(selectedScheduleDate, time, counsellor, key);
+                    openRequestModal(selectedScheduleDate, time, counsellor);
                 });
             }
 
             if (hasRequestModal) {
                 requestForm.addEventListener('submit', async (event) => {
                     event.preventDefault();
-                    if (!selectedSlotKey || !selectedScheduleDate) return;
+                    if (!selectedScheduleDate || !selectedRequestTime || !requestCounsellor.value)
+                        return;
 
                     const note = requestNote.value.trim();
                     if (!note) {
                         alert('Sila isi nota untuk kaunselor sebelum submit.');
+                        return;
+                    }
+
+                    const requestDateValue = selectedScheduleDate.toISOString().slice(0, 10);
+                    const selectedCounsellor = requestCounsellor.value;
+                    const requestSlotKey =
+                        `${requestDateValue}|${selectedRequestTime}|${selectedCounsellor}`;
+
+                    if ((bookedSlotsByKey.get(requestSlotKey) ?? 'Available') !== 'Available') {
+                        alert('Slot kaunselor ini tidak tersedia. Sila pilih kaunselor lain.');
                         return;
                     }
 
@@ -414,16 +446,20 @@
                                 'Accept': 'application/json',
                             },
                             body: JSON.stringify({
-                                booking_date: selectedScheduleDate.toISOString().slice(0, 10),
-                                booking_time: requestTime.value,
-                                counsellor_name: requestCounsellor.value,
+                                booking_date: requestDateValue,
+                                booking_time: selectedRequestTime,
+                                counsellor_name: selectedCounsellor,
                                 note,
                             }),
                         });
 
-                        if (!response.ok) throw new Error('Booking request failed.');
+                        const responsePayload = await response.json().catch(() => null);
 
-                        requestedSlots.add(selectedSlotKey);
+                        if (!response.ok) {
+                            throw new Error(responsePayload?.message ?? 'Booking request failed.');
+                        }
+
+                        bookedSlotsByKey.set(requestSlotKey, 'Pending');
                         closeRequestModal();
                         renderTableRows(selectedScheduleDate);
                         renderCalendar();
