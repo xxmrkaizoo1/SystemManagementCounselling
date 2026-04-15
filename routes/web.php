@@ -290,7 +290,6 @@ Route::middleware('auth')->group(function () {
         abort_unless($role === 'counsellor', 403);
 
         $normalizeCounsellorName = static fn(?string $name): string => preg_replace('/\s+/', '', mb_strtolower(trim((string) $name)));
-
         $counsellorNames = array_values(array_filter([
             $user->full_name,
             $user->name,
@@ -331,16 +330,17 @@ Route::middleware('auth')->group(function () {
 
         abort_unless($role === 'counsellor', 403);
 
+        $normalizeCounsellorName = static fn(?string $name): string => preg_replace('/\s+/', '', mb_strtolower(trim((string) $name)));
         $counsellorNames = array_values(array_filter([
             $user?->full_name,
             $user?->name,
         ]));
         $normalizedCounsellorNames = array_values(array_unique(array_map(
-            static fn(string $name): string => mb_strtolower(trim($name)),
+            $normalizeCounsellorName,
             $counsellorNames
         )));
         abort_unless(
-            in_array(mb_strtolower(trim($bookingRequest->counsellor_name)), $normalizedCounsellorNames, true),
+            in_array($normalizeCounsellorName($bookingRequest->counsellor_name), $normalizedCounsellorNames, true),
             403
         );
 
@@ -385,10 +385,15 @@ Route::middleware('auth')->group(function () {
 
         abort_unless($role === 'counsellor', 403);
 
+        $normalizeCounsellorName = static fn(?string $name): string => preg_replace('/\s+/', '', mb_strtolower(trim((string) $name)));
         $counsellorNames = array_values(array_filter([
             $user->full_name,
             $user->name,
         ]));
+        $normalizedCounsellorNames = array_values(array_unique(array_map(
+            $normalizeCounsellorName,
+            $counsellorNames
+        )));
 
         $statusLabel = static fn(string $status): string => match ($status) {
             'approved' => 'Approved',
@@ -398,7 +403,7 @@ Route::middleware('auth')->group(function () {
 
         $sessions = BookingRequest::query()
             ->with('user:id,name,full_name')
-            ->whereIn(DB::raw('LOWER(TRIM(counsellor_name))'), $normalizedCounsellorNames)
+            ->whereIn(DB::raw("LOWER(REPLACE(TRIM(counsellor_name), ' ', ''))"), $normalizedCounsellorNames)
             ->whereIn('status', ['approved', 'completed'])
             ->latest('booking_date')
             ->latest('booking_time')
@@ -526,16 +531,39 @@ Route::middleware('auth')->group(function () {
     })->name('booking.store');
 
 
-    Route::get('/inbox', function () {
-        $user = request()->user();
+    Route::get('/inbox', function (Request $request) {
+        $user = $request->user();
         $role = $user?->roles()->value('name');
 
         abort_unless(in_array($role, ['student', 'teacher'], true), 403);
 
+        $filters = $request->validate([
+            'date_from' => ['nullable', 'date'],
+            'date_to' => ['nullable', 'date'],
+            'time_from' => ['nullable', 'date_format:H:i'],
+            'time_to' => ['nullable', 'date_format:H:i'],
+        ]);
+
+        $notificationsQuery = $user->inboxNotifications()->latest();
+
+        if (!empty($filters['date_from'])) {
+            $notificationsQuery->whereDate('created_at', '>=', $filters['date_from']);
+        }
+        if (!empty($filters['date_to'])) {
+            $notificationsQuery->whereDate('created_at', '<=', $filters['date_to']);
+        }
+        if (!empty($filters['time_from'])) {
+            $notificationsQuery->whereTime('created_at', '>=', $filters['time_from']);
+        }
+        if (!empty($filters['time_to'])) {
+            $notificationsQuery->whereTime('created_at', '<=', $filters['time_to']);
+        }
+
         return view('inbox', [
             'user' => $user,
             'role' => $role,
-            'notifications' => $user->inboxNotifications()->latest()->get(),
+            'notifications' => $notificationsQuery->get(),
+            'filters' => $filters,
         ]);
     })->name('inbox');
 

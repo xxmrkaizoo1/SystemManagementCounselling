@@ -183,6 +183,9 @@
         </div>
     </div>
 
+    <div id="booking-toast-container"
+        class="pointer-events-none fixed right-4 top-4 z-[90] flex w-full max-w-sm flex-col gap-3"></div>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const calendarGrid = document.getElementById('calendar-grid');
@@ -205,6 +208,7 @@
             const requestNote = document.getElementById('request-note');
             const csrfMeta = document.querySelector('meta[name="csrf-token"]');
             const csrfToken = csrfMeta ? csrfMeta.getAttribute('content') : '';
+            const toastContainer = document.getElementById('booking-toast-container');
 
             if (!calendarGrid || !calendarTitle || !prevBtn || !nextBtn) {
                 return;
@@ -245,7 +249,38 @@
                 Pending: 'text-amber-700 bg-amber-50 border-amber-200',
                 Booked: 'text-sky-700 bg-sky-50 border-sky-200',
             };
+            const toastStyleByType = {
+                success: 'border-emerald-200 bg-emerald-50 text-emerald-800',
+                error: 'border-rose-200 bg-rose-50 text-rose-800',
+                warning: 'border-amber-200 bg-amber-50 text-amber-800',
+                info: 'border-sky-200 bg-sky-50 text-sky-800',
+            };
+            const showToast = (message, type = 'info') => {
+                if (!toastContainer) return;
 
+                const toast = document.createElement('div');
+                toast.className =
+                    `pointer-events-auto translate-y-1 opacity-0 rounded-xl border px-4 py-3 text-sm shadow-lg transition duration-300 ease-out ${toastStyleByType[type] ?? toastStyleByType.info}`;
+                toast.innerHTML = `
+                    <div class="flex items-start gap-3">
+                        <p class="flex-1 leading-5">${message}</p>
+                        <button type="button" class="rounded-md px-1.5 py-0.5 text-xs font-semibold opacity-70 hover:opacity-100" data-toast-dismiss>Tutup</button>
+                    </div>
+                `;
+
+                toastContainer.appendChild(toast);
+                requestAnimationFrame(() => {
+                    toast.classList.add('translate-y-0', 'opacity-100');
+                });
+
+                const dismiss = () => {
+                    toast.classList.add('translate-y-1', 'opacity-0');
+                    window.setTimeout(() => toast.remove(), 250);
+                };
+
+                toast.querySelector('[data-toast-dismiss]')?.addEventListener('click', dismiss);
+                window.setTimeout(dismiss, 3200);
+            };
             const bookedSlotsByKey = new Map(
                 bookingSlots.map((slot) => [
                     `${slot.date}|${slot.time}|${slot.counsellor}`,
@@ -357,9 +392,9 @@
             const openScheduleModal = (date) => {
                 if (!hasScheduleModal) return;
                 if (date < todayStart) {
-                    alert(
-                        'Tarikh lepas tidak boleh dibuat booking. Sila pilih hari ini atau tarikh akan datang.'
-                    );
+                    showToast(
+                        'Tarikh lepas tidak boleh dibuat booking. Sila pilih hari ini atau tarikh akan datang.',
+                        'warning');
                     return;
                 }
                 selectedScheduleDate = date;
@@ -436,15 +471,15 @@
 
                     const note = requestNote.value.trim();
                     if (!note) {
-                        alert('Sila isi nota untuk kaunselor sebelum submit.');
+                        showToast('Sila isi nota untuk kaunselor sebelum submit.', 'warning');
                         return;
                     }
 
                     const requestDateValue = selectedScheduleDate.toISOString().slice(0, 10);
                     if (selectedScheduleDate < todayStart) {
-                        alert(
-                            'Tarikh lepas tidak boleh dibuat booking. Sila pilih hari ini atau tarikh akan datang.'
-                            );
+                        showToast(
+                            'Tarikh lepas tidak boleh dibuat booking. Sila pilih hari ini atau tarikh akan datang.',
+                            'warning');
                         return;
                     }
                     const selectedCounsellor = requestCounsellor.value;
@@ -452,7 +487,8 @@
                         `${requestDateValue}|${selectedRequestTime}|${selectedCounsellor}`;
 
                     if ((bookedSlotsByKey.get(requestSlotKey) ?? 'Available') !== 'Available') {
-                        alert('Slot kaunselor ini tidak tersedia. Sila pilih kaunselor lain.');
+                        showToast('Slot kaunselor ini tidak tersedia. Sila pilih kaunselor lain.',
+                            'warning');
                         return;
                     }
 
@@ -485,10 +521,12 @@
                         closeRequestModal();
                         renderTableRows(selectedScheduleDate);
                         renderCalendar();
-                        alert('Request berjaya dihantar kepada kaunselor. Sila semak status di Inbox.');
+                        showToast(
+                            'Request berjaya dihantar kepada kaunselor. Sila semak status di Inbox.',
+                            'success');
                     } catch (error) {
-                        alert(error instanceof Error ? error.message :
-                            'Maaf, request gagal dihantar. Sila cuba lagi.');
+                        showToast(error instanceof Error ? error.message :
+                            'Maaf, request gagal dihantar. Sila cuba lagi.', 'error');
                     }
                 });
             }

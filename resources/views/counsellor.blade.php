@@ -18,14 +18,16 @@
     @endphp
 
     <div class="fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
-        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_#e0f2fe_0%,_#f8fafc_36%,_#f1f5f9_100%)]"></div>
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_#e0f2fe_0%,_#f8fafc_36%,_#f1f5f9_100%)]">
+        </div>
         <div class="absolute inset-0 bg-grid-pattern opacity-20"></div>
         <div class="absolute -top-24 -left-24 h-[30rem] w-[30rem] rounded-full bg-sky-300/20 blur-3xl"></div>
         <div class="absolute top-12 -right-24 h-[28rem] w-[28rem] rounded-full bg-violet-300/20 blur-3xl"></div>
     </div>
 
     <main class="mx-auto min-h-screen w-full max-w-7xl px-4 pb-80 pt-6 sm:px-8 sm:py-10 lg:px-12">
-        <section class="overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white/85 shadow-2xl ring-1 ring-white/70 backdrop-blur-xl">
+        <section
+            class="overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white/85 shadow-2xl ring-1 ring-white/70 backdrop-blur-xl">
             <header class="border-b border-slate-200/90 bg-white/85 px-4 py-4 sm:px-6 sm:py-5 lg:px-8 lg:py-6">
                 <div class="rounded-2xl border border-slate-200 bg-slate-100/75 p-3 shadow-sm sm:p-4 lg:p-5">
                     <div class="flex flex-wrap items-center gap-3 sm:gap-4">
@@ -35,16 +37,16 @@
                             {{ strtoupper(substr($user->name ?? 'D', 0, 1)) }}
                         </a>
 
-                        <div class="min-w-[220px] flex-1 rounded-xl border border-slate-300/80 bg-white px-4 py-3 shadow-sm lg:px-5">
-                            <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">CollegeCare</p>
-                            <h1 class="text-lg font-semibold text-slate-800 lg:text-xl">Counsellor Session Dashboard</h1>
+                        <div
+                            class="min-w-[220px] flex-1 rounded-xl border border-slate-300/80 bg-white px-4 py-3 shadow-sm lg:px-5">
+                            <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">CollegeCare
+                            </p>
+                            <h1 class="text-lg font-semibold text-slate-800 lg:text-xl">Counsellor Session Dashboard
+                            </h1>
                         </div>
 
                         <div class="flex flex-wrap items-center gap-2">
-                            <a href="{{ route('chat.index') }}"
-                                class="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-600 shadow-sm transition hover:-translate-y-0.5 hover:border-sky-300 hover:text-sky-700">
-                                Chat
-                            </a>
+
                             <a href="{{ route('counsellor.dashboard') }}"
                                 class="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-600 shadow-sm transition hover:-translate-y-0.5 hover:border-sky-300 hover:text-sky-700">
                                 Refresh
@@ -60,11 +62,13 @@
                     </div>
 
                     <div class="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
-                        <div class="rounded-xl border border-amber-200 bg-amber-50/80 px-3 py-2 text-xs sm:px-4 sm:py-3">
+                        <div
+                            class="rounded-xl border border-amber-200 bg-amber-50/80 px-3 py-2 text-xs sm:px-4 sm:py-3">
                             <p class="font-medium text-amber-700">Pending</p>
                             <p class="text-xl font-bold text-amber-800">{{ $pendingCount }}</p>
                         </div>
-                        <div class="rounded-xl border border-emerald-200 bg-emerald-50/80 px-3 py-2 text-xs sm:px-4 sm:py-3">
+                        <div
+                            class="rounded-xl border border-emerald-200 bg-emerald-50/80 px-3 py-2 text-xs sm:px-4 sm:py-3">
                             <p class="font-medium text-emerald-700">Approved</p>
                             <p class="text-xl font-bold text-emerald-800">{{ $approvedCount }}</p>
                         </div>
@@ -72,7 +76,8 @@
                             <p class="font-medium text-sky-700">Booked</p>
                             <p class="text-xl font-bold text-sky-800">{{ $bookedSlots }}</p>
                         </div>
-                        <div class="rounded-xl border border-violet-200 bg-violet-50/80 px-3 py-2 text-xs sm:px-4 sm:py-3">
+                        <div
+                            class="rounded-xl border border-violet-200 bg-violet-50/80 px-3 py-2 text-xs sm:px-4 sm:py-3">
                             <p class="font-medium text-violet-700">Completed</p>
                             <p class="text-xl font-bold text-violet-800">{{ $completedCount }}</p>
                         </div>
@@ -84,12 +89,14 @@
                 <section class="grid gap-6 lg:grid-cols-2">
                     <article
                         class="rounded-3xl border border-slate-200/90 bg-gradient-to-br from-white via-sky-50/45 to-sky-100/55 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md sm:p-8 lg:min-h-[430px]">
-                        <div class="mx-auto flex h-20 w-20 items-center justify-center rounded-full border border-sky-200 bg-white text-3xl shadow-sm">
+                        <div
+                            class="mx-auto flex h-20 w-20 items-center justify-center rounded-full border border-sky-200 bg-white text-3xl shadow-sm">
                             🧑‍🏫
                         </div>
 
                         <h2 class="mt-5 text-center text-2xl font-semibold text-slate-800">Pending Requests</h2>
-                        <p class="mt-2 text-center text-base text-slate-500">Semak permohonan pelajar yang masih menunggu kelulusan.</p>
+                        <p class="mt-2 text-center text-base text-slate-500">Semak permohonan pelajar yang masih
+                            menunggu kelulusan.</p>
 
                         <div class="mt-6 rounded-2xl border border-sky-100 bg-white/80 px-4 py-4 text-center shadow-sm">
                             <p class="text-xs uppercase tracking-wide text-sky-700">Current pending</p>
@@ -106,12 +113,14 @@
 
                     <article
                         class="rounded-3xl border border-slate-200/90 bg-gradient-to-br from-white via-violet-50/45 to-violet-100/55 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md sm:p-8 lg:min-h-[430px]">
-                        <div class="mx-auto flex h-20 w-20 items-center justify-center rounded-full border border-violet-200 bg-white text-3xl shadow-sm">
+                        <div
+                            class="mx-auto flex h-20 w-20 items-center justify-center rounded-full border border-violet-200 bg-white text-3xl shadow-sm">
                             📅
                         </div>
 
                         <h2 class="mt-5 text-center text-2xl font-semibold text-slate-800">Session Status</h2>
-                        <p class="mt-2 text-center text-base text-slate-500">Lihat status sesi yang telah approved, booked, dan complete.</p>
+                        <p class="mt-2 text-center text-base text-slate-500">Lihat status sesi yang telah approved,
+                            booked, dan complete.</p>
 
                         <div class="mt-6 grid grid-cols-3 gap-3 text-center text-xs sm:text-sm">
                             <div class="rounded-xl border border-emerald-100 bg-emerald-50 px-2 py-3 sm:px-3">
@@ -146,7 +155,8 @@
 
     <aside id="messages-widget"
         class="fixed bottom-4 right-4 z-40 w-[calc(100%-2rem)] max-w-md overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-2xl ring-1 ring-slate-200/70 sm:bottom-6 sm:right-6">
-        <div class="flex items-center justify-between bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 px-4 py-3 text-white">
+        <div
+            class="flex items-center justify-between bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 px-4 py-3 text-white">
             <h3 class="text-lg font-semibold">Messages</h3>
             <div class="flex items-center gap-2">
                 <span class="text-sm text-amber-300">🔔</span>
@@ -171,7 +181,8 @@
 
             <div class="flex items-center justify-between text-sm">
                 <p class="font-semibold text-slate-900">Chats</p>
-                <a href="{{ route('counsellor.pending-requests') }}" class="font-medium text-sky-600 hover:text-sky-700">Requests</a>
+                <a href="{{ route('counsellor.pending-requests') }}"
+                    class="font-medium text-sky-600 hover:text-sky-700">Requests</a>
             </div>
 
             <div id="chat-list" class="max-h-64 space-y-3 overflow-y-auto pr-1">
@@ -187,26 +198,31 @@
                         <div class="min-w-0 flex-1">
                             <div class="flex items-start justify-between gap-2">
                                 <div>
-                                    <p class="truncate text-base font-semibold leading-tight text-slate-800">{{ $item['student'] ?? 'Student' }}</p>
-                                    <p class="truncate text-sm text-slate-500">{{ $item['topic'] ?: 'General counseling support' }}</p>
+                                    <p class="truncate text-base font-semibold leading-tight text-slate-800">
+                                        {{ $item['student'] ?? 'Student' }}</p>
+                                    <p class="truncate text-sm text-slate-500">
+                                        {{ $item['topic'] ?: 'General counseling support' }}</p>
                                 </div>
                                 <div class="flex items-center gap-2 pt-0.5">
                                     <span class="text-xs text-slate-400">{{ $item['request_date'] ?? 'Today' }}</span>
                                     @if ($index === 0)
-                                        <span class="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-pink-600 px-1 text-[10px] font-semibold text-white">1</span>
+                                        <span
+                                            class="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-pink-600 px-1 text-[10px] font-semibold text-white">1</span>
                                     @endif
                                 </div>
                             </div>
                         </div>
                     </a>
                 @empty
-                    <div id="chat-empty" class="rounded-xl border border-slate-100 bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">
+                    <div id="chat-empty"
+                        class="rounded-xl border border-slate-100 bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">
                         No chats yet. New student requests will appear here.
                     </div>
                 @endforelse
             </div>
 
-            <div id="chat-no-results" class="hidden rounded-xl border border-slate-100 bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">
+            <div id="chat-no-results"
+                class="hidden rounded-xl border border-slate-100 bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">
                 No matching chats found.
             </div>
         </div>
