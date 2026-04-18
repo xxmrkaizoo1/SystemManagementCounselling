@@ -69,6 +69,14 @@ class ProfileController extends Controller
             'programme' => [Rule::requiredIf($isStudent), 'nullable', Rule::in($this->programmeOptions())],
         ]);
 
+        // Settingup phoneChange
+
+
+
+        $phoneChanged = $user->phone !== $validated['phone'];
+
+
+
         $user->full_name = $validated['full_name'];
         $user->name = $validated['full_name'];
         $user->phone = $validated['phone'];
