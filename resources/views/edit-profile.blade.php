@@ -65,98 +65,105 @@
                 @endif
 
                 @if (!$user->phone_verified_at)
-                    <div
-                        class="rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800 flex items-center justify-between gap-3">
-                        <span>Your phone number is not verified yet. Please verify to confirm this is your real
-                            number.</span>
-                        <a href="{{ route('phone.otp.form') }}"
-                            class="shrink-0 rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-amber-600 transition">Verify
-                            Number</a>
-                    </div>
-                @endif
 
-
-
-                <div class="grid gap-5 lg:grid-cols-[220px_1fr]">
-                    <aside class="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-sm">
-                        <div class="flex flex-col items-center text-center gap-2">
-                            <img src="{{ $user->profile_pic ?: '/images/default-profile.svg' }}" alt="Profile"
-                                class="w-24 h-24 rounded-full border border-slate-200 object-cover bg-sky-50" />
-                            <p class="font-semibold text-slate-800">{{ $user->full_name ?: $user->name }}</p>
-                            <p class="text-xs uppercase tracking-wide text-sky-700">{{ ucfirst($role) }}</p>
+                    @if (blank($user->phone))
+                        <div class="rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                            Add your phone number first, then save profile changes to start phone verification.
                         </div>
-
-                        <form method="POST" action="{{ route('profile.picture.update') }}"
-                            enctype="multipart/form-data" class="mt-4 space-y-2">
-                            @csrf
-                            <input type="file" name="profile_pic" accept=".jpg,.jpeg,.png,.webp"
-                                class="block w-full text-xs" />
-                            <button type="submit"
-                                class="w-full rounded-xl bg-sky-600 px-3 py-2 text-sm font-semibold text-white hover:bg-sky-700 transition">Update
-                                Photo</button>
-                        </form>
-                    </aside>
-
-                    <form method="POST" action="{{ route('profile.update') }}"
-                        class="rounded-2xl border border-slate-200 bg-white/90 p-4 sm:p-5 shadow-sm space-y-4">
-                        @csrf
-                        <div>
-                            <label for="full_name" class="block text-sm font-medium text-slate-700 mb-1.5">Full
-                                Name</label>
-                            <input id="full_name" name="full_name" type="text"
-                                value="{{ old('full_name', $user->full_name ?: $user->name) }}"
-                                class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition" />
+                    @elseif (is_null($user->phone_verified_at))
+                        <div
+                            class="rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800 flex items-center justify-between gap-3">
+                            <span>Your phone number is not verified yet. Please verify to confirm this is your real
+                                number.</span>
+                            <a href="{{ route('phone.otp.form') }}"
+                                class="shrink-0 rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-amber-600 transition">Verify
+                                Number</a>
                         </div>
+                    @endif
 
-                        <div>
-                            <label for="phone" class="block text-sm font-medium text-slate-700 mb-1.5">Phone</label>
-                            <input id="phone" name="phone" type="text"
-                                value="{{ old('phone', $user->phone) }}"
-                                class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition" />
-                        </div>
 
-                        @if ($role === 'student')
-                            <div class="grid sm:grid-cols-2 gap-4">
-                                <div>
-                                    <label for="years"
-                                        class="block text-sm font-medium text-slate-700 mb-1.5">Years</label>
-                                    <select id="years" name="years"
-                                        class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition">
-                                        <option value="">Select years</option>
-                                        @foreach ($yearOptions as $yearOption)
-                                            <option value="{{ $yearOption }}" @selected(old('years', $user->years) === $yearOption)>
-                                                {{ $yearOption }}</option>
-                                        @endforeach
-                                    </select>
 
-                                </div>
-                                <div>
-                                    <label for="programme"
-                                        class="block text-sm font-medium text-slate-700 mb-1.5">Programme</label>
-                                    <select id="programme" name="programme"
-                                        class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition">
-                                        <option value="">Select programme</option>
-                                        @foreach ($programmeOptions as $programmeOption)
-                                            <option value="{{ $programmeOption }}" @selected(old('programme', $user->programme) === $programmeOption)>
-                                                {{ $programmeOption }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
+                    <div class="grid gap-5 lg:grid-cols-[220px_1fr]">
+                        <aside class="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-sm">
+                            <div class="flex flex-col items-center text-center gap-2">
+                                <img src="{{ $user->profile_pic ?: '/images/default-profile.svg' }}" alt="Profile"
+                                    class="w-24 h-24 rounded-full border border-slate-200 object-cover bg-sky-50" />
+                                <p class="font-semibold text-slate-800">{{ $user->full_name ?: $user->name }}</p>
+                                <p class="text-xs uppercase tracking-wide text-sky-700">{{ ucfirst($role) }}</p>
                             </div>
-                        @endif
 
-                        <button type="submit"
-                            class="w-full rounded-xl bg-sky-600 text-white font-semibold py-2.5 hover:bg-sky-700 transition shadow-sm">Save
-                            Changes</button>
+                            <form method="POST" action="{{ route('profile.picture.update') }}"
+                                enctype="multipart/form-data" class="mt-4 space-y-2">
+                                @csrf
+                                <input type="file" name="profile_pic" accept=".jpg,.jpeg,.png,.webp"
+                                    class="block w-full text-xs" />
+                                <button type="submit"
+                                    class="w-full rounded-xl bg-sky-600 px-3 py-2 text-sm font-semibold text-white hover:bg-sky-700 transition">Update
+                                    Photo</button>
+                            </form>
+                        </aside>
 
-                        @if ($role === 'admin')
-                            <a href="{{ route('admin.dashboard') }}"
-                                class="block w-full text-center rounded-xl border border-sky-200 bg-sky-50 px-3 py-2.5 text-sm font-semibold text-sky-700 hover:bg-sky-100 transition">
-                                Admin Dashboard
-                            </a>
-                        @endif
-                    </form>
-                </div>
+                        <form method="POST" action="{{ route('profile.update') }}"
+                            class="rounded-2xl border border-slate-200 bg-white/90 p-4 sm:p-5 shadow-sm space-y-4">
+                            @csrf
+                            <div>
+                                <label for="full_name" class="block text-sm font-medium text-slate-700 mb-1.5">Full
+                                    Name</label>
+                                <input id="full_name" name="full_name" type="text"
+                                    value="{{ old('full_name', $user->full_name ?: $user->name) }}"
+                                    class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition" />
+                            </div>
+
+                            <div>
+                                <label for="phone"
+                                    class="block text-sm font-medium text-slate-700 mb-1.5">Phone</label>
+                                <input id="phone" name="phone" type="text"
+                                    value="{{ old('phone', $user->phone) }}"
+                                    class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition" />
+                            </div>
+
+                            @if ($role === 'student')
+                                <div class="grid sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="years"
+                                            class="block text-sm font-medium text-slate-700 mb-1.5">Years</label>
+                                        <select id="years" name="years"
+                                            class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition">
+                                            <option value="">Select years</option>
+                                            @foreach ($yearOptions as $yearOption)
+                                                <option value="{{ $yearOption }}" @selected(old('years', $user->years) === $yearOption)>
+                                                    {{ $yearOption }}</option>
+                                            @endforeach
+                                        </select>
+
+                                    </div>
+                                    <div>
+                                        <label for="programme"
+                                            class="block text-sm font-medium text-slate-700 mb-1.5">Programme</label>
+                                        <select id="programme" name="programme"
+                                            class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition">
+                                            <option value="">Select programme</option>
+                                            @foreach ($programmeOptions as $programmeOption)
+                                                <option value="{{ $programmeOption }}" @selected(old('programme', $user->programme) === $programmeOption)>
+                                                    {{ $programmeOption }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            @endif
+
+                            <button type="submit"
+                                class="w-full rounded-xl bg-sky-600 text-white font-semibold py-2.5 hover:bg-sky-700 transition shadow-sm">Save
+                                Changes</button>
+
+                            @if ($role === 'admin')
+                                <a href="{{ route('admin.dashboard') }}"
+                                    class="block w-full text-center rounded-xl border border-sky-200 bg-sky-50 px-3 py-2.5 text-sm font-semibold text-sky-700 hover:bg-sky-100 transition">
+                                    Admin Dashboard
+                                </a>
+                            @endif
+                        </form>
+                    </div>
             </div>
 
             <footer

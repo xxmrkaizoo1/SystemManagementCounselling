@@ -68,11 +68,6 @@ class ProfileController extends Controller
             'years' => [Rule::requiredIf($isStudent), 'nullable', Rule::in($this->yearOptions())],
             'programme' => [Rule::requiredIf($isStudent), 'nullable', Rule::in($this->programmeOptions())],
         ]);
-
-        // Settingup phoneChange
-
-
-
         $phoneChanged = $user->phone !== $validated['phone'];
 
 
@@ -82,6 +77,10 @@ class ProfileController extends Controller
         $user->phone = $validated['phone'];
         $user->years = $isStudent ? ($validated['years'] ?? null) : null;
         $user->programme = $isStudent ? ($validated['programme'] ?? null) : null;
+
+        if ($phoneChanged) {
+            $user->phone_verified_at = null;
+        }
 
         $user->save();
 
