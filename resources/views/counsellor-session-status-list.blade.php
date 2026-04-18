@@ -31,41 +31,70 @@
                     </div>
                 @endif
                 <div class="mb-5 rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:p-5">
-                    <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-                        <form id="session-filter-form" class="grid w-full gap-3 sm:grid-cols-2 lg:max-w-2xl" autocomplete="off">
-                            <label class="block">
-                                <span class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">
-                                    Calendar Date
-                                </span>
-                                <input id="session-date-filter" type="date"
-                                    class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-sky-300 focus:ring-2 focus:ring-sky-100">
-                            </label>
-                            <label class="block">
-                                <span class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">
-                                    Booking Status
-                                </span>
-                                <select id="session-status-filter"
-                                    class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-sky-300 focus:ring-2 focus:ring-sky-100">
-                                    <option value="">All status</option>
-                                    <option value="approved">Approved</option>
-                                    <option value="completed">Completed</option>
-                                </select>
-                            </label>
-                        </form>
-                        <div class="grid w-full gap-2 sm:grid-cols-3 lg:max-w-md">
-                            <div class="rounded-xl border border-slate-200 bg-white px-3 py-2">
-                                <p class="text-[11px] uppercase tracking-wide text-slate-500">Visible</p>
-                                <p id="visible-count" class="text-base font-semibold text-slate-700">0</p>
+                    <div class="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
+                        <section class="rounded-2xl border border-slate-200 bg-white overflow-hidden">
+                            <div class="px-4 py-3 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+                                <button id="status-calendar-prev" type="button"
+                                    class="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm hover:border-sky-200 hover:text-sky-700">←</button>
+                                <h2 id="status-calendar-title" class="font-semibold text-slate-700">Month Year</h2>
+                                <button id="status-calendar-next" type="button"
+                                    class="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm hover:border-sky-200 hover:text-sky-700">→</button>
                             </div>
-                            <div class="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2">
-                                <p class="text-[11px] uppercase tracking-wide text-emerald-600">Approved</p>
-                                <p id="approved-count" class="text-base font-semibold text-emerald-700">0</p>
+                            <div class="grid text-[11px] sm:text-xs bg-slate-100 text-slate-600"
+                                style="grid-template-columns: repeat(7, minmax(0, 1fr));">
+                                <div class="p-2 text-center font-semibold">Sun</div>
+                                <div class="p-2 text-center font-semibold">Mon</div>
+                                <div class="p-2 text-center font-semibold">Tue</div>
+                                <div class="p-2 text-center font-semibold">Wed</div>
+                                <div class="p-2 text-center font-semibold">Thu</div>
+                                <div class="p-2 text-center font-semibold">Fri</div>
+                                <div class="p-2 text-center font-semibold">Sat</div>
                             </div>
-                            <div class="rounded-xl border border-violet-200 bg-violet-50 px-3 py-2">
-                                <p class="text-[11px] uppercase tracking-wide text-violet-600">Completed</p>
-                                <p id="completed-count" class="text-base font-semibold text-violet-700">0</p>
+                            <div id="status-calendar-grid" class="grid"
+                                style="grid-template-columns: repeat(7, minmax(0, 1fr));"></div>
+                        </section>
+
+                        <aside class="flex flex-col gap-3">
+                            <form id="session-filter-form" class="grid gap-3" autocomplete="off">
+                                <label class="block">
+                                    <span class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                        Selected Date
+                                    </span>
+                                    <input id="session-date-filter" type="text" readonly placeholder="All dates"
+                                        class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 outline-none">
+                                </label>
+                                <label class="block">
+                                    <span class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                        Booking Status
+                                    </span>
+                                    <select id="session-status-filter"
+                                        class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-sky-300 focus:ring-2 focus:ring-sky-100">
+                                        <option value="">All status</option>
+                                        <option value="approved">Approved</option>
+                                        <option value="completed">Completed</option>
+                                    </select>
+                                </label>
+                                <button id="session-clear-date" type="button"
+                                    class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">
+                                    Clear Date Filter
+                                </button>
+                            </form>
+
+                            <div class="grid gap-2 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
+                                <div class="rounded-xl border border-slate-200 bg-white px-3 py-2">
+                                    <p class="text-[11px] uppercase tracking-wide text-slate-500">Visible</p>
+                                    <p id="visible-count" class="text-base font-semibold text-slate-700">0</p>
+                                </div>
+                                <div class="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2">
+                                    <p class="text-[11px] uppercase tracking-wide text-emerald-600">Approved</p>
+                                    <p id="approved-count" class="text-base font-semibold text-emerald-700">0</p>
+                                </div>
+                                <div class="rounded-xl border border-violet-200 bg-violet-50 px-3 py-2">
+                                    <p class="text-[11px] uppercase tracking-wide text-violet-600">Completed</p>
+                                    <p id="completed-count" class="text-base font-semibold text-violet-700">0</p>
+                                </div>
                             </div>
-                        </div>
+                        </aside>
                     </div>
                 </div>
                 <div class="overflow-auto rounded-2xl border border-slate-200">
@@ -130,8 +159,13 @@
 
     <script>
         (() => {
+            const calendarTitle = document.getElementById('status-calendar-title');
+            const calendarGrid = document.getElementById('status-calendar-grid');
+            const calendarPrev = document.getElementById('status-calendar-prev');
+            const calendarNext = document.getElementById('status-calendar-next');
             const dateFilter = document.getElementById('session-date-filter');
             const statusFilter = document.getElementById('session-status-filter');
+            const clearDateButton = document.getElementById('session-clear-date');
             const tableBody = document.getElementById('session-table-body');
             const emptyRow = document.getElementById('empty-row');
             const noResultsRow = document.getElementById('no-results-row');
@@ -139,14 +173,68 @@
             const approvedCount = document.getElementById('approved-count');
             const completedCount = document.getElementById('completed-count');
 
-            if (!tableBody || !dateFilter || !statusFilter) {
+            if (!tableBody || !dateFilter || !statusFilter || !calendarTitle || !calendarGrid || !calendarPrev || !calendarNext) {
                 return;
             }
 
             const rows = Array.from(tableBody.querySelectorAll('tr[data-session-date]'));
+            const monthLabel = new Intl.DateTimeFormat('en-US', {
+                month: 'long',
+                year: 'numeric',
+            });
+            const dateLabel = new Intl.DateTimeFormat('en-GB', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+            });
+            const bookedDates = new Set(rows.map((row) => row.dataset.sessionDate).filter(Boolean));
+            let selectedDate = '';
+            let currentMonthDate = selectedDate ? new Date(`${selectedDate}T00:00:00`) : new Date();
+
+            const renderCalendar = () => {
+                const year = currentMonthDate.getFullYear();
+                const month = currentMonthDate.getMonth();
+                const firstDay = new Date(year, month, 1);
+                const dayOffset = firstDay.getDay();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+                calendarTitle.textContent = monthLabel.format(firstDay);
+                calendarGrid.innerHTML = '';
+
+                for (let offset = 0; offset < dayOffset; offset += 1) {
+                    const spacer = document.createElement('div');
+                    spacer.className = 'h-10 border-r border-b border-slate-100 bg-slate-50/60';
+                    calendarGrid.appendChild(spacer);
+                }
+
+                for (let day = 1; day <= daysInMonth; day += 1) {
+                    const date = new Date(year, month, day);
+                    const isoDate = date.toISOString().slice(0, 10);
+                    const isSelected = selectedDate === isoDate;
+                    const hasBooking = bookedDates.has(isoDate);
+                    const button = document.createElement('button');
+
+                    button.type = 'button';
+                    button.dataset.date = isoDate;
+                    button.className = [
+                        'h-10 border-r border-b border-slate-100 text-sm transition',
+                        isSelected ? 'bg-sky-600 font-semibold text-white' : 'bg-white text-slate-700 hover:bg-sky-50',
+                        hasBooking && !isSelected ? 'font-semibold text-emerald-700' : '',
+                    ].join(' ').trim();
+                    button.textContent = String(day);
+
+                    button.addEventListener('click', () => {
+                        selectedDate = selectedDate === isoDate ? '' : isoDate;
+                        dateFilter.value = selectedDate ? dateLabel.format(date) : '';
+                        updateRows();
+                        renderCalendar();
+                    });
+
+                    calendarGrid.appendChild(button);
+                }
+            };
 
             const updateRows = () => {
-                const selectedDate = dateFilter.value;
                 const selectedStatus = statusFilter.value;
                 let visible = 0;
                 let approved = 0;
@@ -193,9 +281,27 @@
                 }
             };
 
-            dateFilter.addEventListener('input', updateRows);
             statusFilter.addEventListener('change', updateRows);
+            calendarPrev.addEventListener('click', () => {
+                currentMonthDate = new Date(currentMonthDate.getFullYear(), currentMonthDate.getMonth() - 1, 1);
+                renderCalendar();
+            });
+            calendarNext.addEventListener('click', () => {
+                currentMonthDate = new Date(currentMonthDate.getFullYear(), currentMonthDate.getMonth() + 1, 1);
+                renderCalendar();
+            });
+            if (clearDateButton) {
+                clearDateButton.addEventListener('click', () => {
+                    selectedDate = '';
+                    dateFilter.value = '';
+                    updateRows();
+                    renderCalendar();
+                });
+            }
+
+            dateFilter.value = '';
             updateRows();
+            renderCalendar();
         })();
     </script>
 </body>
