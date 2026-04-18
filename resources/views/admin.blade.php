@@ -136,30 +136,88 @@
                 </aside>
 
                 <section class="space-y-4 lg:space-y-5">
-                    <div id="overview" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 gap-3 sm:gap-4">
-                        <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md hover:-translate-y-0.5 animate-fade-up animation-delay-1">
-                            <p class="text-sm text-slate-500">Total users</p>
-                            <p class="text-2xl font-bold text-slate-900 mt-2">{{ $stats['total_users'] }}</p>
+                    @php
+                        $bookingBase = max((int) ($stats['total_bookings'] ?? 0), 1);
+                        $pendingRatio = (int) round(((int) ($stats['pending_bookings'] ?? 0) / $bookingBase) * 100);
+                    @endphp
+
+                    <div id="overview" class="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 2xl:grid-cols-6">
+                        <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md animate-fade-up animation-delay-1">
+                            <div class="flex items-start justify-between gap-3">
+                                <div>
+                                    <p class="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Users</p>
+                                    <p class="mt-2 text-2xl font-bold text-slate-900">{{ $stats['total_users'] }}</p>
+                                </div>
+                                <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-sky-100 text-sky-700">
+                                    👥
+                                </span>
+                            </div>
+                            <p class="mt-2 text-xs font-medium text-emerald-700">Active accounts</p>
                         </article>
-                        <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md hover:-translate-y-0.5 animate-fade-up animation-delay-1">
-                            <p class="text-sm text-slate-500">Roles configured</p>
-                            <p class="text-2xl font-bold text-slate-900 mt-2">{{ $stats['total_roles'] }}</p>
+
+                        <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md animate-fade-up animation-delay-1">
+                            <div class="flex items-start justify-between gap-3">
+                                <div>
+                                    <p class="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Roles</p>
+                                    <p class="mt-2 text-2xl font-bold text-slate-900">{{ $stats['total_roles'] }}</p>
+                                </div>
+                                <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-100 text-indigo-700">
+                                    🛡️
+                                </span>
+                            </div>
+                            <p class="mt-2 text-xs font-medium text-indigo-700">Access levels</p>
                         </article>
-                        <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md hover:-translate-y-0.5 animate-fade-up animation-delay-2">
-                            <p class="text-sm text-slate-500">Chat messages</p>
-                            <p class="text-2xl font-bold text-slate-900 mt-2">{{ $stats['total_messages'] }}</p>
+
+                        <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md animate-fade-up animation-delay-2">
+                            <div class="flex items-start justify-between gap-3">
+                                <div>
+                                    <p class="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Chats</p>
+                                    <p class="mt-2 text-2xl font-bold text-slate-900">{{ $stats['total_messages'] }}</p>
+                                </div>
+                                <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-violet-100 text-violet-700">
+                                    💬
+                                </span>
+                            </div>
+                            <p class="mt-2 text-xs font-medium text-violet-700">Conversation log</p>
                         </article>
-                        <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md hover:-translate-y-0.5 animate-fade-up animation-delay-2">
-                            <p class="text-sm text-slate-500">Inbox notifications</p>
-                            <p class="text-2xl font-bold text-slate-900 mt-2">{{ $stats['total_notifications'] }}</p>
+
+                        <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md animate-fade-up animation-delay-2">
+                            <div class="flex items-start justify-between gap-3">
+                                <div>
+                                    <p class="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Inbox</p>
+                                    <p class="mt-2 text-2xl font-bold text-slate-900">{{ $stats['total_notifications'] }}</p>
+                                </div>
+                                <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-cyan-100 text-cyan-700">
+                                    🔔
+                                </span>
+                            </div>
+                            <p class="mt-2 text-xs font-medium text-cyan-700">Latest alerts</p>
                         </article>
-                        <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md hover:-translate-y-0.5 animate-fade-up animation-delay-3">
-                            <p class="text-sm text-slate-500">Total bookings</p>
-                            <p class="text-2xl font-bold text-slate-900 mt-2">{{ $stats['total_bookings'] }}</p>
+
+                        <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md animate-fade-up animation-delay-3">
+                            <div class="flex items-start justify-between gap-3">
+                                <div>
+                                    <p class="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Bookings</p>
+                                    <p class="mt-2 text-2xl font-bold text-slate-900">{{ $stats['total_bookings'] }}</p>
+                                </div>
+                                <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
+                                    📅
+                                </span>
+                            </div>
+                            <p class="mt-2 text-xs font-medium text-emerald-700">Scheduled total</p>
                         </article>
-                        <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md hover:-translate-y-0.5 animate-fade-up animation-delay-3">
-                            <p class="text-sm text-slate-500">Pending bookings</p>
-                            <p class="text-2xl font-bold text-amber-600 mt-2">{{ $stats['pending_bookings'] }}</p>
+
+                        <article class="rounded-2xl border border-amber-200 bg-amber-50/70 p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md animate-fade-up animation-delay-3">
+                            <div class="flex items-start justify-between gap-3">
+                                <div>
+                                    <p class="text-xs font-semibold uppercase tracking-[0.12em] text-amber-700">Pending</p>
+                                    <p class="mt-2 text-2xl font-bold text-amber-700">{{ $stats['pending_bookings'] }}</p>
+                                </div>
+                                <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-amber-100 text-amber-700">
+                                    ⏳
+                                </span>
+                            </div>
+                            <p class="mt-2 text-xs font-medium text-amber-700">{{ $pendingRatio }}% of bookings</p>
                         </article>
                     </div>
 
