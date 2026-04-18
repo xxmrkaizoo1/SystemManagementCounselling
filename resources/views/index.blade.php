@@ -127,7 +127,12 @@
                                     <span class="doc-hair"></span>
                                     <span class="doc-eye doc-eye--left"></span>
                                     <span class="doc-eye doc-eye--right"></span>
+                                    <span class="doc-mouth"></span>
+                                    <span class="doc-neck"></span>
                                     <span class="doc-body"></span>
+                                    <span class="doc-coat-panel doc-coat-panel--left"></span>
+                                    <span class="doc-coat-panel doc-coat-panel--right"></span>
+                                    <span class="doc-stethoscope"></span>
                                     <span class="doc-arm doc-arm--left"></span>
                                     <span class="doc-arm doc-arm--right"></span>
                                     <span class="doc-leg doc-leg--left"></span>
