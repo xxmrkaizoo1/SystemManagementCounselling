@@ -30,6 +30,44 @@
                         {{ session('status') }}
                     </div>
                 @endif
+                <div class="mb-5 rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:p-5">
+                    <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                        <form id="session-filter-form" class="grid w-full gap-3 sm:grid-cols-2 lg:max-w-2xl" autocomplete="off">
+                            <label class="block">
+                                <span class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                    Calendar Date
+                                </span>
+                                <input id="session-date-filter" type="date"
+                                    class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-sky-300 focus:ring-2 focus:ring-sky-100">
+                            </label>
+                            <label class="block">
+                                <span class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                    Booking Status
+                                </span>
+                                <select id="session-status-filter"
+                                    class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-sky-300 focus:ring-2 focus:ring-sky-100">
+                                    <option value="">All status</option>
+                                    <option value="approved">Approved</option>
+                                    <option value="completed">Completed</option>
+                                </select>
+                            </label>
+                        </form>
+                        <div class="grid w-full gap-2 sm:grid-cols-3 lg:max-w-md">
+                            <div class="rounded-xl border border-slate-200 bg-white px-3 py-2">
+                                <p class="text-[11px] uppercase tracking-wide text-slate-500">Visible</p>
+                                <p id="visible-count" class="text-base font-semibold text-slate-700">0</p>
+                            </div>
+                            <div class="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2">
+                                <p class="text-[11px] uppercase tracking-wide text-emerald-600">Approved</p>
+                                <p id="approved-count" class="text-base font-semibold text-emerald-700">0</p>
+                            </div>
+                            <div class="rounded-xl border border-violet-200 bg-violet-50 px-3 py-2">
+                                <p class="text-[11px] uppercase tracking-wide text-violet-600">Completed</p>
+                                <p id="completed-count" class="text-base font-semibold text-violet-700">0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="overflow-auto rounded-2xl border border-slate-200">
                     <table class="w-full text-sm">
                         <thead class="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
@@ -42,9 +80,10 @@
                                 <th class="px-4 py-3 font-semibold text-center">Action</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-100 bg-white">
+                        <tbody id="session-table-body" class="divide-y divide-slate-100 bg-white">
                             @forelse ($sessions as $session)
-                                <tr>
+                                <tr data-session-date="{{ $session['date'] }}"
+                                    data-session-status="{{ $session['status_value'] }}">
                                     <td class="px-4 py-3 font-medium text-slate-700">{{ $session['student'] }}</td>
                                     <td class="px-4 py-3 text-slate-600">{{ $session['date'] }}</td>
                                     <td class="px-4 py-3 text-slate-600">{{ $session['time'] }}</td>
@@ -74,17 +113,91 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr>
+                                <tr id="empty-row">
                                     <td colspan="6" class="px-4 py-8 text-center text-slate-500">No
                                         approved/booked/completed sessions available.</td>
                                 </tr>
                             @endforelse
+                            <tr id="no-results-row" class="hidden">
+                                <td colspan="6" class="px-4 py-8 text-center text-slate-500">No sessions match the selected date/status filter.</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </section>
     </main>
+
+    <script>
+        (() => {
+            const dateFilter = document.getElementById('session-date-filter');
+            const statusFilter = document.getElementById('session-status-filter');
+            const tableBody = document.getElementById('session-table-body');
+            const emptyRow = document.getElementById('empty-row');
+            const noResultsRow = document.getElementById('no-results-row');
+            const visibleCount = document.getElementById('visible-count');
+            const approvedCount = document.getElementById('approved-count');
+            const completedCount = document.getElementById('completed-count');
+
+            if (!tableBody || !dateFilter || !statusFilter) {
+                return;
+            }
+
+            const rows = Array.from(tableBody.querySelectorAll('tr[data-session-date]'));
+
+            const updateRows = () => {
+                const selectedDate = dateFilter.value;
+                const selectedStatus = statusFilter.value;
+                let visible = 0;
+                let approved = 0;
+                let completed = 0;
+
+                rows.forEach((row) => {
+                    const rowDate = row.dataset.sessionDate || '';
+                    const rowStatus = row.dataset.sessionStatus || '';
+                    const matchDate = !selectedDate || rowDate === selectedDate;
+                    const matchStatus = !selectedStatus || rowStatus === selectedStatus;
+                    const shouldShow = matchDate && matchStatus;
+
+                    row.classList.toggle('hidden', !shouldShow);
+
+                    if (!shouldShow) {
+                        return;
+                    }
+
+                    visible += 1;
+                    if (rowStatus === 'approved') {
+                        approved += 1;
+                    }
+                    if (rowStatus === 'completed') {
+                        completed += 1;
+                    }
+                });
+
+                if (emptyRow) {
+                    emptyRow.classList.toggle('hidden', visible > 0);
+                }
+                if (noResultsRow) {
+                    const shouldShowNoResults = rows.length > 0 && visible === 0;
+                    noResultsRow.classList.toggle('hidden', !shouldShowNoResults);
+                }
+
+                if (visibleCount) {
+                    visibleCount.textContent = String(visible);
+                }
+                if (approvedCount) {
+                    approvedCount.textContent = String(approved);
+                }
+                if (completedCount) {
+                    completedCount.textContent = String(completed);
+                }
+            };
+
+            dateFilter.addEventListener('input', updateRows);
+            statusFilter.addEventListener('change', updateRows);
+            updateRows();
+        })();
+    </script>
 </body>
 
 </html>
