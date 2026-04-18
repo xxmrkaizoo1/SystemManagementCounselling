@@ -46,6 +46,9 @@
                             Box</a>
                         <a href="{{ route('booking.index') }}"
                             class="block rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-sky-700">Booking</a>
+                        <a href="{{ route('booking.history') }}"
+                            class="block rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-sky-200 hover:text-sky-700 transition">Booking
+                            History</a>
                         <a href="{{ route('profile.edit') }}"
                             class="block rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-sky-200 hover:text-sky-700 transition">Edit
                             Profile</a>

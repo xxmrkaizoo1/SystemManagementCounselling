@@ -511,6 +511,79 @@ Route::middleware('auth')->group(function () {
             'bookingSlots' => $bookingSlots,
         ]);
     })->name('booking.index');
+    Route::get('/booking-history', function (Request $request) {
+        $user = $request->user();
+        $role = $user?->roles()->value('name');
+
+        abort_unless(in_array($role, ['student', 'teacher'], true), 403);
+
+        $filters = $request->validate([
+            'status' => ['nullable', 'in:all,pending,approved,rejected,completed'],
+        ]);
+
+        $selectedStatus = $filters['status'] ?? 'all';
+
+        $statusLabel = static fn(string $status): string => match ($status) {
+            'pending' => 'Pending',
+            'approved' => 'Approved',
+            'rejected' => 'Rejected',
+            'completed' => 'Completed',
+            default => ucfirst($status),
+        };
+
+        $statusBadgeClass = static fn(string $status): string => match ($status) {
+            'approved' => 'border-emerald-200 bg-emerald-50 text-emerald-700',
+            'rejected' => 'border-rose-200 bg-rose-50 text-rose-700',
+            'completed' => 'border-slate-300 bg-slate-100 text-slate-700',
+            default => 'border-amber-200 bg-amber-50 text-amber-700',
+        };
+
+        $bookingsQuery = BookingRequest::query()
+            ->where('user_id', $user->id);
+
+        if ($selectedStatus !== 'all') {
+            $bookingsQuery->where('status', $selectedStatus);
+        }
+
+        $bookings = $bookingsQuery
+            ->latest('booking_date')
+            ->latest('booking_time')
+            ->get()
+            ->map(static function (BookingRequest $booking) use ($statusLabel, $statusBadgeClass): array {
+                return [
+                    'id' => $booking->id,
+                    'date' => (string) $booking->booking_date,
+                    'time' => $booking->booking_time,
+                    'counsellor' => $booking->counsellor_name,
+                    'note' => $booking->note,
+                    'status' => $booking->status,
+                    'status_label' => $statusLabel($booking->status),
+                    'status_badge_class' => $statusBadgeClass($booking->status),
+                ];
+            })
+            ->all();
+
+        $bookingStats = BookingRequest::query()
+            ->where('user_id', $user->id)
+            ->selectRaw('status, COUNT(*) as total')
+            ->groupBy('status')
+            ->pluck('total', 'status');
+
+        return view('booking-history', [
+            'user' => $user,
+            'role' => $role,
+            'bookings' => $bookings,
+            'selectedStatus' => $selectedStatus,
+            'bookingStats' => [
+                'all' => (int) $bookingStats->sum(),
+                'pending' => (int) ($bookingStats['pending'] ?? 0),
+                'approved' => (int) ($bookingStats['approved'] ?? 0),
+                'rejected' => (int) ($bookingStats['rejected'] ?? 0),
+                'completed' => (int) ($bookingStats['completed'] ?? 0),
+            ],
+        ]);
+    })->name('booking.history');
+
 
     Route::post('/booking', function (Request $request) {
         $user = $request->user();

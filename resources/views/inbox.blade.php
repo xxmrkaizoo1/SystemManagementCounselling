@@ -61,9 +61,9 @@
                             <a href="{{ route('chat.index') }}"
                                 class="block rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-sky-200 hover:text-sky-700 transition">Chat
                                 Box</a>
-                            <a href="#"
+                            <a href="{{ route('booking.index') }}"
                                 class="block rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-sky-200 hover:text-sky-700 transition">Booking</a>
-                            <a href="#"
+                            <a href="{{ route('booking.history') }}"
                                 class="block rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-sky-200 hover:text-sky-700 transition">Booking
                                 History</a>
                             <a href="{{ route('profile.edit') }}"
@@ -72,89 +72,93 @@
                         </nav>
                     </aside>
 
-                    <section
-                        class="rounded-2xl border border-slate-200 bg-white/90 p-5 sm:p-6 shadow-sm min-h-[26rem]">
-	                        <div class="mb-4 rounded-xl border border-slate-200 bg-slate-50 p-3">
-	                            <form method="GET" action="{{ route('inbox') }}"
-	                                class="grid gap-3 sm:grid-cols-2 xl:grid-cols-5 items-end">
-	                                <div>
-	                                    <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">Date
-	                                        from</label>
-	                                    <input type="date" name="date_from" value="{{ $filters['date_from'] ?? '' }}"
-	                                        class="w-full rounded-lg border-slate-200 bg-white text-sm" />
-	                                </div>
-	                                <div>
-	                                    <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">Date
-	                                        to</label>
-	                                    <input type="date" name="date_to" value="{{ $filters['date_to'] ?? '' }}"
-	                                        class="w-full rounded-lg border-slate-200 bg-white text-sm" />
-	                                </div>
-	                                <div>
-	                                    <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">Time
-	                                        from</label>
-	                                    <input type="time" name="time_from" value="{{ $filters['time_from'] ?? '' }}"
-	                                        class="w-full rounded-lg border-slate-200 bg-white text-sm" />
-	                                </div>
-	                                <div>
-	                                    <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">Time
-	                                        to</label>
-	                                    <input type="time" name="time_to" value="{{ $filters['time_to'] ?? '' }}"
-	                                        class="w-full rounded-lg border-slate-200 bg-white text-sm" />
-	                                </div>
-	                                <div class="flex gap-2">
-	                                    <button type="submit"
-	                                        class="rounded-lg bg-sky-600 px-3 py-2 text-sm font-semibold text-white hover:bg-sky-700 transition">
-	                                        Filter
-	                                    </button>
-	                                    <a href="{{ route('inbox') }}"
-	                                        class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">
-	                                        Reset
-	                                    </a>
-	                                </div>
-	                            </form>
-	                        </div>
+                    <section class="rounded-2xl border border-slate-200 bg-white/90 p-5 sm:p-6 shadow-sm min-h-[26rem]">
+                        <div class="mb-4 rounded-xl border border-slate-200 bg-slate-50 p-3">
+                            <form method="GET" action="{{ route('inbox') }}"
+                                class="grid gap-3 sm:grid-cols-2 xl:grid-cols-5 items-end">
+                                <div>
+                                    <label
+                                        class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">Date
+                                        from</label>
+                                    <input type="date" name="date_from" value="{{ $filters['date_from'] ?? '' }}"
+                                        class="w-full rounded-lg border-slate-200 bg-white text-sm" />
+                                </div>
+                                <div>
+                                    <label
+                                        class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">Date
+                                        to</label>
+                                    <input type="date" name="date_to" value="{{ $filters['date_to'] ?? '' }}"
+                                        class="w-full rounded-lg border-slate-200 bg-white text-sm" />
+                                </div>
+                                <div>
+                                    <label
+                                        class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">Time
+                                        from</label>
+                                    <input type="time" name="time_from" value="{{ $filters['time_from'] ?? '' }}"
+                                        class="w-full rounded-lg border-slate-200 bg-white text-sm" />
+                                </div>
+                                <div>
+                                    <label
+                                        class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">Time
+                                        to</label>
+                                    <input type="time" name="time_to" value="{{ $filters['time_to'] ?? '' }}"
+                                        class="w-full rounded-lg border-slate-200 bg-white text-sm" />
+                                </div>
+                                <div class="flex gap-2">
+                                    <button type="submit"
+                                        class="rounded-lg bg-sky-600 px-3 py-2 text-sm font-semibold text-white hover:bg-sky-700 transition">
+                                        Filter
+                                    </button>
+                                    <a href="{{ route('inbox') }}"
+                                        class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">
+                                        Reset
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
 
-	                        @if ($notifications->isEmpty())
-	                            <div class="flex min-h-[18rem] items-center justify-center text-center max-w-md mx-auto">
-	                                <div>
-	                                    <div
-	                                        class="mx-auto w-14 h-14 rounded-2xl bg-sky-100 text-sky-700 grid place-items-center text-2xl">
-	                                        📭</div>
-	                                    <h2 class="mt-4 text-lg sm:text-xl font-semibold text-slate-800">No notifications
-	                                        found</h2>
-	                                    <p class="mt-2 text-sm text-slate-500">Try changing your date/time filter, or
-	                                        check again later for new updates.</p>
-	                                </div>
-	                            </div>
-	                        @else
-	                            <div class="w-full space-y-3">
-	                                @foreach ($notifications as $notification)
-	                                    <article class="rounded-xl border border-slate-200 bg-white p-4">
-	                                        <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-	                                            <div>
-	                                                <h3 class="font-semibold text-slate-800">{{ $notification->title }}</h3>
-	                                                <p class="mt-1 text-sm text-slate-600">{{ $notification->message }}</p>
-	                                            </div>
+                        @if ($notifications->isEmpty())
+                            <div class="flex min-h-[18rem] items-center justify-center text-center max-w-md mx-auto">
+                                <div>
+                                    <div
+                                        class="mx-auto w-14 h-14 rounded-2xl bg-sky-100 text-sky-700 grid place-items-center text-2xl">
+                                        📭</div>
+                                    <h2 class="mt-4 text-lg sm:text-xl font-semibold text-slate-800">No notifications
+                                        found</h2>
+                                    <p class="mt-2 text-sm text-slate-500">Try changing your date/time filter, or
+                                        check again later for new updates.</p>
+                                </div>
+                            </div>
+                        @else
+                            <div class="w-full space-y-3">
+                                @foreach ($notifications as $notification)
+                                    <article class="rounded-xl border border-slate-200 bg-white p-4">
+                                        <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                                            <div>
+                                                <h3 class="font-semibold text-slate-800">{{ $notification->title }}
+                                                </h3>
+                                                <p class="mt-1 text-sm text-slate-600">{{ $notification->message }}</p>
+                                            </div>
 
-	                                            <div class="flex items-center gap-2">
-	                                                <span
-	                                                    class="text-xs text-slate-500 whitespace-nowrap">{{ $notification->created_at?->format('Y-m-d H:i:s') }}</span>
-	                                                <form method="POST"
-	                                                    action="{{ route('inbox.notification.delete', $notification) }}">
-	                                                    @csrf
-	                                                    @method('DELETE')
-	                                                    <button type="submit"
-	                                                        class="rounded-lg border border-rose-200 bg-rose-50 px-2 py-1 text-xs font-medium text-rose-700 hover:bg-rose-100 transition"
-	                                                        aria-label="Delete notification">
-	                                                        Delete
-	                                                    </button>
-	                                                </form>
-	                                            </div>
-	                                        </div>
-	                                    </article>
-	                                @endforeach
-	                            </div>
-	                        @endif
+                                            <div class="flex items-center gap-2">
+                                                <span
+                                                    class="text-xs text-slate-500 whitespace-nowrap">{{ $notification->created_at?->format('Y-m-d H:i:s') }}</span>
+                                                <form method="POST"
+                                                    action="{{ route('inbox.notification.delete', $notification) }}">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit"
+                                                        class="rounded-lg border border-rose-200 bg-rose-50 px-2 py-1 text-xs font-medium text-rose-700 hover:bg-rose-100 transition"
+                                                        aria-label="Delete notification">
+                                                        Delete
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </article>
+                                @endforeach
+                            </div>
+                        @endif
                     </section>
                 </div>
             </div>
