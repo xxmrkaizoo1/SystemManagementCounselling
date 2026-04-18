@@ -238,10 +238,17 @@
 
             const getSlotTimesForDate = (date) => {
                 const day = date.getDay();
+                if (day === 0 || day === 6) return [];
                 if (day === 5) return buildHourlySlots(8, 12);
                 if (day >= 1 && day <= 4) return buildHourlySlots(8, 17);
                 return buildHourlySlots(8, 17);
             };
+
+            const isWeekend = (date) => {
+                const day = date.getDay();
+                return day === 0 || day === 6;
+            };
+
 
             const availableCounsellors = normalizedCounsellors.length ? normalizedCounsellors : ['Counsellor'];
             const statusClass = {
@@ -397,6 +404,13 @@
                         'warning');
                     return;
                 }
+
+                if (isWeekend(date)) {
+                    showToast(
+                        'Booking pada hari Sabtu dan Ahad tidak dibenarkan. Sila pilih Isnin hingga Jumaat.',
+                        'warning');
+                    return;
+                }
                 selectedScheduleDate = date;
                 scheduleModalTitle.textContent =
                     `Table Slot • ${date.toLocaleDateString('en-GB', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}`;
@@ -426,21 +440,23 @@
 
                 for (let day = 1; day <= lastDay.getDate(); day++) {
                     const cellDate = new Date(year, month, day);
+                    const weekend = isWeekend(cellDate);
                     const previewStatus = getDailyStatus(cellDate);
                     const isPastDate = cellDate < todayStart;
+                    const isDisabledDate = isPastDate || weekend;
 
                     const button = document.createElement('button');
                     button.type = 'button';
                     button.className =
                         `min-h-24 sm:min-h-28 p-2 text-left border-r border-b border-slate-200 transition ${
-                            isPastDate ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'hover:bg-sky-50'
+                            isDisabledDate ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'hover:bg-sky-50'
                         }`;
                     button.innerHTML = `
                         <p class="font-semibold text-slate-700">${day}</p>
-                        <span class="mt-2 inline-flex rounded-full border px-2 py-0.5 text-xs ${statusClass[previewStatus]}">${previewStatus}</span>
-                       <p class="text-[11px] text-slate-500 mt-1">${isPastDate ? 'Tarikh lepas' : 'Klik untuk buka table'}</p>
+                         <span class="mt-2 inline-flex rounded-full border px-2 py-0.5 text-xs ${weekend ? 'text-slate-600 bg-slate-100 border-slate-200' : statusClass[previewStatus]}">${weekend ? 'Tutup' : previewStatus}</span>
+                       <p class="text-[11px] text-slate-500 mt-1">${isPastDate ? 'Tarikh lepas' : (weekend ? 'Cuti hujung minggu' : 'Klik untuk buka table')}</p>
                     `;
-                    if (!isPastDate) {
+                    if (!isDisabledDate) {
                         button.addEventListener('click', () => openScheduleModal(cellDate));
                     } else {
                         button.disabled = true;
@@ -479,6 +495,12 @@
                     if (selectedScheduleDate < todayStart) {
                         showToast(
                             'Tarikh lepas tidak boleh dibuat booking. Sila pilih hari ini atau tarikh akan datang.',
+                            'warning');
+                        return;
+                    }
+                    if (isWeekend(selectedScheduleDate)) {
+                        showToast(
+                            'Booking pada hari Sabtu dan Ahad tidak dibenarkan. Sila pilih Isnin hingga Jumaat.',
                             'warning');
                         return;
                     }

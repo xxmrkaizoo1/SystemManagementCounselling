@@ -57,6 +57,69 @@
             display: block;
         }
 
+        .session-slide-shell {
+            position: relative;
+            overflow: hidden;
+            border-radius: 0.9rem;
+            border: 1px solid rgb(186 230 253);
+            min-height: 10.5rem;
+            background: linear-gradient(135deg, rgb(240 249 255) 0%, rgb(236 254 255) 55%, rgb(224 242 254) 100%);
+        }
+
+        .session-slide-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scale(1.04);
+            animation: slide-kenburns 10s ease-in-out infinite alternate;
+            filter: saturate(1.05) contrast(1.02);
+        }
+
+        .session-slide-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(110deg, rgb(12 74 110 / 0.70) 0%, rgb(14 116 144 / 0.45) 45%, rgb(14 165 233 / 0.22) 100%);
+        }
+
+        .session-slide-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            min-height: 10.5rem;
+            padding: 1rem;
+            color: rgb(240 249 255);
+        }
+
+        .slide-fade {
+            animation: slide-fade 480ms ease;
+        }
+
+        @keyframes slide-fade {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slide-kenburns {
+            from {
+                transform: scale(1.02);
+            }
+
+            to {
+                transform: scale(1.10);
+            }
+        }
+
         @media (min-width: 1280px) {
             .home-shell {
                 flex-direction: row;
@@ -181,13 +244,26 @@
                         class="home-main rounded-2xl border border-slate-200 bg-white/90 p-4 sm:p-6 shadow-sm space-y-5">
                         <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:p-6">
                             <div class="flex items-center justify-between gap-3 mb-2">
-                                <p class="text-sm text-slate-500">Slide Show / Animation</p>
+
                                 <span
                                     class="text-xs px-2.5 py-1 rounded-full bg-sky-50 border border-sky-200 text-sky-700">Live</span>
                             </div>
-                            <div id="session-slide"
-                                class="rounded-xl bg-white border border-slate-200 p-6 min-h-28 text-slate-700 font-medium">
-                                {{ $announcements[0] }}
+                            <div id="session-slide" class="session-slide-shell shadow-sm">
+                                <img id="session-slide-image" class="session-slide-img"
+                                    src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1400&q=80"
+                                    alt="Counselling wellbeing banner">
+                                <div class="session-slide-overlay"></div>
+                                <div class="session-slide-content">
+                                    <p id="session-slide-tag"
+                                        class="text-[11px] uppercase tracking-[0.14em] text-sky-100/90 font-semibold">
+                                        CollegeCare
+                                        Updates</p>
+                                    <p id="session-slide-title" class="mt-2 text-base sm:text-lg font-semibold">
+                                        {{ $announcements[0] }}</p>
+                                    <p id="session-slide-subtitle" class="mt-1 text-sm text-sky-100/95">
+                                        Your wellbeing journey starts with one conversation.
+                                    </p>
+                                </div>
                             </div>
                         </div>
 
@@ -267,8 +343,9 @@
                                     <h3 class="font-semibold text-slate-700 mb-3">Ringkasan</h3>
                                     <ul class="space-y-2 text-sm text-slate-600">
                                         <li class="rounded-lg border border-slate-200 bg-white p-2">🟢 Slot kosong</li>
-                                        <li class="rounded-lg border border-slate-200 bg-white p-2">🟡 Hampir penuh
+                                        <li class="rounded-lg border border-slate-200 bg-white p-2">🟡 Menunggu
                                         </li>
+                                        <li class="rounded-lg border border-slate-200 bg-white p-2">🔵 Ditempah</li>
                                         <li class="rounded-lg border border-slate-200 bg-white p-2">🔴 Penuh</li>
                                     </ul>
                                 </aside>
@@ -288,15 +365,55 @@
         <script>
             document.addEventListener('DOMContentLoaded', () => {
                 const slide = document.getElementById('session-slide');
-                const items = @json($announcements);
-                if (slide && Array.isArray(items) && items.length > 0) {
+                const slideImage = document.getElementById('session-slide-image');
+                const slideTitle = document.getElementById('session-slide-title');
+                const slideSubtitle = document.getElementById('session-slide-subtitle');
+                const slideTag = document.getElementById('session-slide-tag');
+                const items = @json($announcements ?? []);
+                const fallbackSlides = [{
+                        title: 'Counselling slots for this week are now open. Book early to secure your preferred time.',
+                        subtitle: 'Pick your preferred date and counsellor from the calendar.',
+                        tag: 'Weekly Updates',
+                        image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1400&q=80',
+                    },
+                    {
+                        title: 'Need to change time? Use Booking History to reschedule your active appointment.',
+                        subtitle: 'Keep your session on track with quick, guided rescheduling.',
+                        tag: 'Booking Tips',
+                        image: 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1400&q=80',
+                    },
+                    {
+                        title: 'Check your inbox regularly for OTP and reminder notifications before your session.',
+                        subtitle: 'Stay informed and never miss important counselling updates.',
+                        tag: 'Reminder',
+                        image: 'https://images.unsplash.com/photo-1517022812141-23620dba5c23?auto=format&fit=crop&w=1400&q=80',
+                    }
+                ];
+                const slides = Array.isArray(items) && items.length > 0 ?
+                    items.map((title, index) => ({
+                        title,
+                        subtitle: fallbackSlides[index % fallbackSlides.length].subtitle,
+                        tag: fallbackSlides[index % fallbackSlides.length].tag,
+                        image: fallbackSlides[index % fallbackSlides.length].image,
+                    })) :
+                    fallbackSlides;
+
+                if (slide && slideImage && slideTitle && slideSubtitle && slideTag && slides.length > 0) {
                     let idx = 0;
-                    window.setInterval(() => {
-                        idx = (idx + 1) % items.length;
-                        slide.classList.remove('tip-swap');
+                    const renderSlide = (item) => {
+                        slide.classList.remove('slide-fade');
                         void slide.offsetWidth;
-                        slide.textContent = items[idx];
-                        slide.classList.add('tip-swap');
+                        slideImage.src = item.image;
+                        slideTitle.textContent = item.title;
+                        slideSubtitle.textContent = item.subtitle;
+                        slideTag.textContent = item.tag;
+                        slide.classList.add('slide-fade');
+                    };
+
+                    renderSlide(slides[idx]);
+                    window.setInterval(() => {
+                        idx = (idx + 1) % slides.length;
+                        renderSlide(slides[idx]);
                     }, 6000);
                 }
 
@@ -340,52 +457,116 @@
                     sidebarBackdrop.addEventListener('click', closeSidebar);
                 }
 
-                const counsellors = ['Dr. Aina', 'Mr. Hakim', 'Ms. Farah', 'Dr. Daniel'];
-                const statuses = ['Available', 'Booked', 'Pending', 'Full'];
+                const rawCounsellorNames = @json($counsellorNames ?? []);
+                const rawBookingSlots = @json($bookingSlots ?? []);
+                const counsellors = Array.isArray(rawCounsellorNames) ? rawCounsellorNames : Object.values(
+                    rawCounsellorNames || {});
+                const bookingSlots = Array.isArray(rawBookingSlots) ? rawBookingSlots : Object.values(
+                    rawBookingSlots || {});
+                const availableCounsellors = counsellors.filter(Boolean).length ? counsellors.filter(Boolean) : [
+                    'Counsellor'
+                ];
                 const statusClass = {
                     Available: 'text-emerald-700 bg-emerald-50 border-emerald-200',
                     Booked: 'text-sky-700 bg-sky-50 border-sky-200',
                     Pending: 'text-amber-700 bg-amber-50 border-amber-200',
                     Full: 'text-rose-700 bg-rose-50 border-rose-200',
                 };
-                const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
-                const slotTimes = ['08:00 - 09:00', '09:00 - 10:00', '10:00 - 11:00', '11:00 - 12:00', '02:00 - 03:00',
-                    '03:00 - 04:00'
-                ];
-                const subjects = ['DKA2233', 'UMS2112', 'DKA2243', 'UMC2122', 'MPU2172', 'PER', 'COUNS'];
 
                 let activeDate = new Date();
 
-                const seededStatus = (date, index) => {
-                    const seed = date.getFullYear() + (date.getMonth() + 1) * 17 + date.getDate() * 13 + index * 5;
-                    return statuses[seed % statuses.length];
+                const buildHourlySlots = (startHour, endHour) => {
+                    const slots = [];
+                    for (let hour = startHour; hour < endHour; hour++) {
+                        const from = String(hour).padStart(2, '0');
+                        const to = String(hour + 1).padStart(2, '0');
+                        slots.push(`${from}:00 - ${to}:00`);
+                    }
+                    return slots;
+                };
+
+                const getSlotTimesForDate = (date) => {
+                    const day = date.getDay();
+                    if (day === 5) return buildHourlySlots(8, 12);
+                    if (day >= 1 && day <= 4) return buildHourlySlots(8, 17);
+                    return [];
+                };
+
+                const bookedSlotsByKey = new Map(
+                    bookingSlots.map((slot) => [
+                        `${slot.date}|${slot.time}|${slot.counsellor}`,
+                        slot.status === 'pending' ? 'Pending' : 'Booked'
+                    ])
+                );
+
+                const slotKey = (date, time, counsellor) =>
+                    `${date.toISOString().slice(0, 10)}|${time}|${counsellor}`;
+
+                const computedStatus = (date, time, counsellor) => bookedSlotsByKey.get(slotKey(date, time, counsellor)) ??
+                    'Available';
+
+                const getSlotStatusMeta = (date, time) => {
+                    const occupied = availableCounsellors
+                        .map((counsellor) => ({
+                            counsellor,
+                            status: computedStatus(date, time, counsellor),
+                        }))
+                        .filter((item) => item.status !== 'Available');
+
+                    if (occupied.length === 0) {
+                        return {
+                            counsellorLabel: '-',
+                            status: 'Available',
+                        };
+                    }
+
+                    const allPending = occupied.every((item) => item.status === 'Pending');
+
+                    return {
+                        counsellorLabel: occupied.map((item) => item.counsellor).join(', '),
+                        status: allPending ? 'Pending' : 'Booked',
+                    };
+                };
+
+                const getDailyStatus = (date) => {
+                    if (date.getDay() === 0 || date.getDay() === 6) return null;
+
+                    const slotTimes = getSlotTimesForDate(date);
+                    const slotStatuses = slotTimes.map((time) => getSlotStatusMeta(date, time).status);
+
+                    if (slotStatuses.some((status) => status === 'Available')) return 'Available';
+                    if (slotStatuses.some((status) => status === 'Pending')) return 'Pending';
+                    return 'Full';
                 };
 
                 const renderScheduleRows = (date) => {
                     modalBody.innerHTML = '';
-                    weekDays.forEach((day, dayIndex) => {
+                    const slotTimes = getSlotTimesForDate(date);
+
+                    if (!slotTimes.length) {
                         const tr = document.createElement('tr');
-                        let cells =
-                            `<td class="px-4 py-3 border-b border-slate-100 font-semibold">${day}</td>`;
+                        tr.innerHTML = `
+                            <td colspan="3" class="px-4 py-6 text-center text-sm text-slate-500">
+                                Tiada slot kaunseling pada hujung minggu.
+                            </td>
+                        `;
+                        modalBody.appendChild(tr);
+                        return;
+                    }
 
-                        slotTimes.forEach((_, slotIndex) => {
-                            const status = seededStatus(date, dayIndex + slotIndex);
-                            const counsellor = counsellors[(dayIndex + slotIndex) % counsellors
-                                .length];
-                            const subject = subjects[(date.getDate() + dayIndex + slotIndex) %
-                                subjects.length];
-                            cells += `
-                                <td class="px-2 py-3 border-b border-slate-100 align-top">
-                                    <div class="rounded-lg border border-slate-200 p-2 min-w-0 bg-white">
-                                        <p class="font-semibold text-slate-800 leading-tight">${subject}</p>
-                                        <p class="text-xs text-slate-500 mt-1">${counsellor}</p>
-                                        <span class="mt-2 inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-semibold ${statusClass[status]}">${status}</span>
-                                    </div>
-                                </td>
-                            `;
-                        });
-
-                        tr.innerHTML = cells;
+                    slotTimes.forEach((time) => {
+                        const {
+                            counsellorLabel,
+                            status
+                        } = getSlotStatusMeta(date, time);
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td class="px-4 py-3 border-b border-slate-100 font-semibold">${time}</td>
+                            <td class="px-4 py-3 border-b border-slate-100">${counsellorLabel}</td>
+                            <td class="px-4 py-3 border-b border-slate-100">
+                                <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-semibold ${statusClass[status]}">${status}</span>
+                            </td>
+                        `;
                         modalBody.appendChild(tr);
                     });
                 };
@@ -440,20 +621,25 @@
 
                     for (let day = 1; day <= lastDay.getDate(); day++) {
                         const cellDate = new Date(year, month, day);
-                        const status = seededStatus(cellDate, day % weekDays.length);
+                        const status = getDailyStatus(cellDate);
+                        const isWeekend = cellDate.getDay() === 0 || cellDate.getDay() === 6;
                         const isToday = isCurrentMonth && today.getDate() === day;
                         const button = document.createElement('button');
                         button.type = 'button';
                         button.className =
-                             'min-h-42 sm:min-h-46 p-3 text-left bg-white border border-slate-200 rounded-xl hover:bg-sky-50 transition flex flex-col justify-between';
+                            `min-h-42 sm:min-h-46 p-3 text-left border border-slate-200 rounded-xl transition flex flex-col justify-between ${
+                                isWeekend ? 'bg-slate-50 cursor-default' : 'bg-white hover:bg-sky-50'
+                            }`;
                         button.innerHTML = `
                             <p class="font-semibold text-base leading-none ${isToday ? 'text-sky-700' : 'text-slate-700'}">${day}</p>
-                                                      <span class="mt-2 inline-flex rounded-full border px-2 py-0.5 text-[11px] ${statusClass[status]}">${status}</span>
+                            ${status ? `<span class="mt-2 inline-flex rounded-full border px-2 py-0.5 text-[11px] ${statusClass[status]}">${status}</span>` : '<span class="mt-2 text-[11px] text-slate-400">Weekend</span>'}
                         `;
                         if (isToday) {
                             button.classList.add('ring-2', 'ring-sky-200', 'ring-inset');
                         }
-                        button.addEventListener('click', () => openModal(cellDate));
+                        if (!isWeekend) {
+                            button.addEventListener('click', () => openModal(cellDate));
+                        }
                         calendarGrid.appendChild(button);
                     }
 
@@ -497,19 +683,11 @@
                 <table class="w-full min-w-[760px] lg:min-w-full text-sm table-fixed">
                     <thead class="bg-slate-100 text-slate-700">
                         <tr>
-                            <th class="px-3 py-3 text-left border-b border-slate-200 whitespace-nowrap">Hari / Slot
+                            <th class="px-3 py-3 text-left border-b border-slate-200 whitespace-nowrap">Masa
                             </th>
-                            <th class="px-3 py-3 text-left border-b border-slate-200 whitespace-nowrap">8:00 - 9:00
+                            <th class="px-3 py-3 text-left border-b border-slate-200 whitespace-nowrap">Kaunselor
                             </th>
-                            <th class="px-3 py-3 text-left border-b border-slate-200 whitespace-nowrap">9:00 - 10:00
-                            </th>
-                            <th class="px-3 py-3 text-left border-b border-slate-200 whitespace-nowrap">10:00 - 11:00
-                            </th>
-                            <th class="px-3 py-3 text-left border-b border-slate-200 whitespace-nowrap">11:00 - 12:00
-                            </th>
-                            <th class="px-3 py-3 text-left border-b border-slate-200 whitespace-nowrap">2:00 - 3:00
-                            </th>
-                            <th class="px-3 py-3 text-left border-b border-slate-200 whitespace-nowrap">3:00 - 4:00
+                            <th class="px-3 py-3 text-left border-b border-slate-200 whitespace-nowrap">Status
                             </th>
                         </tr>
                     </thead>

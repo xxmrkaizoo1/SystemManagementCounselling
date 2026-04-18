@@ -79,18 +79,55 @@ Route::middleware('auth')->group(function () {
             'Check your inbox regularly for OTP and reminder notifications before your session.',
         ];
 
-        $counsellors = [
-            ['name' => 'Dr. Aina', 'available' => true, 'next_slot' => '10:30 AM'],
-            ['name' => 'Mr. Hakim', 'available' => false, 'next_slot' => '2:00 PM'],
-            ['name' => 'Ms. Farah', 'available' => true, 'next_slot' => '11:15 AM'],
-            ['name' => 'Dr. Daniel', 'available' => false, 'next_slot' => '3:30 PM'],
-        ];
+        $counsellorNames = User::query()
+            ->whereHas('roles', static fn($query) => $query->where('name', 'counsellor'))
+            ->orderBy('full_name')
+            ->orderBy('name')
+            ->get()
+            ->map(static fn(User $counsellor) => $counsellor->full_name ?: $counsellor->name)
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+
+        $bookingSlots = BookingRequest::query()
+            ->whereIn('status', ['pending', 'approved'])
+            ->get(['booking_date', 'booking_time', 'counsellor_name', 'status'])
+            ->map(static fn(BookingRequest $booking): array => [
+                'date' => (string) $booking->booking_date,
+                'time' => $booking->booking_time,
+                'counsellor' => $booking->counsellor_name,
+                'status' => $booking->status,
+            ])
+            ->all();
+
+        $occupiedNow = BookingRequest::query()
+            ->whereDate('booking_date', today())
+            ->whereIn('status', ['pending', 'approved'])
+            ->pluck('counsellor_name')
+            ->map(static fn(?string $name): string => trim((string) $name))
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+
+        $occupiedLookup = array_flip($occupiedNow);
+        $counsellors = collect($counsellorNames)
+            ->map(static fn(string $name): array => [
+                'name' => $name,
+                'available' => !array_key_exists($name, $occupiedLookup),
+                'next_slot' => now()->addHour()->format('g:i A'),
+            ])
+            ->values()
+            ->all();
 
         return view('home', [
             'user' => $user,
             'role' => $role,
             'announcements' => $announcements,
             'counsellors' => $counsellors,
+            'counsellorNames' => $counsellorNames,
+            'bookingSlots' => $bookingSlots,
         ]);
     })->name('home.session');
 
