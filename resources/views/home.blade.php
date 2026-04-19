@@ -192,12 +192,27 @@
                             Menu
                         </button>
                         <a href="{{ route('home') }}"
-                            class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">Refresh
-                            page</a>
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
+                            class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                aria-hidden="true">
+                                <path d="M21 12a9 9 0 1 1-2.64-6.36" />
+                                <polyline points="21 3 21 9 15 9" />
+                            </svg>
+
+                        </a>
+                        <form id="logout-form" method="POST" action="{{ route('logout') }}"> @csrf
                             <button type="submit"
-                                class="rounded-xl bg-sky-600 px-3 py-2 text-sm font-semibold text-white hover:bg-sky-700 transition">Logout</button>
+                                class="inline-flex items-center gap-2 rounded-xl bg-sky-600 px-3 py-2 text-sm font-semibold text-white hover:bg-sky-700 transition">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                                    <polyline points="16 17 21 12 16 7" />
+                                    <line x1="21" y1="12" x2="9" y2="12" />
+                                </svg>
+
+                            </button>
                         </form>
                     </div>
                 </header>
@@ -256,8 +271,8 @@
                                 <span
                                     class="inline-flex h-12 w-12 items-center justify-center rounded-xl border border-slate-200 bg-slate-50">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-                                        stroke-linejoin="round">
+                                        fill="none" stroke="currentColor" stroke-width="1.8"
+                                        stroke-linecap="round" stroke-linejoin="round">
                                         <rect x="3" y="4" width="18" height="18" rx="2" />
                                         <path d="M16 2v4M8 2v4M3 10h18" />
                                     </svg>
@@ -485,6 +500,45 @@
                 const modalTitle = document.getElementById('schedule-modal-title');
                 const modalBody = document.getElementById('schedule-modal-body');
                 const modalClose = document.getElementById('schedule-modal-close');
+                const logoutForm = document.getElementById('logout-form');
+                const logoutModal = document.getElementById('logout-modal');
+                const logoutCancel = document.getElementById('logout-cancel');
+                const logoutConfirm = document.getElementById('logout-confirm');
+
+                const closeLogoutModal = () => {
+                    if (!logoutModal) return;
+                    logoutModal.classList.add('hidden');
+                    logoutModal.classList.remove('flex');
+                };
+
+                const openLogoutModal = () => {
+                    if (!logoutModal) return;
+                    logoutModal.classList.remove('hidden');
+                    logoutModal.classList.add('flex');
+                };
+
+                if (logoutForm && logoutModal) {
+                    logoutForm.addEventListener('submit', (event) => {
+                        event.preventDefault();
+                        openLogoutModal();
+                    });
+
+                    if (logoutCancel) {
+                        logoutCancel.addEventListener('click', closeLogoutModal);
+                    }
+
+                    if (logoutConfirm) {
+                        logoutConfirm.addEventListener('click', () => logoutForm.submit());
+                    }
+
+                    logoutModal.addEventListener('click', (event) => {
+                        if (event.target === logoutModal) closeLogoutModal();
+                    });
+
+                    document.addEventListener('keydown', (event) => {
+                        if (event.key === 'Escape') closeLogoutModal();
+                    });
+                }
 
                 if (!calendarGrid || !calendarTitle || !prevBtn || !nextBtn) {
                     return;
@@ -749,6 +803,24 @@
                     </thead>
                     <tbody id="schedule-modal-body" class="text-slate-700"></tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="logout-modal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-[80] p-4">
+        <div class="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl">
+            <h3 class="text-lg font-semibold text-slate-800">Confirm logout</h3>
+            <p class="mt-2 text-sm text-slate-600">Are you sure you want to logout?</p>
+            <div class="mt-5 flex justify-end gap-2">
+                <button id="logout-cancel" type="button"
+                    class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">
+                    Cancel
+                </button>
+                <button id="logout-confirm" type="button"
+                    class="rounded-xl bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700 transition">
+                    Yes, logout
+                </button>
             </div>
         </div>
     </div>
