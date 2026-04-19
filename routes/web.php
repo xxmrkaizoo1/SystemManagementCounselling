@@ -120,14 +120,14 @@ $autoRejectExpiredBookings = static function (): void {
         });
 };
 
-Route::middleware([
-    'auth',
-    static function (Request $request, \Closure $next) use ($autoRejectExpiredBookings) {
+Route::matched(static function () use ($autoRejectExpiredBookings): void {
+    if (auth()->check()) {
         $autoRejectExpiredBookings();
+    }
+});
+$autoRejectExpiredBookings();
 
-        return $next($request);
-    },
-])->group(function () {
+Route::middleware('auth')->group(function () {
     Route::get('/admin', function () {
         $role = request()->user()?->roles()->value('name');
 
