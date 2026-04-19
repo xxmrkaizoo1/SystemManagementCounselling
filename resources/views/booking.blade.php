@@ -261,12 +261,32 @@
                     </select>
                 </div>
                 <div>
+                    <label for="request-reason" class="block text-sm font-medium text-slate-700 mb-1">Sebab
+                        booking</label>
+                    <select id="request-reason" required class="w-full rounded-xl border-slate-200 bg-white text-sm">
+                        <option value="">Pilih sebab sesi</option>
+                        <option value="Tekanan akademik">Tekanan akademik</option>
+                        <option value="Pengurusan masa">Pengurusan masa</option>
+                        <option value="Masalah peribadi">Masalah peribadi</option>
+                        <option value="Kerjaya dan hala tuju">Kerjaya dan hala tuju</option>
+                        <option value="Isu emosi / mental">Isu emosi / mental</option>
+                        <option value="Lain-lain">Lain-lain</option>
+                    </select>
+                </div>
+                <div id="request-reason-other-wrap" class="hidden">
+                    <label for="request-reason-other" class="block text-sm font-medium text-slate-700 mb-1">Nyatakan
+                        sebab</label>
+                    <input id="request-reason-other" type="text" maxlength="120"
+                        placeholder="Contoh: Konflik dengan rakan sebilik"
+                        class="w-full rounded-xl border-slate-200 bg-white text-sm" />
+                </div>
+                <div>
                     <label for="request-note" class="block text-sm font-medium text-slate-700 mb-1">Notes kepada
                         kaunselor</label>
-                    <textarea id="request-note" rows="4" required maxlength="500"
+                    <textarea id="request-note" rows="4" required maxlength="420"
                         placeholder="Contoh: Saya perlukan sesi berkaitan tekanan akademik dan pengurusan masa."
                         class="w-full rounded-xl border-slate-200 text-sm"></textarea>
-                    <p class="mt-1 text-xs text-slate-500">Maksimum 500 aksara. <span id="request-note-counter">0</span>/500</p>
+                    <p class="mt-1 text-xs text-slate-500">Maksimum 420 aksara. <span id="request-note-counter">0</span>/420</p>
                 </div>
                 <div class="flex justify-end gap-2">
                     <button type="button" id="request-cancel"
@@ -302,6 +322,9 @@
             const requestDate = document.getElementById('request-date');
             const requestTime = document.getElementById('request-time');
             const requestCounsellor = document.getElementById('request-counsellor');
+            const requestReason = document.getElementById('request-reason');
+            const requestReasonOtherWrap = document.getElementById('request-reason-other-wrap');
+            const requestReasonOther = document.getElementById('request-reason-other');
             const requestNote = document.getElementById('request-note');
             const requestNoteCounter = document.getElementById('request-note-counter');
             const csrfMeta = document.querySelector('meta[name="csrf-token"]');
@@ -322,7 +345,8 @@
             const hasScheduleModal = Boolean(scheduleModal && scheduleModalTitle && scheduleModalBody &&
                 scheduleModalClose);
             const hasRequestModal = Boolean(requestModal && requestModalClose && requestCancel && requestForm &&
-                requestDate && requestTime && requestCounsellor && requestNote);
+                requestDate && requestTime && requestCounsellor && requestReason && requestReasonOtherWrap &&
+                requestReasonOther && requestNote);
 
             const buildHourlySlots = (startHour, endHour) => {
                 const slots = [];
@@ -446,6 +470,9 @@
                 });
                 requestTime.value = time;
                 renderCounsellorOptions(counsellor);
+                requestReason.value = '';
+                requestReasonOther.value = '';
+                requestReasonOtherWrap.classList.add('hidden');
                 requestNote.value = '';
                 requestModal.classList.remove('hidden');
                 requestModal.classList.add('flex');
@@ -593,6 +620,20 @@
                         showToast('Sila isi nota untuk kaunselor sebelum submit.', 'warning');
                         return;
                     }
+                    const selectedReason = requestReason.value.trim();
+                    if (!selectedReason) {
+                        showToast('Sila pilih sebab booking sebelum submit.', 'warning');
+                        return;
+                    }
+
+                    const reasonDetail = requestReasonOther.value.trim();
+                    if (selectedReason === 'Lain-lain' && !reasonDetail) {
+                        showToast('Sila nyatakan sebab lain sebelum submit.', 'warning');
+                        return;
+                    }
+
+                    const resolvedReason = selectedReason === 'Lain-lain' ? reasonDetail : selectedReason;
+                    const finalNote = `[Sebab sesi: ${resolvedReason}] ${note}`;
 
                     const requestDateValue = selectedScheduleDate.toISOString().slice(0, 10);
                     if (selectedScheduleDate < todayStart) {
@@ -631,7 +672,9 @@
                                 booking_date: requestDateValue,
                                 booking_time: selectedRequestTime,
                                 counsellor_name: selectedCounsellor,
-                                note,
+                                reason: selectedReason,
+                                reason_other: reasonDetail,
+                                note: finalNote,
                             }),
                         });
 
@@ -681,6 +724,13 @@
             }
 
             if (hasRequestModal) {
+                requestReason.addEventListener('change', () => {
+                    const isOtherReason = requestReason.value === 'Lain-lain';
+                    requestReasonOtherWrap.classList.toggle('hidden', !isOtherReason);
+                    if (!isOtherReason) {
+                        requestReasonOther.value = '';
+                    }
+                });
                 requestNote.addEventListener('input', updateNoteCounter);
                 requestModalClose.addEventListener('click', closeRequestModal);
                 requestCancel.addEventListener('click', closeRequestModal);

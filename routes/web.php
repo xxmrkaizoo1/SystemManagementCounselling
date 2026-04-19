@@ -664,8 +664,19 @@ Route::middleware('auth')->group(function () {
             'booking_date' => ['required', 'date', 'after_or_equal:today'],
             'booking_time' => ['required', 'string', 'max:50'],
             'counsellor_name' => ['required', 'string', 'max:255'],
-            'note' => ['required', 'string', 'max:500'],
+            'reason' => ['required', 'string', 'max:120'],
+            'reason_other' => ['nullable', 'string', 'max:120'],
+            'note' => ['required', 'string', 'max:700'],
         ]);
+
+        if (
+            $validated['reason'] === 'Lain-lain'
+            && blank($validated['reason_other'] ?? null)
+        ) {
+            return response()->json([
+                'message' => 'Please provide a reason detail when selecting "Lain-lain".',
+            ], 422);
+        }
 
         $normalizeCounsellorName = static fn(?string $name): string => preg_replace('/\s+/', '', mb_strtolower(trim((string) $name)));
         $normalizedRequestedCounsellor = $normalizeCounsellorName($validated['counsellor_name']);

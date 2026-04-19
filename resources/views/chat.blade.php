@@ -57,6 +57,24 @@
             display: block;
         }
 
+
+        .sidebar-search-panel {
+            animation: searchFloat 3.2s ease-in-out infinite;
+        }
+
+        @keyframes searchFloat {
+            0%,
+            100% {
+                transform: translateY(0);
+                box-shadow: 0 1px 2px rgb(15 23 42 / 0.05);
+            }
+
+            50% {
+                transform: translateY(-4px);
+                box-shadow: 0 10px 20px rgb(14 165 233 / 0.15);
+            }
+        }
+
         @media (min-width: 1280px) {
             .home-shell {
                 flex-direction: row;
@@ -114,7 +132,7 @@
             </header>
 
             <div class="p-5 sm:p-7 home-shell">
-                <aside id="home-sidebar" class="home-sidebar rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm space-y-4">
+                <aside id="home-sidebar" class="home-sidebar rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm flex flex-col gap-4">
                     <div class="flex justify-end xl:hidden mb-2">
                         <button type="button" id="sidebar-close"
                             class="sidebar-close-btn rounded-lg border border-slate-200 px-2.5 py-1 text-sm text-slate-600 hover:text-sky-700 hover:border-sky-200">
@@ -197,34 +215,37 @@
                         </nav>
                     </div>
 
-                    <div class="space-y-2 max-h-80 overflow-auto pr-1">
-                        @forelse ($users as $listedUser)
-                            <a href="{{ route('chat.index', ['user_id' => $listedUser->id, 'search' => $search]) }}"
-                                class="block rounded-xl border px-3 py-2 text-sm transition {{ $selectedUser?->id === $listedUser->id ? 'border-sky-300 bg-sky-50 text-sky-700' : 'border-slate-200 bg-white hover:border-sky-200' }}">
-                                <p class="font-semibold">{{ $listedUser->full_name ?: $listedUser->name }}</p>
-                                <p class="text-xs text-slate-500">{{ $listedUser->email }}</p>
-                            </a>
-                        @empty
-                            <p class="text-sm text-slate-500">No users found.</p>
-                        @endforelse
+                    <div class="mt-auto space-y-3">
+                        <div class="sidebar-search-panel rounded-xl border border-slate-200 bg-slate-50 p-3">
+                            <form method="GET" action="{{ route('chat.index') }}" class="flex gap-2 items-end">
+                                @if ($selectedUser)
+                                    <input type="hidden" name="user_id" value="{{ $selectedUser->id }}" />
+                                @endif
+                                <div class="flex-1">
+                                    <label for="search" class="mb-1 block text-xs uppercase tracking-[0.12em] text-slate-500">Search user</label>
+                                    <input id="search" type="text" name="search" value="{{ $search }}" placeholder="Name / email"
+                                        class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:border-sky-400 focus:ring-sky-200" />
+                                </div>
+                                <button type="submit"
+                                    class="rounded-xl border border-sky-200 bg-sky-50 px-4 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-100 transition">Search</button>
+                            </form>
+                        </div>
+
+                        <div class="space-y-2 max-h-80 overflow-auto pr-1">
+                            @forelse ($users as $listedUser)
+                                <a href="{{ route('chat.index', ['user_id' => $listedUser->id, 'search' => $search]) }}"
+                                    class="block rounded-xl border px-3 py-2 text-sm transition {{ $selectedUser?->id === $listedUser->id ? 'border-sky-300 bg-sky-50 text-sky-700' : 'border-slate-200 bg-white hover:border-sky-200' }}">
+                                    <p class="font-semibold">{{ $listedUser->full_name ?: $listedUser->name }}</p>
+                                    <p class="text-xs text-slate-500">{{ $listedUser->email }}</p>
+                                </a>
+                            @empty
+                                <p class="text-sm text-slate-500">No users found.</p>
+                            @endforelse
+                        </div>
                     </div>
                 </aside>
 
                 <section class="home-main rounded-2xl border border-slate-200 bg-white/90 p-4 sm:p-6 shadow-sm min-h-[28rem] flex flex-col">
-                    <div class="mb-4 rounded-xl border border-slate-200 bg-slate-50 p-3">
-                        <form method="GET" action="{{ route('chat.index') }}" class="flex gap-2 items-end">
-                            @if ($selectedUser)
-                                <input type="hidden" name="user_id" value="{{ $selectedUser->id }}" />
-                            @endif
-                            <div class="flex-1">
-                                <label for="search" class="mb-1 block text-xs uppercase tracking-[0.12em] text-slate-500">Search user</label>
-                                <input id="search" type="text" name="search" value="{{ $search }}" placeholder="Name / email"
-                                    class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:border-sky-400 focus:ring-sky-200" />
-                            </div>
-                            <button type="submit"
-                                class="rounded-xl border border-sky-200 bg-sky-50 px-4 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-100 transition">Search</button>
-                        </form>
-                    </div>
 
                     @if (session('status'))
                         <div class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-700">
@@ -237,7 +258,7 @@
                             <div>
                                 <div class="text-4xl">💬</div>
                                 <h2 class="mt-3 text-lg font-semibold text-slate-800">Select a user to start chat</h2>
-                                <p class="text-sm text-slate-500 mt-1">Search for a student or teacher, then send your message.</p>
+                                <p class="text-sm text-slate-500 mt-1">Choose a student or teacher from the left list, then send your message.</p>
                             </div>
                         </div>
                     @else
