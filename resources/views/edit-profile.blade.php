@@ -83,11 +83,94 @@
 
 
 
-                    <div class="grid gap-5 lg:grid-cols-[220px_1fr]">
-                        <aside class="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-sm">
+                    <div class="grid gap-5 lg:grid-cols-[220px_250px_1fr]">
+                        <aside class="rounded-2xl border border-[#b9dbef] bg-[#d8ecf7] p-4 shadow-sm">
+                            <div class="flex items-center gap-3 mb-4 pb-3 border-b border-sky-200/80">
+                                <img src="{{ $user->profile_pic ?: '/images/default-profile.svg' }}" alt="Profile"
+                                    class="w-11 h-11 rounded-full border border-slate-200 object-cover bg-sky-50" />
+                                <div>
+                                    <p class="text-sm font-semibold text-slate-800">{{ $user->name }}</p>
+                                    <p class="text-xs uppercase tracking-wide text-sky-700">
+                                        {{ $role === 'student' ? 'Pelajar' : 'Pensyarah' }}</p>
+                                </div>
+                            </div>
+
+                            <p class="text-xs uppercase tracking-[0.12em] text-slate-500 mb-3">Menu</p>
+                            <nav class="space-y-3 text-sm">
+                                <a href="{{ route('inbox') }}" title="Inbox" aria-label="Inbox"
+                                    class="flex w-full items-center gap-3 rounded-xl border border-slate-200/80 bg-white/95 px-3 py-2.5 text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">
+                                    <span
+                                        class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-slate-500">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <path d="M22 12.2V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v5.2" />
+                                            <path
+                                                d="M2 12.2h4.7a2 2 0 0 1 1.4.6l1 1a2 2 0 0 0 1.4.6h3a2 2 0 0 0 1.4-.6l1-1a2 2 0 0 1 1.4-.6H22" />
+                                            <path d="M22 12.2V17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-4.8" />
+                                        </svg>
+                                    </span>
+                                    <span class="text-sm font-medium text-slate-700">Inbox</span>
+                                </a>
+                                <a href="{{ route('chat.index') }}" title="Chat Box" aria-label="Chat Box"
+                                    class="flex w-full items-center gap-3 rounded-xl border border-slate-200/80 bg-white/95 px-3 py-2.5 text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">
+                                    <span
+                                        class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-slate-500">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                        </svg>
+                                    </span>
+                                    <span class="text-sm font-medium text-slate-700">Chat Box</span>
+                                </a>
+                                <a href="{{ route('booking.index') }}" title="Booking" aria-label="Booking"
+                                    class="flex w-full items-center gap-3 rounded-xl border border-slate-200/80 bg-white/95 px-3 py-2.5 text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">
+                                    <span
+                                        class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-slate-500">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <rect x="3" y="4" width="18" height="18" rx="2" />
+                                            <path d="M16 2v4M8 2v4M3 10h18" />
+                                        </svg>
+                                    </span>
+                                    <span class="text-sm font-medium text-slate-700">Booking</span>
+                                </a>
+                                <a href="{{ route('booking.history') }}" title="Booking History" aria-label="Booking History"
+                                    class="flex w-full items-center gap-3 rounded-xl border border-slate-200/80 bg-white/95 px-3 py-2.5 text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">
+                                    <span
+                                        class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-slate-500">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <path d="M3 3v5h5" />
+                                            <path d="M3.05 13A9 9 0 1 0 6 6.3L3 8" />
+                                            <path d="M12 7v5l3 2" />
+                                        </svg>
+                                    </span>
+                                    <span class="text-sm font-medium text-slate-700">Booking History</span>
+                                </a>
+                                <a href="{{ route('profile.edit') }}" title="Edit Profile" aria-label="Edit Profile"
+                                    class="flex w-full items-center gap-3 rounded-xl border border-sky-300 bg-white px-3 py-2.5 text-sky-700 ring-1 ring-sky-200 shadow-sm">
+                                    <span
+                                        class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-sky-300 bg-white">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Z" />
+                                            <path d="M4 20a8 8 0 0 1 16 0" />
+                                        </svg>
+                                    </span>
+                                    <span class="text-sm font-semibold">Edit Profile</span>
+                                </a>
+                            </nav>
+                        </aside>
+
+                        <aside class="rounded-2xl border border-sky-100 bg-gradient-to-b from-sky-100/70 to-white p-4 shadow-sm">
                             <div class="flex flex-col items-center text-center gap-2">
                                 <img src="{{ $user->profile_pic ?: '/images/default-profile.svg' }}" alt="Profile"
-                                    class="w-24 h-24 rounded-full border border-slate-200 object-cover bg-sky-50" />
+                                    class="w-24 h-24 rounded-full border border-sky-200 object-cover bg-sky-50" />
                                 <p class="font-semibold text-slate-800">{{ $user->full_name ?: $user->name }}</p>
                                 <p class="text-xs uppercase tracking-wide text-sky-700">{{ ucfirst($role) }}</p>
                             </div>
@@ -96,16 +179,21 @@
                                 enctype="multipart/form-data" class="mt-4 space-y-2">
                                 @csrf
                                 <input type="file" name="profile_pic" accept=".jpg,.jpeg,.png,.webp"
-                                    class="block w-full text-xs" />
+                                    class="block w-full rounded-lg border border-sky-200 bg-white px-2.5 py-2 text-xs" />
                                 <button type="submit"
                                     class="w-full rounded-xl bg-sky-600 px-3 py-2 text-sm font-semibold text-white hover:bg-sky-700 transition">Update
                                     Photo</button>
+                                <p class="text-[11px] text-slate-500 text-center">Recommended: square image, max 2MB.</p>
                             </form>
                         </aside>
 
                         <form method="POST" action="{{ route('profile.update') }}"
-                            class="rounded-2xl border border-slate-200 bg-white/90 p-4 sm:p-5 shadow-sm space-y-4">
+                            class="rounded-2xl border border-sky-100 bg-white/95 p-4 sm:p-5 shadow-sm space-y-4">
                             @csrf
+                            <div class="rounded-xl border border-sky-100 bg-sky-50/70 px-3 py-2">
+                                <p class="text-xs font-semibold uppercase tracking-[0.12em] text-sky-700">Account Details</p>
+                                <p class="mt-0.5 text-xs text-slate-600">Keep your personal info up to date for smoother counselling sessions.</p>
+                            </div>
                             <div>
                                 <label for="full_name" class="block text-sm font-medium text-slate-700 mb-1.5">Full
                                     Name</label>
@@ -120,6 +208,7 @@
                                 <input id="phone" name="phone" type="text"
                                     value="{{ old('phone', $user->phone) }}"
                                     class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition" />
+                                <p class="mt-1 text-xs text-slate-500">Use an active number for OTP verification and booking updates.</p>
                             </div>
 
                             @if ($role === 'student')
@@ -164,7 +253,6 @@
                             @endif
                         </form>
                     </div>
-
                 @endif
             </div>
 
