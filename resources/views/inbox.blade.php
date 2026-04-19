@@ -57,6 +57,18 @@
             display: block;
         }
 
+        .inbox-loader {
+            animation: inbox-loader-fade 0.45s ease 1.2s forwards;
+        }
+
+        @keyframes inbox-loader-fade {
+            to {
+                opacity: 0;
+                visibility: hidden;
+                pointer-events: none;
+            }
+        }
+
         @media (min-width: 1280px) {
             .home-shell {
                 flex-direction: row;
@@ -85,18 +97,18 @@
 
 <body class="bg-slate-100 min-h-screen text-slate-700">
 
-    <div id="loginLoader"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-sky-500/95 transition-opacity duration-700">
-        <div class="flex flex-col items-center gap-3">
-            <div class="w-16 h-16 rounded-full border-10 border-white/35 border-t-white animate-spin"></div>
-            <p class="text-white font-semibold tracking-wide">Loading secure portal...</p>
-        </div>
-    </div>
 
 
     @php
         $sidebarRoleLabel = $role === 'teacher' ? 'PENSYARAH' : 'PELAJAR';
     @endphp
+
+    <div class="inbox-loader fixed inset-0 z-[90] flex items-center justify-center bg-sky-500/95">
+        <div class="flex flex-col items-center gap-3">
+            <span class="h-16 w-16 animate-spin rounded-full border-8 border-white/30 border-t-white"></span>
+            <p class="text-xl font-semibold text-white">Loading secure portal...</p>
+        </div>
+    </div>
     <div class="max-w-6xl mx-auto px-3 sm:px-5 py-5 sm:py-7">
         <div class="rounded-3xl border border-slate-200 bg-white shadow-sm overflow-hidden">
             <header
