@@ -58,15 +58,15 @@
         }
 
         .inbox-loader {
-            animation: inbox-loader-fade 0.45s ease 1.2s forwards;
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.45s ease, visibility 0.45s ease;
         }
 
-        @keyframes inbox-loader-fade {
-            to {
-                opacity: 0;
-                visibility: hidden;
-                pointer-events: none;
-            }
+        .inbox-loader.is-hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
         }
 
         @media (min-width: 1280px) {
@@ -103,7 +103,7 @@
         $sidebarRoleLabel = $role === 'teacher' ? 'PENSYARAH' : 'PELAJAR';
     @endphp
 
-    <div class="inbox-loader fixed inset-0 z-[90] flex items-center justify-center bg-sky-500/95">
+    <div id="inbox-loader" class="inbox-loader fixed inset-0 z-[90] flex items-center justify-center bg-sky-500/95">
         <div class="flex flex-col items-center gap-3">
             <span class="h-16 w-16 animate-spin rounded-full border-8 border-white/30 border-t-white"></span>
             <p class="text-xl font-semibold text-white">Loading secure portal...</p>
@@ -343,11 +343,27 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            const inboxLoader = document.getElementById('inbox-loader');
             const sidebar = document.getElementById('home-sidebar');
             const sidebarToggle = document.getElementById('sidebar-toggle');
             const sidebarClose = document.getElementById('sidebar-close');
             const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+            const loaderShownAt = Date.now();
+            const minimumLoaderMs = 3500;
 
+            const hideInboxLoader = () => {
+                if (!inboxLoader) return;
+                const elapsed = Date.now() - loaderShownAt;
+                const remaining = Math.max(0, minimumLoaderMs - elapsed);
+                window.setTimeout(() => {
+                    inboxLoader.classList.add('is-hidden');
+                }, remaining);
+            };
+
+            window.addEventListener('load', hideInboxLoader, {
+                once: true
+            });
+            window.setTimeout(hideInboxLoader, 5000);
             const closeSidebar = () => {
                 if (!sidebar || !sidebarBackdrop) return;
                 sidebar.classList.remove('is-open');
