@@ -43,20 +43,74 @@
                     </div>
 
                     <p class="text-xs uppercase tracking-[0.12em] text-slate-500 mb-3">Menu</p>
-                    <nav class="space-y-2 text-sm">
-                        <a href="{{ route('inbox') }}"
-                            class="block rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-sky-200 hover:text-sky-700 transition">Inbox</a>
-                        <a href="{{ route('chat.index') }}"
-                            class="block rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-sky-200 hover:text-sky-700 transition">Chat
-                            Box</a>
-                        <a href="{{ route('booking.index') }}"
-                            class="block rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-sky-200 hover:text-sky-700 transition">Booking</a>
-                        <a href="{{ route('booking.history') }}"
-                            class="block rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-sky-700">Booking
-                            History</a>
-                        <a href="{{ route('profile.edit') }}"
-                            class="block rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-sky-200 hover:text-sky-700 transition">Edit
-                            Profile</a>
+                    <nav class="space-y-3 text-sm">
+                        <a href="{{ route('inbox') }}" title="Inbox" aria-label="Inbox"
+                            class="flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">
+                            <span
+                                class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M22 12.2V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v5.2" />
+                                    <path
+                                        d="M2 12.2h4.7a2 2 0 0 1 1.4.6l1 1a2 2 0 0 0 1.4.6h3a2 2 0 0 0 1.4-.6l1-1a2 2 0 0 1 1.4-.6H22" />
+                                    <path d="M22 12.2V17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-4.8" />
+                                </svg>
+                            </span>
+                            <span class="text-sm font-medium text-slate-700">Inbox</span>
+                        </a>
+                        <a href="{{ route('chat.index') }}" title="Chat Box" aria-label="Chat Box"
+                            class="flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">
+                            <span
+                                class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                </svg>
+                            </span>
+                            <span class="text-sm font-medium text-slate-700">Chat Box</span>
+                        </a>
+                        <a href="{{ route('booking.index') }}" title="Booking" aria-label="Booking"
+                            class="flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">
+                            <span
+                                class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" />
+                                    <path d="M16 2v4M8 2v4M3 10h18" />
+                                </svg>
+                            </span>
+                            <span class="text-sm font-medium text-slate-700">Booking</span>
+                        </a>
+                        <a href="{{ route('booking.history') }}" title="Booking History" aria-label="Booking History"
+                            class="flex w-full items-center gap-3 rounded-xl border border-sky-200 bg-sky-50 px-3 py-2.5 text-sky-700 shadow-sm">
+                            <span
+                                class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-sky-200 bg-white">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M3 3v5h5" />
+                                    <path d="M3.05 13A9 9 0 1 0 6 6.3L3 8" />
+                                    <path d="M12 7v5l3 2" />
+                                </svg>
+                            </span>
+                            <span class="text-sm font-semibold">Booking History</span>
+                        </a>
+                        <a href="{{ route('profile.edit') }}" title="Edit Profile" aria-label="Edit Profile"
+                            class="flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">
+                            <span
+                                class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Z" />
+                                    <path d="M4 20a8 8 0 0 1 16 0" />
+                                </svg>
+                            </span>
+                            <span class="text-sm font-medium text-slate-700">Edit Profile</span>
+                        </a>
                     </nav>
                 </aside>
 

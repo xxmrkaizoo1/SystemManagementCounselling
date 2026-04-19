@@ -10,6 +10,12 @@
 </head>
 
 <body class="min-h-screen bg-slate-50 text-slate-700 overflow-x-hidden">
+    <div class="fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_#dbeafe_0%,_#f8fafc_30%,_#f1f5f9_100%)]">
+        </div>
+        <div class="absolute -top-24 -left-24 h-80 w-80 rounded-full bg-sky-300/30 blur-3xl"></div>
+        <div class="absolute top-24 -right-16 h-80 w-80 rounded-full bg-indigo-300/25 blur-3xl"></div>
+    </div>
     <main class="min-h-screen p-4 sm:p-8">
         <section
             class="max-w-[96rem] mx-auto rounded-[2rem] border border-slate-200/80 bg-white/75 backdrop-blur-xl shadow-2xl overflow-hidden">
@@ -20,9 +26,14 @@
                     <h1 class="text-xl sm:text-2xl font-bold text-slate-800">Booking Form ({{ ucfirst($role) }})</h1>
                     <p class="text-sm text-slate-500 mt-1">Pilih slot dari calendar untuk buat request kaunselor.</p>
                 </div>
-                <a href="{{ route('home.session') }}"
-                    class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">Back
-                    to Home</a>
+                <div class="flex items-center gap-2">
+                    <span
+                        class="hidden sm:inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">Ready
+                        to book</span>
+                    <a href="{{ route('home.session') }}"
+                        class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">Back
+                        to Home</a>
+                </div>
             </header>
 
             <div class="p-5 sm:p-7 grid lg:grid-cols-[220px_1fr] gap-5">
@@ -38,24 +49,96 @@
                     </div>
 
                     <p class="text-xs uppercase tracking-[0.12em] text-slate-500 mb-3">Menu</p>
-                    <nav class="space-y-2 text-sm">
-                        <a href="{{ route('inbox') }}"
-                            class="block rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-sky-200 hover:text-sky-700 transition">Inbox</a>
-                        <a href="{{ route('chat.index') }}"
-                            class="block rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-sky-200 hover:text-sky-700 transition">Chat
-                            Box</a>
-                        <a href="{{ route('booking.index') }}"
-                            class="block rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-sky-700">Booking</a>
-                        <a href="{{ route('booking.history') }}"
-                            class="block rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-sky-200 hover:text-sky-700 transition">Booking
-                            History</a>
-                        <a href="{{ route('profile.edit') }}"
-                            class="block rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-sky-200 hover:text-sky-700 transition">Edit
-                            Profile</a>
+                    <nav class="space-y-3 text-sm">
+                        <a href="{{ route('inbox') }}" title="Inbox" aria-label="Inbox"
+                            class="flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">
+                            <span
+                                class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M22 12.2V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v5.2" />
+                                    <path
+                                        d="M2 12.2h4.7a2 2 0 0 1 1.4.6l1 1a2 2 0 0 0 1.4.6h3a2 2 0 0 0 1.4-.6l1-1a2 2 0 0 1 1.4-.6H22" />
+                                    <path d="M22 12.2V17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-4.8" />
+                                </svg>
+                            </span>
+                            <span class="text-sm font-medium text-slate-700">Inbox</span>
+                        </a>
+                        <a href="{{ route('chat.index') }}" title="Chat Box" aria-label="Chat Box"
+                            class="flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">
+                            <span
+                                class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                </svg>
+                            </span>
+                            <span class="text-sm font-medium text-slate-700">Chat Box</span>
+                        </a>
+                        <a href="{{ route('booking.index') }}" title="Booking" aria-label="Booking"
+                            class="flex w-full items-center gap-3 rounded-xl border border-sky-200 bg-sky-50 px-3 py-2.5 text-sky-700 shadow-sm">
+                            <span
+                                class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-sky-200 bg-white">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" />
+                                    <path d="M16 2v4M8 2v4M3 10h18" />
+                                </svg>
+                            </span>
+                            <span class="text-sm font-semibold">Booking</span>
+                        </a>
+                        <a href="{{ route('booking.history') }}" title="Booking History" aria-label="Booking History"
+                            class="flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">
+                            <span
+                                class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M3 3v5h5" />
+                                    <path d="M3.05 13A9 9 0 1 0 6 6.3L3 8" />
+                                    <path d="M12 7v5l3 2" />
+                                </svg>
+                            </span>
+                            <span class="text-sm font-medium text-slate-700">Booking History</span>
+                        </a>
+                        <a href="{{ route('profile.edit') }}" title="Edit Profile" aria-label="Edit Profile"
+                            class="flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">
+                            <span
+                                class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Z" />
+                                    <path d="M4 20a8 8 0 0 1 16 0" />
+                                </svg>
+                            </span>
+                            <span class="text-sm font-medium text-slate-700">Edit Profile</span>
+                        </a>
                     </nav>
                 </aside>
 
                 <section class="rounded-2xl border border-slate-200 bg-white/90 p-4 sm:p-6 shadow-sm space-y-5">
+                    <div class="grid gap-3 sm:grid-cols-3">
+                        <article class="rounded-2xl border border-sky-100 bg-sky-50/70 p-4">
+                            <p class="text-xs font-semibold uppercase tracking-[0.1em] text-sky-700">Waktu operasi</p>
+                            <p class="mt-1 text-sm font-semibold text-slate-800">Isnin–Jumaat</p>
+                            <p class="text-xs text-slate-600">8:00 pagi hingga 5:00 petang</p>
+                        </article>
+                        <article class="rounded-2xl border border-amber-100 bg-amber-50/70 p-4">
+                            <p class="text-xs font-semibold uppercase tracking-[0.1em] text-amber-700">Perhatian</p>
+                            <p class="mt-1 text-sm font-semibold text-slate-800">Slot hujung minggu ditutup</p>
+                            <p class="text-xs text-slate-600">Sistem akan blok tempahan automatik.</p>
+                        </article>
+                        <article class="rounded-2xl border border-emerald-100 bg-emerald-50/70 p-4">
+                            <p class="text-xs font-semibold uppercase tracking-[0.1em] text-emerald-700">Cadangan</p>
+                            <p class="mt-1 text-sm font-semibold text-slate-800">Isi nota dengan jelas</p>
+                            <p class="text-xs text-slate-600">Supaya kaunselor lebih bersedia untuk sesi anda.</p>
+                        </article>
+                    </div>
+
                     <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                         <h2 class="font-semibold text-slate-800">Cara guna</h2>
                         <ol class="text-sm text-slate-600 mt-2 list-decimal pl-5 space-y-1">
@@ -74,7 +157,11 @@
                                     class="px-4 py-3 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
                                     <button id="calendar-prev"
                                         class="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm hover:border-sky-200 hover:text-sky-700">←</button>
-                                    <h3 id="calendar-title" class="font-semibold text-slate-700">Month Year</h3>
+                                    <div class="flex items-center gap-2">
+                                        <h3 id="calendar-title" class="font-semibold text-slate-700">Month Year</h3>
+                                        <button id="calendar-today"
+                                            class="rounded-lg border border-sky-200 bg-sky-50 px-2.5 py-1.5 text-xs font-semibold text-sky-700 hover:bg-sky-100">Today</button>
+                                    </div>
                                     <button id="calendar-next"
                                         class="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm hover:border-sky-200 hover:text-sky-700">→</button>
                                 </div>
@@ -100,6 +187,11 @@
                                     <li class="rounded-lg border border-amber-200 bg-amber-50 p-2">🟡 Pending</li>
                                     <li class="rounded-lg border border-sky-200 bg-sky-50 p-2">🔵 Booked</li>
                                 </ul>
+                                <div class="mt-4 rounded-lg border border-slate-200 bg-white p-3 text-xs text-slate-600">
+                                    <p class="font-semibold text-slate-700">Tip cepat</p>
+                                    <p class="mt-1">Klik <span class="font-semibold text-sky-700">Today</span> untuk kembali
+                                        ke bulan semasa.</p>
+                                </div>
                             </aside>
                         </div>
                     </div>
@@ -174,6 +266,7 @@
                     <textarea id="request-note" rows="4" required maxlength="500"
                         placeholder="Contoh: Saya perlukan sesi berkaitan tekanan akademik dan pengurusan masa."
                         class="w-full rounded-xl border-slate-200 text-sm"></textarea>
+                    <p class="mt-1 text-xs text-slate-500">Maksimum 500 aksara. <span id="request-note-counter">0</span>/500</p>
                 </div>
                 <div class="flex justify-end gap-2">
                     <button type="button" id="request-cancel"
@@ -195,6 +288,7 @@
             const calendarTitle = document.getElementById('calendar-title');
             const prevBtn = document.getElementById('calendar-prev');
             const nextBtn = document.getElementById('calendar-next');
+            const todayBtn = document.getElementById('calendar-today');
 
             const scheduleModal = document.getElementById('schedule-modal');
             const scheduleModalTitle = document.getElementById('schedule-modal-title');
@@ -209,6 +303,7 @@
             const requestTime = document.getElementById('request-time');
             const requestCounsellor = document.getElementById('request-counsellor');
             const requestNote = document.getElementById('request-note');
+            const requestNoteCounter = document.getElementById('request-note-counter');
             const csrfMeta = document.querySelector('meta[name="csrf-token"]');
             const csrfToken = csrfMeta ? csrfMeta.getAttribute('content') : '';
             const toastContainer = document.getElementById('booking-toast-container');
@@ -361,6 +456,11 @@
                 requestModal.classList.add('hidden');
                 requestModal.classList.remove('flex');
                 selectedRequestTime = null;
+            };
+
+            const updateNoteCounter = () => {
+                if (!requestNote || !requestNoteCounter) return;
+                requestNoteCounter.textContent = String(requestNote.value.length);
             };
 
             const closeScheduleModal = () => {
@@ -566,6 +666,13 @@
                 renderCalendar();
             });
 
+            if (todayBtn) {
+                todayBtn.addEventListener('click', () => {
+                    activeDate = new Date(todayStart);
+                    renderCalendar();
+                });
+            }
+
             if (hasScheduleModal) {
                 scheduleModalClose.addEventListener('click', closeScheduleModal);
                 scheduleModal.addEventListener('click', (event) => {
@@ -574,6 +681,7 @@
             }
 
             if (hasRequestModal) {
+                requestNote.addEventListener('input', updateNoteCounter);
                 requestModalClose.addEventListener('click', closeRequestModal);
                 requestCancel.addEventListener('click', closeRequestModal);
                 requestModal.addEventListener('click', (event) => {
@@ -581,6 +689,7 @@
                 });
             }
 
+            updateNoteCounter();
             renderCalendar();
         });
     </script>
