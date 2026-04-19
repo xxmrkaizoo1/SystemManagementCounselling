@@ -79,9 +79,18 @@
                     <span
                         class="hidden sm:inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">Ready
                         to book</span>
-                    <a href="{{ route('home.session') }}"
-                        class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">Back
-                        to Home</a>
+                    <div class="flex items-center gap-2">
+                        <a href="{{ route('home.session') }}"
+                            class="rounded-xl border border-slate-200 bg-white p-3 text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">
+
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 9.75L12 4l9 5.75M4.5 10.5V19.5A1.5 1.5 0 006 21h3.75v-4.5h4.5V21H18a1.5 1.5 0 001.5-1.5v-9" />
+                            </svg>
+
+                        </a>
+                    </div>
                 </div>
             </header>
 
@@ -236,9 +245,11 @@
                                     <li class="rounded-lg border border-amber-200 bg-amber-50 p-2">🟡 Pending</li>
                                     <li class="rounded-lg border border-sky-200 bg-sky-50 p-2">🔵 Booked</li>
                                 </ul>
-                                <div class="mt-4 rounded-lg border border-slate-200 bg-white p-3 text-xs text-slate-600">
+                                <div
+                                    class="mt-4 rounded-lg border border-slate-200 bg-white p-3 text-xs text-slate-600">
                                     <p class="font-semibold text-slate-700">Tip cepat</p>
-                                    <p class="mt-1">Klik <span class="font-semibold text-sky-700">Today</span> untuk kembali
+                                    <p class="mt-1">Klik <span class="font-semibold text-sky-700">Today</span> untuk
+                                        kembali
                                         ke bulan semasa.</p>
                                 </div>
                             </aside>
@@ -698,7 +709,8 @@
                         return;
                     }
 
-                    const resolvedReason = selectedReason === 'Lain-lain' ? reasonDetail : selectedReason;
+                    const resolvedReason = selectedReason === 'Lain-lain' ? reasonDetail :
+                        selectedReason;
                     const finalNote = `[Sebab sesi: ${resolvedReason}] ${note}`;
 
                     const requestDateValue = selectedScheduleDate.toISOString().slice(0, 10);

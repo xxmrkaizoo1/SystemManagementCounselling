@@ -94,26 +94,33 @@
                 <div>
                     <p class="text-xs uppercase tracking-[0.14em] text-slate-500">CollegeCare</p>
                     <h1 class="text-xl sm:text-2xl font-bold text-slate-800">Student & Teacher Inbox</h1>
-                    <p class="text-sm text-slate-500 mt-1">{{ $user->full_name ?: $user->name }} • {{ ucfirst($role) }}</p>
+                    <p class="text-sm text-slate-500 mt-1">{{ $user->full_name ?: $user->name }} • {{ ucfirst($role) }}
+                    </p>
                 </div>
                 <div class="flex items-center gap-2">
                     <button type="button" id="sidebar-toggle"
                         class="sidebar-toggle rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">
                         Menu
                     </button>
-                    <a href="{{ route('home.session') }}"
-                        class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">Home
-                        Session</a>
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit"
-                            class="rounded-xl bg-sky-600 px-3 py-2 text-sm font-semibold text-white hover:bg-sky-700 transition">Logout</button>
-                    </form>
+                    <div class="flex items-center gap-2">
+                        <a href="{{ route('home.session') }}"
+                            class="rounded-xl border border-slate-200 bg-white p-3 text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">
+
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 9.75L12 4l9 5.75M4.5 10.5V19.5A1.5 1.5 0 006 21h3.75v-4.5h4.5V21H18a1.5 1.5 0 001.5-1.5v-9" />
+                            </svg>
+
+                        </a>
+                    </div>
+
                 </div>
             </header>
 
             <div class="p-5 sm:p-7 home-shell">
-                <aside id="home-sidebar" class="home-sidebar rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm">
+                <aside id="home-sidebar"
+                    class="home-sidebar rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm">
                     <div class="flex justify-end xl:hidden mb-2">
                         <button type="button" id="sidebar-close"
                             class="sidebar-close-btn rounded-lg border border-slate-200 px-2.5 py-1 text-sm text-slate-600 hover:text-sky-700 hover:border-sky-200">
@@ -134,11 +141,14 @@
                     <nav class="space-y-3 text-sm">
                         <a href="{{ route('inbox') }}" title="Inbox" aria-label="Inbox"
                             class="flex w-full items-center gap-3 rounded-xl border border-sky-200 bg-sky-50 px-3 py-2.5 text-sky-700 transition">
-                            <span class="inline-flex h-12 w-12 items-center justify-center rounded-xl border border-sky-200 bg-white">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <span
+                                class="inline-flex h-12 w-12 items-center justify-center rounded-xl border border-sky-200 bg-white">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                    stroke-linejoin="round">
                                     <path d="M22 12.2V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v5.2" />
-                                    <path d="M2 12.2h4.7a2 2 0 0 1 1.4.6l1 1a2 2 0 0 0 1.4.6h3a2 2 0 0 0 1.4-.6l1-1a2 2 0 0 1 1.4-.6H22" />
+                                    <path
+                                        d="M2 12.2h4.7a2 2 0 0 1 1.4.6l1 1a2 2 0 0 0 1.4.6h3a2 2 0 0 0 1.4-.6l1-1a2 2 0 0 1 1.4-.6H22" />
                                     <path d="M22 12.2V17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-4.8" />
                                 </svg>
                             </span>
@@ -147,9 +157,11 @@
 
                         <a href="{{ route('chat.index') }}" title="Chat Box" aria-label="Chat Box"
                             class="flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">
-                            <span class="inline-flex h-12 w-12 items-center justify-center rounded-xl border border-slate-200 bg-slate-50">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <span
+                                class="inline-flex h-12 w-12 items-center justify-center rounded-xl border border-slate-200 bg-slate-50">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                    stroke-linejoin="round">
                                     <path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                                 </svg>
                             </span>
@@ -158,9 +170,11 @@
 
                         <a href="{{ route('booking.index') }}" title="Booking" aria-label="Booking"
                             class="flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">
-                            <span class="inline-flex h-12 w-12 items-center justify-center rounded-xl border border-slate-200 bg-slate-50">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <span
+                                class="inline-flex h-12 w-12 items-center justify-center rounded-xl border border-slate-200 bg-slate-50">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                    stroke-linejoin="round">
                                     <rect x="3" y="4" width="18" height="18" rx="2" />
                                     <path d="M16 2v4M8 2v4M3 10h18" />
                                 </svg>
@@ -170,9 +184,11 @@
 
                         <a href="{{ route('booking.history') }}" title="Booking History" aria-label="Booking History"
                             class="flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">
-                            <span class="inline-flex h-12 w-12 items-center justify-center rounded-xl border border-slate-200 bg-slate-50">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <span
+                                class="inline-flex h-12 w-12 items-center justify-center rounded-xl border border-slate-200 bg-slate-50">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                    stroke-linejoin="round">
                                     <path d="M3 3v5h5" />
                                     <path d="M3.05 13A9 9 0 1 0 6 6.3L3 8" />
                                     <path d="M12 7v5l3 2" />
@@ -183,9 +199,11 @@
 
                         <a href="{{ route('profile.edit') }}" title="Edit Profile" aria-label="Edit Profile"
                             class="flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">
-                            <span class="inline-flex h-12 w-12 items-center justify-center rounded-xl border border-slate-200 bg-slate-50">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <span
+                                class="inline-flex h-12 w-12 items-center justify-center rounded-xl border border-slate-200 bg-slate-50">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                    stroke-linejoin="round">
                                     <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Z" />
                                     <path d="M4 20a8 8 0 0 1 16 0" />
                                 </svg>
@@ -195,32 +213,43 @@
                     </nav>
                 </aside>
 
-                <section class="home-main rounded-2xl border border-slate-200 bg-white/90 p-5 sm:p-6 shadow-sm min-h-[26rem]">
+                <section
+                    class="home-main rounded-2xl border border-slate-200 bg-white/90 p-5 sm:p-6 shadow-sm min-h-[26rem]">
                     @if (session('status'))
-                        <div class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-700">
+                        <div
+                            class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-700">
                             {{ session('status') }}
                         </div>
                     @endif
 
                     <div class="mb-4 rounded-xl border border-slate-200 bg-slate-50 p-3">
-                        <form method="GET" action="{{ route('inbox') }}" class="grid gap-3 sm:grid-cols-2 xl:grid-cols-5 items-end">
+                        <form method="GET" action="{{ route('inbox') }}"
+                            class="grid gap-3 sm:grid-cols-2 xl:grid-cols-5 items-end">
                             <div>
-                                <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">Date from</label>
+                                <label
+                                    class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">Date
+                                    from</label>
                                 <input type="date" name="date_from" value="{{ $filters['date_from'] ?? '' }}"
                                     class="w-full rounded-lg border-slate-200 bg-white text-sm" />
                             </div>
                             <div>
-                                <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">Date to</label>
+                                <label
+                                    class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">Date
+                                    to</label>
                                 <input type="date" name="date_to" value="{{ $filters['date_to'] ?? '' }}"
                                     class="w-full rounded-lg border-slate-200 bg-white text-sm" />
                             </div>
                             <div>
-                                <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">Time from</label>
+                                <label
+                                    class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">Time
+                                    from</label>
                                 <input type="time" name="time_from" value="{{ $filters['time_from'] ?? '' }}"
                                     class="w-full rounded-lg border-slate-200 bg-white text-sm" />
                             </div>
                             <div>
-                                <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">Time to</label>
+                                <label
+                                    class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">Time
+                                    to</label>
                                 <input type="time" name="time_to" value="{{ $filters['time_to'] ?? '' }}"
                                     class="w-full rounded-lg border-slate-200 bg-white text-sm" />
                             </div>
@@ -240,10 +269,13 @@
                     @if ($notifications->isEmpty())
                         <div class="flex min-h-[18rem] items-center justify-center text-center max-w-md mx-auto">
                             <div>
-                                <div class="mx-auto w-14 h-14 rounded-2xl bg-sky-100 text-sky-700 grid place-items-center text-2xl">
+                                <div
+                                    class="mx-auto w-14 h-14 rounded-2xl bg-sky-100 text-sky-700 grid place-items-center text-2xl">
                                     📭</div>
-                                <h2 class="mt-4 text-lg sm:text-xl font-semibold text-slate-800">No notifications found</h2>
-                                <p class="mt-2 text-sm text-slate-500">Try changing your date/time filter, or check again later for new updates.</p>
+                                <h2 class="mt-4 text-lg sm:text-xl font-semibold text-slate-800">No notifications found
+                                </h2>
+                                <p class="mt-2 text-sm text-slate-500">Try changing your date/time filter, or check
+                                    again later for new updates.</p>
                             </div>
                         </div>
                     @else
@@ -257,8 +289,10 @@
                                         </div>
 
                                         <div class="flex items-center gap-2">
-                                            <span class="text-xs text-slate-500 whitespace-nowrap">{{ $notification->created_at?->format('Y-m-d H:i:s') }}</span>
-                                            <form method="POST" action="{{ route('inbox.notification.delete', $notification) }}">
+                                            <span
+                                                class="text-xs text-slate-500 whitespace-nowrap">{{ $notification->created_at?->format('Y-m-d H:i:s') }}</span>
+                                            <form method="POST"
+                                                action="{{ route('inbox.notification.delete', $notification) }}">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit"
@@ -278,7 +312,8 @@
 
             <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
 
-            <footer class="px-6 sm:px-8 py-4 border-t border-slate-200/80 text-center text-sm text-slate-500 bg-white/80">
+            <footer
+                class="px-6 sm:px-8 py-4 border-t border-slate-200/80 text-center text-sm text-slate-500 bg-white/80">
                 © {{ date('Y') }} CollegeCare • Counselling Booking System
             </footer>
         </div>
