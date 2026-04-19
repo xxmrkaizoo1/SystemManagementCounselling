@@ -11,9 +11,10 @@ use App\Models\ChatMessage;
 use App\Models\InboxNotification;
 use App\Models\Role;
 use App\Models\User;
-use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -58,7 +59,75 @@ Route::middleware('guest')->group(function () {
     Route::post('/signup/otp/resend', [AuthController::class, 'resendSignupOtp'])->name('signup.otp.resend');
 });
 
-Route::middleware('auth')->group(function () {
+$autoRejectExpiredBookings = static function (): void {
+    $now = now();
+
+    $pendingBookings = BookingRequest::query()
+        ->with('user:id,name,full_name,email')
+        ->where('status', 'pending')
+        ->whereDate('booking_date', '<=', $now->toDateString())
+        ->get();
+
+    $pendingBookings
+        ->filter(static function (BookingRequest $booking) use ($now): bool {
+            $bookingDate = (string) $booking->booking_date;
+            $rawTimeRange = trim((string) $booking->booking_time);
+            $timeRangeParts = preg_split('/\s*-\s*/', $rawTimeRange);
+            $endTime = trim((string) ($timeRangeParts[1] ?? ''));
+            $startTime = trim((string) ($timeRangeParts[0] ?? ''));
+            $comparisonTime = $endTime !== '' ? $endTime : $startTime;
+
+            if ($comparisonTime === '') {
+                return false;
+            }
+
+            try {
+                $bookingCutOff = Carbon::createFromFormat(
+                    'Y-m-d H:i',
+                    "{$bookingDate} {$comparisonTime}",
+                    config('app.timezone')
+                );
+            } catch (\Throwable) {
+                return false;
+            }
+
+            return $bookingCutOff->lessThanOrEqualTo($now);
+        })
+        ->each(static function (BookingRequest $booking): void {
+            $booking->update([
+                'status' => 'rejected',
+            ]);
+
+            $recipient = $booking->user;
+            if (! $recipient) {
+                return;
+            }
+
+            $notifyMessage = 'Your booking on ' . $booking->booking_date . ' (' . $booking->booking_time . ') with '
+                . $booking->counsellor_name . ' was auto-rejected because the session time has passed without approval.';
+
+            $recipient->inboxNotifications()->create([
+                'title' => 'Booking auto-rejected',
+                'message' => $notifyMessage,
+            ]);
+
+            if (! empty($recipient->email)) {
+                Mail::raw($notifyMessage, static function ($message) use ($recipient): void {
+                    $message->to($recipient->email)
+                        ->subject('CollegeCare Booking Auto-Rejected');
+                });
+            }
+        });
+};
+
+Route::middleware([
+    'auth',
+    static function (Request $request, \Closure $next) use ($autoRejectExpiredBookings) {
+        $autoRejectExpiredBookings();
+
+        return $next($request);
+    },
+])->group(function () {
     Route::get('/admin', function () {
         $role = request()->user()?->roles()->value('name');
 

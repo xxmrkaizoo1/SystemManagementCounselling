@@ -6,6 +6,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Approved, Booked & Completed • CollegeCare</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        @keyframes fadeSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes softPulse {
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.04);
+            }
+        }
+
+        .status-fade-up {
+            animation: fadeSlideUp 0.35s ease-out both;
+        }
+
+        .status-pulse {
+            animation: softPulse 0.35s ease-out;
+        }
+    </style>
 </head>
 
 <body class="min-h-screen bg-slate-50 text-slate-700">
@@ -30,15 +62,15 @@
                         {{ session('status') }}
                     </div>
                 @endif
-                <div class="mb-5 rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:p-5">
+                <div class="mb-5 rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 via-white to-slate-50 p-4 sm:p-5 shadow-sm status-fade-up">
                     <div class="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
-                        <section class="rounded-2xl border border-slate-200 bg-white overflow-hidden">
-                            <div class="px-4 py-3 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+                        <section class="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm">
+                            <div class="px-4 py-3 border-b border-slate-200 bg-gradient-to-r from-slate-50 to-white flex items-center justify-between">
                                 <button id="status-calendar-prev" type="button"
-                                    class="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm hover:border-sky-200 hover:text-sky-700">←</button>
+                                    class="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm hover:border-sky-200 hover:text-sky-700 hover:-translate-y-0.5 transition-all duration-200">←</button>
                                 <h2 id="status-calendar-title" class="font-semibold text-slate-700">Month Year</h2>
                                 <button id="status-calendar-next" type="button"
-                                    class="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm hover:border-sky-200 hover:text-sky-700">→</button>
+                                    class="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm hover:border-sky-200 hover:text-sky-700 hover:-translate-y-0.5 transition-all duration-200">→</button>
                             </div>
                             <div class="grid text-[11px] sm:text-xs bg-slate-100 text-slate-600"
                                 style="grid-template-columns: repeat(7, minmax(0, 1fr));">
@@ -50,7 +82,7 @@
                                 <div class="p-2 text-center font-semibold">Fri</div>
                                 <div class="p-2 text-center font-semibold">Sat</div>
                             </div>
-                            <div id="status-calendar-grid" class="grid"
+                            <div id="status-calendar-grid" class="grid bg-white"
                                 style="grid-template-columns: repeat(7, minmax(0, 1fr));"></div>
                         </section>
 
@@ -75,7 +107,7 @@
                                     </select>
                                 </label>
                                 <button id="session-clear-date" type="button"
-                                    class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">
+                                    class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:border-sky-200 hover:text-sky-700 hover:-translate-y-0.5 transition-all duration-200">
                                     Clear Date Filter
                                 </button>
                             </form>
@@ -210,6 +242,8 @@
                 for (let day = 1; day <= daysInMonth; day += 1) {
                     const date = new Date(year, month, day);
                     const isoDate = date.toISOString().slice(0, 10);
+                    const weekDay = date.getDay();
+                    const isWeekend = weekDay === 0 || weekDay === 6;
                     const isSelected = selectedDate === isoDate;
                     const hasBooking = bookedDates.has(isoDate);
                     const button = document.createElement('button');
@@ -217,18 +251,25 @@
                     button.type = 'button';
                     button.dataset.date = isoDate;
                     button.className = [
-                        'h-10 border-r border-b border-slate-100 text-sm transition',
-                        isSelected ? 'bg-sky-600 font-semibold text-white' : 'bg-white text-slate-700 hover:bg-sky-50',
-                        hasBooking && !isSelected ? 'font-semibold text-emerald-700' : '',
+                        'h-10 border-r border-b border-slate-100 text-sm transition-all duration-200',
+                        isWeekend ? 'bg-slate-50 text-slate-300 cursor-not-allowed' : 'bg-white text-slate-700 hover:bg-sky-50 hover:scale-[1.02]',
+                        isSelected ? 'bg-sky-600 font-semibold text-white shadow-inner' : '',
+                        hasBooking && !isSelected && !isWeekend ? 'font-semibold text-emerald-700 ring-1 ring-emerald-100' : '',
                     ].join(' ').trim();
                     button.textContent = String(day);
+                    button.title = isWeekend ? 'Weekend is not selectable' : (hasBooking ? 'Date with session record' : 'Filter by this date');
 
-                    button.addEventListener('click', () => {
-                        selectedDate = selectedDate === isoDate ? '' : isoDate;
-                        dateFilter.value = selectedDate ? dateLabel.format(date) : '';
-                        updateRows();
-                        renderCalendar();
-                    });
+                    if (!isWeekend) {
+                        button.addEventListener('click', () => {
+                            selectedDate = selectedDate === isoDate ? '' : isoDate;
+                            dateFilter.value = selectedDate ? dateLabel.format(date) : '';
+                            updateRows();
+                            renderCalendar();
+                        });
+                    } else {
+                        button.disabled = true;
+                        button.setAttribute('aria-disabled', 'true');
+                    }
 
                     calendarGrid.appendChild(button);
                 }
@@ -272,12 +313,21 @@
 
                 if (visibleCount) {
                     visibleCount.textContent = String(visible);
+                    visibleCount.classList.remove('status-pulse');
+                    void visibleCount.offsetWidth;
+                    visibleCount.classList.add('status-pulse');
                 }
                 if (approvedCount) {
                     approvedCount.textContent = String(approved);
+                    approvedCount.classList.remove('status-pulse');
+                    void approvedCount.offsetWidth;
+                    approvedCount.classList.add('status-pulse');
                 }
                 if (completedCount) {
                     completedCount.textContent = String(completed);
+                    completedCount.classList.remove('status-pulse');
+                    void completedCount.offsetWidth;
+                    completedCount.classList.add('status-pulse');
                 }
             };
 
