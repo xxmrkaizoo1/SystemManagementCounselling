@@ -164,6 +164,8 @@
                             @endif
                         </form>
                     </div>
+
+                @endif
             </div>
 
             <footer
