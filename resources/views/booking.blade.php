@@ -37,8 +37,8 @@
             </header>
 
             <div class="p-5 sm:p-7 grid lg:grid-cols-[220px_1fr] gap-5">
-                <aside class="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-sm">
-                    <div class="flex items-center gap-3 mb-4 pb-3 border-b border-slate-200">
+                <aside class="rounded-2xl border border-sky-100 bg-sky-100/60 p-4 shadow-sm">
+                    <div class="flex items-center gap-3 mb-4 pb-3 border-b border-sky-200/80">
                         <img src="{{ $user->profile_pic ?: '/images/default-profile.svg' }}" alt="Profile"
                             class="w-11 h-11 rounded-full border border-slate-200 object-cover bg-sky-50" />
                         <div>
@@ -51,9 +51,9 @@
                     <p class="text-xs uppercase tracking-[0.12em] text-slate-500 mb-3">Menu</p>
                     <nav class="space-y-3 text-sm">
                         <a href="{{ route('inbox') }}" title="Inbox" aria-label="Inbox"
-                            class="flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">
+                            class="flex w-full items-center gap-3 rounded-xl border border-slate-200/90 bg-white px-3 py-2.5 text-slate-600 hover:border-sky-300 hover:bg-sky-50/80 hover:text-sky-700 transition">
                             <span
-                                class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50">
+                                class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-600">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
                                     stroke-linejoin="round">
@@ -66,9 +66,9 @@
                             <span class="text-sm font-medium text-slate-700">Inbox</span>
                         </a>
                         <a href="{{ route('chat.index') }}" title="Chat Box" aria-label="Chat Box"
-                            class="flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">
+                            class="flex w-full items-center gap-3 rounded-xl border border-slate-200/90 bg-white px-3 py-2.5 text-slate-600 hover:border-sky-300 hover:bg-sky-50/80 hover:text-sky-700 transition">
                             <span
-                                class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50">
+                                class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-600">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
                                     stroke-linejoin="round">
@@ -78,9 +78,9 @@
                             <span class="text-sm font-medium text-slate-700">Chat Box</span>
                         </a>
                         <a href="{{ route('booking.index') }}" title="Booking" aria-label="Booking"
-                            class="flex w-full items-center gap-3 rounded-xl border border-sky-200 bg-sky-50 px-3 py-2.5 text-sky-700 shadow-sm">
+                            class="flex w-full items-center gap-3 rounded-xl border border-sky-300 bg-sky-50/90 px-3 py-2.5 text-sky-700 shadow-sm">
                             <span
-                                class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-sky-200 bg-white">
+                                class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-sky-300 bg-white">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
                                     stroke-linejoin="round">
@@ -91,9 +91,9 @@
                             <span class="text-sm font-semibold">Booking</span>
                         </a>
                         <a href="{{ route('booking.history') }}" title="Booking History" aria-label="Booking History"
-                            class="flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">
+                            class="flex w-full items-center gap-3 rounded-xl border border-slate-200/90 bg-white px-3 py-2.5 text-slate-600 hover:border-sky-300 hover:bg-sky-50/80 hover:text-sky-700 transition">
                             <span
-                                class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50">
+                                class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-600">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
                                     stroke-linejoin="round">
@@ -105,9 +105,9 @@
                             <span class="text-sm font-medium text-slate-700">Booking History</span>
                         </a>
                         <a href="{{ route('profile.edit') }}" title="Edit Profile" aria-label="Edit Profile"
-                            class="flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">
+                            class="flex w-full items-center gap-3 rounded-xl border border-slate-200/90 bg-white px-3 py-2.5 text-slate-600 hover:border-sky-300 hover:bg-sky-50/80 hover:text-sky-700 transition">
                             <span
-                                class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50">
+                                class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-600">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
                                     stroke-linejoin="round">
