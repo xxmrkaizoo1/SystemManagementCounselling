@@ -16,6 +16,8 @@
             <p class="text-white font-semibold tracking-wide">Loading secure portal...</p>
         </div>
     </div>
+
+
     <div class="fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
         <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_#e0f2fe_0%,_#f8fafc_35%,_#f1f5f9_100%)]">
         </div>

@@ -84,6 +84,16 @@
 </head>
 
 <body class="bg-slate-100 min-h-screen text-slate-700">
+
+    <div id="loginLoader"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-sky-500/95 transition-opacity duration-700">
+        <div class="flex flex-col items-center gap-3">
+            <div class="w-16 h-16 rounded-full border-10 border-white/35 border-t-white animate-spin"></div>
+            <p class="text-white font-semibold tracking-wide">Loading secure portal...</p>
+        </div>
+    </div>
+
+
     @php
         $sidebarRoleLabel = $role === 'teacher' ? 'PENSYARAH' : 'PELAJAR';
     @endphp
