@@ -7,6 +7,55 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Booking Form • CollegeCare</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        .form-label {
+            display: block;
+            margin-bottom: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: rgb(51 65 85);
+        }
+
+        .form-hint {
+            margin-top: 0.25rem;
+            font-size: 0.75rem;
+            color: rgb(100 116 139);
+        }
+
+        .form-control {
+            width: 100%;
+            border-radius: 0.75rem;
+            border: 1px solid rgb(226 232 240);
+            background: #fff;
+            padding: 0.625rem 0.75rem;
+            font-size: 0.875rem;
+            color: rgb(51 65 85);
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+            transition: all 0.2s ease;
+        }
+
+        .form-control:hover {
+            border-color: rgb(203 213 225);
+        }
+
+        .form-control:focus {
+            border-color: rgb(56 189 248);
+            box-shadow: 0 0 0 4px rgb(224 242 254);
+            outline: none;
+        }
+
+        .form-control[readonly] {
+            background: rgb(248 250 252);
+            color: rgb(71 85 105);
+        }
+
+        .request-card {
+            border-radius: 1rem;
+            border: 1px solid rgb(226 232 240);
+            background: #fff;
+            padding: 0.875rem;
+        }
+    </style>
 </head>
 
 <body class="min-h-screen bg-slate-50 text-slate-700 overflow-x-hidden">
@@ -233,37 +282,35 @@
         </div>
     </div>
 
-    <div id="request-modal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-[80] p-4 sm:p-8">
-        <div class="w-full max-w-xl bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
+    <div id="request-modal"
+        class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-[80] p-4 sm:p-8 opacity-0 transition duration-200">
+        <div id="request-modal-panel"
+            class="w-full max-w-xl bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden transform transition duration-200 opacity-0 translate-y-2 scale-[0.98]">
             <div
                 class="px-5 py-4 border-b border-slate-200 bg-gradient-to-r from-slate-50 to-white flex items-center justify-between">
                 <h3 class="text-lg font-semibold text-slate-800">Request Kaunselor</h3>
                 <button id="request-modal-close"
                     class="rounded-lg border border-slate-200 px-3 py-1.5 text-sm hover:border-sky-200 hover:text-sky-700">Tutup</button>
             </div>
-            <form id="request-form" class="p-5 space-y-4">
+            <form id="request-form" class="p-5 space-y-4 bg-gradient-to-b from-white to-slate-50/50">
                 <div class="grid sm:grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">Tarikh</label>
-                        <input id="request-date" type="text" readonly
-                            class="w-full rounded-xl border-slate-200 bg-slate-50 text-sm" />
+                    <div class="request-card">
+                        <label class="form-label">Tarikh</label>
+                        <input id="request-date" type="text" readonly class="form-control" />
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">Masa</label>
-                        <input id="request-time" type="text" readonly
-                            class="w-full rounded-xl border-slate-200 bg-slate-50 text-sm" />
+                    <div class="request-card">
+                        <label class="form-label">Masa</label>
+                        <input id="request-time" type="text" readonly class="form-control" />
                     </div>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Pilih kaunselor</label>
-                    <select id="request-counsellor" required
-                        class="w-full rounded-xl border-slate-200 bg-white text-sm">
+                <div class="request-card">
+                    <label class="form-label">Pilih kaunselor</label>
+                    <select id="request-counsellor" required class="form-control">
                     </select>
                 </div>
-                <div>
-                    <label for="request-reason" class="block text-sm font-medium text-slate-700 mb-1">Sebab
-                        booking</label>
-                    <select id="request-reason" required class="w-full rounded-xl border-slate-200 bg-white text-sm">
+                <div class="request-card">
+                    <label for="request-reason" class="form-label">Sebab booking</label>
+                    <select id="request-reason" required class="form-control">
                         <option value="">Pilih sebab sesi</option>
                         <option value="Tekanan akademik">Tekanan akademik</option>
                         <option value="Pengurusan masa">Pengurusan masa</option>
@@ -273,26 +320,26 @@
                         <option value="Lain-lain">Lain-lain</option>
                     </select>
                 </div>
-                <div id="request-reason-other-wrap" class="hidden">
-                    <label for="request-reason-other" class="block text-sm font-medium text-slate-700 mb-1">Nyatakan
+                <div id="request-reason-other-wrap"
+                    class="request-card hidden opacity-0 -translate-y-1 transition duration-200">
+                    <label for="request-reason-other" class="form-label">Nyatakan
                         sebab</label>
                     <input id="request-reason-other" type="text" maxlength="120"
-                        placeholder="Contoh: Konflik dengan rakan sebilik"
-                        class="w-full rounded-xl border-slate-200 bg-white text-sm" />
+                        placeholder="Contoh: Konflik dengan rakan sebilik" class="form-control" />
                 </div>
-                <div>
-                    <label for="request-note" class="block text-sm font-medium text-slate-700 mb-1">Notes kepada
+                <div class="request-card">
+                    <label for="request-note" class="form-label">Notes kepada
                         kaunselor</label>
                     <textarea id="request-note" rows="4" required maxlength="420"
                         placeholder="Contoh: Saya perlukan sesi berkaitan tekanan akademik dan pengurusan masa."
-                        class="w-full rounded-xl border-slate-200 text-sm"></textarea>
-                    <p class="mt-1 text-xs text-slate-500">Maksimum 420 aksara. <span id="request-note-counter">0</span>/420</p>
+                        class="form-control min-h-[120px] resize-y"></textarea>
+                    <p class="form-hint">Maksimum 420 aksara. <span id="request-note-counter">0</span>/420</p>
                 </div>
                 <div class="flex justify-end gap-2">
                     <button type="button" id="request-cancel"
-                        class="rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600">Cancel</button>
+                        class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-600 hover:border-slate-300 hover:bg-slate-50 transition">Cancel</button>
                     <button type="submit"
-                        class="rounded-xl bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700">Submit
+                        class="rounded-xl bg-sky-600 px-5 py-2 text-sm font-semibold text-white shadow-md shadow-sky-200/60 hover:bg-sky-700 hover:shadow-lg transition">Submit
                         request</button>
                 </div>
             </form>
@@ -316,6 +363,7 @@
             const scheduleModalClose = document.getElementById('schedule-modal-close');
 
             const requestModal = document.getElementById('request-modal');
+            const requestModalPanel = document.getElementById('request-modal-panel');
             const requestModalClose = document.getElementById('request-modal-close');
             const requestCancel = document.getElementById('request-cancel');
             const requestForm = document.getElementById('request-form');
@@ -346,7 +394,27 @@
                 scheduleModalClose);
             const hasRequestModal = Boolean(requestModal && requestModalClose && requestCancel && requestForm &&
                 requestDate && requestTime && requestCounsellor && requestReason && requestReasonOtherWrap &&
-                requestReasonOther && requestNote);
+                requestReasonOther && requestNote && requestModalPanel);
+
+            const openAnimatedModal = (overlay, panel) => {
+                overlay.classList.remove('hidden');
+                overlay.classList.add('flex');
+                requestAnimationFrame(() => {
+                    overlay.classList.remove('opacity-0');
+                    panel.classList.remove('opacity-0', 'translate-y-2', 'scale-[0.98]');
+                    panel.classList.add('opacity-100', 'translate-y-0', 'scale-100');
+                });
+            };
+
+            const closeAnimatedModal = (overlay, panel) => {
+                overlay.classList.add('opacity-0');
+                panel.classList.add('opacity-0', 'translate-y-2', 'scale-[0.98]');
+                panel.classList.remove('opacity-100', 'translate-y-0', 'scale-100');
+                window.setTimeout(() => {
+                    overlay.classList.add('hidden');
+                    overlay.classList.remove('flex');
+                }, 180);
+            };
 
             const buildHourlySlots = (startHour, endHour) => {
                 const slots = [];
@@ -472,16 +540,14 @@
                 renderCounsellorOptions(counsellor);
                 requestReason.value = '';
                 requestReasonOther.value = '';
-                requestReasonOtherWrap.classList.add('hidden');
+                requestReasonOtherWrap.classList.add('hidden', 'opacity-0', '-translate-y-1');
                 requestNote.value = '';
-                requestModal.classList.remove('hidden');
-                requestModal.classList.add('flex');
+                openAnimatedModal(requestModal, requestModalPanel);
             };
 
             const closeRequestModal = () => {
                 if (!hasRequestModal) return;
-                requestModal.classList.add('hidden');
-                requestModal.classList.remove('flex');
+                closeAnimatedModal(requestModal, requestModalPanel);
                 selectedRequestTime = null;
             };
 
@@ -726,8 +792,14 @@
             if (hasRequestModal) {
                 requestReason.addEventListener('change', () => {
                     const isOtherReason = requestReason.value === 'Lain-lain';
-                    requestReasonOtherWrap.classList.toggle('hidden', !isOtherReason);
-                    if (!isOtherReason) {
+                    if (isOtherReason) {
+                        requestReasonOtherWrap.classList.remove('hidden');
+                        requestAnimationFrame(() => {
+                            requestReasonOtherWrap.classList.remove('opacity-0', '-translate-y-1');
+                        });
+                    } else {
+                        requestReasonOtherWrap.classList.add('opacity-0', '-translate-y-1');
+                        window.setTimeout(() => requestReasonOtherWrap.classList.add('hidden'), 180);
                         requestReasonOther.value = '';
                     }
                 });
