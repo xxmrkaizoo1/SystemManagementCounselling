@@ -57,12 +57,12 @@
                     OTP</button>
             </form>
 
-            {{-- <form method="POST" action="{{ route('phone.otp.resend') }}">
+            <form method="POST" action="{{ route('phone.otp.resend') }}">
                 @csrf
                 <button type="submit"
                     class="w-full rounded-xl border border-slate-200 bg-white py-2.5 text-sm font-medium text-slate-700 hover:border-sky-200 hover:text-sky-700 transition">Resend
                     OTP</button>
-            </form> --}}
+            </form>
         </section>
     </main>
 </body>
