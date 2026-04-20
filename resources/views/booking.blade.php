@@ -86,10 +86,15 @@
                     <p class="text-sm text-slate-500 mt-1">Pilih slot dari calendar untuk buat request kaunselor.</p>
                 </div>
                 <div class="flex items-center gap-2">
+
+
                     <span
                         class="hidden sm:inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">Ready
                         to book</span>
                     <div class="flex items-center gap-2">
+
+
+
                         <a href="{{ route('home.session') }}"
                             class="rounded-xl border border-slate-200 bg-white p-3 text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">
 

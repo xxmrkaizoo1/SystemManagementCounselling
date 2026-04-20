@@ -102,6 +102,11 @@
             .sidebar-backdrop {
                 display: none !important;
             }
+
+            #sidebar-toggle{
+                cursor : pointer;
+
+            }
         }
     </style>
 </head>
@@ -118,14 +123,16 @@
         <div class="absolute top-24 -right-16 h-80 w-80 rounded-full bg-indigo-300/25 blur-3xl"></div>
     </div>
 
-    <div id="loginLoader" class="fixed inset-0 z-[90] flex items-center justify-center bg-sky-500/95 transition-opacity duration-700">
+    <div id="loginLoader"
+        class="fixed inset-0 z-[90] flex items-center justify-center bg-sky-500/95 transition-opacity duration-700">
         <div class="flex flex-col items-center gap-3">
             <span class="h-16 w-16 animate-spin rounded-full border-8 border-white/30 border-t-white"></span>
             <p class="text-xl font-semibold text-white">Loading secure portal...</p>
         </div>
     </div>
 
-    <div id="loginContent" class="max-w-[96rem] mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-7 opacity-0 translate-y-2 transition-all duration-700">
+    <div id="loginContent"
+        class="max-w-[96rem] mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-7 opacity-0 translate-y-2 transition-all duration-700">
         <div class="chat-shell rounded-[2rem] border border-slate-200/80 backdrop-blur-xl shadow-2xl overflow-hidden">
             <header
                 class="px-5 sm:px-8 py-5 border-b border-slate-200/80 bg-white/85 flex items-center justify-between gap-4">
@@ -137,8 +144,14 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <button type="button" id="sidebar-toggle"
-                        class="sidebar-toggle rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">
-                        Menu
+                        class="sidebar-toggle sidebar-toggle  rounded-xl border border-slate-200 bg-white p-3 text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+
                     </button>
                     <div class="flex items-center gap-2">
                         <a href="{{ route('home.session') }}"
@@ -227,8 +240,8 @@
                                 <span
                                     class="inline-flex h-12 w-12 items-center justify-center rounded-xl border border-slate-200 bg-slate-50">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-                                        stroke-linejoin="round">
+                                        fill="none" stroke="currentColor" stroke-width="1.8"
+                                        stroke-linecap="round" stroke-linejoin="round">
                                         <path d="M3 3v5h5" />
                                         <path d="M3.05 13A9 9 0 1 0 6 6.3L3 8" />
                                         <path d="M12 7v5l3 2" />
@@ -280,7 +293,8 @@
                                     <p class="text-xs text-slate-500">{{ $listedUser->email }}</p>
                                 </a>
                             @empty
-                                <p class="rounded-xl border border-dashed border-slate-300 bg-white px-3 py-2 text-xs text-slate-500">
+                                <p
+                                    class="rounded-xl border border-dashed border-slate-300 bg-white px-3 py-2 text-xs text-slate-500">
                                     No users found.
                                 </p>
                             @endforelse
@@ -288,7 +302,8 @@
                     </div>
                 </aside>
 
-                <section class="home-main rounded-2xl border border-slate-200 bg-white/90 p-4 sm:p-5 shadow-sm min-h-[34rem] flex flex-col">
+                <section
+                    class="home-main rounded-2xl border border-slate-200 bg-white/90 p-4 sm:p-5 shadow-sm min-h-[34rem] flex flex-col">
                     @if (session('status'))
                         <div
                             class="mb-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-700">
@@ -302,7 +317,8 @@
                                 <p class="font-semibold text-slate-800">{{ $selectedUser->name }}</p>
                                 <p class="text-xs text-slate-500">{{ $selectedUser->email }}</p>
                             </div>
-                            <span class="text-xs rounded-full border border-sky-200 bg-sky-50 px-2.5 py-1 text-sky-700">
+                            <span
+                                class="text-xs rounded-full border border-sky-200 bg-sky-50 px-2.5 py-1 text-sky-700">
                                 Conversation
                             </span>
                         </div>
@@ -339,15 +355,17 @@
                                 class="rounded-xl bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700 transition">Send</button>
                         </form>
                     @else
-                        <div class="flex-1 grid place-items-center text-center rounded-2xl border border-slate-200 bg-slate-50">
+                        <div
+                            class="flex-1 grid place-items-center text-center rounded-2xl border border-slate-200 bg-slate-50">
                             <div class="p-6">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto text-sky-300" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto text-sky-300"
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
                                         d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                                 </svg>
                                 <p class="mt-3 text-2xl font-semibold text-slate-800">Select a user to start chat</p>
-                                <p class="text-slate-500">Choose a student or teacher from the left list, then send your
+                                <p class="text-slate-500">Choose a student or teacher from the left list, then send
+                                    your
                                     message.</p>
                             </div>
                         </div>

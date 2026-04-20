@@ -142,8 +142,9 @@
             .sidebar-backdrop {
                 display: none !important;
             }
+
             #sidebar-toggle {
-                cursor :pointer;
+                cursor: pointer;
             }
         }
     </style>
@@ -193,7 +194,7 @@
 
 
                         <button type="button" id="sidebar-toggle"
-                            class="sidebar-toggle rounded-xl border border-slate-200 bg-white p-3 text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">
+                            class="sidebar-toggle sidebar-toggle  rounded-xl border border-slate-200 bg-white p-3 text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">
 
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                                 stroke="currentColor">
