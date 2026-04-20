@@ -142,6 +142,9 @@
             .sidebar-backdrop {
                 display: none !important;
             }
+            #sidebar-toggle {
+                cursor :pointer;
+            }
         }
     </style>
 </head>
