@@ -105,7 +105,7 @@
                 class="px-5 sm:px-7 py-4 border-b border-slate-200/80 bg-white/80 flex items-center justify-between gap-4">
                 <div>
                     <p class="text-xs uppercase tracking-[0.14em] text-slate-500">CollegeCare</p>
-                    <h1 class="text-xl sm:text-2xl font-bold text-slate-800">Student & Teacher Inbox</h1>
+                    <h1 class="text-xl sm:text-2xl font-bold text-slate-800">Student & Lecturer  Inbox</h1>
                     <p class="text-sm text-slate-500 mt-1">{{ $user->full_name ?: $user->name }} • {{ ucfirst($role) }}
                     </p>
                 </div>
