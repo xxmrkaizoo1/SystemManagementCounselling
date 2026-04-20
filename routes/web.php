@@ -62,11 +62,40 @@ Route::get('/', function () {
     $supportStatus = $counsellorCount === 0
         ? 'Offline'
         : ($openTodaySlots > 0 ? 'Live' : 'Busy');
+    $counsellorNames = User::query()
+        ->whereHas('roles', static fn($query) => $query->where('name', 'counsellor'))
+        ->orderBy('full_name')
+        ->orderBy('name')
+        ->get()
+        ->map(static fn(User $counsellor): string => trim((string) ($counsellor->full_name ?: $counsellor->name)))
+        ->filter()
+        ->unique()
+        ->values()
+        ->all();
 
+    $occupiedCounsellors = BookingRequest::query()
+        ->whereDate('booking_date', $today->toDateString())
+        ->whereIn('status', ['pending', 'approved'])
+        ->pluck('counsellor_name')
+        ->map(static fn(?string $name): string => trim((string) $name))
+        ->filter()
+        ->unique()
+        ->values()
+        ->all();
+
+    $occupiedCounsellorLookup = array_flip($occupiedCounsellors);
+    $landingCounsellors = collect($counsellorNames)
+        ->map(static fn(string $name): array => [
+            'name' => $name,
+            'status' => array_key_exists($name, $occupiedCounsellorLookup) ? 'Busy' : 'Available',
+        ])
+        ->values()
+        ->all();
     return view('index', [
         'liveCalendarStatus' => $todayCalendarStatus,
         'liveOpenSlots' => $openTodaySlots,
         'liveSupportStatus' => $supportStatus,
+        'landingCounsellors' => $landingCounsellors,
     ]);
 })->name('home');
 

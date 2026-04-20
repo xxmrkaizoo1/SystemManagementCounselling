@@ -123,9 +123,10 @@
                                 default => 'border-slate-200 bg-white/70',
                             };
 
-                            $slotsStatusClass = $slotsValue > 0
-                                ? 'border-emerald-200 bg-emerald-50/80'
-                                : 'border-rose-200 bg-rose-50/80';
+                            $slotsStatusClass =
+                                $slotsValue > 0
+                                    ? 'border-emerald-200 bg-emerald-50/80'
+                                    : 'border-rose-200 bg-rose-50/80';
                         @endphp
 
                         <div class="mt-8 grid grid-cols-3 gap-3 max-w-md mx-auto lg:mx-0">
@@ -274,26 +275,27 @@
                             <h2 class="text-xl font-semibold text-slate-800 mb-4">Available Counsellors</h2>
 
                             <div class="space-y-4 text-sm">
-                                <div
-                                    class="flex items-center justify-between bg-slate-50 p-4 rounded-2xl border border-slate-200">
-                                    <span class="text-slate-700 font-medium">Dr. Ahmad</span>
-                                    <span
-                                        class="text-xs px-3 py-1 rounded-full bg-emerald-100 text-emerald-700">Available</span>
-                                </div>
-
-                                <div
-                                    class="flex items-center justify-between bg-slate-50 p-4 rounded-2xl border border-slate-200">
-                                    <span class="text-slate-700 font-medium">Ms. Farah</span>
-                                    <span
-                                        class="text-xs px-3 py-1 rounded-full bg-amber-100 text-amber-700">Busy</span>
-                                </div>
-
-                                <div
-                                    class="flex items-center justify-between bg-slate-50 p-4 rounded-2xl border border-slate-200">
-                                    <span class="text-slate-700 font-medium">Mr. Daniel</span>
-                                    <span
-                                        class="text-xs px-3 py-1 rounded-full bg-emerald-100 text-emerald-700">Available</span>
-                                </div>
+                                @forelse (($landingCounsellors ?? []) as $counsellor)
+                                    @php
+                                        $isAvailable = ($counsellor['status'] ?? 'Available') === 'Available';
+                                    @endphp
+                                    <div
+                                        class="flex items-center justify-between bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                                        <span
+                                            class="text-slate-700 font-medium">{{ $counsellor['name'] ?? '-' }}</span>
+                                        <span
+                                            class="text-xs px-3 py-1 rounded-full {{ $isAvailable ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700' }}">
+                                            {{ $isAvailable ? 'Available' : 'Busy' }}
+                                        </span>
+                                    </div>
+                                @empty
+                                    <div
+                                        class="flex items-center justify-between bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                                        <span class="text-slate-500">No counsellors available yet</span>
+                                        <span
+                                            class="text-xs px-3 py-1 rounded-full bg-slate-200 text-slate-600">Offline</span>
+                                    </div>
+                                @endforelse
                             </div>
                         </div>
                     </div>
