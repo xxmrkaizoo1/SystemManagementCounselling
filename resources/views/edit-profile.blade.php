@@ -6,6 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Edit Profile • CollegeCare</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        .profile-shell {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.95));
+        }
+    </style>
 </head>
 
 <body class="min-h-screen bg-slate-50 text-slate-700 overflow-x-hidden">
@@ -24,6 +29,13 @@
 
 
 
+    <div id="loginLoader" class="fixed inset-0 z-[90] flex items-center justify-center bg-sky-500/95 transition-opacity duration-700">
+        <div class="flex flex-col items-center gap-3">
+            <span class="h-16 w-16 animate-spin rounded-full border-8 border-white/30 border-t-white"></span>
+            <p class="text-xl font-semibold text-white">Loading secure portal...</p>
+        </div>
+    </div>
+
     <div class="fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
         <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_#e0f2fe_0%,_#f8fafc_35%,_#f1f5f9_100%)]">
         </div>
@@ -37,11 +49,11 @@
         </div>
     </div>
 
-    <main class="min-h-screen p-4 sm:p-8">
+    <main id="loginContent" class="min-h-screen p-4 sm:p-8 opacity-0 translate-y-2 transition-all duration-700">
         <section
-            class="max-w-4xl mx-auto rounded-[2rem] border border-slate-200/80 bg-white/75 backdrop-blur-xl shadow-2xl overflow-hidden">
+            class="profile-shell max-w-[96rem] mx-auto rounded-[2rem] border border-slate-200/80 bg-white/75 backdrop-blur-xl shadow-2xl overflow-hidden">
             <header
-                class="px-5 sm:px-7 py-4 border-b border-slate-200/80 bg-white/80 flex items-center justify-between gap-4">
+                class="px-5 sm:px-8 py-5 border-b border-slate-200/80 bg-white/85 flex items-center justify-between gap-4">
                 <div>
                     <p class="text-xs uppercase tracking-[0.14em] text-slate-500">CollegeCare</p>
                     <h1 class="text-xl sm:text-2xl font-bold text-slate-800">Edit Profile</h1>
@@ -49,7 +61,7 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <a href="{{ route('home.session') }}"
-                        class="rounded-xl border border-slate-200 bg-white p-3 text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">
+                        class="rounded-xl border border-slate-200 bg-white p-3 text-slate-600 hover:text-sky-700 hover:border-sky-200 hover:bg-sky-50 transition">
 
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
@@ -93,7 +105,7 @@
 
 
 
-                    <div class="grid gap-5 lg:grid-cols-[220px_250px_1fr]">
+                    <div class="grid gap-5 xl:grid-cols-[250px_280px_1fr]">
                         <aside class="rounded-2xl border border-[#b9dbef] bg-[#d8ecf7] p-4 shadow-sm">
                             <div class="flex items-center gap-3 mb-4 pb-3 border-b border-sky-200/80">
                                 <img src="{{ $user->profile_pic ?: '/images/default-profile.svg' }}" alt="Profile"

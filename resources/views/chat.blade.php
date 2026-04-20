@@ -7,6 +7,10 @@
     <title>Chat Box • CollegeCare</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
+        .chat-shell {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.95));
+        }
+
         .home-shell {
             display: flex;
             flex-direction: column;
@@ -102,15 +106,29 @@
     </style>
 </head>
 
-<body class="bg-slate-100 min-h-screen text-slate-700">
+<body class="min-h-screen bg-slate-100 text-slate-700 overflow-x-hidden">
     @php
         $sidebarRoleLabel = $role === 'teacher' ? 'PENSYARAH' : 'PELAJAR';
     @endphp
 
-    <div class="max-w-6xl mx-auto px-3 sm:px-5 py-5 sm:py-7">
-        <div class="rounded-3xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+    <div class="fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_#dbeafe_0%,_#f8fafc_30%,_#f1f5f9_100%)]">
+        </div>
+        <div class="absolute -top-24 -left-24 h-80 w-80 rounded-full bg-sky-300/30 blur-3xl"></div>
+        <div class="absolute top-24 -right-16 h-80 w-80 rounded-full bg-indigo-300/25 blur-3xl"></div>
+    </div>
+
+    <div id="loginLoader" class="fixed inset-0 z-[90] flex items-center justify-center bg-sky-500/95 transition-opacity duration-700">
+        <div class="flex flex-col items-center gap-3">
+            <span class="h-16 w-16 animate-spin rounded-full border-8 border-white/30 border-t-white"></span>
+            <p class="text-xl font-semibold text-white">Loading secure portal...</p>
+        </div>
+    </div>
+
+    <div id="loginContent" class="max-w-[96rem] mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-7 opacity-0 translate-y-2 transition-all duration-700">
+        <div class="chat-shell rounded-[2rem] border border-slate-200/80 backdrop-blur-xl shadow-2xl overflow-hidden">
             <header
-                class="px-5 sm:px-7 py-4 border-b border-slate-200/80 bg-white/80 flex items-center justify-between gap-4">
+                class="px-5 sm:px-8 py-5 border-b border-slate-200/80 bg-white/85 flex items-center justify-between gap-4">
                 <div>
                     <p class="text-xs uppercase tracking-[0.14em] text-slate-500">CollegeCare</p>
                     <h1 class="text-xl sm:text-2xl font-bold text-slate-800">Chat Box</h1>
@@ -124,7 +142,7 @@
                     </button>
                     <div class="flex items-center gap-2">
                         <a href="{{ route('home.session') }}"
-                            class="rounded-xl border border-slate-200 bg-white p-3 text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">
+                            class="rounded-xl border border-slate-200 bg-white p-3 text-slate-600 hover:text-sky-700 hover:border-sky-200 hover:bg-sky-50 transition">
 
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24"
                                 stroke="currentColor">
@@ -258,54 +276,50 @@
                             @forelse ($users as $listedUser)
                                 <a href="{{ route('chat.index', ['user_id' => $listedUser->id, 'search' => $search]) }}"
                                     class="block rounded-xl border px-3 py-2 text-sm transition {{ $selectedUser?->id === $listedUser->id ? 'border-sky-300 bg-sky-50 text-sky-700' : 'border-slate-200 bg-white hover:border-sky-200' }}">
-                                    <p class="font-semibold">{{ $listedUser->full_name ?: $listedUser->name }}</p>
+                                    <p class="font-semibold">{{ $listedUser->name }}</p>
                                     <p class="text-xs text-slate-500">{{ $listedUser->email }}</p>
                                 </a>
                             @empty
-                                <p class="text-sm text-slate-500">No users found.</p>
+                                <p class="rounded-xl border border-dashed border-slate-300 bg-white px-3 py-2 text-xs text-slate-500">
+                                    No users found.
+                                </p>
                             @endforelse
                         </div>
                     </div>
                 </aside>
 
-                <section
-                    class="home-main rounded-2xl border border-slate-200 bg-white/90 p-4 sm:p-6 shadow-sm min-h-[28rem] flex flex-col">
-
+                <section class="home-main rounded-2xl border border-slate-200 bg-white/90 p-4 sm:p-5 shadow-sm min-h-[34rem] flex flex-col">
                     @if (session('status'))
                         <div
-                            class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-700">
+                            class="mb-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-700">
                             {{ session('status') }}
                         </div>
                     @endif
 
-                    @if (!$selectedUser)
-                        <div class="flex-1 grid place-items-center text-center">
+                    @if ($selectedUser)
+                        <div class="flex items-center justify-between border-b border-slate-200 pb-3">
                             <div>
-                                <div class="text-4xl">💬</div>
-                                <h2 class="mt-3 text-lg font-semibold text-slate-800">Select a user to start chat</h2>
-                                <p class="text-sm text-slate-500 mt-1">Choose a student or teacher from the left list,
-                                    then send your message.</p>
+                                <p class="font-semibold text-slate-800">{{ $selectedUser->name }}</p>
+                                <p class="text-xs text-slate-500">{{ $selectedUser->email }}</p>
                             </div>
-                        </div>
-                    @else
-                        <div class="pb-3 border-b border-slate-200">
-                            <h2 class="text-lg font-semibold text-slate-800">Chat with
-                                {{ $selectedUser->full_name ?: $selectedUser->name }}</h2>
-                            <p class="text-sm text-slate-500">{{ $selectedUser->email }}</p>
+                            <span class="text-xs rounded-full border border-sky-200 bg-sky-50 px-2.5 py-1 text-sky-700">
+                                Conversation
+                            </span>
                         </div>
 
-                        <div class="flex-1 my-4 space-y-3 overflow-auto pr-1">
+                        <div id="chat-scroll" class="flex-1 overflow-auto py-3 space-y-2 pr-1">
                             @forelse ($messages as $message)
-                                <div
-                                    class="flex {{ (int) $message->sender_id === (int) $user->id ? 'justify-end' : 'justify-start' }}">
-                                    <article
-                                        class="max-w-[80%] rounded-2xl px-4 py-2 {{ (int) $message->sender_id === (int) $user->id ? 'bg-sky-600 text-white' : 'bg-slate-100 text-slate-700' }}">
-                                        <p class="text-sm">{{ $message->message }}</p>
-                                        <p
-                                            class="mt-1 text-[11px] {{ (int) $message->sender_id === (int) $user->id ? 'text-sky-100' : 'text-slate-500' }}">
-                                            {{ $message->created_at?->format('Y-m-d H:i') }}
+                                @php
+                                    $isMine = (int) $message->sender_id === (int) $user->id;
+                                @endphp
+                                <div class="flex {{ $isMine ? 'justify-end' : 'justify-start' }}">
+                                    <div
+                                        class="max-w-[78%] rounded-2xl px-3 py-2 text-sm border {{ $isMine ? 'bg-sky-600 text-white border-sky-600' : 'bg-white text-slate-700 border-slate-200' }}">
+                                        <p class="whitespace-pre-wrap break-words">{{ $message->message }}</p>
+                                        <p class="mt-1 text-[10px] {{ $isMine ? 'text-sky-100' : 'text-slate-400' }}">
+                                            {{ $message->created_at->format('d M Y, h:i A') }}
                                         </p>
-                                    </article>
+                                    </div>
                                 </div>
                             @empty
                                 <p class="text-sm text-slate-500">No messages yet. Start the conversation below.</p>
@@ -324,6 +338,19 @@
                             <button type="submit"
                                 class="rounded-xl bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700 transition">Send</button>
                         </form>
+                    @else
+                        <div class="flex-1 grid place-items-center text-center rounded-2xl border border-slate-200 bg-slate-50">
+                            <div class="p-6">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto text-sky-300" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                                        d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                </svg>
+                                <p class="mt-3 text-2xl font-semibold text-slate-800">Select a user to start chat</p>
+                                <p class="text-slate-500">Choose a student or teacher from the left list, then send your
+                                    message.</p>
+                            </div>
+                        </div>
                     @endif
                 </section>
             </div>

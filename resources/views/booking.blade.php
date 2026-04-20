@@ -59,13 +59,23 @@
 </head>
 
 <body class="min-h-screen bg-slate-50 text-slate-700 overflow-x-hidden">
+
+    <div id="loginLoader"
+        class="fixed inset-0 z-[90] flex items-center justify-center bg-sky-500/95 transition-opacity duration-700">
+        <div class="flex flex-col items-center gap-3">
+            <span class="h-16 w-16 animate-spin rounded-full border-8 border-white/30 border-t-white"></span>
+            <p class="text-xl font-semibold text-white">Loading secure portal...</p>
+        </div>
+    </div>
+
+
     <div class="fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
         <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_#dbeafe_0%,_#f8fafc_30%,_#f1f5f9_100%)]">
         </div>
         <div class="absolute -top-24 -left-24 h-80 w-80 rounded-full bg-sky-300/30 blur-3xl"></div>
         <div class="absolute top-24 -right-16 h-80 w-80 rounded-full bg-indigo-300/25 blur-3xl"></div>
     </div>
-    <main class="min-h-screen p-4 sm:p-8">
+    <main id="loginContent" class="min-h-screen p-4 sm:p-8 opacity-0 translate-y-2 transition-all duration-700">
         <section
             class="max-w-[96rem] mx-auto rounded-[2rem] border border-slate-200/80 bg-white/75 backdrop-blur-xl shadow-2xl overflow-hidden">
             <header

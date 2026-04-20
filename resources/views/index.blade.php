@@ -104,18 +104,42 @@
                             — all in one place.
                         </p>
 
+                        @php
+                            $todayStatus = strtoupper((string) ($liveCalendarStatus ?? 'OPEN'));
+                            $supportStatus = strtoupper((string) ($liveSupportStatus ?? 'LIVE'));
+                            $slotsValue = (int) ($liveOpenSlots ?? 0);
+
+                            $todayStatusClass = match ($todayStatus) {
+                                'OPEN' => 'border-emerald-200 bg-emerald-50/80',
+                                'FULL' => 'border-amber-200 bg-amber-50/80',
+                                'CLOSED' => 'border-rose-200 bg-rose-50/80',
+                                default => 'border-slate-200 bg-white/70',
+                            };
+
+                            $supportStatusClass = match ($supportStatus) {
+                                'LIVE' => 'border-emerald-200 bg-emerald-50/80',
+                                'BUSY' => 'border-amber-200 bg-amber-50/80',
+                                'OFFLINE' => 'border-rose-200 bg-rose-50/80',
+                                default => 'border-slate-200 bg-white/70',
+                            };
+
+                            $slotsStatusClass = $slotsValue > 0
+                                ? 'border-emerald-200 bg-emerald-50/80'
+                                : 'border-rose-200 bg-rose-50/80';
+                        @endphp
+
                         <div class="mt-8 grid grid-cols-3 gap-3 max-w-md mx-auto lg:mx-0">
-                            <div class="rounded-2xl bg-white/70 border border-slate-200 p-4 shadow-sm">
+                            <div class="rounded-2xl border p-4 shadow-sm {{ $todayStatusClass }}">
                                 <p class="text-xs text-slate-500">Today</p>
-                                <p class="text-lg font-bold text-slate-800">Open</p>
+                                <p class="text-lg font-bold text-slate-800">{{ $liveCalendarStatus ?? 'Open' }}</p>
                             </div>
-                            <div class="rounded-2xl bg-white/70 border border-slate-200 p-4 shadow-sm">
+                            <div class="rounded-2xl border p-4 shadow-sm {{ $slotsStatusClass }}">
                                 <p class="text-xs text-slate-500">Slots</p>
-                                <p class="text-lg font-bold text-slate-800">12</p>
+                                <p class="text-lg font-bold text-slate-800">{{ $liveOpenSlots ?? 0 }}</p>
                             </div>
-                            <div class="rounded-2xl bg-white/70 border border-slate-200 p-4 shadow-sm">
+                            <div class="rounded-2xl border p-4 shadow-sm {{ $supportStatusClass }}">
                                 <p class="text-xs text-slate-500">Support</p>
-                                <p class="text-lg font-bold text-slate-800">Fast</p>
+                                <p class="text-lg font-bold text-slate-800">{{ $liveSupportStatus ?? 'Live' }}</p>
                             </div>
                         </div>
 

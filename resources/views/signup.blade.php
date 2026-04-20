@@ -6,9 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sign Up • CollegeCare</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        .signup-shell {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.95));
+        }
+    </style>
 </head>
 
 <body class="min-h-screen bg-slate-50 text-slate-700 overflow-x-hidden">
+    <div id="loginLoader" class="fixed inset-0 z-[90] flex items-center justify-center bg-sky-500/95 transition-opacity duration-700">
+        <div class="flex flex-col items-center gap-3">
+            <span class="h-16 w-16 animate-spin rounded-full border-8 border-white/30 border-t-white"></span>
+            <p class="text-xl font-semibold text-white">Loading secure portal...</p>
+        </div>
+    </div>
+
     <div class="fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
         <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_#e0f2fe_0%,_#f8fafc_35%,_#f1f5f9_100%)]">
         </div>
@@ -29,23 +41,23 @@
         <div class="aurora-band aurora-band--two"></div>
     </div>
 
-    <main class="min-h-screen flex items-center justify-center p-4 sm:p-8">
+    <main id="loginContent" class="min-h-screen flex items-center justify-center p-4 sm:p-8 opacity-0 translate-y-2 transition-all duration-700">
         <section
-            class="w-full max-w-5xl rounded-[2rem] border border-slate-200/80 bg-white/75 backdrop-blur-xl shadow-2xl overflow-hidden">
-            <div class="p-5 sm:p-7 border-b border-slate-200/80 flex items-center justify-between gap-3 bg-white/80">
+            class="signup-shell w-full max-w-[96rem] rounded-[2rem] border border-slate-200/80 bg-white/75 backdrop-blur-xl shadow-2xl overflow-hidden">
+            <div class="p-5 sm:p-8 border-b border-slate-200/80 flex items-center justify-between gap-3 bg-white/85">
                 <div>
                     <p class="text-xs uppercase tracking-[0.14em] text-slate-500">CollegeCare</p>
                     <h1 class="text-xl sm:text-2xl font-bold text-slate-800">Create account</h1>
                 </div>
                 <a href="{{ route('home') }}"
-                    class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">
+                    class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:text-sky-700 hover:border-sky-200 hover:bg-sky-50 transition">
                     <span>←</span>
                     <span>Back</span>
                 </a>
             </div>
 
             <div class="p-6 sm:p-8" x-data="{ role: '{{ old('role') === 'teacher' ? 'teacher' : 'student' }}', showPassword: false, showConfirm: false, profilePreview: null, profileFileName: '' }">
-                <div class="mx-auto max-w-3xl rounded-3xl border border-slate-200 bg-white/90 p-6 sm:p-8 shadow-sm">
+                <div class="mx-auto w-full max-w-4xl rounded-3xl border border-slate-200 bg-white/90 p-6 sm:p-8 shadow-sm">
                     <form class="mt-1 grid gap-4" action="{{ route('signup.store') }}" method="POST"
                         enctype="multipart/form-data"> @csrf
                         <div class="flex flex-col items-center gap-2.5">

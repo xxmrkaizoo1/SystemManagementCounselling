@@ -34,7 +34,40 @@ Route::get('/', function () {
         }
     }
 
-    return view('index');
+    $today = now();
+    $weekdayIso = (int) $today->dayOfWeekIso; // 1 (Mon) ... 7 (Sun)
+
+    $hourlySlotCount = match (true) {
+        $weekdayIso >= 1 && $weekdayIso <= 4 => 9, // 8:00-17:00
+        $weekdayIso === 5 => 4, // 8:00-12:00
+        default => 0, // weekend closed
+    };
+
+    $counsellorCount = User::query()
+        ->whereHas('roles', static fn($query) => $query->where('name', 'counsellor'))
+        ->count();
+
+    $totalTodaySlots = $hourlySlotCount * $counsellorCount;
+
+    $bookedTodaySlots = BookingRequest::query()
+        ->whereDate('booking_date', $today->toDateString())
+        ->whereIn('status', ['pending', 'approved'])
+        ->count();
+
+    $openTodaySlots = max($totalTodaySlots - $bookedTodaySlots, 0);
+    $todayCalendarStatus = $totalTodaySlots === 0
+        ? 'Closed'
+        : ($openTodaySlots > 0 ? 'Open' : 'Full');
+
+    $supportStatus = $counsellorCount === 0
+        ? 'Offline'
+        : ($openTodaySlots > 0 ? 'Live' : 'Busy');
+
+    return view('index', [
+        'liveCalendarStatus' => $todayCalendarStatus,
+        'liveOpenSlots' => $openTodaySlots,
+        'liveSupportStatus' => $supportStatus,
+    ]);
 })->name('home');
 
 Route::middleware('guest')->group(function () {

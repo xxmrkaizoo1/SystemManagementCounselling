@@ -6,21 +6,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Booking History • CollegeCare</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        .history-shell {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.95));
+        }
+
+        .history-table thead th {
+            letter-spacing: 0.08em;
+        }
+
+        .history-table tbody tr:hover {
+            background: rgb(248 250 252);
+        }
+    </style>
 </head>
 
-<body class="bg-slate-100 min-h-screen">
-    <div class="max-w-6xl mx-auto px-3 sm:px-5 py-5 sm:py-7">
-        <div class="rounded-3xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+<body class="min-h-screen bg-slate-100 text-slate-700 overflow-x-hidden">
+    <div class="fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_#dbeafe_0%,_#f8fafc_30%,_#f1f5f9_100%)]">
+        </div>
+        <div class="absolute -top-24 -left-24 h-80 w-80 rounded-full bg-sky-300/30 blur-3xl"></div>
+        <div class="absolute top-24 -right-16 h-80 w-80 rounded-full bg-indigo-300/25 blur-3xl"></div>
+    </div>
+
+    <div id="loginLoader" class="fixed inset-0 z-[90] flex items-center justify-center bg-sky-500/95 transition-opacity duration-700">
+        <div class="flex flex-col items-center gap-3">
+            <span class="h-16 w-16 animate-spin rounded-full border-8 border-white/30 border-t-white"></span>
+            <p class="text-xl font-semibold text-white">Loading secure portal...</p>
+        </div>
+    </div>
+
+    <div id="loginContent"
+        class="max-w-[96rem] mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-7 opacity-0 translate-y-2 transition-all duration-700">
+        <div class="history-shell rounded-[2rem] border border-slate-200/80 backdrop-blur-xl shadow-2xl overflow-hidden">
             <header
-                class="px-5 sm:px-7 py-4 border-b border-slate-200/80 bg-white/85 flex items-center justify-between gap-4">
+                class="px-5 sm:px-8 py-5 border-b border-slate-200/80 bg-white/85 flex items-center justify-between gap-4">
                 <div>
                     <p class="text-xs uppercase tracking-[0.14em] text-slate-500">CollegeCare</p>
                     <h1 class="text-xl sm:text-2xl font-bold text-slate-800">Booking History ({{ ucfirst($role) }})</h1>
-                    <p class="text-sm text-slate-500 mt-1">Semua rekod tempahan sesi kaunseling anda.</p>
+                    <p class="text-sm text-slate-500 mt-1">Semua rekod tempahan sesi kaunseling anda, disusun kemas untuk semakan pantas.</p>
                 </div>
                 <div class="flex items-center gap-2">
                     <a href="{{ route('home.session') }}"
-                        class="rounded-xl border border-slate-200 bg-white p-3 text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">
+                        class="rounded-xl border border-slate-200 bg-white p-3 text-slate-600 hover:text-sky-700 hover:border-sky-200 hover:bg-sky-50 transition">
 
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
@@ -32,8 +60,8 @@
                 </div>
             </header>
 
-            <div class="p-5 sm:p-7 grid lg:grid-cols-[220px_1fr] gap-5">
-                <aside class="rounded-2xl border border-[#b9dbef] bg-[#d8ecf7] p-4 shadow-sm">
+            <div class="p-5 sm:p-7 grid xl:grid-cols-[250px_1fr] gap-5">
+                <aside class="rounded-2xl border border-sky-200 bg-sky-100/75 p-4 shadow-sm">
                     <div class="flex items-center gap-3 mb-4 pb-3 border-b border-sky-200/80">
                         <img src="{{ $user->profile_pic ?: '/images/default-profile.svg' }}" alt="Profile"
                             class="w-11 h-11 rounded-full border border-slate-200 object-cover bg-sky-50" />
@@ -140,7 +168,7 @@
                         </div>
                     </div>
 
-                    <div class="grid gap-4 lg:grid-cols-[1fr_250px]">
+                    <div class="grid gap-4 xl:grid-cols-[minmax(0,1fr)_260px]">
                         <div class="space-y-4">
                             <form method="GET" action="{{ route('booking.history') }}"
                                 class="flex items-end gap-3">
@@ -160,8 +188,8 @@
                                     class="rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-100 transition">Filter</button>
                             </form>
 
-                            <div class="overflow-x-auto rounded-2xl border border-slate-200">
-                                <table class="min-w-full text-sm">
+                            <div class="overflow-x-auto rounded-2xl border border-slate-200 bg-white">
+                                <table class="history-table min-w-full text-sm">
                                     <thead class="bg-slate-50 text-slate-600 uppercase text-xs tracking-wide">
                                         <tr>
                                             <th class="px-4 py-3 text-left">Date</th>
