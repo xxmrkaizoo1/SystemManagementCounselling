@@ -34,6 +34,7 @@
         }
 
         @keyframes pulse-glow {
+
             0%,
             100% {
                 opacity: .35;
@@ -95,21 +96,21 @@
                 <div class="min-w-0">
                     <p class="text-xs uppercase tracking-[0.14em] text-indigo-500 font-semibold">CollegeCare</p>
                     <h1 class="text-xl sm:text-2xl font-bold text-slate-900 leading-tight">Admin Dashboard</h1>
-                    <p class="text-sm text-slate-600 mt-1 truncate">Welcome back, {{ $user->full_name ?: $user->name }}</p>
+                    <p class="text-sm text-slate-600 mt-1 truncate">Welcome back, {{ $user->full_name ?: $user->name }}
+                    </p>
                 </div>
-                <div class="flex items-center gap-2 self-start sm:self-auto">
-                    <a href="{{ route('home') }}"
-                        class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:text-sky-700 hover:border-sky-200 transition hover:-translate-y-0.5">Home</a>
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit"
-                            class="rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:from-sky-700 hover:to-indigo-700 transition hover:-translate-y-0.5 shadow-sm">Logout</button>
-                    </form>
+
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit"
+                        class="rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:from-sky-700 hover:to-indigo-700 transition hover:-translate-y-0.5 shadow-sm">Logout</button>
+                </form>
                 </div>
             </header>
 
             <div class="p-4 sm:p-6 lg:p-7 grid xl:grid-cols-[240px_1fr] gap-4 lg:gap-5">
-                <aside class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm flex flex-col animate-fade-up animation-delay-1">
+                <aside
+                    class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm flex flex-col animate-fade-up animation-delay-1">
                     <div class="flex items-center gap-3 mb-4 pb-3 border-b border-slate-200">
                         <img src="{{ $user->profile_pic ?: '/images/default-profile.svg' }}" alt="Profile"
                             class="w-11 h-11 rounded-full border border-slate-200 object-cover bg-sky-50" />
@@ -141,79 +142,101 @@
                         $pendingRatio = (int) round(((int) ($stats['pending_bookings'] ?? 0) / $bookingBase) * 100);
                     @endphp
 
-                    <div id="overview" class="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 2xl:grid-cols-6">
-                        <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md animate-fade-up animation-delay-1">
+                    <div id="overview"
+                        class="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 2xl:grid-cols-6">
+                        <article
+                            class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md animate-fade-up animation-delay-1">
                             <div class="flex items-start justify-between gap-3">
                                 <div>
-                                    <p class="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Users</p>
+                                    <p class="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Users
+                                    </p>
                                     <p class="mt-2 text-2xl font-bold text-slate-900">{{ $stats['total_users'] }}</p>
                                 </div>
-                                <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-sky-100 text-sky-700">
+                                <span
+                                    class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-sky-100 text-sky-700">
                                     👥
                                 </span>
                             </div>
                             <p class="mt-2 text-xs font-medium text-emerald-700">Active accounts</p>
                         </article>
 
-                        <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md animate-fade-up animation-delay-1">
+                        <article
+                            class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md animate-fade-up animation-delay-1">
                             <div class="flex items-start justify-between gap-3">
                                 <div>
-                                    <p class="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Roles</p>
+                                    <p class="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Roles
+                                    </p>
                                     <p class="mt-2 text-2xl font-bold text-slate-900">{{ $stats['total_roles'] }}</p>
                                 </div>
-                                <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-100 text-indigo-700">
+                                <span
+                                    class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-100 text-indigo-700">
                                     🛡️
                                 </span>
                             </div>
                             <p class="mt-2 text-xs font-medium text-indigo-700">Access levels</p>
                         </article>
 
-                        <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md animate-fade-up animation-delay-2">
+                        <article
+                            class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md animate-fade-up animation-delay-2">
                             <div class="flex items-start justify-between gap-3">
                                 <div>
-                                    <p class="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Chats</p>
+                                    <p class="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Chats
+                                    </p>
                                     <p class="mt-2 text-2xl font-bold text-slate-900">{{ $stats['total_messages'] }}</p>
                                 </div>
-                                <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-violet-100 text-violet-700">
+                                <span
+                                    class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-violet-100 text-violet-700">
                                     💬
                                 </span>
                             </div>
                             <p class="mt-2 text-xs font-medium text-violet-700">Conversation log</p>
                         </article>
 
-                        <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md animate-fade-up animation-delay-2">
+                        <article
+                            class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md animate-fade-up animation-delay-2">
                             <div class="flex items-start justify-between gap-3">
                                 <div>
-                                    <p class="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Inbox</p>
-                                    <p class="mt-2 text-2xl font-bold text-slate-900">{{ $stats['total_notifications'] }}</p>
+                                    <p class="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Inbox
+                                    </p>
+                                    <p class="mt-2 text-2xl font-bold text-slate-900">
+                                        {{ $stats['total_notifications'] }}</p>
                                 </div>
-                                <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-cyan-100 text-cyan-700">
+                                <span
+                                    class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-cyan-100 text-cyan-700">
                                     🔔
                                 </span>
                             </div>
                             <p class="mt-2 text-xs font-medium text-cyan-700">Latest alerts</p>
                         </article>
 
-                        <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md animate-fade-up animation-delay-3">
+                        <article
+                            class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md animate-fade-up animation-delay-3">
                             <div class="flex items-start justify-between gap-3">
                                 <div>
-                                    <p class="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Bookings</p>
-                                    <p class="mt-2 text-2xl font-bold text-slate-900">{{ $stats['total_bookings'] }}</p>
+                                    <p class="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Bookings
+                                    </p>
+                                    <p class="mt-2 text-2xl font-bold text-slate-900">{{ $stats['total_bookings'] }}
+                                    </p>
                                 </div>
-                                <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
+                                <span
+                                    class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
                                     📅
                                 </span>
                             </div>
                             <p class="mt-2 text-xs font-medium text-emerald-700">Scheduled total</p>
                         </article>
 
-                        <article class="rounded-2xl border border-amber-200 bg-amber-50/70 p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md animate-fade-up animation-delay-3">
+                        <article
+                            class="rounded-2xl border border-amber-200 bg-amber-50/70 p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md animate-fade-up animation-delay-3">
                             <div class="flex items-start justify-between gap-3">
                                 <div>
-                                    <p class="text-xs font-semibold uppercase tracking-[0.12em] text-amber-700">Pending</p>
-                                    <p class="mt-2 text-2xl font-bold text-amber-700">{{ $stats['pending_bookings'] }}</p>
+                                    <p class="text-xs font-semibold uppercase tracking-[0.12em] text-amber-700">Pending
+                                    </p>
+                                    <p class="mt-2 text-2xl font-bold text-amber-700">{{ $stats['pending_bookings'] }}
+                                    </p>
                                 </div>
-                                <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-amber-100 text-amber-700">
+                                <span
+                                    class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-amber-100 text-amber-700">
                                     ⏳
                                 </span>
                             </div>
@@ -222,7 +245,8 @@
                     </div>
 
                     <div class="grid lg:grid-cols-2 gap-4">
-                        <article id="roles" class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm animate-fade-up animation-delay-2">
+                        <article id="roles"
+                            class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm animate-fade-up animation-delay-2">
                             <h2 class="text-lg font-semibold text-slate-900">Users by role</h2>
                             <p class="text-sm text-slate-600 mt-1">Snapshot based on current role assignments.</p>
 
@@ -239,7 +263,8 @@
                             </div>
                         </article>
 
-                        <article id="users" class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm animate-fade-up animation-delay-3">
+                        <article id="users"
+                            class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm animate-fade-up animation-delay-3">
                             <h2 class="text-lg font-semibold text-slate-900">Recently registered users</h2>
                             <p class="text-sm text-slate-600 mt-1">Latest 8 users in the platform.</p>
 
@@ -263,7 +288,8 @@
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td class="py-2 text-slate-500" colspan="3">No users available.</td>
+                                                <td class="py-2 text-slate-500" colspan="3">No users available.
+                                                </td>
                                             </tr>
                                         @endforelse
                                     </tbody>
@@ -272,57 +298,28 @@
                         </article>
                     </div>
 
-                    <article id="notifications" class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm animate-fade-up animation-delay-3">
+                    <article id="notifications"
+                        class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm animate-fade-up animation-delay-3">
                         <div class="flex items-start justify-between gap-3">
                             <div>
                                 <h2 class="text-lg font-semibold text-slate-900">Recent inbox notifications</h2>
                                 <p class="text-sm text-slate-600 mt-1">Most recent system notices sent to users.</p>
                             </div>
 
-                            <div class="relative" data-dropdown-root>
-                                <button type="button" id="notificationActionsButton"
-                                    class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-sky-200 hover:text-sky-700"
-                                    aria-haspopup="true" aria-expanded="false" aria-controls="notificationActionsMenu">
-                                    <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                        <path
-                                            d="M10 3a1 1 0 0 1 1 1v.384A4.002 4.002 0 0 1 14 8.2V11.5l1.724 2.414A1 1 0 0 1 14.91 15.5H5.09a1 1 0 0 1-.814-1.586L6 11.5V8.2a4.002 4.002 0 0 1 3-3.816V4a1 1 0 0 1 1-1Zm2 13a2 2 0 1 1-4 0h4Z" />
-                                    </svg>
-                                    Actions
-                                    <svg class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                        <path fill-rule="evenodd"
-                                            d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.168l3.71-3.94a.75.75 0 1 1 1.08 1.04l-4.25 4.516a.75.75 0 0 1-1.08 0L5.21 8.268a.75.75 0 0 1 .02-1.06Z"
-                                            clip-rule="evenodd" />
-                                    </svg>
-                                </button>
-
-                                <div id="notificationActionsMenu"
-                                    class="hidden absolute right-0 z-20 mt-2 w-56 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg"
-                                    role="menu" aria-labelledby="notificationActionsButton">
-                                    <a href="{{ route('inbox') }}"
-                                        class="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 transition hover:bg-sky-50 hover:text-sky-700"
-                                        role="menuitem">
-                                        <span class="text-base" aria-hidden="true">📥</span>
-                                        Open inbox
-                                    </a>
-                                    <a href="{{ route('booking.history') }}"
-                                        class="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 transition hover:bg-emerald-50 hover:text-emerald-700"
-                                        role="menuitem">
-                                        <span class="text-base" aria-hidden="true">📅</span>
-                                        View booking history
-                                    </a>
-                                    <a href="#overview"
-                                        class="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 transition hover:bg-indigo-50 hover:text-indigo-700"
-                                        role="menuitem">
-                                        <span class="text-base" aria-hidden="true">📊</span>
-                                        Go to summary cards
-                                    </a>
-                                </div>
-                            </div>
+                            {{-- <a href="{{ route('inbox') }}"
+                                class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-sky-200 hover:text-sky-700 hover:bg-sky-50/60">
+                                <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path
+                                        d="M2.5 4.75A2.25 2.25 0 0 1 4.75 2.5h10.5A2.25 2.25 0 0 1 17.5 4.75v10.5a2.25 2.25 0 0 1-2.25 2.25H4.75A2.25 2.25 0 0 1 2.5 15.25V4.75Zm8.28 2.47a.75.75 0 0 0-1.06 0L6.97 9.97a.75.75 0 1 0 1.06 1.06l1.47-1.47V13a.75.75 0 0 0 1.5 0V9.56l1.47 1.47a.75.75 0 1 0 1.06-1.06l-2.75-2.75Z" />
+                                </svg>
+                                View all
+                            </a> --}}
                         </div>
 
                         <div class="mt-4 grid sm:grid-cols-2 xl:grid-cols-3 gap-3">
                             @forelse ($recentNotifications as $notification)
-                                <div class="rounded-xl border border-slate-200 bg-slate-50 p-3 transition hover:-translate-y-0.5 hover:shadow-sm hover:border-sky-200">
+                                <div
+                                    class="rounded-xl border border-slate-200 bg-slate-50 p-3 transition hover:-translate-y-0.5 hover:shadow-sm hover:border-sky-200">
                                     <p class="text-xs text-slate-500">
                                         {{ optional($notification->created_at)->diffForHumans() }}</p>
                                     <p class="font-semibold text-slate-800 mt-1">
@@ -340,53 +337,6 @@
             </div>
         </section>
     </main>
-    <script>
-        (() => {
-            const dropdownRoot = document.querySelector('[data-dropdown-root]');
-
-            if (!dropdownRoot) {
-                return;
-            }
-
-            const trigger = dropdownRoot.querySelector('#notificationActionsButton');
-            const menu = dropdownRoot.querySelector('#notificationActionsMenu');
-
-            if (!trigger || !menu) {
-                return;
-            }
-
-            const closeMenu = () => {
-                menu.classList.add('hidden');
-                trigger.setAttribute('aria-expanded', 'false');
-            };
-
-            const openMenu = () => {
-                menu.classList.remove('hidden');
-                trigger.setAttribute('aria-expanded', 'true');
-            };
-
-            trigger.addEventListener('click', () => {
-                if (menu.classList.contains('hidden')) {
-                    openMenu();
-                    return;
-                }
-
-                closeMenu();
-            });
-
-            document.addEventListener('click', (event) => {
-                if (!dropdownRoot.contains(event.target)) {
-                    closeMenu();
-                }
-            });
-
-            document.addEventListener('keydown', (event) => {
-                if (event.key === 'Escape') {
-                    closeMenu();
-                }
-            });
-        })();
-    </script>
 </body>
 
 </html>
