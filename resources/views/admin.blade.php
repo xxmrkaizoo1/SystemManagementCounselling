@@ -273,8 +273,52 @@
                     </div>
 
                     <article id="notifications" class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm animate-fade-up animation-delay-3">
-                        <h2 class="text-lg font-semibold text-slate-900">Recent inbox notifications</h2>
-                        <p class="text-sm text-slate-600 mt-1">Most recent system notices sent to users.</p>
+                        <div class="flex items-start justify-between gap-3">
+                            <div>
+                                <h2 class="text-lg font-semibold text-slate-900">Recent inbox notifications</h2>
+                                <p class="text-sm text-slate-600 mt-1">Most recent system notices sent to users.</p>
+                            </div>
+
+                            <div class="relative" data-dropdown-root>
+                                <button type="button" id="notificationActionsButton"
+                                    class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-sky-200 hover:text-sky-700"
+                                    aria-haspopup="true" aria-expanded="false" aria-controls="notificationActionsMenu">
+                                    <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                        <path
+                                            d="M10 3a1 1 0 0 1 1 1v.384A4.002 4.002 0 0 1 14 8.2V11.5l1.724 2.414A1 1 0 0 1 14.91 15.5H5.09a1 1 0 0 1-.814-1.586L6 11.5V8.2a4.002 4.002 0 0 1 3-3.816V4a1 1 0 0 1 1-1Zm2 13a2 2 0 1 1-4 0h4Z" />
+                                    </svg>
+                                    Actions
+                                    <svg class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                        <path fill-rule="evenodd"
+                                            d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.168l3.71-3.94a.75.75 0 1 1 1.08 1.04l-4.25 4.516a.75.75 0 0 1-1.08 0L5.21 8.268a.75.75 0 0 1 .02-1.06Z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+
+                                <div id="notificationActionsMenu"
+                                    class="hidden absolute right-0 z-20 mt-2 w-56 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg"
+                                    role="menu" aria-labelledby="notificationActionsButton">
+                                    <a href="{{ route('inbox') }}"
+                                        class="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 transition hover:bg-sky-50 hover:text-sky-700"
+                                        role="menuitem">
+                                        <span class="text-base" aria-hidden="true">📥</span>
+                                        Open inbox
+                                    </a>
+                                    <a href="{{ route('booking.history') }}"
+                                        class="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 transition hover:bg-emerald-50 hover:text-emerald-700"
+                                        role="menuitem">
+                                        <span class="text-base" aria-hidden="true">📅</span>
+                                        View booking history
+                                    </a>
+                                    <a href="#overview"
+                                        class="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 transition hover:bg-indigo-50 hover:text-indigo-700"
+                                        role="menuitem">
+                                        <span class="text-base" aria-hidden="true">📊</span>
+                                        Go to summary cards
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="mt-4 grid sm:grid-cols-2 xl:grid-cols-3 gap-3">
                             @forelse ($recentNotifications as $notification)
@@ -296,6 +340,53 @@
             </div>
         </section>
     </main>
+    <script>
+        (() => {
+            const dropdownRoot = document.querySelector('[data-dropdown-root]');
+
+            if (!dropdownRoot) {
+                return;
+            }
+
+            const trigger = dropdownRoot.querySelector('#notificationActionsButton');
+            const menu = dropdownRoot.querySelector('#notificationActionsMenu');
+
+            if (!trigger || !menu) {
+                return;
+            }
+
+            const closeMenu = () => {
+                menu.classList.add('hidden');
+                trigger.setAttribute('aria-expanded', 'false');
+            };
+
+            const openMenu = () => {
+                menu.classList.remove('hidden');
+                trigger.setAttribute('aria-expanded', 'true');
+            };
+
+            trigger.addEventListener('click', () => {
+                if (menu.classList.contains('hidden')) {
+                    openMenu();
+                    return;
+                }
+
+                closeMenu();
+            });
+
+            document.addEventListener('click', (event) => {
+                if (!dropdownRoot.contains(event.target)) {
+                    closeMenu();
+                }
+            });
+
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape') {
+                    closeMenu();
+                }
+            });
+        })();
+    </script>
 </body>
 
 </html>
