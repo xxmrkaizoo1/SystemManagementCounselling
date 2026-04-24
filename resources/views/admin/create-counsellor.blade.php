@@ -77,7 +77,7 @@
             class="absolute -top-20 -left-20 w-[32rem] h-[32rem] rounded-full bg-cyan-300/35 blur-3xl animate-aurora-drift animate-pulse-glow">
         </div>
         <div
-            class="absolute top-10 -right-24 w-[32rem] h-[32rem] rounded-full bg-indigo-300/30 blur-3xl animate-aurora-drift animate-pulse-glow animation-delay-1">
+            class="absolute top-10-right-24 w-[32rem] h-[32rem] rounded-full bg-indigo-300/30 blur-3xl animate-aurora-drift animate-pulse-glow animation-delay-1">
         </div>
         <div
             class="absolute -bottom-24 left-1/3 w-[28rem] h-[28rem] rounded-full bg-emerald-300/25 blur-3xl animate-aurora-drift animate-pulse-glow animation-delay-2">
@@ -96,8 +96,16 @@
                         step.</p>
                 </div>
                 <a href="{{ route('admin.dashboard') }}"
-                    class="inline-flex items-center rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:text-sky-700 hover:border-sky-200 transition">
-                    ← Back to dashboard
+                    class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">
+
+                    <!-- Curved Back Icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 14L4 9l5-5M4 9h10a7 7 0 110 14h-3" />
+                    </svg>
+
+
                 </a>
             </header>
 
@@ -114,12 +122,14 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('admin.counsellor.store') }}" class="grid gap-5 animate-fade-up animation-delay-1">
+                <form method="POST" action="{{ route('admin.counsellor.store') }}"
+                    class="grid gap-5 animate-fade-up animation-delay-1">
                     @csrf
 
                     <div class="grid sm:grid-cols-2 gap-4">
                         <div>
-                            <label for="full_name" class="block text-sm font-medium text-slate-700 mb-1.5">Full Name</label>
+                            <label for="full_name" class="block text-sm font-medium text-slate-700 mb-1.5">Full
+                                Name</label>
                             <input id="full_name" name="full_name" type="text" value="{{ old('full_name') }}"
                                 class="w-full rounded-xl border border-slate-300 bg-white/95 px-3 py-2.5 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500/25 focus:border-indigo-500 transition" />
                         </div>
@@ -146,7 +156,8 @@
                         <div class="flex flex-wrap items-center justify-between gap-3">
                             <div>
                                 <p class="text-sm font-semibold text-slate-900">Quick suggestions</p>
-                                <p class="text-xs text-slate-600 mt-0.5">Use suggested credentials, then share them securely
+                                <p class="text-xs text-slate-600 mt-0.5">Use suggested credentials, then share them
+                                    securely
                                     with the counsellor.</p>
                             </div>
                             <button type="button" id="generate-password"
@@ -158,7 +169,8 @@
 
                     <div class="grid sm:grid-cols-2 gap-4">
                         <div>
-                            <label for="password" class="block text-sm font-medium text-slate-700 mb-1.5">Password</label>
+                            <label for="password"
+                                class="block text-sm font-medium text-slate-700 mb-1.5">Password</label>
                             <input id="password" name="password" type="text"
                                 class="w-full rounded-xl border border-slate-300 bg-white/95 px-3 py-2.5 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500/25 focus:border-indigo-500 transition" />
                         </div>

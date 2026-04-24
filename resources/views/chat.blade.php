@@ -127,7 +127,7 @@
         class="fixed inset-0 z-[90] flex items-center justify-center bg-sky-500/95 transition-opacity duration-700">
         <div class="flex flex-col items-center gap-3">
             <span class="h-16 w-16 animate-spin rounded-full border-8 border-white/30 border-t-white"></span>
-            <p class="text-xl font-semibold text-white">Loading secure portal...</p>
+            <p class="text-xl font-semibold text-white">Loading chat  portal...</p>
         </div>
     </div>
 

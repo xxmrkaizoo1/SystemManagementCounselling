@@ -126,14 +126,13 @@
                             class="block rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:border-sky-200 hover:text-sky-700 transition hover:-translate-y-0.5">
                             Manage user accounts
                         </a>
-                    </div>
-
-                    <div class="mt-5 pt-4 border-t border-slate-200">
                         <a href="{{ route('admin.counsellor.signup') }}"
                             class="block w-full rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white hover:from-sky-700 hover:to-indigo-700 transition hover:-translate-y-0.5 shadow-sm">
                             Sign up counsellor
                         </a>
                     </div>
+
+
                 </aside>
 
                 <section class="space-y-4 lg:space-y-5">

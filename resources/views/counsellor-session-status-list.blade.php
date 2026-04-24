@@ -183,7 +183,7 @@
                                 <td colspan="6" class="px-4 py-8 text-center text-slate-500">No sessions match the selected date/status filter.</td>
                             </tr>
                         </tbody>
-                    </table>
+                    </table>s
                 </div>
             </div>
         </section>
