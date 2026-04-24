@@ -68,7 +68,8 @@
         <header class="shrink-0 sticky top-0 z-40 bg-white/70 backdrop-blur-xl border-b border-slate-200">
             <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-2xl bg-sky-600 shadow-sm"></div>
+                    <img src="{{ asset('images/collegecare-logo.png') }}" alt="CollegeCare logo"
+                        class="w-10 h-10 rounded-2xl object-cover shadow-sm" />
                     <div>
                         <p class="font-bold leading-tight">CollegeCare</p>
                         <p class="text-xs text-slate-500 -mt-0.5">Counselling Booking System</p>
