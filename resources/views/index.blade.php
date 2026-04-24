@@ -8,8 +8,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="min-h-screen flex flex-col bg-slate-50 text-slate-700 overflow-x-hidden">
-
+<body class="min-h-screen flex flex-col bg-slate-50 text-slate-700 overflow-x-hidden scroll-smooth">
     <div id="cursor-dot" class="fixed top-0 left-0 w-3 h-3 bg-sky-600 rounded-full pointer-events-none z-50"></div>
     <div id="cursor-ring" class="fixed top-0 left-0 w-8 h-8 border border-sky-500 rounded-full pointer-events-none z-40">
     </div>
@@ -77,7 +76,7 @@
                 </div>
 
                 <div class="flex items-center gap-3">
-                    <a href="#roles"
+                    <a href="#roles" id="getStartedLink"
                         class="nav-cta-link hidden sm:inline text-sm font-medium text-slate-600 hover:text-sky-600 transition">
                         Get Started
                     </a>
@@ -181,6 +180,125 @@
                     <div
                         class="mx-auto w-full max-w-xl rounded-3xl bg-white/70 border border-slate-200 shadow-sm p-6 sm:p-8 backdrop-blur-xl animate-fade-in-up animation-delay-2">
                         <div class="flex items-center justify-between">
+                            <p class="font-bold text-slate-800">Campus Wellness Highlights</p>
+                            <span class="text-xs px-3 py-1 rounded-full bg-sky-50 text-sky-700 border border-sky-200">
+                                Slideshow
+                            </span>
+                        </div>
+
+                        <p class="mt-2 text-sm text-slate-600">Latest guidance, reminders, and support updates.</p>
+
+                        <div
+                            class="mt-6 relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                            <div id="heroSlides" class="transition-all duration-500 ease-out">
+                                <article class="hero-slide p-6 sm:p-7">
+                                    <img src="https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1200&q=80"
+                                        alt="Student writing in journal for stress relief"
+                                        class="h-40 w-full rounded-xl object-cover mb-5" />
+                                    <p class="text-xs uppercase tracking-[0.18em] text-sky-600 font-semibold">Tip Of
+                                        The
+                                        Week</p>
+                                    <h3 class="mt-2 text-xl font-bold text-slate-800">Start small to reduce study
+                                        stress</h3>
+                                    <p class="mt-3 text-sm text-slate-600 leading-relaxed">
+                                        Break tasks into 20-minute blocks and rest briefly between sessions to protect
+                                        your focus.
+                                    </p>
+                                </article>
+
+                                <article class="hero-slide hidden p-6 sm:p-7">
+                                    <img src="https://images.unsplash.com/photo-1516302752625-fcc3c50ae61f?auto=format&fit=crop&w=1200&q=80"
+                                        alt="Counsellor desk with notebook and warm lighting"
+                                        class="h-40 w-full rounded-xl object-cover mb-5" />
+                                    <p class="text-xs uppercase tracking-[0.18em] text-indigo-600 font-semibold">
+                                        Service Update</p>
+                                    <h3 class="mt-2 text-xl font-bold text-slate-800">Extended counselling support
+                                        hours
+                                    </h3>
+                                    <p class="mt-3 text-sm text-slate-600 leading-relaxed">
+                                        New evening slots are available for students with packed class schedules.
+                                    </p>
+                                </article>
+
+                                <article class="hero-slide hidden p-6 sm:p-7">
+                                    <img src="https://images.unsplash.com/photo-1474418397713-7ede21d49118?auto=format&fit=crop&w=1200&q=80"
+                                        alt="Glass of water and a peaceful morning setup"
+                                        class="h-40 w-full rounded-xl object-cover mb-5" />
+                                    <p class="text-xs uppercase tracking-[0.18em] text-emerald-600 font-semibold">
+                                        Wellbeing Reminder</p>
+                                    <h3 class="mt-2 text-xl font-bold text-slate-800">Hydration and sleep boost
+                                        resilience
+                                    </h3>
+                                    <p class="mt-3 text-sm text-slate-600 leading-relaxed">
+                                        Aim for enough water and a regular bedtime to improve mood and concentration.
+                                    </p>
+                                </article>
+                            </div>
+
+                            <div class="px-6 pb-5 flex items-center justify-between">
+                                <div id="heroSlideDots" class="flex items-center gap-2">
+                                    <button type="button" class="hero-slide-dot w-2.5 h-2.5 rounded-full bg-sky-500"
+                                        aria-label="Show slide 1"></button>
+                                    <button type="button"
+                                        class="hero-slide-dot w-2.5 h-2.5 rounded-full bg-slate-300"
+                                        aria-label="Show slide 2"></button>
+                                    <button type="button"
+                                        class="hero-slide-dot w-2.5 h-2.5 rounded-full bg-slate-300"
+                                        aria-label="Show slide 3"></button>
+                                </div>
+                                <span class="text-xs text-slate-500">Auto-rotates every 4s</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="mt-20 animate-fade-in-up animation-delay-4">
+                    <div class="grid lg:grid-cols-2 gap-8">
+                        <div
+                            class="bg-white/70 backdrop-blur-xl border border-slate-200 rounded-3xl p-8 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+                            <h2 class="text-xl font-semibold text-slate-800 mb-4">Announcements</h2>
+                            <div class="space-y-4 text-sm text-slate-600">
+                                <p>📌 Counselling sessions available Monday – Friday.</p>
+                                <p>📌 Emergency booking priority available.</p>
+                                <p>📌 Please cancel 24 hours before session.</p>
+                            </div>
+                        </div>
+
+                        <div
+                            class="bg-white/70 backdrop-blur-xl border border-slate-200 rounded-3xl p-8 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+                            <h2 class="text-xl font-semibold text-slate-800 mb-4">Available Counsellors</h2>
+
+                            <div class="space-y-4 text-sm">
+                                @forelse (($landingCounsellors ?? []) as $counsellor)
+                                    @php
+                                        $isAvailable = ($counsellor['status'] ?? 'Available') === 'Available';
+                                    @endphp
+                                    <div
+                                        class="flex items-center justify-between bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                                        <span
+                                            class="text-slate-700 font-medium">{{ $counsellor['name'] ?? '-' }}</span>
+                                        <span
+                                            class="text-xs px-3 py-1 rounded-full {{ $isAvailable ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700' }}">
+                                            {{ $isAvailable ? 'Available' : 'Busy' }}
+                                        </span>
+                                    </div>
+                                @empty
+                                    <div
+                                        class="flex items-center justify-between bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                                        <span class="text-slate-500">No counsellors available yet</span>
+                                        <span
+                                            class="text-xs px-3 py-1 rounded-full bg-slate-200 text-slate-600">Offline</span>
+                                    </div>
+                                @endforelse
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="roles" class="mt-8 animate-fade-in-up animation-delay-4">
+                    <div
+                        class="mx-auto w-full max-w-4xl rounded-3xl bg-white/70 border border-slate-200 shadow-sm p-6 sm:p-8 backdrop-blur-xl">
+                        <div class="flex items-center justify-between">
                             <p class="font-bold text-slate-800">Quick Access</p>
                             <span
                                 class="text-xs px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
@@ -190,7 +308,7 @@
 
                         <p class="mt-2 text-sm text-slate-600">User types and what each role can do in the system.</p>
 
-                        <div id="roles" class="mt-6 grid gap-4">
+                        <div class="mt-6 grid gap-4">
                             <div class="rounded-2xl bg-white border border-slate-200 p-5 shadow-sm">
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center gap-3">
@@ -258,49 +376,6 @@
                         </div>
                     </div>
                 </section>
-
-                <section class="mt-20 animate-fade-in-up animation-delay-4">
-                    <div class="grid lg:grid-cols-2 gap-8">
-                        <div
-                            class="bg-white/70 backdrop-blur-xl border border-slate-200 rounded-3xl p-8 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
-                            <h2 class="text-xl font-semibold text-slate-800 mb-4">Announcements</h2>
-                            <div class="space-y-4 text-sm text-slate-600">
-                                <p>📌 Counselling sessions available Monday – Friday.</p>
-                                <p>📌 Emergency booking priority available.</p>
-                                <p>📌 Please cancel 24 hours before session.</p>
-                            </div>
-                        </div>
-
-                        <div
-                            class="bg-white/70 backdrop-blur-xl border border-slate-200 rounded-3xl p-8 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
-                            <h2 class="text-xl font-semibold text-slate-800 mb-4">Available Counsellors</h2>
-
-                            <div class="space-y-4 text-sm">
-                                @forelse (($landingCounsellors ?? []) as $counsellor)
-                                    @php
-                                        $isAvailable = ($counsellor['status'] ?? 'Available') === 'Available';
-                                    @endphp
-                                    <div
-                                        class="flex items-center justify-between bg-slate-50 p-4 rounded-2xl border border-slate-200">
-                                        <span
-                                            class="text-slate-700 font-medium">{{ $counsellor['name'] ?? '-' }}</span>
-                                        <span
-                                            class="text-xs px-3 py-1 rounded-full {{ $isAvailable ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700' }}">
-                                            {{ $isAvailable ? 'Available' : 'Busy' }}
-                                        </span>
-                                    </div>
-                                @empty
-                                    <div
-                                        class="flex items-center justify-between bg-slate-50 p-4 rounded-2xl border border-slate-200">
-                                        <span class="text-slate-500">No counsellors available yet</span>
-                                        <span
-                                            class="text-xs px-3 py-1 rounded-full bg-slate-200 text-slate-600">Offline</span>
-                                    </div>
-                                @endforelse
-                            </div>
-                        </div>
-                    </div>
-                </section>
             </div>
         </main>
 
@@ -308,6 +383,51 @@
             © {{ date('Y') }} CollegeCare • Counselling Booking System
         </footer>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const getStartedLink = document.getElementById('getStartedLink');
+            const quickAccessSection = document.getElementById('roles');
+
+            if (getStartedLink && quickAccessSection) {
+                getStartedLink.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    quickAccessSection.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start',
+                    });
+
+                    quickAccessSection.classList.add('ring-2', 'ring-sky-300', 'ring-offset-4',
+                        'ring-offset-white');
+                    window.setTimeout(() => {
+                        quickAccessSection.classList.remove('ring-2', 'ring-sky-300',
+                            'ring-offset-4', 'ring-offset-white');
+                    }, 1200);
+                });
+            }
+            const slides = Array.from(document.querySelectorAll('.hero-slide'));
+            const dots = Array.from(document.querySelectorAll('.hero-slide-dot'));
+            if (!slides.length || slides.length !== dots.length) return;
+
+            let currentSlide = 0;
+            const showSlide = (targetIndex) => {
+                currentSlide = (targetIndex + slides.length) % slides.length;
+                slides.forEach((slide, index) => slide.classList.toggle('hidden', index !== currentSlide));
+                dots.forEach((dot, index) => {
+                    dot.classList.toggle('bg-sky-500', index === currentSlide);
+                    dot.classList.toggle('bg-slate-300', index !== currentSlide);
+                });
+            };
+
+            dots.forEach((dot, index) => {
+                dot.addEventListener('click', () => showSlide(index));
+            });
+
+            setInterval(() => {
+                showSlide(currentSlide + 1);
+            }, 4000);
+        });
+    </script>
 </body>
 
 </html>
