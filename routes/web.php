@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\NewPasswordController;
+use App\Models\NoMatriksEntry;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Admin\CounsellorController;
 use App\Http\Controllers\ChatController;
@@ -322,6 +323,54 @@ Route::middleware('auth')->group(function () {
             'managedUsers' => $managedUsers,
         ]);
     })->name('admin.accounts.manage');
+
+    Route::get('/admin/no-matriks-users', function () {
+        $user = request()->user();
+        $role = $user?->roles()->value('name');
+
+        abort_unless($role === 'admin', 403);
+
+        $usersWithMatriks = User::query()
+            ->leftJoin('user_role', 'users.id', '=', 'user_role.user_id')
+            ->leftJoin('roles', 'roles.id', '=', 'user_role.role_id')
+            ->select('users.id', 'users.name', 'users.full_name', 'users.no_matriks', 'users.created_at')
+            ->selectRaw("COALESCE(roles.name, 'unassigned') as role_name")
+            ->whereNotNull('users.no_matriks')
+            ->where('users.no_matriks', '!=', '')
+            ->orderByDesc('users.created_at')
+            ->get();
+
+        return view('admin.no-matriks-users', [
+            'user' => $user,
+            'usersWithMatriks' => $usersWithMatriks,
+            'allUsers' => User::query()
+                ->select('id', 'name', 'full_name', 'no_matriks')
+                ->orderBy('name')
+                ->get(),
+        ]);
+    })->name('admin.users.no-matriks');
+
+
+    Route::post('/admin/no-matriks-users/{managedUser}', function (Request $request, User $managedUser) {
+        $authUser = $request->user();
+        $authRole = $authUser?->roles()->value('name');
+
+        abort_unless($authRole === 'admin', 403);
+
+        $validated = $request->validate([
+            'no_matriks' => ['required', 'string', 'max:50', 'unique:users,no_matriks,' . $managedUser->id],
+        ]);
+
+        $managedUser->no_matriks = trim($validated['no_matriks']);
+        $managedUser->save();
+
+        return redirect()
+            ->route('admin.users.no-matriks')
+
+
+            ->with('status', "Saved {$addedCount} no_matriks value(s). Skipped {$duplicateCount} duplicate value(s).");
+    })->name('admin.users.no-matriks.store');
+
 
     Route::patch('/admin/manage-accounts/{managedUser}', function (Request $request, User $managedUser) {
         $authUser = $request->user();
@@ -875,6 +924,77 @@ Route::middleware('auth')->group(function () {
 });
 
 
+Route::get('/admin/no-matriks-users', function () {
+    $user = request()->user();
+    $role = $user?->roles()->value('name');
+
+    abort_unless($role === 'admin', 403);
+
+    return view('admin.no-matriks-users', [
+        'user' => $user,
+        'matriksEntries' => NoMatriksEntry::query()
+            ->latest()
+            ->get(),
+    ]);
+})->name('admin.users.no-matriks');
+
+Route::post('/admin/no-matriks-users/{managedUser?}', function (Request $request) {
+    $authUser = $request->user();
+    $authRole = $authUser?->roles()->value('name');
+
+    abort_unless($authRole === 'admin', 403);
+
+    $validated = $request->validate([
+        'no_matriks' => ['required', 'string'],
+    ]);
+
+    $entries = collect(preg_split('/[\r\n,;]+/', (string) $validated['no_matriks']))
+        ->map(static fn(?string $value): string => trim((string) $value))
+        ->filter()
+        ->unique()
+        ->values();
+
+    if ($entries->isEmpty()) {
+        return redirect()
+            ->route('admin.users.no-matriks')
+            ->withErrors(['no_matriks' => 'Please enter at least one no_matriks value.']);
+    }
+
+    $tooLong = $entries->first(static fn(string $value): bool => mb_strlen($value) > 50);
+    if ($tooLong) {
+        return redirect()
+            ->route('admin.users.no-matriks')
+            ->withErrors(['no_matriks' => 'Each no_matriks value must be 50 characters or fewer.']);
+    }
+
+    $existing = NoMatriksEntry::query()
+        ->whereIn('no_matriks', $entries->all())
+        ->pluck('no_matriks')
+        ->all();
+
+    $existingLookup = array_flip($existing);
+    $newEntries = $entries
+        ->reject(static fn(string $value): bool => array_key_exists($value, $existingLookup))
+        ->values();
+
+    if ($newEntries->isNotEmpty()) {
+        $now = now();
+        NoMatriksEntry::query()->insert(
+            $newEntries->map(static fn(string $value): array => [
+                'no_matriks' => $value,
+                'created_by' => $authUser?->id,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ])->all()
+        );
+    }
+
+    $addedCount = $newEntries->count();
+    $duplicateCount = $entries->count() - $addedCount;
+    return redirect()
+        ->route('admin.users.no-matriks')
+        ->with('status', 'Nombor matriks berjaya disimpan.');
+})->name('admin.users.no-matriks.store');
 
 
 // Route::get('/dashboard', function () {

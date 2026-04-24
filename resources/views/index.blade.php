@@ -6,6 +6,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Counselling Booking</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        .hero-slide {
+            opacity: 0;
+            transform: translateY(10px) scale(0.985);
+            transition: opacity 650ms ease, transform 650ms ease;
+            pointer-events: none;
+        }
+
+        .hero-slide.is-active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+            z-index: 2;
+        }
+
+        .hero-slide-image {
+            transform: scale(1);
+            transition: transform 4s ease;
+        }
+
+        .hero-slide.is-active .hero-slide-image {
+            transform: scale(1.05);
+        }
+    </style>
 </head>
 
 <body class="min-h-screen flex flex-col bg-slate-50 text-slate-700 overflow-x-hidden scroll-smooth">
@@ -190,11 +214,11 @@
 
                         <div
                             class="mt-6 relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-                            <div id="heroSlides" class="transition-all duration-500 ease-out">
-                                <article class="hero-slide p-6 sm:p-7">
-                                    <img src="https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1200&q=80"
-                                        alt="Student writing in journal for stress relief"
-                                        class="h-40 w-full rounded-xl object-cover mb-5" />
+                            <div id="heroSlides" class="relative min-h-[25rem]">
+                                <article class="hero-slide is-active absolute inset-0 p-6 sm:p-7">
+                                    <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80"
+                                        alt="University students discussing class tasks together"
+                                        class="hero-slide-image h-40 w-full rounded-xl object-cover mb-5" />
                                     <p class="text-xs uppercase tracking-[0.18em] text-sky-600 font-semibold">Tip Of
                                         The
                                         Week</p>
@@ -206,10 +230,10 @@
                                     </p>
                                 </article>
 
-                                <article class="hero-slide hidden p-6 sm:p-7">
-                                    <img src="https://images.unsplash.com/photo-1516302752625-fcc3c50ae61f?auto=format&fit=crop&w=1200&q=80"
-                                        alt="Counsellor desk with notebook and warm lighting"
-                                        class="h-40 w-full rounded-xl object-cover mb-5" />
+                                <article class="hero-slide absolute inset-0 p-6 sm:p-7">
+                                    <img src="https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1200&q=80"
+                                        alt="Counsellor speaking with a student in a support session"
+                                        class="hero-slide-image h-40 w-full rounded-xl object-cover mb-5" />
                                     <p class="text-xs uppercase tracking-[0.18em] text-indigo-600 font-semibold">
                                         Service Update</p>
                                     <h3 class="mt-2 text-xl font-bold text-slate-800">Extended counselling support
@@ -220,10 +244,10 @@
                                     </p>
                                 </article>
 
-                                <article class="hero-slide hidden p-6 sm:p-7">
-                                    <img src="https://images.unsplash.com/photo-1474418397713-7ede21d49118?auto=format&fit=crop&w=1200&q=80"
-                                        alt="Glass of water and a peaceful morning setup"
-                                        class="h-40 w-full rounded-xl object-cover mb-5" />
+                                <article class="hero-slide absolute inset-0 p-6 sm:p-7">
+                                    <img src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1200&q=80"
+                                        alt="Peaceful bedtime setup with water and lamp for healthy sleep habits"
+                                        class="hero-slide-image h-40 w-full rounded-xl object-cover mb-5" />
                                     <p class="text-xs uppercase tracking-[0.18em] text-emerald-600 font-semibold">
                                         Wellbeing Reminder</p>
                                     <h3 class="mt-2 text-xl font-bold text-slate-800">Hydration and sleep boost
@@ -412,7 +436,9 @@
             let currentSlide = 0;
             const showSlide = (targetIndex) => {
                 currentSlide = (targetIndex + slides.length) % slides.length;
-                slides.forEach((slide, index) => slide.classList.toggle('hidden', index !== currentSlide));
+                slides.forEach((slide, index) => {
+                    slide.classList.toggle('is-active', index === currentSlide);
+                });
                 dots.forEach((dot, index) => {
                     dot.classList.toggle('bg-sky-500', index === currentSlide);
                     dot.classList.toggle('bg-slate-300', index !== currentSlide);
