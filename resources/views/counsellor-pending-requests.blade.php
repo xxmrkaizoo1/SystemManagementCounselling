@@ -37,7 +37,7 @@
                                 <th class="px-4 py-3 font-semibold">Student</th>
                                 <th class="px-4 py-3 font-semibold">Date</th>
                                 <th class="px-4 py-3 font-semibold">Time</th>
-                                <th class="px-4 py-3 font-semibold">Status</th>s
+                                <th class="px-4 py-3 font-semibold">Status</th>
                                 <th class="px-4 py-3 font-semibold">Topic</th>
                                 <th class="px-4 py-3 font-semibold text-center">Action</th>
                             </tr>

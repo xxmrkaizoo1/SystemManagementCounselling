@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\NoMatriksEntry;
 use App\Models\Role;
 use App\Models\User;
 use App\Services\PhoneOtpTelegramSender;
@@ -77,6 +78,7 @@ class AuthController extends Controller
             'phone' => ['required', 'string', 'max:30'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'role' => ['required', Rule::in(['student', 'teacher'])],
+            'no_matriks' => ['nullable', 'string', 'max:50'],
             'years' => ['nullable', 'string', 'max:50'],
             'programme' => ['nullable', 'string', 'max:50'],
             'profile_pic' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
@@ -85,10 +87,28 @@ class AuthController extends Controller
         ]);
 
         if ($validated['role'] === 'student') {
-            $request->validate([
-                'years' => ['required', 'string', 'max:50'],
-                'programme' => ['required', 'string', 'max:50'],
-            ]);
+            $request->validate(
+                [
+                    'years' => ['required', 'string', 'max:50'],
+                    'programme' => ['required', 'string', 'max:50'],
+                    'no_matriks' => [
+                        'required',
+                        'string',
+                        'max:50',
+                        'unique:users,no_matriks',
+                        static function (string $attribute, mixed $value, \Closure $fail): void {
+                            $noMatriks = trim((string) $value);
+
+                            if (! NoMatriksEntry::query()->where('no_matriks', $noMatriks)->exists()) {
+                                $fail('No matriks is not registered by admin.');
+                            }
+                        },
+                    ],
+                ],
+                [
+                    'no_matriks.unique' => 'No matriks already used.',
+                ]
+            );
         }
         if ($validated['role'] === 'teacher') {
             $request->validate([
@@ -116,6 +136,7 @@ class AuthController extends Controller
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'role' => $validated['role'],
+            'no_matriks' => $validated['role'] === 'student' ? trim((string) ($validated['no_matriks'] ?? '')) : null,
             'years' => $validated['role'] === 'student' ? ($validated['years'] ?? null) : null,
             'programme' => $validated['role'] === 'student' ? ($validated['programme'] ?? null) : null,
             'profile_pic' => $profilePicPath,
@@ -167,6 +188,26 @@ class AuthController extends Controller
             ]);
         }
 
+        if (($pendingSignup['role'] ?? null) === 'student') {
+            $noMatriks = trim((string) ($pendingSignup['no_matriks'] ?? ''));
+
+            if ($noMatriks === '' || ! NoMatriksEntry::query()->where('no_matriks', $noMatriks)->exists()) {
+                $this->clearPendingSignup($request, $pendingEmail);
+
+                return redirect()->route('signup')->withErrors([
+                    'no_matriks' => 'No matriks is not registered by admin.',
+                ]);
+            }
+
+            if (User::query()->where('no_matriks', $noMatriks)->exists()) {
+                $this->clearPendingSignup($request, $pendingEmail);
+
+                return redirect()->route('signup')->withErrors([
+                    'no_matriks' => 'No matriks already used.',
+                ]);
+            }
+        }
+
         $cachedOtp = Cache::get($this->otpCacheKey($pendingEmail));
 
         if (! $cachedOtp) {
@@ -189,6 +230,7 @@ class AuthController extends Controller
             'phone' => $pendingSignup['phone'],
             'email' => $pendingSignup['email'],
             'password' => $pendingSignup['password'],
+            'no_matriks' => $pendingSignup['no_matriks'] ?? null,
             'years' => $pendingSignup['years'],
             'programme' => $pendingSignup['programme'],
             'profile_pic' => $profilePicPath,

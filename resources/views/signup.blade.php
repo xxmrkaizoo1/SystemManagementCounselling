@@ -219,6 +219,16 @@
                             </div>
                         </div>
 
+                          <div x-show="role === 'student'" x-transition class="mx-auto w-full sm:w-1/2">
+                            <label for="no_matriks" class="block text-sm font-medium text-slate-700 mb-1.5 text-center">No matriks</label>
+                            <input id="no_matriks" name="no_matriks" type="text" value="{{ old('no_matriks') }}"
+                                x-bind:disabled="role !== 'student'" placeholder="Enter no matriks"
+                                class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm text-center outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition disabled:bg-slate-100 disabled:text-slate-400" />
+                            @error('no_matriks')
+                                <p class="mt-1 text-xs text-rose-600 text-center">{{ $message }}</p>
+                            @enderror
+                        </div>
+
                         <button type="submit"
                             class="mt-2 w-full rounded-xl bg-sky-600 text-white font-semibold py-2.5 hover:bg-sky-700 transition shadow-sm">
                             Sign Up
