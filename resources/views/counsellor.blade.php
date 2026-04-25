@@ -18,7 +18,8 @@
     @endphp
 
     <div class="fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
-        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_#e0f2fe_0%,_#f8fafc_36%,_#f1f5f9_100%)]"></div>
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_#e0f2fe_0%,_#f8fafc_36%,_#f1f5f9_100%)]">
+        </div>
         <div class="absolute inset-0 bg-grid-pattern opacity-20"></div>
         <div class="absolute -top-24 -left-24 h-[30rem] w-[30rem] rounded-full bg-sky-300/20 blur-3xl"></div>
         <div class="absolute top-12 -right-24 h-[28rem] w-[28rem] rounded-full bg-violet-300/20 blur-3xl"></div>
@@ -38,8 +39,10 @@
                             </a>
 
                             <div class="rounded-xl border border-slate-300/80 bg-white px-4 py-3 shadow-sm">
-                                <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">CollegeCare</p>
-                                <h1 class="text-lg font-semibold text-slate-800 lg:text-xl">Counsellor Session Dashboard</h1>
+                                <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                                    CollegeCare</p>
+                                <h1 class="text-lg font-semibold text-slate-800 lg:text-xl">Counsellor Session Dashboard
+                                </h1>
                             </div>
                         </div>
 
@@ -80,6 +83,42 @@
             </header>
 
             <div class="px-4 pb-6 pt-6 sm:px-6 sm:pb-8 lg:px-8 lg:pb-10 lg:pt-8">
+
+
+                <section
+                    class="mb-6 overflow-hidden rounded-3xl border border-slate-200/90 bg-gradient-to-r from-slate-900 via-sky-900 to-violet-900 shadow-xl">
+                    <div class="relative h-64 sm:h-72 lg:h-80">
+                        <img id="counsellor-hero-image" src="{{ asset('images/slides/counselling-session.svg') }}"
+                            alt="Counsellor wellbeing slide"
+                            class="absolute inset-0 h-full w-full object-cover opacity-70 transition-all duration-700" />
+                        <div
+                            class="absolute inset-0 bg-gradient-to-r from-slate-950/80 via-slate-900/55 to-slate-900/30">
+                        </div>
+
+                        <div class="relative z-10 flex h-full flex-col justify-end px-6 pb-6 pt-8 sm:px-8 sm:pb-8">
+                            <p id="counsellor-hero-tag"
+                                class="text-xs font-semibold uppercase tracking-[0.16em] text-sky-200/95">CollegeCare
+                                Focus</p>
+                            <h2 id="counsellor-hero-title"
+                                class="mt-2 max-w-3xl text-2xl font-bold text-white sm:text-3xl">
+                                Guide every student with empathy and structure.
+                            </h2>
+                            <p id="counsellor-hero-subtitle" class="mt-2 max-w-2xl text-sm text-slate-100 sm:text-base">
+                                Review requests, confirm sessions, and keep counselling support consistent every week.
+                            </p>
+
+                            <div class="mt-4 flex items-center gap-2">
+                                <button id="counsellor-hero-prev" type="button"
+                                    class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/35 bg-white/10 text-white transition hover:bg-white/20"
+                                    aria-label="Previous slide">←</button>
+                                <button id="counsellor-hero-next" type="button"
+                                    class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/35 bg-white/10 text-white transition hover:bg-white/20"
+                                    aria-label="Next slide">→</button>
+                                <div id="counsellor-hero-dots" class="ml-1 flex items-center gap-1.5"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
                 <section class="grid gap-6 lg:grid-cols-2">
                     <article
                         class="rounded-3xl border border-slate-200/90 bg-gradient-to-br from-white via-sky-50/45 to-sky-100/55 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md sm:p-8 lg:min-h-[430px]">
@@ -89,7 +128,8 @@
                         </div>
 
                         <h2 class="mt-5 text-center text-2xl font-semibold text-slate-800">Pending Requests</h2>
-                        <p class="mt-2 text-center text-base text-slate-500">Semak permohonan pelajar yang masih menunggu kelulusan.</p>
+                        <p class="mt-2 text-center text-base text-slate-500">Semak permohonan pelajar yang masih
+                            menunggu kelulusan.</p>
 
                         <div class="mt-6 rounded-2xl border border-sky-100 bg-white/80 px-4 py-4 text-center shadow-sm">
                             <p class="text-xs uppercase tracking-wide text-sky-700">Current pending</p>
@@ -112,7 +152,8 @@
                         </div>
 
                         <h2 class="mt-5 text-center text-2xl font-semibold text-slate-800">Session Status</h2>
-                        <p class="mt-2 text-center text-base text-slate-500">Lihat status sesi yang telah approved, booked, dan complete.</p>
+                        <p class="mt-2 text-center text-base text-slate-500">Lihat status sesi yang telah approved,
+                            booked, dan complete.</p>
 
                         <div class="mt-6 grid grid-cols-3 gap-3 text-center text-xs sm:text-sm">
                             <div class="rounded-xl border border-emerald-100 bg-emerald-50 px-2 py-3 sm:px-3">
@@ -138,16 +179,15 @@
                     </article>
                 </section>
 
-                <div class="mt-6 rounded-2xl border border-slate-200 bg-slate-50/90 px-4 py-3 text-sm text-slate-600">
-                    <span>Total Applications: {{ count($applications) }}</span>
-                </div>
+
             </div>
         </section>
     </main>
 
     <aside id="messages-widget"
         class="fixed bottom-4 right-4 z-40 w-[calc(100%-2rem)] max-w-md overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-2xl ring-1 ring-slate-200/70 sm:bottom-6 sm:right-6">
-        <div class="flex items-center justify-between bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 px-4 py-3 text-white">
+        <div
+            class="flex items-center justify-between bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 px-4 py-3 text-white">
             <h3 class="text-lg font-semibold">Messages</h3>
             <div class="flex items-center gap-2">
                 <span class="text-sm text-amber-300">🔔</span>
@@ -172,7 +212,8 @@
 
             <div class="flex items-center justify-between text-sm">
                 <p class="font-semibold text-slate-900">Chats</p>
-                <a href="{{ route('counsellor.pending-requests') }}" class="font-medium text-sky-600 hover:text-sky-700">Requests</a>
+                <a href="{{ route('counsellor.pending-requests') }}"
+                    class="font-medium text-sky-600 hover:text-sky-700">Requests</a>
             </div>
 
             <div id="chat-list" class="max-h-64 space-y-3 overflow-y-auto pr-1">
@@ -188,8 +229,10 @@
                         <div class="min-w-0 flex-1">
                             <div class="flex items-start justify-between gap-2">
                                 <div>
-                                    <p class="truncate text-base font-semibold leading-tight text-slate-800">{{ $item['student'] ?? 'Student' }}</p>
-                                    <p class="truncate text-sm text-slate-500">{{ $item['topic'] ?: 'General counseling support' }}</p>
+                                    <p class="truncate text-base font-semibold leading-tight text-slate-800">
+                                        {{ $item['student'] ?? 'Student' }}</p>
+                                    <p class="truncate text-sm text-slate-500">
+                                        {{ $item['topic'] ?: 'General counseling support' }}</p>
                                 </div>
                                 <div class="flex items-center gap-2 pt-0.5">
                                     <span class="text-xs text-slate-400">{{ $item['request_date'] ?? 'Today' }}</span>
@@ -209,7 +252,8 @@
                 @endforelse
             </div>
 
-            <div id="chat-no-results" class="hidden rounded-xl border border-slate-100 bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">
+            <div id="chat-no-results"
+                class="hidden rounded-xl border border-slate-100 bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">
                 No matching chats found.
             </div>
         </div>
@@ -223,6 +267,79 @@
             const chatList = document.getElementById('chat-list');
             const chatRows = chatList ? Array.from(chatList.querySelectorAll('[data-chat-item="true"]')) : [];
             const noResults = document.getElementById('chat-no-results');
+            const heroImage = document.getElementById('counsellor-hero-image');
+            const heroTag = document.getElementById('counsellor-hero-tag');
+            const heroTitle = document.getElementById('counsellor-hero-title');
+            const heroSubtitle = document.getElementById('counsellor-hero-subtitle');
+            const heroPrev = document.getElementById('counsellor-hero-prev');
+            const heroNext = document.getElementById('counsellor-hero-next');
+            const heroDots = document.getElementById('counsellor-hero-dots');
+
+            const heroSlides = [{
+                    image: "{{ asset('images/slides/counselling-session.svg') }}",
+                    tag: 'CollegeCare Focus',
+                    title: 'Guide every student with empathy and structure.',
+                    subtitle: 'Review requests, confirm sessions, and keep counselling support consistent every week.',
+                },
+                {
+                    image: "{{ asset('images/slides/study-focus.svg') }}",
+                    tag: 'Student Readiness',
+                    title: 'Support better academic focus with timely check-ins.',
+                    subtitle: 'Approve important sessions quickly to help students stay on track.',
+                },
+                {
+                    image: "{{ asset('images/slides/sleep-hydrate.svg') }}",
+                    tag: 'Wellbeing Reminder',
+                    title: 'Promote healthy routines beyond the counselling room.',
+                    subtitle: 'Encourage practical habits students can follow every day.',
+                }
+            ];
+            let currentHeroSlide = 0;
+            let heroSlideInterval = null;
+
+            const renderHeroDots = function() {
+                if (!heroDots) return;
+                heroDots.innerHTML = '';
+                heroSlides.forEach(function(_, index) {
+                    const dot = document.createElement('button');
+                    dot.type = 'button';
+                    dot.className = 'h-2.5 w-2.5 rounded-full transition ' + (index ===
+                        currentHeroSlide ?
+                        'bg-white' : 'bg-white/40 hover:bg-white/70');
+                    dot.setAttribute('aria-label', 'Go to slide ' + (index + 1));
+                    dot.addEventListener('click', function() {
+                        setHeroSlide(index);
+                    });
+                    heroDots.appendChild(dot);
+                });
+            };
+
+            const setHeroSlide = function(index) {
+                if (!heroImage || !heroTag || !heroTitle || !heroSubtitle) return;
+                currentHeroSlide = (index + heroSlides.length) % heroSlides.length;
+                const slide = heroSlides[currentHeroSlide];
+
+                heroImage.classList.add('opacity-40');
+                setTimeout(function() {
+                    heroImage.src = slide.image;
+                    heroTag.textContent = slide.tag;
+                    heroTitle.textContent = slide.title;
+                    heroSubtitle.textContent = slide.subtitle;
+                    heroImage.classList.remove('opacity-40');
+                }, 120);
+
+                renderHeroDots();
+            };
+
+            const startHeroAutoplay = function() {
+                if (!heroImage) return;
+                if (heroSlideInterval) {
+                    clearInterval(heroSlideInterval);
+                }
+                heroSlideInterval = setInterval(function() {
+                    setHeroSlide(currentHeroSlide + 1);
+                }, 4500);
+            };
 
             if (toggleButton && widgetBody) {
                 toggleButton.addEventListener('click', function() {
@@ -249,6 +366,25 @@
                         noResults.classList.toggle('hidden', visibleCount > 0);
                     }
                 });
+            }
+
+            if (heroImage && heroTag && heroTitle && heroSubtitle) {
+                setHeroSlide(0);
+                startHeroAutoplay();
+
+                if (heroPrev) {
+                    heroPrev.addEventListener('click', function() {
+                        setHeroSlide(currentHeroSlide - 1);
+                        startHeroAutoplay();
+                    });
+                }
+
+                if (heroNext) {
+                    heroNext.addEventListener('click', function() {
+                        setHeroSlide(currentHeroSlide + 1);
+                        startHeroAutoplay();
+                    });
+                }
             }
         });
     </script>

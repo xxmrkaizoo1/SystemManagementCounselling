@@ -20,6 +20,7 @@ class BookingRequest extends Model
         'booking_date',
         'booking_time',
         'counsellor_name',
+        'topic',
         'note',
         'status',
     ];

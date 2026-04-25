@@ -20,6 +20,7 @@
         }
 
         @keyframes softPulse {
+
             0%,
             100% {
                 transform: scale(1);
@@ -40,19 +41,31 @@
     </style>
 </head>
 
-<body class="min-h-screen bg-slate-50 text-slate-700">
-    <main class="mx-auto max-w-5xl p-4 sm:p-8">
-        <section class="rounded-3xl border border-slate-200 bg-white shadow-xl overflow-hidden">
-            <header class="border-b border-slate-200 bg-white px-5 py-4 sm:px-7 flex items-center justify-between gap-3">
-                <div>
-                    <p class="text-xs uppercase tracking-[0.14em] text-slate-500">CollegeCare</p>
-                    <h1 class="text-xl font-bold text-slate-800">Approved, Booked & Completed</h1>
-                    <p class="text-sm text-slate-500">Counsellor: {{ $user->full_name ?: $user->name }}</p>
+<body class="min-h-screen overflow-x-hidden bg-slate-50 text-slate-700 antialiased">
+    <div class="fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_#e0f2fe_0%,_#f8fafc_40%,_#eef2ff_100%)]">
+        </div>
+        <div class="absolute inset-0 bg-grid-pattern opacity-20"></div>
+        <div class="absolute -top-20 -left-24 h-[28rem] w-[28rem] rounded-full bg-sky-300/20 blur-3xl"></div>
+        <div class="absolute top-10 -right-24 h-[26rem] w-[26rem] rounded-full bg-violet-300/20 blur-3xl"></div>
+    </div>
+
+    <main class="mx-auto max-w-6xl p-4 sm:p-8 lg:p-10">
+        <section
+            class="overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white/85 shadow-2xl ring-1 ring-white/70 backdrop-blur-xl">
+            <header class="border-b border-slate-200/90 bg-white/90 px-5 py-5 sm:px-7 sm:py-6">
+                <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">CollegeCare</p>
+                        <h1 class="mt-1 text-2xl font-bold text-slate-800 sm:text-3xl">Approved, Booked & Completed</h1>
+                        <p class="mt-1 text-sm text-slate-500">Counsellor: {{ $user->full_name ?: $user->name }}</p>
+                    </div>
+                    <a href="{{ route('counsellor.dashboard') }}"
+                        class="inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-sky-300 hover:text-sky-700">
+                        Back to Dashboard
+                    </a>
                 </div>
-                <a href="{{ route('counsellor.dashboard') }}"
-                    class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">
-                    Back to Dashboard
-                </a>
+                \
             </header>
 
             <div class="p-5 sm:p-7">
@@ -62,17 +75,19 @@
                         {{ session('status') }}
                     </div>
                 @endif
-                <div class="mb-5 rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 via-white to-slate-50 p-4 sm:p-5 shadow-sm status-fade-up">
+                <div
+                    class="mb-5 rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 via-white to-slate-50 p-4 sm:p-5 shadow-sm status-fade-up">
                     <div class="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
-                        <section class="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm">
-                            <div class="px-4 py-3 border-b border-slate-200 bg-gradient-to-r from-slate-50 to-white flex items-center justify-between">
+                        <section class="overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-sm">
+                            <div
+                                class="flex items-center justify-between border-b border-slate-200 bg-gradient-to-r from-slate-50 to-white px-4 py-3">
                                 <button id="status-calendar-prev" type="button"
-                                    class="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm hover:border-sky-200 hover:text-sky-700 hover:-translate-y-0.5 transition-all duration-200">←</button>
+                                    class="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-sky-200 hover:text-sky-700">←</button>
                                 <h2 id="status-calendar-title" class="font-semibold text-slate-700">Month Year</h2>
                                 <button id="status-calendar-next" type="button"
-                                    class="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm hover:border-sky-200 hover:text-sky-700 hover:-translate-y-0.5 transition-all duration-200">→</button>
+                                    class="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-sky-200 hover:text-sky-700">→</button>
                             </div>
-                            <div class="grid text-[11px] sm:text-xs bg-slate-100 text-slate-600"
+                            <div class="grid bg-slate-100 text-[11px] text-slate-600 sm:text-xs"
                                 style="grid-template-columns: repeat(7, minmax(0, 1fr));">
                                 <div class="p-2 text-center font-semibold">Sun</div>
                                 <div class="p-2 text-center font-semibold">Mon</div>
@@ -89,14 +104,16 @@
                         <aside class="flex flex-col gap-3">
                             <form id="session-filter-form" class="grid gap-3" autocomplete="off">
                                 <label class="block">
-                                    <span class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                    <span
+                                        class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">
                                         Selected Date
                                     </span>
                                     <input id="session-date-filter" type="text" readonly placeholder="All dates"
-                                        class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 outline-none">
+                                        class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-sky-300 focus:ring-2 focus:ring-sky-100">
                                 </label>
                                 <label class="block">
-                                    <span class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                    <span
+                                        class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">
                                         Booking Status
                                     </span>
                                     <select id="session-status-filter"
@@ -107,7 +124,7 @@
                                     </select>
                                 </label>
                                 <button id="session-clear-date" type="button"
-                                    class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:border-sky-200 hover:text-sky-700 hover:-translate-y-0.5 transition-all duration-200">
+                                    class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-600 transition-all duration-200 hover:-translate-y-0.5 hover:border-sky-200 hover:text-sky-700">
                                     Clear Date Filter
                                 </button>
                             </form>
@@ -129,9 +146,10 @@
                         </aside>
                     </div>
                 </div>
-                <div class="overflow-auto rounded-2xl border border-slate-200">
-                    <table class="w-full text-sm">
-                        <thead class="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
+                <div
+                    class="overflow-auto rounded-2xl border border-slate-200/90 bg-white shadow-inner shadow-slate-100/60">
+                    <table class="w-full min-w-[760px] text-sm">
+                        <thead class="bg-slate-100/90 text-left text-xs uppercase tracking-wider text-slate-500">
                             <tr>
                                 <th class="px-4 py-3 font-semibold">Student</th>
                                 <th class="px-4 py-3 font-semibold">Date</th>
@@ -144,13 +162,14 @@
                         <tbody id="session-table-body" class="divide-y divide-slate-100 bg-white">
                             @forelse ($sessions as $session)
                                 <tr data-session-date="{{ $session['date'] }}"
-                                    data-session-status="{{ $session['status_value'] }}">
-                                    <td class="px-4 py-3 font-medium text-slate-700">{{ $session['student'] }}</td>
+                                    data-session-status="{{ $session['status_value'] }}"
+                                    class="transition hover:bg-sky-50/70">
+                                    <td class="px-4 py-3 font-semibold text-slate-800">{{ $session['student'] }}</td>
                                     <td class="px-4 py-3 text-slate-600">{{ $session['date'] }}</td>
                                     <td class="px-4 py-3 text-slate-600">{{ $session['time'] }}</td>
                                     <td class="px-4 py-3">
                                         <span
-                                            class="rounded-full px-2.5 py-1 text-xs font-semibold {{ $session['status'] === 'Completed' ? 'bg-violet-100 text-violet-700' : ($session['status'] === 'Approved' ? 'bg-emerald-100 text-emerald-700' : 'bg-sky-100 text-sky-700') }}">
+                                            class="rounded-full border px-2.5 py-1 text-xs font-semibold {{ $session['status'] === 'Completed' ? 'border-violet-200 bg-violet-100 text-violet-700' : ($session['status'] === 'Approved' ? 'border-emerald-200 bg-emerald-100 text-emerald-700' : 'border-sky-200 bg-sky-100 text-sky-700') }}">
                                             {{ $session['status'] }}
                                         </span>
                                     </td>
@@ -164,7 +183,7 @@
                                                 @method('PATCH')
                                                 <input type="hidden" name="status" value="completed">
                                                 <button type="submit"
-                                                    class="rounded-lg border border-violet-200 bg-violet-50 px-3 py-1.5 text-xs font-semibold text-violet-700 hover:bg-violet-100">
+                                                    class="rounded-lg border border-violet-200 bg-violet-50 px-3 py-1.5 text-xs font-semibold text-violet-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-violet-100">
                                                     Mark Completed
                                                 </button>
                                             </form>
@@ -175,12 +194,22 @@
                                 </tr>
                             @empty
                                 <tr id="empty-row">
-                                    <td colspan="6" class="px-4 py-8 text-center text-slate-500">No
-                                        approved/booked/completed sessions available.</td>
+                                    <td colspan="6" class="px-4 py-10 text-center text-slate-500">
+                                        <div class="mx-auto flex max-w-sm flex-col items-center gap-2">
+                                            <span
+                                                class="inline-flex h-14 w-14 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-2xl">📅</span>
+                                            <p class="text-base font-semibold text-slate-700">No
+                                                approved/booked/completed sessions available</p>
+                                            <p class="text-sm text-slate-500">New updates will appear here
+                                                automatically.</p>
+                                        </div>
+                                    </td>
                                 </tr>
                             @endforelse
                             <tr id="no-results-row" class="hidden">
-                                <td colspan="6" class="px-4 py-8 text-center text-slate-500">No sessions match the selected date/status filter.</td>
+                                <td colspan="6" class="px-4 py-8 text-center text-slate-500">No sessions match the
+                                    selected date/status
+                                    filter.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -205,7 +234,8 @@
             const approvedCount = document.getElementById('approved-count');
             const completedCount = document.getElementById('completed-count');
 
-            if (!tableBody || !dateFilter || !statusFilter || !calendarTitle || !calendarGrid || !calendarPrev || !calendarNext) {
+            if (!tableBody || !dateFilter || !statusFilter || !calendarTitle || !calendarGrid || !calendarPrev || !
+                calendarNext) {
                 return;
             }
 
@@ -252,12 +282,15 @@
                     button.dataset.date = isoDate;
                     button.className = [
                         'h-10 border-r border-b border-slate-100 text-sm transition-all duration-200',
-                        isWeekend ? 'bg-slate-50 text-slate-300 cursor-not-allowed' : 'bg-white text-slate-700 hover:bg-sky-50 hover:scale-[1.02]',
+                        isWeekend ? 'bg-slate-50 text-slate-300 cursor-not-allowed' :
+                        'bg-white text-slate-700 hover:bg-sky-50 hover:scale-[1.02]',
                         isSelected ? 'bg-sky-600 font-semibold text-white shadow-inner' : '',
-                        hasBooking && !isSelected && !isWeekend ? 'font-semibold text-emerald-700 ring-1 ring-emerald-100' : '',
+                        hasBooking && !isSelected && !isWeekend ?
+                        'font-semibold text-emerald-700 ring-1 ring-emerald-100' : '',
                     ].join(' ').trim();
                     button.textContent = String(day);
-                    button.title = isWeekend ? 'Weekend is not selectable' : (hasBooking ? 'Date with session record' : 'Filter by this date');
+                    button.title = isWeekend ? 'Weekend is not selectable' : (hasBooking ?
+                        'Date with session record' : 'Filter by this date');
 
                     if (!isWeekend) {
                         button.addEventListener('click', () => {

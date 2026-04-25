@@ -673,7 +673,7 @@ Route::middleware('auth')->group(function () {
                 return [
                     'student' => $booking->user?->full_name ?: $booking->user?->name ?: 'Pelajar',
                     'request_date' => (string) $booking->booking_date,
-                    'topic' => $booking->note,
+                    'topic' => $booking->topic ?: 'General support',
                     'status' => $statusLabel($booking->status),
                 ];
             })
@@ -745,8 +745,9 @@ Route::middleware('auth')->group(function () {
                     'student' => $booking->user?->full_name ?: $booking->user?->name ?: 'Pelajar',
                     'date' => (string) $booking->booking_date,
                     'time' => $booking->booking_time,
-                    'topic' => $booking->note,
+                    'topic' => $booking->topic ?: 'General support',
                     'status' => $booking->status,
+                    'notes' => $booking->note,
                 ];
             })
             ->all();
@@ -850,6 +851,8 @@ Route::middleware('auth')->group(function () {
                     'status' => $statusLabel($booking->status),
                     'status_value' => $booking->status,
                     'topic' => $booking->note,
+                    'topic' => $booking->topic ?: 'General support',
+                    s
                 ];
             })
             ->all();
@@ -1024,11 +1027,16 @@ Route::middleware('auth')->group(function () {
             ], 422);
         }
 
+        $bookingTopic = $validated['reason'] === 'Lain-lain'
+            ? ($validated['reason_other'] ?? 'General support')
+            : $validated['reason'];
+
         BookingRequest::create([
             'user_id' => $user->id,
             'booking_date' => $validated['booking_date'],
             'booking_time' => $validated['booking_time'],
             'counsellor_name' => $validated['counsellor_name'],
+            'topic' => $bookingTopic,
             'note' => $validated['note'],
             'status' => 'pending',
         ]);
