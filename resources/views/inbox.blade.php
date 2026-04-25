@@ -57,6 +57,13 @@
             display: block;
         }
 
+        .word-pill {
+            display: inline-flex;
+            border-radius: 0.45rem;
+            background: rgb(255 255 255 / 0.96);
+            padding: 0.1rem 0.45rem;
+        }
+
         @media (min-width: 1280px) {
             .home-shell {
                 flex-direction: row;
@@ -155,12 +162,20 @@
                         <img src="{{ $user->profile_pic ?: '/images/default-profile.svg' }}" alt="Profile"
                             class="w-11 h-11 rounded-full border border-slate-200 object-cover bg-sky-50" />
                         <div>
-                            <p class="text-sm font-semibold text-slate-800">{{ $user->name }}</p>
-                            <p class="text-xs uppercase tracking-wide text-sky-700">{{ $sidebarRoleLabel }}</p>
+                            <p class="flex flex-wrap gap-1 text-sm font-semibold text-slate-800">
+                                @foreach (preg_split('/\s+/', trim($user->name)) as $nameWord)
+                                    @if ($nameWord !== '')
+                                        <span class="word-pill">{{ $nameWord }}</span>
+                                    @endif
+                                @endforeach
+                            </p>
+                            <p class="text-xs uppercase tracking-wide text-sky-700"><span
+                                    class="word-pill">{{ $sidebarRoleLabel }}</span></p>
                         </div>
                     </div>
 
-                    <p class="text-xs uppercase tracking-[0.12em] text-slate-500 mb-3">Menu</p>
+                    <p class="text-xs uppercase tracking-[0.12em] text-slate-500 mb-3"><span class="word-pill">Menu</span>
+                    </p>
                     <nav class="space-y-3 text-sm">
                         <a href="{{ route('inbox') }}" title="Inbox" aria-label="Inbox"
                             class="flex w-full items-center gap-3 rounded-xl border border-sky-200 bg-sky-50 px-3 py-2.5 text-sky-700 transition">
