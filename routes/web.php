@@ -196,6 +196,19 @@ Route::middleware('auth')->group(function () {
 
         abort_unless($role === 'admin', 403);
 
+        $usedNoMatriksLookup = User::query()
+            ->whereNotNull('no_matriks')
+            ->where('no_matriks', '!=', '')
+            ->pluck('no_matriks')
+            ->flip();
+
+        $entriesForView = NoMatriksEntry::query()->latest()
+            ->get()
+            ->map(static function (NoMatriksEntry $entry) use ($usedNoMatriksLookup): NoMatriksEntry {
+                $entry->is_used = $usedNoMatriksLookup->has($entry->no_matriks);
+                return $entry;
+            });
+
         return view('admin.overview');
     })->name('admin.overview');
 
@@ -932,9 +945,7 @@ Route::get('/admin/no-matriks-users', function () {
 
     return view('admin.no-matriks-users', [
         'user' => $user,
-        'matriksEntries' => NoMatriksEntry::query()
-            ->latest()
-            ->get(),
+        'matriksEntries' => $entriesForView,
     ]);
 })->name('admin.users.no-matriks');
 
@@ -945,10 +956,50 @@ Route::post('/admin/no-matriks-users/{managedUser?}', function (Request $request
     abort_unless($authRole === 'admin', 403);
 
     $validated = $request->validate([
-        'no_matriks' => ['required', 'string'],
+        'no_matriks' => ['nullable', 'string'],
+        'no_matriks_file' => ['nullable', 'file', 'max:5120', 'mimes:txt,csv,jpg,jpeg,png,webp'],
     ]);
 
-    $entries = collect(preg_split('/[\r\n,;]+/', (string) $validated['no_matriks']))
+    $rawInput = trim((string) ($validated['no_matriks'] ?? ''));
+    $uploadedFile = $request->file('no_matriks_file');
+
+    if ($uploadedFile) {
+        $mimeType = (string) ($uploadedFile->getMimeType() ?? '');
+        $isImage = str_starts_with($mimeType, 'image/');
+
+        if ($isImage) {
+            $sourcePath = $uploadedFile->getRealPath();
+            $escapedSource = escapeshellarg((string) $sourcePath);
+            $outputBase = tempnam(sys_get_temp_dir(), 'matriks_ocr_');
+
+            if ($outputBase === false) {
+                return redirect()
+                    ->route('admin.users.no-matriks')
+                    ->withErrors(['no_matriks_file' => 'Unable to process the uploaded image right now.']);
+            }
+
+            @unlink($outputBase);
+            $escapedOutputBase = escapeshellarg($outputBase);
+            $command = "tesseract {$escapedSource} {$escapedOutputBase} -l eng --psm 6 2>&1";
+            exec($command, $shellOutput, $exitCode);
+
+            if ($exitCode !== 0) {
+                @unlink($outputBase . '.txt');
+                return redirect()
+                    ->route('admin.users.no-matriks')
+                    ->withErrors(['no_matriks_file' => 'Image OCR failed. Please upload a TXT/CSV file or paste the list manually.']);
+            }
+
+            $ocrText = @file_get_contents($outputBase . '.txt');
+            @unlink($outputBase . '.txt');
+            $rawInput = trim($rawInput . "\n" . (string) $ocrText);
+        } else {
+            $fileText = @file_get_contents($uploadedFile->getRealPath());
+            $rawInput = trim($rawInput . "\n" . (string) $fileText);
+        }
+    }
+
+    $entries = collect(preg_split('/[\r\n,;]+/', $rawInput))
         ->map(static fn(?string $value): string => trim((string) $value))
         ->filter()
         ->unique()
@@ -971,6 +1022,20 @@ Route::post('/admin/no-matriks-users/{managedUser?}', function (Request $request
         ->whereIn('no_matriks', $entries->all())
         ->pluck('no_matriks')
         ->all();
+
+
+    if (!empty($existing)) {
+        $duplicatePreview = collect($existing)->take(5)->implode(', ');
+        $duplicateSuffix = count($existing) > 5 ? ' ...' : '';
+
+        return redirect()
+            ->route('admin.users.no-matriks')
+            ->withInput()
+            ->withErrors([
+                'no_matriks' => 'Cannot save because some no_matriks already exist: ' . $duplicatePreview . $duplicateSuffix,
+            ])
+            ->with('error_popup', 'Duplicate no_matriks detected. Please remove existing numbers and try again.');
+    }
 
     $existingLookup = array_flip($existing);
     $newEntries = $entries

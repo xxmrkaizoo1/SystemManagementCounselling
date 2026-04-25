@@ -61,9 +61,11 @@
             class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_#dbeafe_0%,_#e0f2fe_35%,_#e9d5ff_62%,_#f8fafc_100%)]">
         </div>
         <div
-            class="absolute -top-24 -left-16 h-[30rem] w-[30rem] rounded-full bg-cyan-300/35 blur-3xl animate-float-orb"></div>
+            class="absolute -top-24 -left-16 h-[30rem] w-[30rem] rounded-full bg-cyan-300/35 blur-3xl animate-float-orb">
+        </div>
         <div
-            class="absolute -bottom-20 -right-20 h-[28rem] w-[28rem] rounded-full bg-indigo-300/30 blur-3xl animate-float-orb"></div>
+            class="absolute -bottom-20 -right-20 h-[28rem] w-[28rem] rounded-full bg-indigo-300/30 blur-3xl animate-float-orb">
+        </div>
     </div>
 
     <main class="min-h-screen p-4 sm:p-6 lg:p-8">
@@ -73,7 +75,7 @@
                 class="px-5 sm:px-7 py-4 border-b border-slate-200/80 bg-white/80 flex items-center justify-between gap-3">
                 <div>
                     <p class="text-xs uppercase tracking-[0.14em] text-indigo-500 font-semibold">CollegeCare</p>
-                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900">Admin • no_matriks Users</h1>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900">Admin • Number Matriks Users</h1>
                     <p class="text-sm text-slate-600 mt-1">Manage your no_matriks list with a cleaner experience.</p>
                 </div>
 
@@ -103,19 +105,44 @@
                     </div>
                 @endif
 
+                @if (session('error_popup'))
+                    <div id="error-popup"
+                        class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 px-4">
+                        <div class="w-full max-w-md rounded-2xl bg-white p-5 shadow-2xl">
+                            <h3 class="text-lg font-semibold text-rose-700">Unable to save no_matriks</h3>
+                            <p class="mt-2 text-sm text-slate-700">{{ session('error_popup') }}</p>
+                            <button id="close-error-popup" type="button"
+                                class="mt-4 rounded-xl bg-rose-600 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-700 transition">
+                                OK
+                            </button>
+                        </div>
+                    </div>
+                @endif
+
                 <div
                     class="mb-5 rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm transition hover:shadow-md animate-fade-up delay-1">
                     <h2 class="text-lg font-semibold text-slate-900">Add many no_matriks numbers</h2>
-                    <p class="mt-1 text-sm text-slate-600">Enter one or multiple values (one per line, comma, or semicolon).</p>
+                    <p class="mt-1 text-sm text-slate-600">Enter one or multiple values (one per line, comma, or
+                        semicolon).</p>
 
-                    <form method="POST" action="{{ url('/admin/no-matriks-users') }}"
+                    <form method="POST" action="{{ url('/admin/no-matriks-users') }}" enctype="multipart/form-data"
                         class="mt-4 grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
                         @csrf
                         <div>
-                            <label for="no_matriks" class="mb-1 block text-sm font-medium text-slate-700">no_matriks list</label>
+                            <label for="no_matriks" class="mb-1 block text-sm font-medium text-slate-700">no_matriks
+                                list</label>
                             <textarea id="no_matriks" name="no_matriks" rows="4"
                                 class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 focus:border-sky-400 focus:ring-sky-400"
-                                placeholder="A23CS0001&#10;A23CS0002&#10;A23CS0003" required>{{ old('no_matriks') }}</textarea>
+                                placeholder="A23CS0001&#10;A23CS0002&#10;A23CS0003">{{ old('no_matriks') }}</textarea>
+                            <div id="file-dropzone"
+                                class="mt-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 px-3 py-3 text-sm text-slate-600 transition hover:border-sky-400 hover:bg-sky-50">
+                                <label for="no_matriks_file" class="block cursor-pointer">
+                                    Drop image / TXT / CSV here, or click to choose file.
+                                </label>
+                                <input id="no_matriks_file" name="no_matriks_file" type="file" class="sr-only"
+                                    accept=".txt,.csv,image/png,image/jpeg,image/webp">
+                                <p id="file-name" class="mt-1 text-xs text-slate-500">No file selected.</p>
+                            </div>
                         </div>
 
                         <button type="submit"
@@ -137,18 +164,33 @@
                             <tr>
                                 <th class="px-4 py-3 text-left font-semibold">no_matriks</th>
                                 <th class="px-4 py-3 text-left font-semibold">Added</th>
+                                <th class="px-4 py-3 text-left font-semibold">Status</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse ($matriksEntries as $entry)
                                 <tr class="border-t border-slate-200 hover:bg-sky-50/60 transition">
                                     <td class="px-4 py-3 font-mono text-slate-800">{{ $entry->no_matriks }}</td>
-                                    <td class="px-4 py-3 text-slate-500">{{ optional($entry->created_at)->diffForHumans() }}</td>
+                                    <td class="px-4 py-3 text-slate-500">
+                                        {{ optional($entry->created_at)->diffForHumans() }}</td>
+                                    <td class="px-4 py-3">
+                                        @if ($entry->is_used)
+                                            <span
+                                                class="inline-flex rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-700">
+                                                Used by user
+                                            </span>
+                                        @else
+                                            <span
+                                                class="inline-flex rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">
+                                                Not used yet
+                                            </span>
+                                        @endif
+                                    </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="2" class="px-4 py-8 text-center text-slate-500">
-                                        No no_matriks entries found.
+                                    <td colspan="3" class="px-4 py-8 text-center text-slate-500"> No no_matriks
+                                        entries found.
                                     </td>
                                 </tr>
                             @endforelse
@@ -158,6 +200,52 @@
             </div>
         </section>
     </main>
+    <script>
+        (() => {
+            const input = document.getElementById('no_matriks_file');
+            const dropzone = document.getElementById('file-dropzone');
+            const fileName = document.getElementById('file-name');
+            if (!input || !dropzone || !fileName) return;
+
+            const updateLabel = (file) => {
+                fileName.textContent = file ? `Selected: ${file.name}` : 'No file selected.';
+            };
+
+            input.addEventListener('change', () => updateLabel(input.files?.[0]));
+
+            ['dragenter', 'dragover'].forEach((eventName) => {
+                dropzone.addEventListener(eventName, (event) => {
+                    event.preventDefault();
+                    dropzone.classList.add('border-sky-500', 'bg-sky-50');
+                });
+            });
+
+            ['dragleave', 'drop'].forEach((eventName) => {
+                dropzone.addEventListener(eventName, (event) => {
+                    event.preventDefault();
+                    dropzone.classList.remove('border-sky-500', 'bg-sky-50');
+                });
+            });
+
+            dropzone.addEventListener('drop', (event) => {
+                const droppedFile = event.dataTransfer?.files?.[0];
+                if (!droppedFile) return;
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(droppedFile);
+                input.files = dataTransfer.files;
+                updateLabel(droppedFile);
+            });
+
+            const errorPopup = document.getElementById('error-popup');
+            const closePopup = document.getElementById('close-error-popup');
+            if (errorPopup && closePopup) {
+                closePopup.addEventListener('click', () => errorPopup.remove());
+                errorPopup.addEventListener('click', (event) => {
+                    if (event.target === errorPopup) errorPopup.remove();
+                });
+            }
+        })();
+    </script>
 </body>
 
 </html>
