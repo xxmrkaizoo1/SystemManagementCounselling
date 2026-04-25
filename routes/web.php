@@ -196,19 +196,6 @@ Route::middleware('auth')->group(function () {
 
         abort_unless($role === 'admin', 403);
 
-        $usedNoMatriksLookup = User::query()
-            ->whereNotNull('no_matriks')
-            ->where('no_matriks', '!=', '')
-            ->pluck('no_matriks')
-            ->flip();
-
-        $entriesForView = NoMatriksEntry::query()->latest()
-            ->get()
-            ->map(static function (NoMatriksEntry $entry) use ($usedNoMatriksLookup): NoMatriksEntry {
-                $entry->is_used = $usedNoMatriksLookup->has($entry->no_matriks);
-                return $entry;
-            });
-
         return view('admin.overview');
     })->name('admin.overview');
 
@@ -343,46 +330,181 @@ Route::middleware('auth')->group(function () {
 
         abort_unless($role === 'admin', 403);
 
-        $usersWithMatriks = User::query()
-            ->leftJoin('user_role', 'users.id', '=', 'user_role.user_id')
-            ->leftJoin('roles', 'roles.id', '=', 'user_role.role_id')
-            ->select('users.id', 'users.name', 'users.full_name', 'users.no_matriks', 'users.created_at')
-            ->selectRaw("COALESCE(roles.name, 'unassigned') as role_name")
-            ->whereNotNull('users.no_matriks')
-            ->where('users.no_matriks', '!=', '')
-            ->orderByDesc('users.created_at')
-            ->get();
+        $usedNoMatriksLookup = User::query()
+            ->whereNotNull('no_matriks')
+            ->where('no_matriks', '!=', '')
+            ->pluck('no_matriks')
+            ->flip();
+
+        $entriesForView = NoMatriksEntry::query()
+            ->latest()
+            ->get()
+            ->map(static function (NoMatriksEntry $entry) use ($usedNoMatriksLookup): NoMatriksEntry {
+                $entry->is_used = $usedNoMatriksLookup->has($entry->no_matriks);
+                return $entry;
+            });
 
         return view('admin.no-matriks-users', [
             'user' => $user,
-            'usersWithMatriks' => $usersWithMatriks,
-            'allUsers' => User::query()
-                ->select('id', 'name', 'full_name', 'no_matriks')
-                ->orderBy('name')
-                ->get(),
+            'matriksEntries' => $entriesForView,
         ]);
     })->name('admin.users.no-matriks');
 
 
-    Route::post('/admin/no-matriks-users/{managedUser}', function (Request $request, User $managedUser) {
+    Route::post('/admin/no-matriks-users/{managedUser?}', function (Request $request) {
         $authUser = $request->user();
         $authRole = $authUser?->roles()->value('name');
 
         abort_unless($authRole === 'admin', 403);
 
         $validated = $request->validate([
-            'no_matriks' => ['required', 'string', 'max:50', 'unique:users,no_matriks,' . $managedUser->id],
+            'no_matriks' => ['nullable', 'string'],
+            'no_matriks_file' => ['nullable', 'file', 'max:5120', 'mimes:txt,csv,jpg,jpeg,png,webp'],
         ]);
 
-        $managedUser->no_matriks = trim($validated['no_matriks']);
-        $managedUser->save();
+        $rawInput = trim((string) ($validated['no_matriks'] ?? ''));
+        $uploadedFile = $request->file('no_matriks_file');
+
+        $extractMatriksFromText = static function (string $text): array {
+            $upperText = strtoupper($text);
+            preg_match_all('/[A-Z0-9][A-Z0-9\-\s]{4,}[A-Z0-9]/', $upperText, $matches);
+
+            return collect($matches[0] ?? [])
+                ->map(static fn(string $value): string => preg_replace('/[^A-Z0-9]/', '', $value) ?? '')
+                ->filter(static fn(string $value): bool => $value !== '')
+                ->filter(static fn(string $value): bool => strlen($value) >= 6 && strlen($value) <= 50)
+                ->filter(static fn(string $value): bool => preg_match('/[A-Z]/', $value) === 1 && preg_match('/\d/', $value) === 1)
+                ->unique()
+                ->values()
+                ->all();
+        };
+
+        if ($uploadedFile) {
+            $mimeType = (string) ($uploadedFile->getMimeType() ?? '');
+            $isImage = str_starts_with($mimeType, 'image/');
+
+            if ($isImage) {
+                $sourcePath = $uploadedFile->getRealPath();
+                $escapedSource = escapeshellarg((string) $sourcePath);
+                $outputBase = tempnam(sys_get_temp_dir(), 'matriks_ocr_');
+
+                if ($outputBase === false) {
+                    return redirect()
+                        ->route('admin.users.no-matriks')
+                        ->withErrors(['no_matriks_file' => 'Unable to process the uploaded image right now.']);
+                }
+
+                @unlink($outputBase);
+                $escapedOutputBase = escapeshellarg($outputBase);
+                $command = "tesseract {$escapedSource} {$escapedOutputBase} -l eng --psm 6 2>&1";
+                exec($command, $shellOutput, $exitCode);
+
+                $ocrCommands = [
+                    "tesseract {$escapedSource} {$escapedOutputBase} -l eng --psm 6 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 2>&1",
+                    "tesseract {$escapedSource} {$escapedOutputBase} -l eng --psm 11 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 2>&1",
+                ];
+
+                $ocrTexts = [];
+                foreach ($ocrCommands as $command) {
+                    $shellOutput = [];
+                    $exitCode = 1;
+                    exec($command, $shellOutput, $exitCode);
+                    if ($exitCode === 0) {
+                        $ocrTexts[] = (string) @file_get_contents($outputBase . '.txt');
+                    }
+                }
+
+                @unlink($outputBase . '.txt');
+
+                if (empty($ocrTexts)) {
+                    return redirect()
+                        ->route('admin.users.no-matriks')
+                        ->withErrors(['no_matriks_file' => 'Image OCR failed. Please upload a TXT/CSV file or paste the list manually.']);
+                }
+
+                $ocrMerged = implode("\n", $ocrTexts);
+                $ocrCandidates = $extractMatriksFromText($ocrMerged);
+                $rawInput = trim($rawInput . "\n" . implode("\n", $ocrCandidates));
+            } else {
+                $fileText = @file_get_contents($uploadedFile->getRealPath());
+                $rawInput = trim($rawInput . "\n" . (string) $fileText);
+            }
+        }
+
+        $entries = collect(preg_split('/[\r\n,;]+/', $rawInput))
+            ->map(static fn(?string $value): string => trim((string) $value))
+            ->filter()
+            ->unique()
+            ->values();
+
+        if ($entries->isEmpty()) {
+            return redirect()
+                ->route('admin.users.no-matriks')
+                ->withErrors(['no_matriks' => 'Please enter at least one no_matriks value.']);
+        }
+
+        $tooLong = $entries->first(static fn(string $value): bool => mb_strlen($value) > 50);
+        if ($tooLong) {
+            return redirect()
+                ->route('admin.users.no-matriks')
+                ->withErrors(['no_matriks' => 'Each no_matriks value must be 50 characters or fewer.']);
+        }
+
+        $existing = NoMatriksEntry::query()
+            ->whereIn('no_matriks', $entries->all())
+            ->pluck('no_matriks')
+            ->all();
+
+        if (!empty($existing)) {
+            $duplicatePreview = collect($existing)->take(5)->implode(', ');
+            $duplicateSuffix = count($existing) > 5 ? ' ...' : '';
+
+            return redirect()
+                ->route('admin.users.no-matriks')
+                ->withInput()
+                ->withErrors([
+                    'no_matriks' => 'Cannot save because some no_matriks already exist: ' . $duplicatePreview . $duplicateSuffix,
+                ])
+                ->with('error_popup', 'Duplicate no_matriks detected. Please remove existing numbers and try again.');
+        }
+
+        $now = now();
+        NoMatriksEntry::query()->insert(
+            $entries->map(static fn(string $value): array => [
+                'no_matriks' => $value,
+                'created_by' => $authUser?->id,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ])->all()
+        );
 
         return redirect()
             ->route('admin.users.no-matriks')
-
-
-            ->with('status', "Saved {$addedCount} no_matriks value(s). Skipped {$duplicateCount} duplicate value(s).");
+            ->with('status', 'Nombor matriks berjaya disimpan.');
     })->name('admin.users.no-matriks.store');
+
+    Route::delete('/admin/no-matriks-users', function (Request $request) {
+        $authUser = $request->user();
+        $authRole = $authUser?->roles()->value('name');
+
+        abort_unless($authRole === 'admin', 403);
+
+        $validated = $request->validate([
+            'entry_ids' => ['required', 'array', 'min:1'],
+            'entry_ids.*' => ['integer', 'exists:no_matriks_entries,id'],
+        ]);
+
+        $deletedCount = NoMatriksEntry::query()
+            ->whereIn('id', $validated['entry_ids'])
+            ->delete();
+
+        return redirect()
+            ->route('admin.users.no-matriks')
+            ->with('status', $deletedCount > 0
+                ? "Berjaya padam {$deletedCount} no_matriks."
+                : 'Tiada no_matriks dipadam.');
+    })->name('admin.users.no-matriks.bulk-destroy');
+
 
 
     Route::patch('/admin/manage-accounts/{managedUser}', function (Request $request, User $managedUser) {
@@ -935,131 +1057,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])
         ->name('logout');
 });
-
-
-Route::get('/admin/no-matriks-users', function () {
-    $user = request()->user();
-    $role = $user?->roles()->value('name');
-
-    abort_unless($role === 'admin', 403);
-
-    return view('admin.no-matriks-users', [
-        'user' => $user,
-        'matriksEntries' => $entriesForView,
-    ]);
-})->name('admin.users.no-matriks');
-
-Route::post('/admin/no-matriks-users/{managedUser?}', function (Request $request) {
-    $authUser = $request->user();
-    $authRole = $authUser?->roles()->value('name');
-
-    abort_unless($authRole === 'admin', 403);
-
-    $validated = $request->validate([
-        'no_matriks' => ['nullable', 'string'],
-        'no_matriks_file' => ['nullable', 'file', 'max:5120', 'mimes:txt,csv,jpg,jpeg,png,webp'],
-    ]);
-
-    $rawInput = trim((string) ($validated['no_matriks'] ?? ''));
-    $uploadedFile = $request->file('no_matriks_file');
-
-    if ($uploadedFile) {
-        $mimeType = (string) ($uploadedFile->getMimeType() ?? '');
-        $isImage = str_starts_with($mimeType, 'image/');
-
-        if ($isImage) {
-            $sourcePath = $uploadedFile->getRealPath();
-            $escapedSource = escapeshellarg((string) $sourcePath);
-            $outputBase = tempnam(sys_get_temp_dir(), 'matriks_ocr_');
-
-            if ($outputBase === false) {
-                return redirect()
-                    ->route('admin.users.no-matriks')
-                    ->withErrors(['no_matriks_file' => 'Unable to process the uploaded image right now.']);
-            }
-
-            @unlink($outputBase);
-            $escapedOutputBase = escapeshellarg($outputBase);
-            $command = "tesseract {$escapedSource} {$escapedOutputBase} -l eng --psm 6 2>&1";
-            exec($command, $shellOutput, $exitCode);
-
-            if ($exitCode !== 0) {
-                @unlink($outputBase . '.txt');
-                return redirect()
-                    ->route('admin.users.no-matriks')
-                    ->withErrors(['no_matriks_file' => 'Image OCR failed. Please upload a TXT/CSV file or paste the list manually.']);
-            }
-
-            $ocrText = @file_get_contents($outputBase . '.txt');
-            @unlink($outputBase . '.txt');
-            $rawInput = trim($rawInput . "\n" . (string) $ocrText);
-        } else {
-            $fileText = @file_get_contents($uploadedFile->getRealPath());
-            $rawInput = trim($rawInput . "\n" . (string) $fileText);
-        }
-    }
-
-    $entries = collect(preg_split('/[\r\n,;]+/', $rawInput))
-        ->map(static fn(?string $value): string => trim((string) $value))
-        ->filter()
-        ->unique()
-        ->values();
-
-    if ($entries->isEmpty()) {
-        return redirect()
-            ->route('admin.users.no-matriks')
-            ->withErrors(['no_matriks' => 'Please enter at least one no_matriks value.']);
-    }
-
-    $tooLong = $entries->first(static fn(string $value): bool => mb_strlen($value) > 50);
-    if ($tooLong) {
-        return redirect()
-            ->route('admin.users.no-matriks')
-            ->withErrors(['no_matriks' => 'Each no_matriks value must be 50 characters or fewer.']);
-    }
-
-    $existing = NoMatriksEntry::query()
-        ->whereIn('no_matriks', $entries->all())
-        ->pluck('no_matriks')
-        ->all();
-
-
-    if (!empty($existing)) {
-        $duplicatePreview = collect($existing)->take(5)->implode(', ');
-        $duplicateSuffix = count($existing) > 5 ? ' ...' : '';
-
-        return redirect()
-            ->route('admin.users.no-matriks')
-            ->withInput()
-            ->withErrors([
-                'no_matriks' => 'Cannot save because some no_matriks already exist: ' . $duplicatePreview . $duplicateSuffix,
-            ])
-            ->with('error_popup', 'Duplicate no_matriks detected. Please remove existing numbers and try again.');
-    }
-
-    $existingLookup = array_flip($existing);
-    $newEntries = $entries
-        ->reject(static fn(string $value): bool => array_key_exists($value, $existingLookup))
-        ->values();
-
-    if ($newEntries->isNotEmpty()) {
-        $now = now();
-        NoMatriksEntry::query()->insert(
-            $newEntries->map(static fn(string $value): array => [
-                'no_matriks' => $value,
-                'created_by' => $authUser?->id,
-                'created_at' => $now,
-                'updated_at' => $now,
-            ])->all()
-        );
-    }
-
-    $addedCount = $newEntries->count();
-    $duplicateCount = $entries->count() - $addedCount;
-    return redirect()
-        ->route('admin.users.no-matriks')
-        ->with('status', 'Nombor matriks berjaya disimpan.');
-})->name('admin.users.no-matriks.store');
 
 
 // Route::get('/dashboard', function () {

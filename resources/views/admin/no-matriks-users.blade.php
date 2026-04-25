@@ -159,43 +159,69 @@
 
                 <div
                     class="overflow-auto rounded-2xl border border-slate-200 bg-white/95 shadow-sm animate-fade-up delay-3">
-                    <table class="w-full min-w-[480px] text-sm">
-                        <thead class="bg-slate-50 text-slate-600">
-                            <tr>
-                                <th class="px-4 py-3 text-left font-semibold">no_matriks</th>
-                                <th class="px-4 py-3 text-left font-semibold">Added</th>
-                                <th class="px-4 py-3 text-left font-semibold">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($matriksEntries as $entry)
-                                <tr class="border-t border-slate-200 hover:bg-sky-50/60 transition">
-                                    <td class="px-4 py-3 font-mono text-slate-800">{{ $entry->no_matriks }}</td>
-                                    <td class="px-4 py-3 text-slate-500">
-                                        {{ optional($entry->created_at)->diffForHumans() }}</td>
-                                    <td class="px-4 py-3">
-                                        @if ($entry->is_used)
-                                            <span
-                                                class="inline-flex rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-700">
-                                                Used by user
-                                            </span>
-                                        @else
-                                            <span
-                                                class="inline-flex rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">
-                                                Not used yet
-                                            </span>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @empty
+                    <form id="bulk-delete-form" method="POST"
+                        action="{{ route('admin.users.no-matriks.bulk-destroy') }}">
+                        @csrf
+                        @method('DELETE')
+                        <div
+                            class="flex flex-col gap-2 border-b border-slate-200 bg-slate-50 px-4 py-3 text-xs text-slate-600 sm:flex-row sm:items-center sm:justify-between">
+                            <p>Select one or more no_matriks and click delete.</p>
+                            <button id="bulk-delete-btn" type="submit"
+                                class="inline-flex w-fit items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-50"
+                                disabled>
+                                Delete selected
+                            </button>
+                        </div>
+
+                        <table class="w-full min-w-[680px] text-sm">
+                            <thead class="bg-slate-50 text-slate-600">
                                 <tr>
-                                    <td colspan="3" class="px-4 py-8 text-center text-slate-500"> No no_matriks
-                                        entries found.
-                                    </td>
+                                    <th class="px-4 py-3 text-left font-semibold">no_matriks</th>
+                                    <th class="px-4 py-3 text-left font-semibold">Added</th>
+                                    <th class="px-4 py-3 text-left font-semibold">Status</th>
+                                    <th class="px-4 py-3 text-left font-semibold">
+                                        <label class="inline-flex items-center gap-2">
+                                            <input id="select-all-entries" type="checkbox"
+                                                class="h-4 w-4 rounded border-slate-300 text-sky-600 focus:ring-sky-500">
+                                            <span>Delete</span>
+                                        </label>
+                                    </th>
                                 </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @forelse ($matriksEntries as $entry)
+                                    <tr class="border-t border-slate-200 hover:bg-sky-50/60 transition">
+                                        <td class="px-4 py-3 font-mono text-slate-800">{{ $entry->no_matriks }}</td>
+                                        <td class="px-4 py-3 text-slate-500">
+                                            {{ optional($entry->created_at)->diffForHumans() }}</td>
+                                        <td class="px-4 py-3">
+                                            @if ($entry->is_used)
+                                                <span
+                                                    class="inline-flex rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-700">
+                                                    Used by user
+                                                </span>
+                                            @else
+                                                <span
+                                                    class="inline-flex rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">
+                                                    Not used yet
+                                                </span>
+                                            @endif
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            <input type="checkbox" name="entry_ids[]" value="{{ $entry->id }}"
+                                                class="entry-checkbox h-4 w-4 rounded border-slate-300 text-sky-600 focus:ring-sky-500">
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="px-4 py-8 text-center text-slate-500"> No no_matriks
+                                            entries found.
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </form>
                 </div>
             </div>
         </section>
@@ -244,6 +270,56 @@
                     if (event.target === errorPopup) errorPopup.remove();
                 });
             }
+
+            const selectAll = document.getElementById('select-all-entries');
+            const entryCheckboxes = Array.from(document.querySelectorAll('.entry-checkbox'));
+            const bulkDeleteBtn = document.getElementById('bulk-delete-btn');
+            const bulkDeleteForm = document.getElementById('bulk-delete-form');
+
+            const refreshBulkDeleteButton = () => {
+                if (!bulkDeleteBtn) return;
+                const checkedCount = entryCheckboxes.filter((checkbox) => checkbox.checked).length;
+                bulkDeleteBtn.disabled = checkedCount === 0;
+                bulkDeleteBtn.textContent = checkedCount > 0 ? `Delete selected (${checkedCount})` :
+                    'Delete selected';
+            };
+
+            if (selectAll) {
+                selectAll.addEventListener('change', () => {
+                    entryCheckboxes.forEach((checkbox) => {
+                        checkbox.checked = selectAll.checked;
+                    });
+                    refreshBulkDeleteButton();
+                });
+            }
+
+            entryCheckboxes.forEach((checkbox) => {
+                checkbox.addEventListener('change', () => {
+                    if (!selectAll) return;
+                    const allChecked = entryCheckboxes.length > 0 && entryCheckboxes.every((item) =>
+                        item.checked);
+                    selectAll.checked = allChecked;
+                    refreshBulkDeleteButton();
+                });
+            });
+
+            if (bulkDeleteForm) {
+                bulkDeleteForm.addEventListener('submit', (event) => {
+                    const selected = entryCheckboxes.filter((checkbox) => checkbox.checked).length;
+                    if (selected === 0) {
+                        event.preventDefault();
+                        return;
+                    }
+
+                    const confirmed = confirm(
+                        `Delete ${selected} selected no_matriks entr${selected === 1 ? 'y' : 'ies'}?`);
+                    if (!confirmed) {
+                        event.preventDefault();
+                    }
+                });
+            }
+
+            refreshBulkDeleteButton();
         })();
     </script>
 </body>
