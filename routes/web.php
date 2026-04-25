@@ -365,12 +365,68 @@ Route::middleware('auth')->group(function () {
         $rawInput = trim((string) ($validated['no_matriks'] ?? ''));
         $uploadedFile = $request->file('no_matriks_file');
 
-        $extractMatriksFromText = static function (string $text): array {
-            $upperText = strtoupper($text);
-            preg_match_all('/[A-Z0-9][A-Z0-9\-\s]{4,}[A-Z0-9]/', $upperText, $matches);
+        $normalizeLikelyOcrMistakes = static function (string $value): string {
+            $normalized = strtoupper($value);
 
-            return collect($matches[0] ?? [])
+            // Common OCR confusion in mixed alpha-numeric IDs
+            $normalized = preg_replace('/(?<=\d)[OQ](?=\d)/', '0', $normalized) ?? $normalized;
+            $normalized = preg_replace('/(?<=\d)[IL](?=\d)/', '1', $normalized) ?? $normalized;
+            $normalized = preg_replace('/(?<=[A-Z])[0](?=[A-Z])/', 'O', $normalized) ?? $normalized;
+
+            return $normalized;
+        };
+        $resolveTesseractBinary = static function (): ?string {
+            $candidates = array_values(array_filter([
+                config('services.tesseract.binary'),
+                env('TESSERACT_BINARY'),
+                'tesseract',
+                'C:\\Program Files\\Tesseract-OCR\\tesseract.exe',
+                'C:\\Program Files (x86)\\Tesseract-OCR\\tesseract.exe',
+            ], static fn($value): bool => is_string($value) && trim($value) !== ''));
+
+            foreach ($candidates as $candidate) {
+                $candidate = trim($candidate);
+
+                if (
+                    str_contains($candidate, DIRECTORY_SEPARATOR)
+                    || str_contains($candidate, '\\')
+                    || str_contains($candidate, '/')
+                ) {
+                    if (is_file($candidate)) {
+                        return $candidate;
+                    }
+
+                    continue;
+                }
+
+                $lookupCommand = strtoupper(substr(PHP_OS_FAMILY, 0, 3)) === 'WIN'
+                    ? "where {$candidate} 2>NUL"
+                    : "command -v {$candidate} 2>/dev/null";
+                $resolvedPath = trim((string) shell_exec($lookupCommand));
+                if ($resolvedPath !== '') {
+                    $firstResolvedLine = trim((string) strtok($resolvedPath, "\r\n"));
+                    if ($firstResolvedLine !== '') {
+                        return $firstResolvedLine;
+                    }
+                }
+            }
+
+            return null;
+        };
+
+        $extractMatriksFromText = static function (string $text) use ($normalizeLikelyOcrMistakes): array {
+            $upperText = strtoupper($text);
+            return collect(preg_split('/\R+/', $upperText))
+                ->flatMap(static function (?string $line): array {
+                    if ($line === null) {
+                        return [];
+                    }
+
+                    preg_match_all('/[A-Z0-9]{5,}/', $line, $lineMatches);
+                    return $lineMatches[0] ?? [];
+                })
                 ->map(static fn(string $value): string => preg_replace('/[^A-Z0-9]/', '', $value) ?? '')
+                ->map($normalizeLikelyOcrMistakes)
                 ->filter(static fn(string $value): bool => $value !== '')
                 ->filter(static fn(string $value): bool => strlen($value) >= 6 && strlen($value) <= 50)
                 ->filter(static fn(string $value): bool => preg_match('/[A-Z]/', $value) === 1 && preg_match('/\d/', $value) === 1)
@@ -384,8 +440,18 @@ Route::middleware('auth')->group(function () {
             $isImage = str_starts_with($mimeType, 'image/');
 
             if ($isImage) {
+
+
+                $tesseractBinary = $resolveTesseractBinary();
+                if ($tesseractBinary === null) {
+                    return redirect()
+                        ->route('admin.users.no-matriks')
+                        ->withErrors(['no_matriks_file' => 'Image OCR is unavailable because Tesseract is not configured on the server. Please set TESSERACT_BINARY or install Tesseract.']);
+                }
+
                 $sourcePath = $uploadedFile->getRealPath();
                 $escapedSource = escapeshellarg((string) $sourcePath);
+                $escapedTesseractBinary = escapeshellarg($tesseractBinary);
                 $outputBase = tempnam(sys_get_temp_dir(), 'matriks_ocr_');
 
                 if ($outputBase === false) {
@@ -400,8 +466,10 @@ Route::middleware('auth')->group(function () {
                 exec($command, $shellOutput, $exitCode);
 
                 $ocrCommands = [
-                    "tesseract {$escapedSource} {$escapedOutputBase} -l eng --psm 6 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 2>&1",
-                    "tesseract {$escapedSource} {$escapedOutputBase} -l eng --psm 11 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 2>&1",
+                    "{$escapedTesseractBinary} {$escapedSource} {$escapedOutputBase} -l eng --oem 1 --psm 6 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 2>&1",
+                    "{$escapedTesseractBinary} {$escapedSource} {$escapedOutputBase} -l eng --oem 1 --psm 7 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 2>&1",
+                    "{$escapedTesseractBinary} {$escapedSource} {$escapedOutputBase} -l eng --oem 1 --psm 11 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 2>&1",
+                    "{$escapedTesseractBinary} {$escapedSource} {$escapedOutputBase} -l eng --oem 1 --psm 12 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 2>&1",
                 ];
 
                 $ocrTexts = [];
@@ -424,7 +492,8 @@ Route::middleware('auth')->group(function () {
 
                 $ocrMerged = implode("\n", $ocrTexts);
                 $ocrCandidates = $extractMatriksFromText($ocrMerged);
-                $rawInput = trim($rawInput . "\n" . implode("\n", $ocrCandidates));
+                $ocrInputToMerge = !empty($ocrCandidates) ? implode("\n", $ocrCandidates) : $ocrMerged;
+                $rawInput = trim($rawInput . "\n" . $ocrInputToMerge);
             } else {
                 $fileText = @file_get_contents($uploadedFile->getRealPath());
                 $rawInput = trim($rawInput . "\n" . (string) $fileText);
