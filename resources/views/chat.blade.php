@@ -64,8 +64,13 @@
         .word-pill {
             display: inline-flex;
             border-radius: 0.45rem;
-            background: rgb(255 255 255 / 0.96);
             padding: 0.1rem 0.45rem;
+        }
+
+        @media (max-width: 1279.98px) {
+            .word-pill {
+                background: rgb(255 255 255 / 0.96);
+            }
         }
 
 
@@ -110,8 +115,8 @@
                 display: none !important;
             }
 
-            #sidebar-toggle{
-                cursor : pointer;
+            #sidebar-toggle {
+                cursor: pointer;
 
             }
         }
@@ -134,7 +139,7 @@
         class="fixed inset-0 z-[90] flex items-center justify-center bg-sky-500/95 transition-opacity duration-700">
         <div class="flex flex-col items-center gap-3">
             <span class="h-16 w-16 animate-spin rounded-full border-8 border-white/30 border-t-white"></span>
-            <p class="text-xl font-semibold text-white">Loading chat  portal...</p>
+            <p class="text-xl font-semibold text-white">Loading chat portal...</p>
         </div>
     </div>
 
@@ -243,8 +248,8 @@
                                 <span
                                     class="inline-flex h-12 w-12 items-center justify-center rounded-xl border border-slate-200 bg-slate-50">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-                                        stroke-linejoin="round">
+                                        fill="none" stroke="currentColor" stroke-width="1.8"
+                                        stroke-linecap="round" stroke-linejoin="round">
                                         <rect x="3" y="4" width="18" height="18" rx="2" />
                                         <path d="M16 2v4M8 2v4M3 10h18" />
                                     </svg>

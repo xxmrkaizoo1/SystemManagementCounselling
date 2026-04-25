@@ -60,9 +60,16 @@
         .word-pill {
             display: inline-flex;
             border-radius: 0.45rem;
-            background: rgb(255 255 255 / 0.96);
             padding: 0.1rem 0.45rem;
         }
+
+
+        @media (max-width: 1279.98px) {
+            .word-pill {
+                background: rgb(255 255 255 / 0.96);
+            }
+        }
+
 
         @media (min-width: 1280px) {
             .home-shell {
@@ -112,7 +119,7 @@
                 class="px-5 sm:px-7 py-4 border-b border-slate-200/80 bg-white/80 flex items-center justify-between gap-4">
                 <div>
                     <p class="text-xs uppercase tracking-[0.14em] text-slate-500">CollegeCare</p>
-                    <h1 class="text-xl sm:text-2xl font-bold text-slate-800">Student & Lecturer  Inbox</h1>
+                    <h1 class="text-xl sm:text-2xl font-bold text-slate-800">Student & Lecturer Inbox</h1>
                     <p class="text-sm text-slate-500 mt-1">{{ $user->full_name ?: $user->name }} • {{ ucfirst($role) }}
                     </p>
                 </div>
@@ -174,7 +181,8 @@
                         </div>
                     </div>
 
-                    <p class="text-xs uppercase tracking-[0.12em] text-slate-500 mb-3"><span class="word-pill">Menu</span>
+                    <p class="text-xs uppercase tracking-[0.12em] text-slate-500 mb-3"><span
+                            class="word-pill">Menu</span>
                     </p>
                     <nav class="space-y-3 text-sm">
                         <a href="{{ route('inbox') }}" title="Inbox" aria-label="Inbox"
