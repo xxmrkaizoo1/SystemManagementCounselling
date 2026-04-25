@@ -6,6 +6,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Counsellor Dashboard • CollegeCare</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        @keyframes heroZoom {
+            0% {
+                transform: scale(1);
+            }
+
+            100% {
+                transform: scale(1.08);
+            }
+        }
+
+        @keyframes heroFadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-slide-image {
+            animation: heroZoom 9s ease-in-out infinite alternate;
+            will-change: transform, opacity;
+        }
+
+        .hero-fade-enter {
+            animation: heroFadeUp 0.55s ease;
+        }
+    </style>
 </head>
 
 <body class="min-h-screen overflow-x-hidden bg-slate-50 text-slate-700 antialiased">
@@ -18,8 +50,7 @@
     @endphp
 
     <div class="fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
-        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_#e0f2fe_0%,_#f8fafc_36%,_#f1f5f9_100%)]">
-        </div>
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_#e0f2fe_0%,_#f8fafc_36%,_#f1f5f9_100%)]"></div>
         <div class="absolute inset-0 bg-grid-pattern opacity-20"></div>
         <div class="absolute -top-24 -left-24 h-[30rem] w-[30rem] rounded-full bg-sky-300/20 blur-3xl"></div>
         <div class="absolute top-12 -right-24 h-[28rem] w-[28rem] rounded-full bg-violet-300/20 blur-3xl"></div>
@@ -39,10 +70,8 @@
                             </a>
 
                             <div class="rounded-xl border border-slate-300/80 bg-white px-4 py-3 shadow-sm">
-                                <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
-                                    CollegeCare</p>
-                                <h1 class="text-lg font-semibold text-slate-800 lg:text-xl">Counsellor Session Dashboard
-                                </h1>
+                                <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">CollegeCare</p>
+                                <h1 class="text-lg font-semibold text-slate-800 lg:text-xl">Counsellor Session Dashboard</h1>
                             </div>
                         </div>
 
@@ -83,24 +112,20 @@
             </header>
 
             <div class="px-4 pb-6 pt-6 sm:px-6 sm:pb-8 lg:px-8 lg:pb-10 lg:pt-8">
-
-
                 <section
                     class="mb-6 overflow-hidden rounded-3xl border border-slate-200/90 bg-gradient-to-r from-slate-900 via-sky-900 to-violet-900 shadow-xl">
                     <div class="relative h-64 sm:h-72 lg:h-80">
-                        <img id="counsellor-hero-image" src="{{ asset('images/slides/counselling-session.svg') }}"
+                        <img id="counsellor-hero-image"
+                            src="https://images.unsplash.com/photo-1714976694525-71eb29a7c500?auto=format&fit=crop&w=1400&q=80"
                             alt="Counsellor wellbeing slide"
-                            class="absolute inset-0 h-full w-full object-cover opacity-70 transition-all duration-700" />
-                        <div
-                            class="absolute inset-0 bg-gradient-to-r from-slate-950/80 via-slate-900/55 to-slate-900/30">
-                        </div>
+                            class="hero-slide-image absolute inset-0 h-full w-full object-cover opacity-70 transition-all duration-700" />
+                        <div class="absolute inset-0 bg-gradient-to-r from-slate-950/80 via-slate-900/55 to-slate-900/30"></div>
 
                         <div class="relative z-10 flex h-full flex-col justify-end px-6 pb-6 pt-8 sm:px-8 sm:pb-8">
                             <p id="counsellor-hero-tag"
                                 class="text-xs font-semibold uppercase tracking-[0.16em] text-sky-200/95">CollegeCare
                                 Focus</p>
-                            <h2 id="counsellor-hero-title"
-                                class="mt-2 max-w-3xl text-2xl font-bold text-white sm:text-3xl">
+                            <h2 id="counsellor-hero-title" class="mt-2 max-w-3xl text-2xl font-bold text-white sm:text-3xl">
                                 Guide every student with empathy and structure.
                             </h2>
                             <p id="counsellor-hero-subtitle" class="mt-2 max-w-2xl text-sm text-slate-100 sm:text-base">
@@ -119,6 +144,7 @@
                         </div>
                     </div>
                 </section>
+
                 <section class="grid gap-6 lg:grid-cols-2">
                     <article
                         class="rounded-3xl border border-slate-200/90 bg-gradient-to-br from-white via-sky-50/45 to-sky-100/55 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md sm:p-8 lg:min-h-[430px]">
@@ -128,8 +154,7 @@
                         </div>
 
                         <h2 class="mt-5 text-center text-2xl font-semibold text-slate-800">Pending Requests</h2>
-                        <p class="mt-2 text-center text-base text-slate-500">Semak permohonan pelajar yang masih
-                            menunggu kelulusan.</p>
+                        <p class="mt-2 text-center text-base text-slate-500">Semak permohonan pelajar yang masih menunggu kelulusan.</p>
 
                         <div class="mt-6 rounded-2xl border border-sky-100 bg-white/80 px-4 py-4 text-center shadow-sm">
                             <p class="text-xs uppercase tracking-wide text-sky-700">Current pending</p>
@@ -152,8 +177,7 @@
                         </div>
 
                         <h2 class="mt-5 text-center text-2xl font-semibold text-slate-800">Session Status</h2>
-                        <p class="mt-2 text-center text-base text-slate-500">Lihat status sesi yang telah approved,
-                            booked, dan complete.</p>
+                        <p class="mt-2 text-center text-base text-slate-500">Lihat status sesi yang telah approved, booked, dan complete.</p>
 
                         <div class="mt-6 grid grid-cols-3 gap-3 text-center text-xs sm:text-sm">
                             <div class="rounded-xl border border-emerald-100 bg-emerald-50 px-2 py-3 sm:px-3">
@@ -179,15 +203,16 @@
                     </article>
                 </section>
 
-
+                <div class="mt-6 rounded-2xl border border-slate-200 bg-slate-50/90 px-4 py-3 text-sm text-slate-600">
+                    <span>Total Applications: {{ count($applications) }}</span>
+                </div>
             </div>
         </section>
     </main>
 
     <aside id="messages-widget"
         class="fixed bottom-4 right-4 z-40 w-[calc(100%-2rem)] max-w-md overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-2xl ring-1 ring-slate-200/70 sm:bottom-6 sm:right-6">
-        <div
-            class="flex items-center justify-between bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 px-4 py-3 text-white">
+        <div class="flex items-center justify-between bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 px-4 py-3 text-white">
             <h3 class="text-lg font-semibold">Messages</h3>
             <div class="flex items-center gap-2">
                 <span class="text-sm text-amber-300">🔔</span>
@@ -212,8 +237,7 @@
 
             <div class="flex items-center justify-between text-sm">
                 <p class="font-semibold text-slate-900">Chats</p>
-                <a href="{{ route('counsellor.pending-requests') }}"
-                    class="font-medium text-sky-600 hover:text-sky-700">Requests</a>
+                <a href="{{ route('counsellor.pending-requests') }}" class="font-medium text-sky-600 hover:text-sky-700">Requests</a>
             </div>
 
             <div id="chat-list" class="max-h-64 space-y-3 overflow-y-auto pr-1">
@@ -229,10 +253,8 @@
                         <div class="min-w-0 flex-1">
                             <div class="flex items-start justify-between gap-2">
                                 <div>
-                                    <p class="truncate text-base font-semibold leading-tight text-slate-800">
-                                        {{ $item['student'] ?? 'Student' }}</p>
-                                    <p class="truncate text-sm text-slate-500">
-                                        {{ $item['topic'] ?: 'General counseling support' }}</p>
+                                    <p class="truncate text-base font-semibold leading-tight text-slate-800">{{ $item['student'] ?? 'Student' }}</p>
+                                    <p class="truncate text-sm text-slate-500">{{ $item['topic'] ?: 'General counseling support' }}</p>
                                 </div>
                                 <div class="flex items-center gap-2 pt-0.5">
                                     <span class="text-xs text-slate-400">{{ $item['request_date'] ?? 'Today' }}</span>
@@ -252,8 +274,7 @@
                 @endforelse
             </div>
 
-            <div id="chat-no-results"
-                class="hidden rounded-xl border border-slate-100 bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">
+            <div id="chat-no-results" class="hidden rounded-xl border border-slate-100 bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">
                 No matching chats found.
             </div>
         </div>
@@ -276,19 +297,19 @@
             const heroDots = document.getElementById('counsellor-hero-dots');
 
             const heroSlides = [{
-                    image: "{{ asset('images/slides/counselling-session.svg') }}",
+                    image: 'https://images.unsplash.com/photo-1714976694525-71eb29a7c500?auto=format&fit=crop&w=1400&q=80',
                     tag: 'CollegeCare Focus',
                     title: 'Guide every student with empathy and structure.',
                     subtitle: 'Review requests, confirm sessions, and keep counselling support consistent every week.',
                 },
                 {
-                    image: "{{ asset('images/slides/study-focus.svg') }}",
+                    image: 'https://images.unsplash.com/photo-1714976694867-bc0e012fab70?auto=format&fit=crop&w=1400&q=80',
                     tag: 'Student Readiness',
                     title: 'Support better academic focus with timely check-ins.',
                     subtitle: 'Approve important sessions quickly to help students stay on track.',
                 },
                 {
-                    image: "{{ asset('images/slides/sleep-hydrate.svg') }}",
+                    image: 'https://plus.unsplash.com/premium_photo-1668613402936-98ce515c5cc5?auto=format&fit=crop&w=1400&q=80',
                     tag: 'Wellbeing Reminder',
                     title: 'Promote healthy routines beyond the counselling room.',
                     subtitle: 'Encourage practical habits students can follow every day.',
@@ -303,8 +324,7 @@
                 heroSlides.forEach(function(_, index) {
                     const dot = document.createElement('button');
                     dot.type = 'button';
-                    dot.className = 'h-2.5 w-2.5 rounded-full transition ' + (index ===
-                        currentHeroSlide ?
+                    dot.className = 'h-2.5 w-2.5 rounded-full transition ' + (index === currentHeroSlide ?
                         'bg-white' : 'bg-white/40 hover:bg-white/70');
                     dot.setAttribute('aria-label', 'Go to slide ' + (index + 1));
                     dot.addEventListener('click', function() {
@@ -325,6 +345,13 @@
                     heroTag.textContent = slide.tag;
                     heroTitle.textContent = slide.title;
                     heroSubtitle.textContent = slide.subtitle;
+
+                    [heroTag, heroTitle, heroSubtitle].forEach(function(el) {
+                        el.classList.remove('hero-fade-enter');
+                        void el.offsetWidth;
+                        el.classList.add('hero-fade-enter');
+                    });
+
                     heroImage.classList.remove('opacity-40');
                 }, 120);
 
