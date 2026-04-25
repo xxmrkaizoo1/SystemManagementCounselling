@@ -29,6 +29,20 @@
         .hero-slide.is-active .hero-slide-image {
             transform: scale(1.05);
         }
+
+        .role-slide {
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 500ms ease, transform 500ms ease;
+            pointer-events: none;
+        }
+
+        .role-slide.is-active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+            z-index: 2;
+        }
     </style>
 </head>
 
@@ -332,59 +346,73 @@
 
                         <p class="mt-2 text-sm text-slate-600">User types and what each role can do in the system.</p>
 
-                        <div class="mt-6 grid gap-4">
-                            <div class="rounded-2xl bg-white border border-slate-200 p-5 shadow-sm">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center gap-3">
-                                        <div
-                                            class="w-10 h-10 rounded-2xl bg-sky-100 text-sky-700 flex items-center justify-center font-bold">
-                                            S</div>
-                                        <div>
-                                            <p class="font-semibold text-slate-800">Student</p>
-                                            <p class="text-sm text-slate-500">Book sessions, follow progress, and get
-                                                wellbeing support.</p>
+                        <div class="mt-6 rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+                            <div id="roleSlides" class="relative min-h-[11.5rem] sm:min-h-[10rem]">
+                                <article class="role-slide is-active absolute inset-0 p-5">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <div
+                                                class="w-10 h-10 rounded-2xl bg-sky-100 text-sky-700 flex items-center justify-center font-bold">
+                                                S</div>
+                                            <div>
+                                                <p class="font-semibold text-slate-800">Student</p>
+                                                <p class="text-sm text-slate-500">Book sessions, follow progress, and get
+                                                    wellbeing support.</p>
+                                            </div>
                                         </div>
+                                        <span
+                                            class="text-xs px-2.5 py-1 rounded-full bg-sky-50 border border-sky-200 text-sky-700">User
+                                            Type</span>
                                     </div>
-                                    <span
-                                        class="text-xs px-2.5 py-1 rounded-full bg-sky-50 border border-sky-200 text-sky-700">User
-                                        Type</span>
-                                </div>
+                                </article>
+
+                                <article class="role-slide absolute inset-0 p-5">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <div
+                                                class="w-10 h-10 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold">
+                                                C</div>
+                                            <div>
+                                                <p class="font-semibold text-slate-800">Counsellor</p>
+                                                <p class="text-sm text-slate-500">Manage appointments, notes, and student
+                                                    support plans.</p>
+                                            </div>
+                                        </div>
+                                        <span
+                                            class="text-xs px-2.5 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700">User
+                                            Type</span>
+                                    </div>
+                                </article>
+
+                                <article class="role-slide absolute inset-0 p-5">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <div
+                                                class="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
+                                                A</div>
+                                            <div>
+                                                <p class="font-semibold text-slate-800">Admin</p>
+                                                <p class="text-sm text-slate-500">Control users, reports, and platform
+                                                    settings.</p>
+                                            </div>
+                                        </div>
+                                        <span
+                                            class="text-xs px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700">User
+                                            Type</span>
+                                    </div>
+                                </article>
                             </div>
 
-                            <div class="rounded-2xl bg-white border border-slate-200 p-5 shadow-sm">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center gap-3">
-                                        <div
-                                            class="w-10 h-10 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold">
-                                            C</div>
-                                        <div>
-                                            <p class="font-semibold text-slate-800">Counsellor</p>
-                                            <p class="text-sm text-slate-500">Manage appointments, notes, and student
-                                                support plans.</p>
-                                        </div>
-                                    </div>
-                                    <span
-                                        class="text-xs px-2.5 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700">User
-                                        Type</span>
+                            <div class="border-t border-slate-100 px-5 py-3 flex items-center justify-between bg-slate-50/70">
+                                <div id="roleSlideDots" class="flex items-center gap-2">
+                                    <button type="button" class="role-slide-dot w-2.5 h-2.5 rounded-full bg-sky-500"
+                                        aria-label="Show role slide 1"></button>
+                                    <button type="button" class="role-slide-dot w-2.5 h-2.5 rounded-full bg-slate-300"
+                                        aria-label="Show role slide 2"></button>
+                                    <button type="button" class="role-slide-dot w-2.5 h-2.5 rounded-full bg-slate-300"
+                                        aria-label="Show role slide 3"></button>
                                 </div>
-                            </div>
-
-                            <div class="rounded-2xl bg-white border border-slate-200 p-5 shadow-sm">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center gap-3">
-                                        <div
-                                            class="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
-                                            A</div>
-                                        <div>
-                                            <p class="font-semibold text-slate-800">Admin</p>
-                                            <p class="text-sm text-slate-500">Control users, reports, and platform
-                                                settings.</p>
-                                        </div>
-                                    </div>
-                                    <span
-                                        class="text-xs px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700">User
-                                        Type</span>
-                                </div>
+                                <span class="text-xs text-slate-500">Role overview</span>
                             </div>
                         </div>
 
@@ -429,29 +457,53 @@
                     }, 1200);
                 });
             }
-            const slides = Array.from(document.querySelectorAll('.hero-slide'));
-            const dots = Array.from(document.querySelectorAll('.hero-slide-dot'));
-            if (!slides.length || slides.length !== dots.length) return;
+            const heroSlides = Array.from(document.querySelectorAll('.hero-slide'));
+            const heroDots = Array.from(document.querySelectorAll('.hero-slide-dot'));
+            if (heroSlides.length && heroSlides.length === heroDots.length) {
+                let currentHeroSlide = 0;
+                const showHeroSlide = (targetIndex) => {
+                    currentHeroSlide = (targetIndex + heroSlides.length) % heroSlides.length;
+                    heroSlides.forEach((slide, index) => {
+                        slide.classList.toggle('is-active', index === currentHeroSlide);
+                    });
+                    heroDots.forEach((dot, index) => {
+                        dot.classList.toggle('bg-sky-500', index === currentHeroSlide);
+                        dot.classList.toggle('bg-slate-300', index !== currentHeroSlide);
+                    });
+                };
 
-            let currentSlide = 0;
-            const showSlide = (targetIndex) => {
-                currentSlide = (targetIndex + slides.length) % slides.length;
-                slides.forEach((slide, index) => {
-                    slide.classList.toggle('is-active', index === currentSlide);
+                heroDots.forEach((dot, index) => {
+                    dot.addEventListener('click', () => showHeroSlide(index));
                 });
-                dots.forEach((dot, index) => {
-                    dot.classList.toggle('bg-sky-500', index === currentSlide);
-                    dot.classList.toggle('bg-slate-300', index !== currentSlide);
+
+                setInterval(() => {
+                    showHeroSlide(currentHeroSlide + 1);
+                }, 4000);
+            }
+
+            const roleSlides = Array.from(document.querySelectorAll('.role-slide'));
+            const roleDots = Array.from(document.querySelectorAll('.role-slide-dot'));
+            if (roleSlides.length && roleSlides.length === roleDots.length) {
+                let currentRoleSlide = 0;
+                const showRoleSlide = (targetIndex) => {
+                    currentRoleSlide = (targetIndex + roleSlides.length) % roleSlides.length;
+                    roleSlides.forEach((slide, index) => {
+                        slide.classList.toggle('is-active', index === currentRoleSlide);
+                    });
+                    roleDots.forEach((dot, index) => {
+                        dot.classList.toggle('bg-sky-500', index === currentRoleSlide);
+                        dot.classList.toggle('bg-slate-300', index !== currentRoleSlide);
+                    });
+                };
+
+                roleDots.forEach((dot, index) => {
+                    dot.addEventListener('click', () => showRoleSlide(index));
                 });
-            };
 
-            dots.forEach((dot, index) => {
-                dot.addEventListener('click', () => showSlide(index));
-            });
-
-            setInterval(() => {
-                showSlide(currentSlide + 1);
-            }, 4000);
+                setInterval(() => {
+                    showRoleSlide(currentRoleSlide + 1);
+                }, 5000);
+            }
         });
     </script>
 </body>
