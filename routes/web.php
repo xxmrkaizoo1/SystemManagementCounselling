@@ -116,6 +116,7 @@ Route::middleware('guest')->group(function () {
 
     Route::get('/signup', [AuthController::class, 'showSignup'])->name('signup');
     Route::post('/signup', [AuthController::class, 'register'])->name('signup.store');
+    Route::get('/signup/no-matriks', [AuthController::class, 'lookupNoMatriks'])->name('signup.no-matriks.lookup');
 
     Route::get('/signup/otp', [AuthController::class, 'showOtpForm'])->name('signup.otp.form');
     Route::post('/signup/otp/verify', [AuthController::class, 'verifySignupOtp'])->name('signup.otp.verify');
@@ -237,6 +238,19 @@ Route::middleware('auth')->group(function () {
             ])
             ->all();
 
+        $userActiveBookings = BookingRequest::query()
+            ->where('user_id', $user->id)
+            ->whereIn('status', ['pending', 'approved'])
+            ->get(['id', 'booking_date', 'booking_time', 'counsellor_name', 'status'])
+            ->map(static fn(BookingRequest $booking): array => [
+                'id' => $booking->id,
+                'date' => (string) $booking->booking_date,
+                'time' => $booking->booking_time,
+                'counsellor' => $booking->counsellor_name,
+                'status' => $booking->status,
+            ])
+            ->all();
+
         $now = now();
         $currentMinutes = ((int) $now->format('H')) * 60 + ((int) $now->format('i'));
         $nextSlotLabel = $now->copy()->addHour()->startOfHour()->format('g:i A');
@@ -283,6 +297,7 @@ Route::middleware('auth')->group(function () {
             'counsellorNames' => $counsellorNames,
             'bookingSlots' => $bookingSlots,
             'currentTimeLabel' => $now->format('g:i A'),
+            'userActiveBookings' => $userActiveBookings,
         ]);
     })->name('home.session');
 
@@ -999,7 +1014,7 @@ Route::middleware('auth')->group(function () {
                     'status_value' => $booking->status,
                     'topic' => $booking->note,
                     'topic' => $booking->topic ?: 'General support',
-                    s
+
                 ];
             })
             ->all();
@@ -1043,6 +1058,8 @@ Route::middleware('auth')->group(function () {
             'role' => $role,
             'counsellors' => $counsellors,
             'bookingSlots' => $bookingSlots,
+            'userActiveBookings' => $userActiveBookings,
+
         ]);
     })->name('booking.index');
     Route::get('/booking-history', function (Request $request) {
@@ -1247,7 +1264,51 @@ Route::middleware('auth')->group(function () {
             'message' => 'Booking request submitted.',
         ]);
     })->name('booking.store');
+    Route::delete('/booking/{bookingRequest}', function (Request $request, BookingRequest $bookingRequest) {
+        $user = $request->user();
+        $role = $user?->roles()->value('name');
 
+        abort_unless(in_array($role, ['student', 'teacher'], true), 403);
+        abort_unless((int) $bookingRequest->user_id === (int) $user?->id, 403);
+
+        if (! in_array($bookingRequest->status, ['pending', 'approved'], true)) {
+            return response()->json([
+                'message' => 'Only pending or approved bookings can be cancelled.',
+            ], 422);
+        }
+
+        $bookingRequest->update([
+            'status' => 'rejected',
+        ]);
+
+        $user->inboxNotifications()->create([
+            'title' => 'Booking cancelled',
+            'message' => 'Your counselling booking for ' . $bookingRequest->booking_date . ' (' . $bookingRequest->booking_time . ') with ' . $bookingRequest->counsellor_name . ' has been cancelled.',
+        ]);
+
+        $normalizedCounsellorName = preg_replace('/\s+/', '', mb_strtolower(trim((string) $bookingRequest->counsellor_name)));
+        $matchedCounsellor = User::query()
+            ->whereHas('roles', static fn($query) => $query->where('name', 'counsellor'))
+            ->get(['id', 'name', 'full_name'])
+            ->first(static function (User $counsellor) use ($normalizedCounsellorName): bool {
+                $candidates = [
+                    preg_replace('/\s+/', '', mb_strtolower(trim((string) $counsellor->name))),
+                    preg_replace('/\s+/', '', mb_strtolower(trim((string) $counsellor->full_name))),
+                ];
+
+                return in_array($normalizedCounsellorName, $candidates, true);
+            });
+
+        $matchedCounsellor?->inboxNotifications()->create([
+            'title' => 'Booking cancelled by user',
+            'message' => ($user->full_name ?: $user->name ?: 'A user') . ' cancelled the counselling booking on '
+                . $bookingRequest->booking_date . ' (' . $bookingRequest->booking_time . ').',
+        ]);
+
+        return response()->json([
+            'message' => 'Booking cancelled successfully.',
+        ]);
+    })->name('booking.cancel');
 
     Route::get('/inbox', function (Request $request) {
         $user = $request->user();

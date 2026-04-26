@@ -419,10 +419,13 @@
 
             const rawCounsellors = @json($counsellors ?? []);
             const rawBookingSlots = @json($bookingSlots ?? []);
+            const rawUserActiveBookings = @json($userActiveBookings ?? []);
             const counsellors = Array.isArray(rawCounsellors) ? rawCounsellors : Object.values(rawCounsellors ||
             {});
             const bookingSlots = Array.isArray(rawBookingSlots) ? rawBookingSlots : Object.values(rawBookingSlots ||
             {});
+            const userActiveBookings = Array.isArray(rawUserActiveBookings) ? rawUserActiveBookings : Object
+                .values(rawUserActiveBookings || {});
             const normalizedCounsellors = counsellors.filter(Boolean);
             const hasScheduleModal = Boolean(scheduleModal && scheduleModalTitle && scheduleModalBody &&
                 scheduleModalClose);
@@ -518,7 +521,12 @@
                     slot.status === 'pending' ? 'Pending' : 'Booked'
                 ])
             );
-
+            const userBookingsByKey = new Map(
+                userActiveBookings.map((slot) => [
+                    `${slot.date}|${slot.time}|${slot.counsellor}`,
+                    slot
+                ])
+            );
             let activeDate = new Date();
             let selectedScheduleDate = null;
             let selectedRequestTime = null;
@@ -607,12 +615,16 @@
                         availableCounsellors.length];
                     const status = computedStatus(date, time, counsellor);
                     const key = slotKey(date, time, counsellor);
+                    const userBooking = userBookingsByKey.get(key);
                     const counsellorLabel = status === 'Available' ? '-' : counsellor;
                     const tr = document.createElement('tr');
 
                     const actionButton = status === 'Available' ?
                         `<button type="button" data-action="request" data-slot-key="${key}" data-time="${time}" data-counsellor="${counsellor}" class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700 shadow-sm hover:bg-emerald-100 hover:border-emerald-300 transition">Buat Request</button>` :
-                        `<span class="inline-flex items-center rounded-lg bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-500">Tidak tersedia</span>`;
+                        (userBooking ?
+                            `<button type="button" data-action="cancel-booking" data-booking-id="${userBooking.id}" data-slot-key="${key}" class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-700 shadow-sm hover:bg-rose-100 hover:border-rose-300 transition">Cancel Booking</button>` :
+                            `<span class="inline-flex items-center rounded-lg bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-500">Tidak tersedia</span>`
+                        );
 
                     tr.className = 'group';
                     tr.innerHTML = `
@@ -699,7 +711,49 @@
             if (hasScheduleModal) {
                 scheduleModalBody.addEventListener('click', (event) => {
                     const target = event.target;
-                    if (!(target instanceof HTMLElement) || target.dataset.action !== 'request') return;
+                    if (!(target instanceof HTMLElement)) return;
+
+                    if (target.dataset.action === 'cancel-booking') {
+                        const bookingId = target.dataset.bookingId;
+                        const key = target.dataset.slotKey;
+
+                        if (!bookingId || !key) return;
+
+                        const bookingToCancel = userBookingsByKey.get(key);
+                        const isConfirmed = window.confirm(
+                            `Adakah anda pasti mahu batalkan booking pada ${bookingToCancel?.date ?? ''} (${bookingToCancel?.time ?? ''})?`
+                        );
+                        if (!isConfirmed) return;
+
+                        fetch(`{{ url('/booking') }}/${bookingId}`, {
+                                method: 'DELETE',
+                                headers: {
+                                    'X-CSRF-TOKEN': csrfToken,
+                                    'Accept': 'application/json',
+                                },
+                            })
+                            .then(async (response) => {
+                                const responsePayload = await response.json().catch(() => null);
+                                if (!response.ok) {
+                                    throw new Error(responsePayload?.message ??
+                                        'Gagal batalkan booking.');
+                                }
+                                bookedSlotsByKey.delete(key);
+                                userBookingsByKey.delete(key);
+                                if (selectedScheduleDate) {
+                                    renderTableRows(selectedScheduleDate);
+                                }
+                                renderCalendar();
+                                showToast('Booking berjaya dibatalkan.', 'success');
+                            })
+                            .catch((error) => {
+                                showToast(error instanceof Error ? error.message :
+                                    'Gagal batalkan booking.', 'error');
+                            });
+                        return;
+                    }
+
+                    if (target.dataset.action !== 'request') return;
 
                     const time = target.dataset.time;
                     const counsellor = target.dataset.counsellor;

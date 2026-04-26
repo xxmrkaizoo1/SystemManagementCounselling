@@ -10,6 +10,7 @@ use App\Services\PhoneOtpTelegramSender;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
@@ -38,6 +39,30 @@ class AuthController extends Controller
     public function showSignup(): View
     {
         return view('signup');
+    }
+
+    public function lookupNoMatriks(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'no_matriks' => ['required', 'string', 'max:50'],
+        ]);
+
+        $noMatriks = strtoupper(trim((string) $validated['no_matriks']));
+
+        $entry = NoMatriksEntry::query()
+            ->whereRaw('UPPER(no_matriks) = ?', [$noMatriks])
+            ->first();
+
+        if (! $entry || blank($entry->label_name)) {
+            return response()->json([
+                'found' => false,
+            ]);
+        }
+
+        return response()->json([
+            'found' => true,
+            'label_name' => trim((string) $entry->label_name),
+        ]);
     }
 
     public function showOtpForm(Request $request): View|RedirectResponse
