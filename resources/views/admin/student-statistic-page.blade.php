@@ -24,11 +24,7 @@
                     <a href="{{ route('admin.dashboard') }}"
                         class="rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700 hover:border-sky-200 hover:text-sky-700 transition">Back
                         to dashboard</a>
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit"
-                            class="rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:from-sky-700 hover:to-indigo-700 transition shadow-sm">Logout</button>
-                    </form>
+
                 </div>
             </header>
 

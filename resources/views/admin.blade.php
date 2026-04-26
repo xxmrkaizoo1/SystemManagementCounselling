@@ -130,14 +130,15 @@
                             class="mt-2 block rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:border-sky-200 hover:text-sky-700 transition hover:-translate-y-0.5">
                             View no_matriks list
                         </a>
-                        <a href="{{ route('admin.counsellor.signup') }}"
-                            class="mt-2 block w-full rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white hover:from-sky-700 hover:to-indigo-700 transition hover:-translate-y-0.5 shadow-sm">
-                            Sign up counsellor
-                        </a>
+
 
                         <a href="{{ route('admin.student-statistics') }}"
                             class="mt-2 block rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:border-sky-200 hover:text-sky-700 transition hover:-translate-y-0.5">
                             Student booking statistics
+                        </a>
+                        <a href="{{ route('admin.counsellor.signup') }}"
+                            class="mt-2 block rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:border-sky-200 hover:text-sky-700 transition hover:-translate-y-0.5">
+                            Sign up counsellor
                         </a>
                     </div>
 
