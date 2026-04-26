@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
 class CounsellorController extends Controller
@@ -34,14 +35,16 @@ class CounsellorController extends Controller
             'phone' => ['nullable', 'string', 'max:30'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'confirmed', 'min:8'],
+
         ]);
+        $plainPassword = $validated['password'];
 
         $counsellor = User::create([
             'name' => $validated['full_name'],
             'full_name' => $validated['full_name'],
             'phone' => $validated['phone'] ?? null,
             'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
+            'password' => Hash::make($plainPassword),
         ]);
 
         $counsellorRole = Role::firstOrCreate(
@@ -53,6 +56,21 @@ class CounsellorController extends Controller
             $counsellorRole->id => ['assigned_at' => now()],
         ]);
 
-        return redirect()->route('admin.counsellor.create')->with('status', 'Counsellor account created successfully.');
+        Mail::mailer(config('mail.default', 'failover'))->send(
+            'emails.counsellor-account-created',
+            [
+                'fullName' => $counsellor->full_name,
+                'phone' => $counsellor->phone,
+                'email' => $counsellor->email,
+                'password' => $plainPassword,
+                'signinUrl' => route('login'),
+            ],
+            function ($message) use ($counsellor) {
+                $message->to($counsellor->email)
+                    ->subject('CollegeCare Counsellor Account Created');
+            }
+        );
+
+        return redirect()->route('admin.counsellor.create')->with('status', 'Counsellor account created successfully. Login details were sent to the counsellor email.');
     }
 }

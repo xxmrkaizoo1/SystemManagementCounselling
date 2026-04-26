@@ -27,6 +27,9 @@ class AuthController extends Controller
     private const SESSION_PENDING_EMAIL = 'signup.otp_email';
     private const PHONE_OTP_CACHE_PREFIX = 'phone_otp_';
 
+    private const COUNSELLOR_LOGIN_OTP_CACHE_PREFIX = 'counsellor_login_otp_';
+    private const SESSION_PENDING_COUNSELLOR_LOGIN_USER_ID = 'counsellor_login.user_id';
+
     public function showLogin(): View
     {
         return view('login');
@@ -60,15 +63,163 @@ class AuthController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        if (! Auth::attempt($credentials, $request->boolean('remember'))) {
+        $user = User::query()->where('email', $credentials['email'])->first();
+
+        if (! $user || ! Hash::check($credentials['password'], $user->password)) {
             return back()
                 ->withErrors(['email' => 'The provided credentials do not match our records.'])
                 ->onlyInput('email');
         }
+        $isCounsellor = $user->roles()->where('name', 'counsellor')->exists();
+        $requiresFirstLoginOtp = $isCounsellor && ! $user->counsellor_first_login_verified_at;
+
+        if ($requiresFirstLoginOtp) {
+            $otp = random_int(100000, 999999);
+
+            Cache::put(
+                $this->counsellorLoginOtpCacheKey($user->id),
+                ['otp' => $otp],
+                now()->addMinutes(self::OTP_TTL_MINUTES)
+            );
+
+            try {
+                $this->sendCounsellorLoginOtpEmail($user->email, $otp);
+            } catch (Throwable $exception) {
+                Cache::forget($this->counsellorLoginOtpCacheKey($user->id));
+                report($exception);
+
+                return back()
+                    ->withErrors(['email' => 'Unable to send login OTP right now. Please check mail settings and try again.'])
+                    ->onlyInput('email');
+            }
+
+            $request->session()->put(self::SESSION_PENDING_COUNSELLOR_LOGIN_USER_ID, $user->id);
+
+            return redirect()
+                ->route('counsellor.login.otp.form')
+                ->with('status', 'OTP sent to your email. Please verify to continue your first login.');
+        }
+
+        Auth::login($user, $request->boolean('remember'));
+        $request->session()->regenerate();
+
+        return redirect()->intended(route('home'));
+    }
+
+    public function showCounsellorLoginOtpForm(Request $request): View|RedirectResponse
+    {
+        $userId = $request->session()->get(self::SESSION_PENDING_COUNSELLOR_LOGIN_USER_ID);
+
+        if (! $userId) {
+            return redirect()->route('login')->withErrors([
+                'email' => 'Please login first to verify OTP.',
+            ]);
+        }
+
+        $user = User::query()->find($userId);
+
+        if (! $user) {
+            $request->session()->forget(self::SESSION_PENDING_COUNSELLOR_LOGIN_USER_ID);
+
+            return redirect()->route('login')->withErrors([
+                'email' => 'Account not found. Please login again.',
+            ]);
+        }
+
+        return view('counsellor-login-otp', [
+            'email' => $user->email,
+        ]);
+    }
+
+    public function verifyCounsellorLoginOtp(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'otp' => ['required', 'integer', 'digits:6'],
+        ]);
+
+        $userId = $request->session()->get(self::SESSION_PENDING_COUNSELLOR_LOGIN_USER_ID);
+
+        if (! $userId) {
+            return redirect()->route('login')->withErrors([
+                'email' => 'Login session expired. Please login again.',
+            ]);
+        }
+
+        $user = User::query()->find($userId);
+
+        if (! $user) {
+            $request->session()->forget(self::SESSION_PENDING_COUNSELLOR_LOGIN_USER_ID);
+
+            return redirect()->route('login')->withErrors([
+                'email' => 'Account not found. Please login again.',
+            ]);
+        }
+
+        $cachedOtp = Cache::get($this->counsellorLoginOtpCacheKey($user->id));
+
+        if (! $cachedOtp) {
+            return back()->withErrors([
+                'otp' => 'OTP expired. Please resend a new code.',
+            ]);
+        }
+
+        if ((int) $cachedOtp['otp'] !== (int) $request->integer('otp')) {
+            return back()->withErrors([
+                'otp' => 'Invalid OTP code. Please try again.',
+            ])->withInput();
+        }
+
+        $user->counsellor_first_login_verified_at = now();
+        $user->save();
+
+        Cache::forget($this->counsellorLoginOtpCacheKey($user->id));
+        $request->session()->forget(self::SESSION_PENDING_COUNSELLOR_LOGIN_USER_ID);
+
+        Auth::login($user);
 
         $request->session()->regenerate();
 
         return redirect()->intended(route('home'));
+    }
+    public function resendCounsellorLoginOtp(Request $request): RedirectResponse
+    {
+        $userId = $request->session()->get(self::SESSION_PENDING_COUNSELLOR_LOGIN_USER_ID);
+
+        if (! $userId) {
+            return redirect()->route('login')->withErrors([
+                'email' => 'Login session expired. Please login again.',
+            ]);
+        }
+
+        $user = User::query()->find($userId);
+
+        if (! $user) {
+            $request->session()->forget(self::SESSION_PENDING_COUNSELLOR_LOGIN_USER_ID);
+
+            return redirect()->route('login')->withErrors([
+                'email' => 'Account not found. Please login again.',
+            ]);
+        }
+
+        $otp = random_int(100000, 999999);
+
+        Cache::put(
+            $this->counsellorLoginOtpCacheKey($user->id),
+            ['otp' => $otp],
+            now()->addMinutes(self::OTP_TTL_MINUTES)
+        );
+
+        try {
+            $this->sendCounsellorLoginOtpEmail($user->email, $otp);
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return back()->withErrors([
+                'otp' => 'Unable to resend OTP right now. Please try again in a moment.',
+            ]);
+        }
+
+        return back()->with('status', 'A new login OTP has been sent to your email.');
     }
 
     public function register(Request $request): RedirectResponse
@@ -472,6 +623,22 @@ class AuthController extends Controller
     private function otpCacheKey(string $email): string
     {
         return 'signup_otp_' . sha1(strtolower($email));
+    }
+
+    private function counsellorLoginOtpCacheKey(int $userId): string
+    {
+        return self::COUNSELLOR_LOGIN_OTP_CACHE_PREFIX . $userId;
+    }
+
+    private function sendCounsellorLoginOtpEmail(string $email, int $otp): void
+    {
+        Mail::mailer(config('mail.default', 'failover'))->raw(
+            "Your CollegeCare counsellor first-login OTP is: {$otp}. This code expires in " . self::OTP_TTL_MINUTES . ' minutes.',
+            function ($message) use ($email) {
+                $message->to($email)
+                    ->subject('CollegeCare Counsellor First Login OTP');
+            }
+        );
     }
 
     private function clearPendingSignup(Request $request, string $email): void

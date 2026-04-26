@@ -53,6 +53,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'phone_verified_at' => 'datetime',
+            'counsellor_first_login_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
     }

@@ -120,6 +120,10 @@ Route::middleware('guest')->group(function () {
     Route::get('/signup/otp', [AuthController::class, 'showOtpForm'])->name('signup.otp.form');
     Route::post('/signup/otp/verify', [AuthController::class, 'verifySignupOtp'])->name('signup.otp.verify');
     Route::post('/signup/otp/resend', [AuthController::class, 'resendSignupOtp'])->name('signup.otp.resend');
+
+    Route::get('/counsellor/login-otp', [AuthController::class, 'showCounsellorLoginOtpForm'])->name('counsellor.login.otp.form');
+    Route::post('/counsellor/login-otp/verify', [AuthController::class, 'verifyCounsellorLoginOtp'])->name('counsellor.login.otp.verify');
+    Route::post('/counsellor/login-otp/resend', [AuthController::class, 'resendCounsellorLoginOtp'])->name('counsellor.login.otp.resend');
 });
 
 $autoRejectExpiredBookings = static function (): void {
