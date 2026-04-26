@@ -110,6 +110,8 @@
                     $activeRoleCount = $managedUsers->pluck('role_name')->filter()->unique()->count();
                     $accountGraphPercentage = min(100, ($managedUserCount / 20) * 100);
                     $activeRoleGraphPercentage = min(100, ($activeRoleCount / 5) * 100);
+                    $accountGraphOffset = 100 - $accountGraphPercentage;
+                    $activeRoleGraphOffset = 100 - $activeRoleGraphPercentage;
                 @endphp
                 @if (session('status'))
                     <div class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
@@ -121,9 +123,28 @@
                     <div class="grid gap-3 sm:grid-cols-2">
                         <article
                             class="animate-slide-up-fade rounded-2xl border border-sky-100 bg-gradient-to-br from-sky-50 via-white to-sky-100/60 p-4 shadow-sm">
-                            <p class="text-xs uppercase tracking-[0.14em] text-sky-600/80">Jumlah Akaun</p>
-                            <p class="mt-1 text-2xl font-bold text-slate-800">{{ $managedUserCount }}</p>
-                            <p class="mt-1 text-xs text-slate-500">Graf jumlah akaun daripada 20 paparan semasa.</p>
+                            <div class="flex items-center justify-between gap-4">
+                                <div>
+                                    <p class="text-xs uppercase tracking-[0.14em] text-sky-600/80">Jumlah Akaun</p>
+                                    <p class="mt-1 text-2xl font-bold text-slate-800">{{ $managedUserCount }}</p>
+                                    <p class="mt-1 text-xs text-slate-500">Graf jumlah akaun daripada 20 paparan semasa.
+                                    </p>
+                                </div>
+                                <div class="relative h-16 w-16 shrink-0">
+                                    <svg viewBox="0 0 36 36" class="h-16 w-16 -rotate-90">
+                                        <path d="M18 2.5a15.5 15.5 0 1 1 0 31a15.5 15.5 0 1 1 0 -31"
+                                            class="fill-none stroke-sky-100" stroke-width="3.5" />
+                                        <path d="M18 2.5a15.5 15.5 0 1 1 0 31a15.5 15.5 0 1 1 0 -31"
+                                            class="fill-none stroke-sky-500 transition-all duration-700"
+                                            stroke-width="3.5" stroke-linecap="round" stroke-dasharray="100"
+                                            stroke-dashoffset="{{ $accountGraphOffset }}" />
+                                    </svg>
+                                    <span
+                                        class="absolute inset-0 flex items-center justify-center text-[10px] font-semibold text-sky-700">
+                                        {{ number_format($accountGraphPercentage, 0) }}%
+                                    </span>
+                                </div>
+                            </div>
                             <div class="mt-3">
                                 <div class="h-2 w-full rounded-full bg-sky-100">
                                     <div class="h-2 rounded-full bg-sky-500 transition-all duration-500"
@@ -137,17 +158,37 @@
                         <article
                             class="animate-slide-up-fade rounded-2xl border border-emerald-100 bg-white p-4 shadow-sm"
                             style="animation-delay: 110ms;">
-                            <p class="text-xs uppercase tracking-[0.14em] text-emerald-600/80">Peranan Aktif</p>
-                            <p class="mt-1 text-2xl font-bold text-slate-800">{{ $activeRoleCount }}</p>
-                            <p class="mt-1 text-xs text-slate-500">Graf kategori peranan aktif daripada 5 kategori.</p>
+                            <div class="flex items-center justify-between gap-4">
+                                <div>
+                                    <p class="text-xs uppercase tracking-[0.14em] text-emerald-600/80">Peranan Aktif</p>
+                                    <p class="mt-1 text-2xl font-bold text-slate-800">{{ $activeRoleCount }}</p>
+                                    <p class="mt-1 text-xs text-slate-500">Graf kategori peranan aktif daripada 5
+                                        kategori.
+                                    </p>
+                                </div>
+                                <div class="relative h-16 w-16 shrink-0">
+                                    <svg viewBox="0 0 36 36" class="h-16 w-16 -rotate-90">
+                                        <path d="M18 2.5a15.5 15.5 0 1 1 0 31a15.5 15.5 0 1 1 0 -31"
+                                            class="fill-none stroke-emerald-100" stroke-width="3.5" />
+                                        <path d="M18 2.5a15.5 15.5 0 1 1 0 31a15.5 15.5 0 1 1 0 -31"
+                                            class="fill-none stroke-emerald-500 transition-all duration-700"
+                                            stroke-width="3.5" stroke-linecap="round" stroke-dasharray="100"
+                                            stroke-dashoffset="{{ $activeRoleGraphOffset }}" />
+                                    </svg>
+                                    <span
+                                        class="absolute inset-0 flex items-center justify-center text-[10px] font-semibold text-emerald-700">
+                                        {{ number_format($activeRoleGraphPercentage, 0) }}%
+                                    </span>
+                                </div>
+                            </div>
                             <div class="mt-3">
                                 <div class="h-2 w-full rounded-full bg-emerald-100">
                                     <div class="h-2 rounded-full bg-emerald-500 transition-all duration-500"
                                         style="width: {{ $activeRoleGraphPercentage }}%;"></div>
                                 </div>
                                 <p class="mt-1 text-[11px] text-slate-500">
-                                    {{ number_format($activeRoleGraphPercentage, 0) }}% kategori aktif
-                                </p>
+                                    {{ number_format($activeRoleGraphPercentage, 0) }}%
+                                    kategori aktif</p>
                             </div>
                         </article>
                     </div>
@@ -201,7 +242,8 @@
                                             data-role="{{ strtolower($managedUser->role_name) }}">
                                             <td class="py-2 pr-2 font-medium text-slate-700">{{ $managedUser->name }}
                                             </td>
-                                            <td class="py-2 pr-2 text-sky-700 capitalize">{{ $managedUser->role_name }}
+                                            <td class="py-2 pr-2 text-sky-700 capitalize">
+                                                {{ $managedUser->role_name }}
                                             </td>
                                             <td class="py-2 pr-2 text-slate-600">{{ $managedUser->email }}</td>
                                             <td class="py-2 text-slate-500">{{ $managedUser->phone ?: '—' }}</td>

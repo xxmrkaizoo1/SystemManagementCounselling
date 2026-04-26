@@ -343,6 +343,76 @@ Route::middleware('auth')->group(function () {
         ]);
     })->name('admin.accounts.manage');
 
+
+    Route::get('/admin/student-statistics', function () {
+        $user = request()->user();
+        $role = $user?->roles()->value('name');
+
+        abort_unless($role === 'admin', 403);
+
+        $statusCounts = BookingRequest::query()
+            ->selectRaw('status, COUNT(*) as total')
+            ->groupBy('status')
+            ->pluck('total', 'status');
+
+        $statusTotals = [
+            'all' => (int) $statusCounts->sum(),
+            'pending' => (int) ($statusCounts['pending'] ?? 0),
+            'approved' => (int) ($statusCounts['approved'] ?? 0),
+            'rejected' => (int) ($statusCounts['rejected'] ?? 0),
+            'completed' => (int) ($statusCounts['completed'] ?? 0),
+        ];
+
+        $topicStats = BookingRequest::query()
+            ->selectRaw("COALESCE(NULLIF(TRIM(REPLACE(topic, '[EMERGENCY] ', '')), ''), 'General support') as topic_category")
+            ->selectRaw('COUNT(*) as total_bookings')
+            ->selectRaw("SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending_total")
+            ->selectRaw("SUM(CASE WHEN status = 'approved' THEN 1 ELSE 0 END) as approved_total")
+            ->selectRaw("SUM(CASE WHEN status = 'rejected' THEN 1 ELSE 0 END) as rejected_total")
+            ->selectRaw("SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed_total")
+            ->groupBy('topic_category')
+            ->orderByDesc('total_bookings')
+            ->get()
+            ->map(static function ($row): array {
+                return [
+                    'topic' => (string) $row->topic_category,
+                    'total' => (int) $row->total_bookings,
+                    'pending' => (int) $row->pending_total,
+                    'approved' => (int) $row->approved_total,
+                    'rejected' => (int) $row->rejected_total,
+                    'completed' => (int) $row->completed_total,
+                ];
+            });
+
+        $studentStats = BookingRequest::query()
+            ->join('users', 'users.id', '=', 'booking_requests.user_id')
+            ->select('users.id', 'users.name', 'users.full_name', 'users.email')
+            ->selectRaw('COUNT(booking_requests.id) as total_bookings')
+            ->selectRaw("SUM(CASE WHEN booking_requests.status = 'pending' THEN 1 ELSE 0 END) as active_pending")
+            ->selectRaw("SUM(CASE WHEN booking_requests.status = 'approved' THEN 1 ELSE 0 END) as active_approved")
+            ->groupBy('users.id', 'users.name', 'users.full_name', 'users.email')
+            ->orderByDesc('total_bookings')
+            ->limit(10)
+            ->get()
+            ->map(static function ($row): array {
+                return [
+                    'student' => (string) ($row->full_name ?: $row->name),
+                    'email' => (string) $row->email,
+                    'total' => (int) $row->total_bookings,
+                    'active_pending' => (int) $row->active_pending,
+                    'active_approved' => (int) $row->active_approved,
+                ];
+            });
+
+        return view('admin.student-statistic-page', [
+            'user' => $user,
+            'statusTotals' => $statusTotals,
+            'topicStats' => $topicStats,
+            'studentStats' => $studentStats,
+        ]);
+    })->name('admin.student-statistics');
+
+
     Route::get('/admin/no-matriks-users', function (Request $request) {
         $user = request()->user();
         $role = $user?->roles()->value('name');
