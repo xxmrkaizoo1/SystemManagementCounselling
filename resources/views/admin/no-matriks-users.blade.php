@@ -122,8 +122,9 @@
                 <div
                     class="mb-5 rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm transition hover:shadow-md animate-fade-up delay-1">
                     <h2 class="text-lg font-semibold text-slate-900">Add many no_matriks numbers</h2>
-                    <p class="mt-1 text-sm text-slate-600">Enter one per line. You can use <span
-                            class="font-medium">NO_MATRIKS | NAME</span> to store label name.</p>
+                    <p class="mt-1 text-sm text-slate-600">Enter one per line. Supported format: <span
+                            class="font-medium">NAME | NO_MATRIKS</span> (or CSV: <span
+                            class="font-medium">NAME,NO_MATRIKS</span>).</p>
 
                     <form method="POST" action="{{ url('/admin/no-matriks-users') }}" enctype="multipart/form-data"
                         class="mt-4 grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
@@ -133,17 +134,13 @@
                                 list</label>
                             <textarea id="no_matriks" name="no_matriks" rows="4"
                                 class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 focus:border-sky-400 focus:ring-sky-400"
-                                placeholder="A23CS0001 | Ali Bin Abu&#10;A23CS0002 | Siti Aminah&#10;A23CS0003">{{ old('no_matriks') }}</textarea>
+                                placeholder="Ali Bin Abu | A23CS0001&#10;Siti Aminah | A23CS0002&#10;A23CS0003">{{ old('no_matriks') }}</textarea>
                             <div id="file-dropzone"
                                 class="mt-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 px-3 py-3 text-sm text-slate-600 transition hover:border-sky-400 hover:bg-sky-50">
                                 <label for="no_matriks_file" class="block cursor-pointer">
-                                    Drop image / TXT / CSV here, or click to choose file.
-                                </label>
-                                <p
-                                    class="mt-1 inline-flex rounded-full bg-violet-100 px-2 py-0.5 text-[11px] font-semibold text-violet-700">
-                                    AI OCR reads labels: Nama, Angka Giliran, Nombor Matriks </p>
+                                    Drop TXT / CSV here, or click to choose file. </label>
                                 <input id="no_matriks_file" name="no_matriks_file" type="file" class="sr-only"
-                                    accept=".txt,.csv,image/png,image/jpeg,image/webp">
+                                    accept=".txt,.csv">
                                 <p id="file-name" class="mt-1 text-xs text-slate-500">No file selected.</p>
                             </div>
                         </div>

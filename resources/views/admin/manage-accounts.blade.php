@@ -104,6 +104,13 @@
             </header>
 
             <div class="p-6 sm:p-7 space-y-5">
+
+                @php
+                    $managedUserCount = $managedUsers->count();
+                    $activeRoleCount = $managedUsers->pluck('role_name')->filter()->unique()->count();
+                    $accountGraphPercentage = min(100, ($managedUserCount / 20) * 100);
+                    $activeRoleGraphPercentage = min(100, ($activeRoleCount / 5) * 100);
+                @endphp
                 @if (session('status'))
                     <div class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
                         {{ session('status') }}
@@ -111,28 +118,37 @@
                 @endif
 
                 <div class="space-y-4">
-                    <div class="grid gap-3 sm:grid-cols-3">
+                    <div class="grid gap-3 sm:grid-cols-2">
                         <article
                             class="animate-slide-up-fade rounded-2xl border border-sky-100 bg-gradient-to-br from-sky-50 via-white to-sky-100/60 p-4 shadow-sm">
                             <p class="text-xs uppercase tracking-[0.14em] text-sky-600/80">Jumlah Akaun</p>
-                            <p class="mt-1 text-2xl font-bold text-slate-800">{{ $managedUsers->count() }}</p>
-                            <p class="mt-1 text-xs text-slate-500">Data terkini dalam paparan semasa.</p>
+                            <p class="mt-1 text-2xl font-bold text-slate-800">{{ $managedUserCount }}</p>
+                            <p class="mt-1 text-xs text-slate-500">Graf jumlah akaun daripada 20 paparan semasa.</p>
+                            <div class="mt-3">
+                                <div class="h-2 w-full rounded-full bg-sky-100">
+                                    <div class="h-2 rounded-full bg-sky-500 transition-all duration-500"
+                                        style="width: {{ $accountGraphPercentage }}%;"></div>
+                                </div>
+                                <p class="mt-1 text-[11px] text-slate-500">
+                                    {{ number_format($accountGraphPercentage, 0) }}%
+                                    dipaparkan</p>
+                            </div>
                         </article>
                         <article
                             class="animate-slide-up-fade rounded-2xl border border-emerald-100 bg-white p-4 shadow-sm"
                             style="animation-delay: 110ms;">
                             <p class="text-xs uppercase tracking-[0.14em] text-emerald-600/80">Peranan Aktif</p>
-                            <p class="mt-1 text-2xl font-bold text-slate-800">
-                                {{ $managedUsers->pluck('role_name')->filter()->unique()->count() }}
-                            </p>
-                            <p class="mt-1 text-xs text-slate-500">Bilangan kategori peranan semasa.</p>
-                        </article>
-                        <article
-                            class="animate-slide-up-fade rounded-2xl border border-violet-100 bg-white p-4 shadow-sm"
-                            style="animation-delay: 200ms;">
-                            <p class="text-xs uppercase tracking-[0.14em] text-violet-600/80">Mesra Carian</p>
-                            <p class="mt-1 text-2xl font-bold text-slate-800">Live</p>
-                            <p class="mt-1 text-xs text-slate-500">Tapisan terus tanpa muat semula halaman.</p>
+                            <p class="mt-1 text-2xl font-bold text-slate-800">{{ $activeRoleCount }}</p>
+                            <p class="mt-1 text-xs text-slate-500">Graf kategori peranan aktif daripada 5 kategori.</p>
+                            <div class="mt-3">
+                                <div class="h-2 w-full rounded-full bg-emerald-100">
+                                    <div class="h-2 rounded-full bg-emerald-500 transition-all duration-500"
+                                        style="width: {{ $activeRoleGraphPercentage }}%;"></div>
+                                </div>
+                                <p class="mt-1 text-[11px] text-slate-500">
+                                    {{ number_format($activeRoleGraphPercentage, 0) }}% kategori aktif
+                                </p>
+                            </div>
                         </article>
                     </div>
 

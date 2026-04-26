@@ -409,217 +409,44 @@ Route::middleware('auth')->group(function () {
 
         $validated = $request->validate([
             'no_matriks' => ['nullable', 'string'],
-            'no_matriks_file' => ['nullable', 'file', 'max:5120', 'mimes:txt,csv,jpg,jpeg,png,webp'],
+            'no_matriks_file' => ['nullable', 'file', 'max:5120', 'mimes:txt,csv'],
         ]);
 
         $rawInput = trim((string) ($validated['no_matriks'] ?? ''));
         $uploadedFile = $request->file('no_matriks_file');
 
-        $normalizeLikelyOcrMistakes = static function (string $value): string {
-            $normalized = strtoupper($value);
-
-            // Common OCR confusion in mixed alpha-numeric IDs
-            $normalized = preg_replace('/(?<=\d)[OQ](?=\d)/', '0', $normalized) ?? $normalized;
-            $normalized = preg_replace('/(?<=\d)[IL](?=\d)/', '1', $normalized) ?? $normalized;
-            $normalized = preg_replace('/(?<=[A-Z])[0](?=[A-Z])/', 'O', $normalized) ?? $normalized;
-
-            return $normalized;
-        };
-        $resolveTesseractBinary = static function (): ?string {
-            $candidates = array_values(array_filter([
-                config('services.tesseract.binary'),
-                env('TESSERACT_BINARY'),
-                'tesseract',
-                'C:\\Program Files\\Tesseract-OCR\\tesseract.exe',
-                'C:\\Program Files (x86)\\Tesseract-OCR\\tesseract.exe',
-            ], static fn($value): bool => is_string($value) && trim($value) !== ''));
-
-            foreach ($candidates as $candidate) {
-                $candidate = trim($candidate);
-
-                if (
-                    str_contains($candidate, DIRECTORY_SEPARATOR)
-                    || str_contains($candidate, '\\')
-                    || str_contains($candidate, '/')
-                ) {
-                    if (is_file($candidate)) {
-                        return $candidate;
-                    }
-
-                    continue;
-                }
-
-                $lookupCommand = strtoupper(substr(PHP_OS_FAMILY, 0, 3)) === 'WIN'
-                    ? "where {$candidate} 2>NUL"
-                    : "command -v {$candidate} 2>/dev/null";
-                $resolvedPath = trim((string) shell_exec($lookupCommand));
-                if ($resolvedPath !== '') {
-                    $firstResolvedLine = trim((string) strtok($resolvedPath, "\r\n"));
-                    if ($firstResolvedLine !== '') {
-                        return $firstResolvedLine;
-                    }
-                }
-            }
-
-            return null;
-        };
-
-        $extractEntriesFromText = static function (string $text) use ($normalizeLikelyOcrMistakes): array {
-            $sanitizeLabelName = static function (string $value): string {
-                $value = trim((string) preg_replace('/\s+/', ' ', $value));
-                $value = (string) preg_replace('/^(?:NAMA(?:\s+CALON)?|ANGKA\s+GILIRAN|NOMBOR\s+MATRIKS|NO\.?\s*KAD\s*PENGENALAN)\s*[:\-]?\s*/iu', '', $value);
-                $value = (string) preg_replace('/^\d+\s*/', '', $value);
-                $value = trim((string) preg_replace('/^[\-\:\|\;\,\.\)\(]+/', '', $value));
-
-                if ($value === '' || preg_match('/[A-Za-z]/', $value) !== 1) {
-                    return '';
-                }
-
-                return mb_substr($value, 0, 120);
-            };
-
-            $lines = collect(preg_split('/\R+/', $text))
-                ->map(static fn(?string $line): string => trim((string) $line))
-                ->filter(static fn(string $line): bool => $line !== '')
-                ->values();
-            return $lines
-                ->flatMap(static function (string $line, int $lineIndex) use ($lines, $normalizeLikelyOcrMistakes, $sanitizeLabelName): array {
-
-                    $upperLine = strtoupper($line);
-                    preg_match_all('/[A-Z0-9]{6,50}/', $upperLine, $lineMatches, PREG_OFFSET_CAPTURE);
-                    $matches = $lineMatches[0] ?? [];
-
-                    if ($matches === []) {
-                        return [];
-                    }
-                    $labelFromExplicitTag = '';
-                    if (preg_match('/NAMA(?:\s+CALON)?\s*[:\-]?\s*(.+?)(?:\s+ANGKA\s+GILIRAN|\s+NOMBOR\s+MATRIKS|$)/iu', $line, $tagMatch) === 1) {
-                        $labelFromExplicitTag = $sanitizeLabelName((string) ($tagMatch[1] ?? ''));
-                    }
-                    $entries = [];
-                    foreach ($matches as $index => $matchInfo) {
-                        $matchedId = (string) ($matchInfo[0] ?? '');
-                        $normalizedMatriks = preg_replace('/[^A-Z0-9]/', '', $matchedId) ?? '';
-                        $normalizedMatriks = $normalizeLikelyOcrMistakes($normalizedMatriks);
-
-                        if (
-                            $normalizedMatriks === ''
-                            || strlen($normalizedMatriks) < 6
-                            || strlen($normalizedMatriks) > 50
-                            || preg_match('/[A-Z]/', $normalizedMatriks) !== 1
-                            || preg_match('/\d/', $normalizedMatriks) !== 1
-                        ) {
-                            continue;
-                        }
-
-                        $labelName = $labelFromExplicitTag;
-                        if ($labelName === '' && $index === 0) {
-                            $start = (int) ($matchInfo[1] ?? 0);
-                            $beforeId = $sanitizeLabelName((string) substr($line, 0, $start));
-                            $afterId = $sanitizeLabelName((string) substr($line, $start + strlen($matchedId)));
-
-                            $labelName = $beforeId !== '' ? $beforeId : $afterId;
-                        }
-
-                        if ($labelName === '' && $lineIndex > 0) {
-                            $prevLine = (string) $lines->get($lineIndex - 1, '');
-                            if ($prevLine !== '') {
-                                $labelName = $sanitizeLabelName($prevLine);
-                            }
-                        }
-
-                        $entries[] = [
-                            'no_matriks' => $normalizedMatriks,
-                            'label_name' => $labelName,
-                        ];
-                    }
-
-                    return $entries;
-                })
-                ->unique('no_matriks')
-                ->values()
-                ->all();
-        };
-
         if ($uploadedFile) {
-            $mimeType = (string) ($uploadedFile->getMimeType() ?? '');
-            $isImage = str_starts_with($mimeType, 'image/');
-
-            if ($isImage) {
-
-
-                $tesseractBinary = $resolveTesseractBinary();
-                if ($tesseractBinary === null) {
-                    return redirect()
-                        ->route('admin.users.no-matriks')
-                        ->withErrors(['no_matriks_file' => 'Image OCR is unavailable because Tesseract is not configured on the server. Please set TESSERACT_BINARY or install Tesseract.']);
-                }
-
-                $sourcePath = $uploadedFile->getRealPath();
-                $escapedSource = escapeshellarg((string) $sourcePath);
-                $escapedTesseractBinary = escapeshellarg($tesseractBinary);
-                $outputBase = tempnam(sys_get_temp_dir(), 'matriks_ocr_');
-
-                if ($outputBase === false) {
-                    return redirect()
-                        ->route('admin.users.no-matriks')
-                        ->withErrors(['no_matriks_file' => 'Unable to process the uploaded image right now.']);
-                }
-
-                @unlink($outputBase);
-                $escapedOutputBase = escapeshellarg($outputBase);
-                $command = "tesseract {$escapedSource} {$escapedOutputBase} -l eng --psm 6 2>&1";
-                exec($command, $shellOutput, $exitCode);
-
-                $ocrCommands = [
-                    "{$escapedTesseractBinary} {$escapedSource} {$escapedOutputBase} -l eng --oem 1 --psm 6 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 2>&1",
-                    "{$escapedTesseractBinary} {$escapedSource} {$escapedOutputBase} -l eng --oem 1 --psm 7 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 2>&1",
-                    "{$escapedTesseractBinary} {$escapedSource} {$escapedOutputBase} -l eng --oem 1 --psm 11 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 2>&1",
-                    "{$escapedTesseractBinary} {$escapedSource} {$escapedOutputBase} -l eng --oem 1 --psm 12 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 2>&1",
-                ];
-
-                $ocrTexts = [];
-                foreach ($ocrCommands as $command) {
-                    $shellOutput = [];
-                    $exitCode = 1;
-                    exec($command, $shellOutput, $exitCode);
-                    if ($exitCode === 0) {
-                        $ocrTexts[] = (string) @file_get_contents($outputBase . '.txt');
-                    }
-                }
-
-                @unlink($outputBase . '.txt');
-
-                if (empty($ocrTexts)) {
-                    return redirect()
-                        ->route('admin.users.no-matriks')
-                        ->withErrors(['no_matriks_file' => 'Image OCR failed. Please upload a TXT/CSV file or paste the list manually.']);
-                }
-
-                $ocrMerged = implode("\n", $ocrTexts);
-                $ocrCandidates = $extractEntriesFromText($ocrMerged);
-                $ocrInputToMerge = !empty($ocrCandidates)
-                    ? collect($ocrCandidates)->map(static fn(array $entry): string => $entry['label_name'] !== ''
-                        ? "{$entry['no_matriks']} | {$entry['label_name']}"
-                        : $entry['no_matriks'])
-                    ->implode("\n")
-                    : $ocrMerged;
-                $rawInput = trim($rawInput . "\n" . $ocrInputToMerge);
-            } else {
-                $fileText = @file_get_contents($uploadedFile->getRealPath());
-                $rawInput = trim($rawInput . "\n" . (string) $fileText);
-            }
+            $fileText = @file_get_contents($uploadedFile->getRealPath());
+            $rawInput = trim($rawInput . "\n" . (string) $fileText);
         }
 
+        $isLikelyMatriks = static function (string $value): bool {
+            $trimmed = trim($value);
+            return preg_match('/^[A-Z0-9]{5,50}$/i', $trimmed) === 1
+                && preg_match('/[A-Z]/i', $trimmed) === 1
+                && preg_match('/\d/', $trimmed) === 1;
+        };
+
+
         $parsedEntries = collect(preg_split('/\R+/', $rawInput))
-            ->flatMap(static function (?string $rawLine): array {
+            ->flatMap(static function (?string $rawLine) use ($isLikelyMatriks): array {
                 $line = trim((string) $rawLine);
                 if ($line === '') {
                     return [];
                 }
 
                 if (str_contains($line, '|')) {
-                    [$matriks, $name] = array_pad(explode('|', $line, 2), 2, '');
+                    [$first, $second] = array_pad(explode('|', $line, 2), 2, '');
+                    $first = trim($first);
+                    $second = trim($second);
+
+                    if ($isLikelyMatriks($second) && ! $isLikelyMatriks($first)) {
+                        $matriks = $second;
+                        $name = $first;
+                    } else {
+                        $matriks = $first;
+                        $name = $second;
+                    }
                     return [[
                         'no_matriks' => trim($matriks),
                         'label_name' => trim($name),
@@ -629,7 +456,7 @@ Route::middleware('auth')->group(function () {
                 if (str_contains($line, ',')) {
                     $parts = array_values(array_filter(array_map('trim', explode(',', $line)), static fn(string $value): bool => $value !== ''));
                     $allLookLikeMatriks = ! empty($parts)
-                        && collect($parts)->every(static fn(string $value): bool => preg_match('/^[A-Z0-9]{5,50}$/i', $value) === 1);
+                        && collect($parts)->every(static fn(string $value): bool => $isLikelyMatriks($value));
 
                     if ($allLookLikeMatriks) {
                         return array_map(static fn(string $value): array => [
@@ -638,8 +465,19 @@ Route::middleware('auth')->group(function () {
                         ], $parts);
                     }
 
-                    $matriks = $parts[0] ?? '';
-                    $name = trim(implode(', ', array_slice($parts, 1)));
+                    $matriksIndex = collect($parts)->search(static fn(string $value): bool => $isLikelyMatriks($value));
+                    $matriks = '';
+                    $name = '';
+
+                    if ($matriksIndex !== false) {
+                        $matriks = $parts[$matriksIndex];
+                        $name = $matriksIndex > 0
+                            ? $parts[$matriksIndex - 1]
+                            : trim(implode(', ', array_slice($parts, 1)));
+                    } else {
+                        $matriks = $parts[0] ?? '';
+                        $name = trim(implode(', ', array_slice($parts, 1)));
+                    }
                     return [[
                         'no_matriks' => $matriks,
                         'label_name' => $name,
