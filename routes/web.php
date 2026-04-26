@@ -722,6 +722,14 @@ Route::middleware('auth')->group(function () {
                     'student_id' => $booking->user?->id,
                     'student' => $booking->user?->full_name ?: $booking->user?->name ?: 'Pelajar',
                     'student_email' => $booking->user?->email,
+                    'requester_role' => (
+                        $booking->user?->roles
+                        ?->pluck('name')
+                        ->map(static fn(string $name): string => mb_strtolower($name))
+                        ->first(static fn(string $name): bool => in_array($name, ['student', 'teacher'], true))
+                    ) === 'teacher'
+                        ? 'Lecturer'
+                        : 'Student',
                     'request_date' => (string) $booking->booking_date,
                     'topic' => $booking->topic ?: 'General support',
                     'status' => $statusLabel($booking->status),
@@ -942,13 +950,14 @@ Route::middleware('auth')->group(function () {
         };
 
         $sessions = BookingRequest::query()
-            ->with('user:id,name,full_name')
+            ->with(['user:id,name,full_name,email', 'user.roles:id,name'])
             ->whereIn(DB::raw("LOWER(REPLACE(TRIM(counsellor_name), ' ', ''))"), $normalizedCounsellorNames)
             ->whereIn('status', ['approved', 'completed'])
             ->latest('booking_date')
             ->latest('booking_time')
             ->get()
             ->map(static function (BookingRequest $booking) use ($statusLabel): array {
+
                 return [
                     'id' => $booking->id,
                     'student' => $booking->user?->full_name ?: $booking->user?->name ?: 'Pelajar',

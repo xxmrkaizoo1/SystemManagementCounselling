@@ -285,8 +285,8 @@
                         data-student-id="{{ $item['student_id'] ?? '' }}"
                         data-email="{{ $item['student_email'] ?? '' }}"
                         data-student-name="{{ $item['student'] ?? 'Student' }}"
-                        data-display-date="{{ $displayDate }}"
-                        data-request-date="{{ $item['request_date'] }}"
+                        data-display-date="{{ $displayDate }}" data-request-date="{{ $item['request_date'] }}"
+                        data-requester-role="{{ $item['requester_role'] ?? 'Student' }}"
                         data-topic="{{ $item['topic'] ?: 'General counseling support' }}"
                         data-reminder-url="{{ isset($item['booking_request_id']) ? route('counsellor.booking-request.reminder', $item['booking_request_id']) : '' }}"
                         data-name="{{ strtolower($item['student'] ?? 'student') }}"
@@ -350,14 +350,18 @@
             <div id="chat-popup-body" class="space-y-3 px-4 py-4">
                 <div class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600">
                     <p><span class="font-medium text-slate-700">Topic:</span> <span id="chat-popup-topic"></span></p>
-                    <p><span class="font-medium text-slate-700">Request date:</span> <span id="chat-popup-date"></span></p>
+                    <p><span class="font-medium text-slate-700">Request date:</span> <span
+                            id="chat-popup-date"></span></p>
+                    <p><span class="font-medium text-slate-700">Status:</span> <span id="chat-popup-role"></span></p>
                     <p><span class="font-medium text-slate-700">Email:</span> <span id="chat-popup-email"></span></p>
                 </div>
                 <form id="reminder-form" method="POST" action="">
                     @csrf
                     <div id="chat-popup-thread"
-                        class="max-h-56 space-y-2 overflow-y-auto rounded-xl border border-slate-200 bg-slate-50 p-3"></div>
-                    <label for="chat-popup-message-input" class="mb-1 mt-3 block text-sm font-medium text-slate-700">Chat message</label>
+                        class="max-h-56 space-y-2 overflow-y-auto rounded-xl border border-slate-200 bg-slate-50 p-3">
+                    </div>
+                    <label for="chat-popup-message-input"
+                        class="mb-1 mt-3 block text-sm font-medium text-slate-700">Chat message</label>
                     <div class="flex items-center gap-2">
                         <input id="chat-popup-message-input" type="text"
                             class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100"
@@ -370,7 +374,8 @@
                         <button id="chat-popup-cancel" type="button"
                             class="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50">Cancel</button>
                         <button type="submit"
-                            class="rounded-lg bg-sky-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-sky-700">Send reminder email</button>
+                            class="rounded-lg bg-sky-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-sky-700">Send
+                            reminder email</button>
                     </div>
                 </form>
             </div>
@@ -399,6 +404,7 @@
             const chatPopupStudent = document.getElementById('chat-popup-student');
             const chatPopupTopic = document.getElementById('chat-popup-topic');
             const chatPopupDate = document.getElementById('chat-popup-date');
+            const chatPopupRole = document.getElementById('chat-popup-role');
             const chatPopupEmail = document.getElementById('chat-popup-email');
             const chatPopupReminder = document.getElementById('chat-popup-reminder');
             const heroImage = document.getElementById('counsellor-hero-image');
@@ -545,8 +551,10 @@
                     row.addEventListener('click', function() {
                         const studentName = row.dataset.studentName || 'Student';
                         const topic = row.dataset.topic || 'General counseling support';
-                        const displayDate = row.dataset.displayDate || row.dataset.requestDate || '-';
-                        const email = row.dataset.email || 'No email found';
+                        const displayDate = row.dataset.displayDate || row.dataset.requestDate ||
+                            '-';
+                        const roleLabel = row.dataset.requesterRole || 'Student';
+                        const email = row.dataset.email || '-';
                         const reminderUrl = row.dataset.reminderUrl || '';
 
                         if (!reminderUrl) {
@@ -556,10 +564,15 @@
                         chatPopupStudent.textContent = studentName;
                         chatPopupTopic.textContent = topic;
                         chatPopupDate.textContent = displayDate;
+                        if (chatPopupRole) {
+                            chatPopupRole.textContent = roleLabel;
+                        }
                         chatPopupEmail.textContent = email;
                         reminderForm.setAttribute('action', reminderUrl);
                         const defaultMessage =
-                            'Hi ' + studentName + ', this is a reminder to respond to your counselling request about "' + topic + '".';
+                            'Hi ' + studentName +
+                            ', this is a reminder to respond to your counselling request about "' +
+                            topic + '".';
                         chatPopupReminder.value = defaultMessage;
                         if (chatPopupThread) {
                             chatPopupThread.innerHTML = '';
@@ -631,7 +644,8 @@
                     if (!isDragging) return;
                     const maxLeft = window.innerWidth - chatPopup.offsetWidth - 8;
                     const maxTop = window.innerHeight - chatPopup.offsetHeight - 8;
-                    const nextLeft = Math.min(Math.max(8, event.clientX - dragOffsetX), Math.max(8, maxLeft));
+                    const nextLeft = Math.min(Math.max(8, event.clientX - dragOffsetX), Math.max(8,
+                        maxLeft));
                     const nextTop = Math.min(Math.max(8, event.clientY - dragOffsetY), Math.max(8, maxTop));
                     chatPopup.style.left = nextLeft + 'px';
                     chatPopup.style.top = nextTop + 'px';
