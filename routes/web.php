@@ -368,7 +368,10 @@ Route::middleware('auth')->group(function () {
             ->latest();
 
         if ($searchTerm !== '') {
-            $entriesQuery->where('no_matriks', 'like', '%' . $searchTerm . '%');
+            $entriesQuery->where(function ($query) use ($searchTerm) {
+                $query->where('no_matriks', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('label_name', 'like', '%' . $searchTerm . '%');
+            });
         }
 
         if ($statusFilter === 'used') {
@@ -547,27 +550,81 @@ Route::middleware('auth')->group(function () {
             }
         }
 
-        $entries = collect(preg_split('/[\r\n,;]+/', $rawInput))
-            ->map(static fn(?string $value): string => trim((string) $value))
-            ->filter()
-            ->unique()
+        $parsedEntries = collect(preg_split('/\R+/', $rawInput))
+            ->flatMap(static function (?string $rawLine): array {
+                $line = trim((string) $rawLine);
+                if ($line === '') {
+                    return [];
+                }
+
+                if (str_contains($line, '|')) {
+                    [$matriks, $name] = array_pad(explode('|', $line, 2), 2, '');
+                    return [[
+                        'no_matriks' => trim($matriks),
+                        'label_name' => trim($name),
+                    ]];
+                }
+
+                if (str_contains($line, ',')) {
+                    $parts = array_values(array_filter(array_map('trim', explode(',', $line)), static fn(string $value): bool => $value !== ''));
+                    $allLookLikeMatriks = ! empty($parts)
+                        && collect($parts)->every(static fn(string $value): bool => preg_match('/^[A-Z0-9]{5,50}$/i', $value) === 1);
+
+                    if ($allLookLikeMatriks) {
+                        return array_map(static fn(string $value): array => [
+                            'no_matriks' => $value,
+                            'label_name' => '',
+                        ], $parts);
+                    }
+
+                    $matriks = $parts[0] ?? '';
+                    $name = trim(implode(', ', array_slice($parts, 1)));
+                    return [[
+                        'no_matriks' => $matriks,
+                        'label_name' => $name,
+                    ]];
+                }
+
+                if (str_contains($line, ';')) {
+                    return array_map(static fn(string $value): array => [
+                        'no_matriks' => trim($value),
+                        'label_name' => '',
+                    ], array_values(array_filter(array_map('trim', explode(';', $line)), static fn(string $value): bool => $value !== '')));
+                }
+
+                return [[
+                    'no_matriks' => $line,
+                    'label_name' => '',
+                ]];
+            })
+            ->map(static fn(array $entry): array => [
+                'no_matriks' => strtoupper(trim((string) ($entry['no_matriks'] ?? ''))),
+                'label_name' => trim((string) ($entry['label_name'] ?? '')),
+            ])
+            ->filter(static fn(array $entry): bool => $entry['no_matriks'] !== '')
+            ->unique('no_matriks')
             ->values();
 
-        if ($entries->isEmpty()) {
+        if ($parsedEntries->isEmpty()) {
             return redirect()
                 ->route('admin.users.no-matriks')
                 ->withErrors(['no_matriks' => 'Please enter at least one no_matriks value.']);
         }
 
-        $tooLong = $entries->first(static fn(string $value): bool => mb_strlen($value) > 50);
-        if ($tooLong) {
+        $tooLong = $parsedEntries->first(static fn(array $entry): bool => mb_strlen($entry['no_matriks']) > 50);
+        if ($tooLong !== null) {
             return redirect()
                 ->route('admin.users.no-matriks')
                 ->withErrors(['no_matriks' => 'Each no_matriks value must be 50 characters or fewer.']);
         }
-
+        $tooLongLabel = $parsedEntries->first(static fn(array $entry): bool => mb_strlen($entry['label_name']) > 120);
+        if ($tooLongLabel !== null) {
+            return redirect()
+                ->route('admin.users.no-matriks')
+                ->withErrors(['no_matriks' => 'Each name label must be 120 characters or fewer.']);
+        }
         $existing = NoMatriksEntry::query()
-            ->whereIn('no_matriks', $entries->all())
+            ->whereIn('no_matriks', $parsedEntries->pluck('no_matriks')->all())
             ->pluck('no_matriks')
             ->all();
 
@@ -586,8 +643,9 @@ Route::middleware('auth')->group(function () {
 
         $now = now();
         NoMatriksEntry::query()->insert(
-            $entries->map(static fn(string $value): array => [
-                'no_matriks' => $value,
+            $parsedEntries->map(static fn(array $entry): array => [
+                'no_matriks' => $entry['no_matriks'],
+                'label_name' => $entry['label_name'] !== '' ? $entry['label_name'] : null,
                 'created_by' => $authUser?->id,
                 'created_at' => $now,
                 'updated_at' => $now,

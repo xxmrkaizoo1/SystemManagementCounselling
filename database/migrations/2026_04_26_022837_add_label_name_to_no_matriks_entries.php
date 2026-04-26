@@ -1,0 +1,22 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::table('no_matriks_entries', function (Blueprint $table) {
+            $table->string('label_name', 120)->nullable()->after('no_matriks');
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::table('no_matriks_entries', function (Blueprint $table) {
+            $table->dropColumn('label_name');
+        });
+    }
+};

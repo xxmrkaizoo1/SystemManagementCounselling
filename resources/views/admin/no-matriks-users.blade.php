@@ -122,8 +122,8 @@
                 <div
                     class="mb-5 rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm transition hover:shadow-md animate-fade-up delay-1">
                     <h2 class="text-lg font-semibold text-slate-900">Add many no_matriks numbers</h2>
-                    <p class="mt-1 text-sm text-slate-600">Enter one or multiple values (one per line, comma, or
-                        semicolon).</p>
+                    <p class="mt-1 text-sm text-slate-600">Enter one per line. You can use <span
+                            class="font-medium">NO_MATRIKS | NAME</span> to store label name.</p>
 
                     <form method="POST" action="{{ url('/admin/no-matriks-users') }}" enctype="multipart/form-data"
                         class="mt-4 grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
@@ -133,7 +133,7 @@
                                 list</label>
                             <textarea id="no_matriks" name="no_matriks" rows="4"
                                 class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 focus:border-sky-400 focus:ring-sky-400"
-                                placeholder="A23CS0001&#10;A23CS0002&#10;A23CS0003">{{ old('no_matriks') }}</textarea>
+                                placeholder="A23CS0001 | Ali Bin Abu&#10;A23CS0002 | Siti Aminah&#10;A23CS0003">{{ old('no_matriks') }}</textarea>
                             <div id="file-dropzone"
                                 class="mt-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 px-3 py-3 text-sm text-slate-600 transition hover:border-sky-400 hover:bg-sky-50">
                                 <label for="no_matriks_file" class="block cursor-pointer">
@@ -155,21 +155,20 @@
                 <div
                     class="mb-5 rounded-xl border border-sky-200 bg-sky-50/80 px-4 py-3 text-sm text-sky-700 animate-fade-up delay-2">
                     Showing <span class="font-semibold">{{ $matriksEntries->count() }}</span> result(s)
-                    @if (!empty($filters['search']) || (($filters['status'] ?? 'all') !== 'all'))
+                    @if (!empty($filters['search']) || ($filters['status'] ?? 'all') !== 'all')
                         (filtered)
                     @endif
-                    • Total no_matriks in list: <span class="font-semibold">{{ $totalEntriesCount ?? $matriksEntries->count() }}</span>
+                    • Total no_matriks in list: <span
+                        class="font-semibold">{{ $totalEntriesCount ?? $matriksEntries->count() }}</span>
                 </div>
 
-                <div
-                    class="mb-5 rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm animate-fade-up delay-2">
+                <div class="mb-5 rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm animate-fade-up delay-2">
                     <form method="GET" action="{{ route('admin.users.no-matriks') }}"
                         class="grid gap-3 sm:grid-cols-[minmax(0,1fr)_220px_auto_auto] sm:items-end">
                         <div>
                             <label for="search" class="mb-1 block text-sm font-medium text-slate-700">Search
-                                no_matriks</label>
-                            <input id="search" name="search" type="text"
-                                value="{{ $filters['search'] ?? '' }}"
+                                no_matriks / name</label>
+                            <input id="search" name="search" type="text" value="{{ $filters['search'] ?? '' }}"
                                 placeholder="e.g. BKV0625"
                                 class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 focus:border-sky-400 focus:ring-sky-400">
                         </div>
@@ -209,10 +208,11 @@
                             </button>
                         </div>
 
-                        <table class="w-full min-w-[680px] text-sm">
+                        <table class="w-full min-w-[760px] text-sm">
                             <thead class="bg-slate-50 text-slate-600">
                                 <tr>
                                     <th class="px-4 py-3 text-left font-semibold">no_matriks</th>
+                                    <th class="px-4 py-3 text-left font-semibold">Name</th>
                                     <th class="px-4 py-3 text-left font-semibold">Added</th>
                                     <th class="px-4 py-3 text-left font-semibold">Status</th>
                                     <th class="px-4 py-3 text-left font-semibold">
@@ -228,6 +228,7 @@
                                 @forelse ($matriksEntries as $entry)
                                     <tr class="border-t border-slate-200 hover:bg-sky-50/60 transition">
                                         <td class="px-4 py-3 font-mono text-slate-800">{{ $entry->no_matriks }}</td>
+                                        <td class="px-4 py-3 text-slate-700">{{ $entry->label_name ?: '-' }}</td>
                                         <td class="px-4 py-3 text-slate-500">
                                             {{ optional($entry->created_at)->diffForHumans() }}</td>
                                         <td class="px-4 py-3">
@@ -256,7 +257,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="4" class="px-4 py-8 text-center text-slate-500"> No no_matriks
+                                        <td colspan="5" class="px-4 py-8 text-center text-slate-500"> No no_matriks
                                             entries found.
                                         </td>
                                     </tr>
@@ -431,9 +432,11 @@
                     if (modalUserName) modalUserName.textContent = button.dataset.userName || '-';
                     if (modalUserEmail) modalUserEmail.textContent = button.dataset.userEmail || '-';
                     if (modalUserPhone) modalUserPhone.textContent = button.dataset.userPhone || '-';
-                    if (modalUserNoMatriks) modalUserNoMatriks.textContent = button.dataset.userNoMatriks ||
+                    if (modalUserNoMatriks) modalUserNoMatriks.textContent = button.dataset
+                        .userNoMatriks ||
                         '-';
-                    if (modalUserCreated) modalUserCreated.textContent = button.dataset.userCreated || '-';
+                    if (modalUserCreated) modalUserCreated.textContent = button.dataset.userCreated ||
+                        '-';
                     showUserInfoModal();
                 });
             });

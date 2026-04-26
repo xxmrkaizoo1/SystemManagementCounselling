@@ -11,6 +11,7 @@ class NoMatriksEntry extends Model
 
     protected $fillable = [
         'no_matriks',
+        'label_name',
         'created_by',
     ];
 }
