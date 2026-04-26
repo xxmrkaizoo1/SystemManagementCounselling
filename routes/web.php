@@ -1052,7 +1052,18 @@ Route::middleware('auth')->group(function () {
                 'status' => $booking->status,
             ])
             ->all();
-
+        $userActiveBookings = BookingRequest::query()
+            ->where('user_id', $user->id)
+            ->whereIn('status', ['pending', 'approved'])
+            ->get(['id', 'booking_date', 'booking_time', 'counsellor_name', 'status'])
+            ->map(static fn(BookingRequest $booking): array => [
+                'id' => $booking->id,
+                'date' => (string) $booking->booking_date,
+                'time' => $booking->booking_time,
+                'counsellor' => $booking->counsellor_name,
+                'status' => $booking->status,
+            ])
+            ->all();
         return view('booking', [
             'user' => $user,
             'role' => $role,

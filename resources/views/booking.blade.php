@@ -533,7 +533,15 @@
             const todayStart = new Date();
             todayStart.setHours(0, 0, 0, 0);
 
-            const slotKey = (date, time, counsellor) => `${date.toISOString().slice(0, 10)}|${time}|${counsellor}`;
+            const formatDateForApi = (date) => {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+
+                return `${year}-${month}-${day}`;
+            };
+
+            const slotKey = (date, time, counsellor) => `${formatDateForApi(date)}|${time}|${counsellor}`;
 
             const computedStatus = (date, time, counsellor) => {
                 const key = slotKey(date, time, counsellor);
@@ -793,7 +801,7 @@
                     const finalNote =
                         `${isEmergency ? '[EMERGENCY] ' : ''}[Sebab sesi: ${resolvedReason}] ${note}`;
 
-                    const requestDateValue = selectedScheduleDate.toISOString().slice(0, 10);
+                    const requestDateValue = formatDateForApi(selectedScheduleDate);
                     if (selectedScheduleDate < todayStart) {
                         showToast(
                             'Tarikh lepas tidak boleh dibuat booking. Sila pilih hari ini atau tarikh akan datang.',
