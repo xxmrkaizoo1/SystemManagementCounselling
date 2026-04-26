@@ -240,6 +240,7 @@
                                 ✕
                             </button>
                         </div>
+
                         <div class="flex items-center gap-3 mb-4 pb-3 border-b border-slate-200">
                             <img src="{{ $user->profile_pic ?: '/images/default-profile.svg' }}" alt="Profile"
                                 class="w-11 h-11 rounded-full border border-slate-200 object-cover bg-sky-50" />
@@ -446,7 +447,6 @@
                 </footer>
             </section>
         </main>
-
         <script>
             document.addEventListener('DOMContentLoaded', () => {
                 const slide = document.getElementById('session-slide');
@@ -583,18 +583,10 @@
 
                 const rawCounsellorNames = @json($counsellorNames ?? []);
                 const rawBookingSlots = @json($bookingSlots ?? []);
-                const rawUserActiveBookings = @json($userActiveBookings ?? []);
                 const counsellors = Array.isArray(rawCounsellorNames) ? rawCounsellorNames : Object.values(
                     rawCounsellorNames || {});
                 const bookingSlots = Array.isArray(rawBookingSlots) ? rawBookingSlots : Object.values(
                     rawBookingSlots || {});
-                const userActiveBookings = Array.isArray(rawUserActiveBookings) ? rawUserActiveBookings : Object.values(
-                    rawUserActiveBookings || {});
-                const availableCounsellors = counsellors.filter(Boolean).length ? counsellors.filter(Boolean) : [
-                    'Counsellor'
-                ];
-                const bookingPageUrl = @json(route('booking.index'));
-                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
                 const statusClass = {
                     Available: 'text-emerald-700 bg-emerald-50 border-emerald-200',
                     Booked: 'text-sky-700 bg-sky-50 border-sky-200',
@@ -622,32 +614,27 @@
                     return [];
                 };
 
-                const bookedSlotsByKey = new Map(
-                    bookingSlots.map((slot) => [
-                        `${slot.date}|${slot.time}|${slot.counsellor}`,
-                        slot.status === 'pending' ? 'Pending' : 'Booked'
-                    ])
-                );
-                const userActiveBookingsByDateTime = new Map(
-                    userActiveBookings.map((booking) => [
-                        `${booking.date}|${booking.time}`,
-                        booking,
-                    ])
-                );
+                const bookingSlotsByDateTime = bookingSlots.reduce((carry, slot) => {
+                    const key = `${slot.date}|${slot.time}`;
+                    const normalizedStatus = slot.status === 'pending' ? 'Pending' : 'Booked';
+                    const normalizedCounsellor = String(slot.counsellor || '').trim();
 
-                const slotKey = (date, time, counsellor) =>
-                    `${date.toISOString().slice(0, 10)}|${time}|${counsellor}`;
-                const computedStatus = (date, time, counsellor) => bookedSlotsByKey.get(slotKey(date, time,
-                        counsellor)) ??
-                    'Available';
+                    if (!carry.has(key)) {
+                        carry.set(key, []);
+                    }
+
+                    carry.get(key).push({
+                        status: normalizedStatus,
+                        counsellor: normalizedCounsellor,
+                    });
+
+                    return carry;
+                }, new Map());
+
+                const slotKey = (date, time) => `${date.toISOString().slice(0, 10)}|${time}`;
 
                 const getSlotStatusMeta = (date, time) => {
-                    const occupied = availableCounsellors
-                        .map((counsellor) => ({
-                            counsellor,
-                            status: computedStatus(date, time, counsellor),
-                        }))
-                        .filter((item) => item.status !== 'Available');
+                    const occupied = bookingSlotsByDateTime.get(slotKey(date, time)) ?? [];
 
                     if (occupied.length === 0) {
                         return {
@@ -659,7 +646,10 @@
                     const allPending = occupied.every((item) => item.status === 'Pending');
 
                     return {
-                        counsellorLabel: occupied.map((item) => item.counsellor).join(', '),
+                        counsellorLabel: occupied
+                            .map((item) => item.counsellor)
+                            .filter(Boolean)
+                            .join(', ') || '-',
                         status: allPending ? 'Pending' : 'Booked',
                     };
                 };
@@ -695,20 +685,14 @@
                             counsellorLabel,
                             status
                         } = getSlotStatusMeta(date, time);
-                        const dateKey = date.toISOString().slice(0, 10);
-                        const userBooking = userActiveBookingsByDateTime.get(`${dateKey}|${time}`);
-                        const actionMarkup = status === 'Available' ?
-                            `<a href="${bookingPageUrl}" class="inline-flex rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700 shadow-sm hover:bg-emerald-100 hover:border-emerald-300 transition">Buat Request</a>` :
-                            (userBooking ?
-                                `<button type="button" data-action="cancel-booking" data-booking-id="${userBooking.id}" class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-700 shadow-sm hover:bg-rose-100 hover:border-rose-300 transition">Cancel Booking</button>` :
-                                `<span class="inline-flex items-center rounded-lg bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-500">Tidak tersedia</span>`
-                            );
+                        const actionMarkup =
+                            `<span class="inline-flex items-center rounded-lg bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-500">View only</span>`;
                         const tr = document.createElement('tr');
                         tr.className = 'group';
                         tr.innerHTML = `
                             <td class="px-6 py-4 whitespace-nowrap font-semibold text-slate-700 bg-white border-y border-l border-slate-200 rounded-l-xl group-hover:border-sky-200 transition">${time}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-slate-700 bg-white border-y border-slate-200 group-hover:border-sky-200 transition">${counsellorLabel}</td>
-                            <td class="px-6 py-4 text-center bg-white border-y border-slate-200 group-hover:border-sky-200 transition">
+                                                        <td class="px-6 py-4 text-center bg-white border-y border-slate-200 group-hover:border-sky-200 transition">
                                 <span class="inline-flex min-w-[104px] justify-center rounded-full border px-3 py-1 text-sm font-semibold ${statusClass[status]}">${status}</span>
                             </td>
                             <td class="px-6 py-4 text-center bg-white border-y border-r border-slate-200 rounded-r-xl group-hover:border-sky-200 transition">${actionMarkup}</td>
@@ -716,58 +700,6 @@
                         modalBody.appendChild(tr);
                     });
                 };
-
-                if (modalBody) {
-                    modalBody.addEventListener('click', async (event) => {
-                        const target = event.target;
-                        if (!(target instanceof HTMLElement) || target.dataset.action !==
-                            'cancel-booking') {
-                            return;
-                        }
-
-                        const bookingId = target.dataset.bookingId;
-                        if (!bookingId) {
-                            return;
-                        }
-
-                        target.setAttribute('disabled', 'disabled');
-
-                        try {
-                            const response = await fetch(`/booking/${bookingId}`, {
-                                method: 'DELETE',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': csrfToken,
-                                    'X-Requested-With': 'XMLHttpRequest',
-                                    'Accept': 'application/json',
-                                },
-                            });
-
-                            if (!response.ok) {
-                                throw new Error('Failed to cancel booking.');
-                            }
-
-                            const canceledBooking = Array.from(userActiveBookingsByDateTime.values()).find((
-                                    booking) =>
-                                String(booking.id) === bookingId);
-
-                            if (canceledBooking) {
-                                userActiveBookingsByDateTime.delete(
-                                    `${canceledBooking.date}|${canceledBooking.time}`);
-                                bookedSlotsByKey.delete(
-                                    `${canceledBooking.date}|${canceledBooking.time}|${canceledBooking.counsellor}`
-                                );
-                            }
-
-                            if (selectedScheduleDate) {
-                                renderScheduleRows(selectedScheduleDate);
-                                renderCalendar();
-                            }
-                        } catch (error) {
-                            target.removeAttribute('disabled');
-                        }
-                    });
-                }
 
                 const openModal = (date) => {
                     if (!modal || !modalTitle || !modalBody) {
