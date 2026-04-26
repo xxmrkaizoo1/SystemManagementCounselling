@@ -731,6 +731,7 @@ Route::middleware('auth')->group(function () {
                         ? 'Lecturer'
                         : 'Student',
                     'request_date' => (string) $booking->booking_date,
+                    'request_time' => (string) $booking->booking_time,
                     'topic' => $booking->topic ?: 'General support',
                     'status' => $statusLabel($booking->status),
                 ];

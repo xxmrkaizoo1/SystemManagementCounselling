@@ -274,11 +274,8 @@
                 @forelse ($chatItems as $index => $item)
                     @php
                         $requestDate = \Carbon\Carbon::parse($item['request_date']);
-                        $displayDate = $requestDate->isToday()
-                            ? 'Today'
-                            : ($requestDate->isTomorrow()
-                                ? 'Tomorrow'
-                                : $requestDate->format('d M Y'));
+                        $requestTime = $item['request_time'] ?: '-';
+                        $displayDate = $requestDate->format('l, d M Y') . ' • ' . $requestTime;
                     @endphp
                     <button type="button" data-chat-item="true"
                         data-booking-request-id="{{ $item['booking_request_id'] ?? '' }}"
@@ -286,6 +283,7 @@
                         data-email="{{ $item['student_email'] ?? '' }}"
                         data-student-name="{{ $item['student'] ?? 'Student' }}"
                         data-display-date="{{ $displayDate }}" data-request-date="{{ $item['request_date'] }}"
+                        data-request-time="{{ $item['request_time'] ?? '' }}"
                         data-requester-role="{{ $item['requester_role'] ?? 'Student' }}"
                         data-topic="{{ $item['topic'] ?: 'General counseling support' }}"
                         data-reminder-url="{{ isset($item['booking_request_id']) ? route('counsellor.booking-request.reminder', $item['booking_request_id']) : '' }}"
@@ -351,6 +349,8 @@
                 <div class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600">
                     <p><span class="font-medium text-slate-700">Topic:</span> <span id="chat-popup-topic"></span></p>
                     <p><span class="font-medium text-slate-700">Request date:</span> <span
+                            id="chat-popup-date"></span></p>
+                    <p><span class="font-medium text-slate-700">Request slot:</span> <span
                             id="chat-popup-date"></span></p>
                     <p><span class="font-medium text-slate-700">Status:</span> <span id="chat-popup-role"></span></p>
                     <p><span class="font-medium text-slate-700">Email:</span> <span id="chat-popup-email"></span></p>
