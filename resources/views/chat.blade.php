@@ -197,22 +197,16 @@
                     <div class="flex items-center gap-3 mb-1 pb-3 border-b border-slate-200">
                         <img src="{{ $user->profile_pic ?: '/images/default-profile.svg' }}" alt="Profile"
                             class="w-11 h-11 rounded-full border border-slate-200 object-cover bg-sky-50" />
-                        <div>
-                            <p class="flex flex-wrap gap-1 text-sm font-semibold text-slate-800">
-                                @foreach (preg_split('/\s+/', trim($user->name)) as $nameWord)
-                                    @if ($nameWord !== '')
-                                        <span class="word-pill">{{ $nameWord }}</span>
-                                    @endif
-                                @endforeach
+                        <div class="min-w-0 flex-1">
+                            <p class="text-sm font-semibold leading-6 text-slate-800 break-words">
+                                {{ $user->full_name ?: $user->name }}
                             </p>
-                            <p class="text-xs uppercase tracking-wide text-sky-700"><span
-                                    class="word-pill">{{ $sidebarRoleLabel }}</span></p>
+                            <p class="text-xs uppercase tracking-wide text-sky-700">{{ $sidebarRoleLabel }}</p>
                         </div>
                     </div>
 
                     <div>
-                        <p class="text-xs uppercase tracking-[0.12em] text-slate-500 mb-3"><span
-                                class="word-pill">Menu</span></p>
+                        <p class="text-xs uppercase tracking-[0.12em] text-slate-500 mb-3">Menu</p>
                         <nav class="space-y-3 text-sm">
                             <a href="{{ route('inbox') }}" title="Inbox" aria-label="Inbox"
                                 class="flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">
@@ -248,8 +242,8 @@
                                 <span
                                     class="inline-flex h-12 w-12 items-center justify-center rounded-xl border border-slate-200 bg-slate-50">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="1.8"
-                                        stroke-linecap="round" stroke-linejoin="round">
+                                        fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                        stroke-linejoin="round">
                                         <rect x="3" y="4" width="18" height="18" rx="2" />
                                         <path d="M16 2v4M8 2v4M3 10h18" />
                                     </svg>

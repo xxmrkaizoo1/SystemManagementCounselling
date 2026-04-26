@@ -382,6 +382,35 @@
     <div id="booking-toast-container"
         class="pointer-events-none fixed right-4 top-4 z-[90] flex w-full max-w-sm flex-col gap-3"></div>
 
+    <div id="cancel-booking-modal"
+        class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-[85] p-4 sm:p-8 opacity-0 transition duration-200">
+        <div id="cancel-booking-modal-panel"
+            class="w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden transform transition duration-200 opacity-0 translate-y-2 scale-[0.98]">
+            <div
+                class="px-5 py-4 border-b border-slate-200 bg-gradient-to-r from-rose-50 to-white flex items-center justify-between">
+                <h3 class="text-lg font-semibold text-slate-800">Batal Booking</h3>
+                <button id="cancel-booking-modal-close"
+                    class="rounded-lg border border-slate-200 px-3 py-1.5 text-sm hover:border-sky-200 hover:text-sky-700">Tutup</button>
+            </div>
+            <form id="cancel-booking-form" class="p-5 space-y-4 bg-gradient-to-b from-white to-slate-50/50">
+                <p id="cancel-booking-modal-text" class="text-sm text-slate-700"></p>
+                <div class="request-card">
+                    <label for="cancel-booking-reason" class="form-label">Sebab batal booking</label>
+                    <textarea id="cancel-booking-reason" rows="3" required maxlength="255"
+                        placeholder="Contoh: Ada kelas ganti pada waktu tersebut." class="form-control min-h-[96px] resize-y"></textarea>
+                    <p class="form-hint">Maksimum 255 aksara.</p>
+                </div>
+                <div class="flex justify-end gap-2">
+                    <button type="button" id="cancel-booking-modal-cancel"
+                        class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-600 hover:border-slate-300 hover:bg-slate-50 transition">Kembali</button>
+                    <button type="submit"
+                        class="rounded-xl bg-rose-600 px-5 py-2 text-sm font-semibold text-white shadow-md shadow-rose-200/60 hover:bg-rose-700 hover:shadow-lg transition">Sahkan
+                        Batal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const calendarGrid = document.getElementById('calendar-grid');
@@ -409,6 +438,13 @@
             const requestNote = document.getElementById('request-note');
             const requestNoteCounter = document.getElementById('request-note-counter');
             const requestEmergency = document.getElementById('request-emergency');
+            const cancelBookingModal = document.getElementById('cancel-booking-modal');
+            const cancelBookingModalPanel = document.getElementById('cancel-booking-modal-panel');
+            const cancelBookingModalClose = document.getElementById('cancel-booking-modal-close');
+            const cancelBookingModalCancel = document.getElementById('cancel-booking-modal-cancel');
+            const cancelBookingForm = document.getElementById('cancel-booking-form');
+            const cancelBookingModalText = document.getElementById('cancel-booking-modal-text');
+            const cancelBookingReason = document.getElementById('cancel-booking-reason');
             const csrfMeta = document.querySelector('meta[name="csrf-token"]');
             const csrfToken = csrfMeta ? csrfMeta.getAttribute('content') : '';
             const toastContainer = document.getElementById('booking-toast-container');
@@ -432,6 +468,9 @@
             const hasRequestModal = Boolean(requestModal && requestModalClose && requestCancel && requestForm &&
                 requestDate && requestTime && requestCounsellor && requestReason && requestReasonOtherWrap &&
                 requestReasonOther && requestNote && requestModalPanel && requestEmergency);
+            const hasCancelBookingModal = Boolean(cancelBookingModal && cancelBookingModalPanel &&
+                cancelBookingModalClose && cancelBookingModalCancel && cancelBookingForm &&
+                cancelBookingModalText && cancelBookingReason);
 
             const openAnimatedModal = (overlay, panel) => {
                 overlay.classList.remove('hidden');
@@ -527,6 +566,7 @@
                     slot
                 ])
             );
+            let pendingCancellation = null;
             let activeDate = new Date();
             let selectedScheduleDate = null;
             let selectedRequestTime = null;
@@ -728,36 +768,18 @@
                         if (!bookingId || !key) return;
 
                         const bookingToCancel = userBookingsByKey.get(key);
-                        const isConfirmed = window.confirm(
-                            `Adakah anda pasti mahu batalkan booking pada ${bookingToCancel?.date ?? ''} (${bookingToCancel?.time ?? ''})?`
-                        );
-                        if (!isConfirmed) return;
+                        if (!bookingToCancel || !hasCancelBookingModal) return;
 
-                        fetch(`{{ url('/booking') }}/${bookingId}`, {
-                                method: 'DELETE',
-                                headers: {
-                                    'X-CSRF-TOKEN': csrfToken,
-                                    'Accept': 'application/json',
-                                },
-                            })
-                            .then(async (response) => {
-                                const responsePayload = await response.json().catch(() => null);
-                                if (!response.ok) {
-                                    throw new Error(responsePayload?.message ??
-                                        'Gagal batalkan booking.');
-                                }
-                                bookedSlotsByKey.delete(key);
-                                userBookingsByKey.delete(key);
-                                if (selectedScheduleDate) {
-                                    renderTableRows(selectedScheduleDate);
-                                }
-                                renderCalendar();
-                                showToast('Booking berjaya dibatalkan.', 'success');
-                            })
-                            .catch((error) => {
-                                showToast(error instanceof Error ? error.message :
-                                    'Gagal batalkan booking.', 'error');
-                            });
+                        pendingCancellation = {
+                            bookingId,
+                            key,
+                            date: bookingToCancel.date,
+                            time: bookingToCancel.time,
+                        };
+                        cancelBookingModalText.textContent =
+                            `Anda pasti mahu batalkan booking pada ${bookingToCancel.date} (${bookingToCancel.time})?`;
+                        cancelBookingReason.value = '';
+                        openAnimatedModal(cancelBookingModal, cancelBookingModalPanel);
                         return;
                     }
 
@@ -769,6 +791,63 @@
 
                     if (!time || !counsellor || !key || !selectedScheduleDate) return;
                     openRequestModal(selectedScheduleDate, time, counsellor);
+                });
+            }
+
+            if (hasCancelBookingModal) {
+                const closeCancelBookingModal = () => {
+                    closeAnimatedModal(cancelBookingModal, cancelBookingModalPanel);
+                    pendingCancellation = null;
+                    cancelBookingReason.value = '';
+                };
+
+                cancelBookingModalClose.addEventListener('click', closeCancelBookingModal);
+                cancelBookingModalCancel.addEventListener('click', closeCancelBookingModal);
+                cancelBookingModal.addEventListener('click', (event) => {
+                    if (event.target === cancelBookingModal) closeCancelBookingModal();
+                });
+
+                cancelBookingForm.addEventListener('submit', async (event) => {
+                    event.preventDefault();
+                    if (!pendingCancellation) return;
+
+                    const reason = cancelBookingReason.value.trim();
+                    if (!reason) {
+                        showToast('Sila isi sebab pembatalan booking.', 'warning');
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch(
+                            `{{ url('/booking') }}/${pendingCancellation.bookingId}`, {
+                                method: 'DELETE',
+                                headers: {
+                                    'X-CSRF-TOKEN': csrfToken,
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    cancel_reason: reason,
+                                }),
+                            });
+                        const responsePayload = await response.json().catch(() => null);
+
+                        if (!response.ok) {
+                            throw new Error(responsePayload?.message ?? 'Gagal batalkan booking.');
+                        }
+
+                        bookedSlotsByKey.delete(pendingCancellation.key);
+                        userBookingsByKey.delete(pendingCancellation.key);
+                        closeCancelBookingModal();
+                        if (selectedScheduleDate) {
+                            renderTableRows(selectedScheduleDate);
+                        }
+                        renderCalendar();
+                        showToast('Booking berjaya dibatalkan.', 'success');
+                    } catch (error) {
+                        showToast(error instanceof Error ? error.message : 'Gagal batalkan booking.',
+                            'error');
+                    }
                 });
             }
 

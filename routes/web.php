@@ -435,6 +435,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/no-matriks-users', function (Request $request) {
         $user = request()->user();
         $role = $user?->roles()->value('name');
+        $validated = $request->validate([
+            'cancel_reason' => ['required', 'string', 'max:255'],
+        ]);
+        $cancelReason = trim((string) ($validated['cancel_reason'] ?? ''));
 
         abort_unless($role === 'admin', 403);
 
@@ -1294,7 +1298,7 @@ Route::middleware('auth')->group(function () {
 
         $user->inboxNotifications()->create([
             'title' => 'Booking cancelled',
-            'message' => 'Your counselling booking for ' . $bookingRequest->booking_date . ' (' . $bookingRequest->booking_time . ') with ' . $bookingRequest->counsellor_name . ' has been cancelled.',
+            'message' => 'Your counselling booking for ' . $bookingRequest->booking_date . ' (' . $bookingRequest->booking_time . ') with ' . $bookingRequest->counsellor_name . ' has been cancelled. Reason: ' . $cancelReason . '.',
         ]);
 
         $normalizedCounsellorName = preg_replace('/\s+/', '', mb_strtolower(trim((string) $bookingRequest->counsellor_name)));
@@ -1313,7 +1317,7 @@ Route::middleware('auth')->group(function () {
         $matchedCounsellor?->inboxNotifications()->create([
             'title' => 'Booking cancelled by user',
             'message' => ($user->full_name ?: $user->name ?: 'A user') . ' cancelled the counselling booking on '
-                . $bookingRequest->booking_date . ' (' . $bookingRequest->booking_time . ').',
+                . $bookingRequest->booking_date . ' (' . $bookingRequest->booking_time . '). Reason: ' . $cancelReason . '.',
         ]);
 
         return response()->json([
@@ -1324,6 +1328,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/inbox', function (Request $request) {
         $user = $request->user();
         $role = $user?->roles()->value('name');
+        $validated = $request->validate([
+            'cancel_reason' => ['required', 'string', 'max:255'],
+        ]);
+        $cancelReason = trim((string) ($validated['cancel_reason'] ?? ''));
 
         abort_unless(in_array($role, ['student', 'teacher'], true), 403);
 
@@ -1356,6 +1364,26 @@ Route::middleware('auth')->group(function () {
             'filters' => $filters,
         ]);
     })->name('inbox');
+
+    Route::delete('/inbox/bulk-delete', function (Request $request) {
+        $user = $request->user();
+        $role = $user?->roles()->value('name');
+
+        abort_unless(in_array($role, ['student', 'teacher'], true), 403);
+
+        $validated = $request->validate([
+            'notification_ids' => ['required', 'array', 'min:1'],
+            'notification_ids.*' => ['integer'],
+        ]);
+
+        $deletedCount = $user->inboxNotifications()
+            ->whereIn('id', $validated['notification_ids'])
+            ->delete();
+
+        return back()->with('status', $deletedCount > 0
+            ? $deletedCount . ' notification' . ($deletedCount === 1 ? '' : 's') . ' deleted.'
+            : 'No notifications were deleted.');
+    })->name('inbox.notification.bulk-delete');
 
 
     Route::delete('/inbox/{notification}', function (InboxNotification $notification) {
