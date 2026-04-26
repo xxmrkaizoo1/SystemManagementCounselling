@@ -583,13 +583,18 @@
 
                 const rawCounsellorNames = @json($counsellorNames ?? []);
                 const rawBookingSlots = @json($bookingSlots ?? []);
+                const rawUserActiveBookings = @json($userActiveBookings ?? []);
                 const counsellors = Array.isArray(rawCounsellorNames) ? rawCounsellorNames : Object.values(
                     rawCounsellorNames || {});
                 const bookingSlots = Array.isArray(rawBookingSlots) ? rawBookingSlots : Object.values(
                     rawBookingSlots || {});
+                const userActiveBookings = Array.isArray(rawUserActiveBookings) ? rawUserActiveBookings : Object.values(
+                    rawUserActiveBookings || {});
                 const availableCounsellors = counsellors.filter(Boolean).length ? counsellors.filter(Boolean) : [
                     'Counsellor'
                 ];
+                const bookingPageUrl = @json(route('booking.index'));
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
                 const statusClass = {
                     Available: 'text-emerald-700 bg-emerald-50 border-emerald-200',
                     Booked: 'text-sky-700 bg-sky-50 border-sky-200',
@@ -598,6 +603,7 @@
                 };
 
                 let activeDate = new Date();
+                let selectedScheduleDate = null;
 
                 const buildHourlySlots = (startHour, endHour) => {
                     const slots = [];
@@ -622,10 +628,15 @@
                         slot.status === 'pending' ? 'Pending' : 'Booked'
                     ])
                 );
+                const userActiveBookingsByDateTime = new Map(
+                    userActiveBookings.map((booking) => [
+                        `${booking.date}|${booking.time}`,
+                        booking,
+                    ])
+                );
 
                 const slotKey = (date, time, counsellor) =>
                     `${date.toISOString().slice(0, 10)}|${time}|${counsellor}`;
-
                 const computedStatus = (date, time, counsellor) => bookedSlotsByKey.get(slotKey(date, time,
                         counsellor)) ??
                     'Available';
@@ -671,7 +682,7 @@
                     if (!slotTimes.length) {
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
-                            <td colspan="3" class="px-4 py-6 text-center text-sm text-slate-500">
+                            <td colspan="4" class="px-4 py-6 text-center text-sm text-slate-500">
                                 Tiada slot kaunseling pada hujung minggu.
                             </td>
                         `;
@@ -684,22 +695,85 @@
                             counsellorLabel,
                             status
                         } = getSlotStatusMeta(date, time);
+                        const dateKey = date.toISOString().slice(0, 10);
+                        const userBooking = userActiveBookingsByDateTime.get(`${dateKey}|${time}`);
+                        const actionMarkup = status === 'Available' ?
+                            `<a href="${bookingPageUrl}" class="inline-flex rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700 shadow-sm hover:bg-emerald-100 hover:border-emerald-300 transition">Buat Request</a>` :
+                            (userBooking ?
+                                `<button type="button" data-action="cancel-booking" data-booking-id="${userBooking.id}" class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-700 shadow-sm hover:bg-rose-100 hover:border-rose-300 transition">Cancel Booking</button>` :
+                                `<span class="inline-flex items-center rounded-lg bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-500">Tidak tersedia</span>`
+                            );
                         const tr = document.createElement('tr');
+                        tr.className = 'group';
                         tr.innerHTML = `
-                            <td class="px-4 py-3 border-b border-slate-100 font-semibold">${time}</td>
-                            <td class="px-4 py-3 border-b border-slate-100">${counsellorLabel}</td>
-                            <td class="px-4 py-3 border-b border-slate-100">
-                                <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-semibold ${statusClass[status]}">${status}</span>
+                            <td class="px-6 py-4 whitespace-nowrap font-semibold text-slate-700 bg-white border-y border-l border-slate-200 rounded-l-xl group-hover:border-sky-200 transition">${time}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-slate-700 bg-white border-y border-slate-200 group-hover:border-sky-200 transition">${counsellorLabel}</td>
+                            <td class="px-6 py-4 text-center bg-white border-y border-slate-200 group-hover:border-sky-200 transition">
+                                <span class="inline-flex min-w-[104px] justify-center rounded-full border px-3 py-1 text-sm font-semibold ${statusClass[status]}">${status}</span>
                             </td>
+                            <td class="px-6 py-4 text-center bg-white border-y border-r border-slate-200 rounded-r-xl group-hover:border-sky-200 transition">${actionMarkup}</td>
                         `;
                         modalBody.appendChild(tr);
                     });
                 };
 
+                if (modalBody) {
+                    modalBody.addEventListener('click', async (event) => {
+                        const target = event.target;
+                        if (!(target instanceof HTMLElement) || target.dataset.action !==
+                            'cancel-booking') {
+                            return;
+                        }
+
+                        const bookingId = target.dataset.bookingId;
+                        if (!bookingId) {
+                            return;
+                        }
+
+                        target.setAttribute('disabled', 'disabled');
+
+                        try {
+                            const response = await fetch(`/booking/${bookingId}`, {
+                                method: 'DELETE',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': csrfToken,
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'Accept': 'application/json',
+                                },
+                            });
+
+                            if (!response.ok) {
+                                throw new Error('Failed to cancel booking.');
+                            }
+
+                            const canceledBooking = Array.from(userActiveBookingsByDateTime.values()).find((
+                                    booking) =>
+                                String(booking.id) === bookingId);
+
+                            if (canceledBooking) {
+                                userActiveBookingsByDateTime.delete(
+                                    `${canceledBooking.date}|${canceledBooking.time}`);
+                                bookedSlotsByKey.delete(
+                                    `${canceledBooking.date}|${canceledBooking.time}|${canceledBooking.counsellor}`
+                                );
+                            }
+
+                            if (selectedScheduleDate) {
+                                renderScheduleRows(selectedScheduleDate);
+                                renderCalendar();
+                            }
+                        } catch (error) {
+                            target.removeAttribute('disabled');
+                        }
+                    });
+                }
+
                 const openModal = (date) => {
                     if (!modal || !modalTitle || !modalBody) {
                         return;
                     }
+                    selectedScheduleDate = new Date(date);
                     modalTitle.textContent =
                         `Jadual Kaunselor • ${date.toLocaleDateString('en-GB', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}`;
                     renderScheduleRows(date);
@@ -795,24 +869,34 @@
 
     <div id="schedule-modal"
         class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-[70] p-3 sm:p-6">
-        <div
-            class="w-full max-w-[96vw] xl:max-w-[88rem] bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
-            <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+        <div class="w-full max-w-5xl bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
+            <div
+                class="px-5 py-4 border-b border-slate-200 bg-gradient-to-r from-slate-50 to-white flex items-center justify-between">
                 <h3 id="schedule-modal-title" class="text-lg font-semibold text-slate-800">Jadual Kaunselor</h3>
                 <button id="schedule-modal-close"
                     class="rounded-lg border border-slate-200 px-3 py-1.5 text-sm hover:border-sky-200 hover:text-sky-700">
                     Tutup
                 </button>
             </div>
-            <div class="overflow-x-auto">
-                <table class="w-full min-w-[760px] lg:min-w-full text-sm table-fixed">
-                    <thead class="bg-slate-100 text-slate-700">
+            <div class="max-h-[65vh] overflow-auto">
+                <table class="w-full border-separate [border-spacing:0_10px] text-base">
+                    <thead class="sticky top-0 z-10 bg-white/95 text-slate-600 backdrop-blur">
                         <tr>
-                            <th class="px-3 py-3 text-left border-b border-slate-200 whitespace-nowrap">Masa
+                            <th
+                                class="w-[20%] px-6 py-3 text-left border-b border-slate-200 text-[12px] font-bold uppercase tracking-[0.12em]">
+                                Masa
                             </th>
-                            <th class="px-3 py-3 text-left border-b border-slate-200 whitespace-nowrap">Kaunselor
+                            <th
+                                class="w-[30%] px-6 py-3 text-left border-b border-slate-200 text-[12px] font-bold uppercase tracking-[0.12em]">
+                                Kaunselor
                             </th>
-                            <th class="px-3 py-3 text-left border-b border-slate-200 whitespace-nowrap">Status
+                            <th
+                                class="w-[20%] px-6 py-3 text-center border-b border-slate-200 text-[12px] font-bold uppercase tracking-[0.12em]">
+                                Status
+                            </th>
+                            <th
+                                class="w-[30%] px-6 py-3 text-center border-b border-slate-200 text-[12px] font-bold uppercase tracking-[0.12em]">
+                                Action
                             </th>
                         </tr>
                     </thead>
