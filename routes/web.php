@@ -233,9 +233,27 @@ Route::middleware('auth')->group(function () {
             ])
             ->all();
 
+        $now = now();
+        $currentMinutes = ((int) $now->format('H')) * 60 + ((int) $now->format('i'));
+        $nextSlotLabel = $now->copy()->addHour()->startOfHour()->format('g:i A');
+
         $occupiedNow = BookingRequest::query()
-            ->whereDate('booking_date', today())
+            ->whereDate('booking_date', $now->toDateString())
             ->whereIn('status', ['pending', 'approved'])
+            ->get(['booking_time', 'counsellor_name'])
+            ->filter(static function (BookingRequest $booking) use ($currentMinutes): bool {
+                if (!preg_match('/^(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})$/', (string) $booking->booking_time, $matches)) {
+                    return false;
+                }
+
+                [$startHour, $startMinute] = array_map('intval', explode(':', $matches[1]));
+                [$endHour, $endMinute] = array_map('intval', explode(':', $matches[2]));
+
+                $startMinutes = ($startHour * 60) + $startMinute;
+                $endMinutes = ($endHour * 60) + $endMinute;
+
+                return $currentMinutes >= $startMinutes && $currentMinutes < $endMinutes;
+            })
             ->pluck('counsellor_name')
             ->map(static fn(?string $name): string => trim((string) $name))
             ->filter()
@@ -248,7 +266,7 @@ Route::middleware('auth')->group(function () {
             ->map(static fn(string $name): array => [
                 'name' => $name,
                 'available' => !array_key_exists($name, $occupiedLookup),
-                'next_slot' => now()->addHour()->format('g:i A'),
+                'next_slot' => $nextSlotLabel,
             ])
             ->values()
             ->all();
@@ -260,6 +278,7 @@ Route::middleware('auth')->group(function () {
             'counsellors' => $counsellors,
             'counsellorNames' => $counsellorNames,
             'bookingSlots' => $bookingSlots,
+            'currentTimeLabel' => $now->format('g:i A'),
         ]);
     })->name('home.session');
 
@@ -324,29 +343,57 @@ Route::middleware('auth')->group(function () {
         ]);
     })->name('admin.accounts.manage');
 
-    Route::get('/admin/no-matriks-users', function () {
+    Route::get('/admin/no-matriks-users', function (Request $request) {
         $user = request()->user();
         $role = $user?->roles()->value('name');
 
         abort_unless($role === 'admin', 403);
 
-        $usedNoMatriksLookup = User::query()
+        $searchTerm = trim((string) $request->query('search', ''));
+        $statusFilter = (string) $request->query('status', 'all');
+        if (!in_array($statusFilter, ['all', 'used', 'unused'], true)) {
+            $statusFilter = 'all';
+        }
+
+        $usedNoMatriksUsers = User::query()
             ->whereNotNull('no_matriks')
             ->where('no_matriks', '!=', '')
-            ->pluck('no_matriks')
-            ->flip();
-
-        $entriesForView = NoMatriksEntry::query()
-            ->latest()
+            ->select('id', 'name', 'email', 'phone', 'no_matriks', 'created_at')
             ->get()
-            ->map(static function (NoMatriksEntry $entry) use ($usedNoMatriksLookup): NoMatriksEntry {
-                $entry->is_used = $usedNoMatriksLookup->has($entry->no_matriks);
+            ->keyBy('no_matriks');
+
+
+
+        $entriesQuery = NoMatriksEntry::query()
+            ->latest();
+
+        if ($searchTerm !== '') {
+            $entriesQuery->where('no_matriks', 'like', '%' . $searchTerm . '%');
+        }
+
+        if ($statusFilter === 'used') {
+            $entriesQuery->whereIn('no_matriks', $usedNoMatriksUsers->keys()->all());
+        } elseif ($statusFilter === 'unused') {
+            $entriesQuery->whereNotIn('no_matriks', $usedNoMatriksUsers->keys()->all());
+        }
+
+        $entriesForView = $entriesQuery
+            ->get()
+            ->map(static function (NoMatriksEntry $entry) use ($usedNoMatriksUsers): NoMatriksEntry {
+                $matchedUser = $usedNoMatriksUsers->get($entry->no_matriks);
+                $entry->is_used = $matchedUser !== null;
+                $entry->used_by_user = $matchedUser;
                 return $entry;
             });
 
         return view('admin.no-matriks-users', [
             'user' => $user,
             'matriksEntries' => $entriesForView,
+            'filters' => [
+                'search' => $searchTerm,
+                'status' => $statusFilter,
+            ],
+            'totalEntriesCount' => NoMatriksEntry::query()->count(),
         ]);
     })->name('admin.users.no-matriks');
 

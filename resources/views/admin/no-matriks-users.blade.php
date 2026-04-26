@@ -154,7 +154,43 @@
 
                 <div
                     class="mb-5 rounded-xl border border-sky-200 bg-sky-50/80 px-4 py-3 text-sm text-sky-700 animate-fade-up delay-2">
-                    Total no_matriks in list: <span class="font-semibold">{{ $matriksEntries->count() }}</span>
+                    Showing <span class="font-semibold">{{ $matriksEntries->count() }}</span> result(s)
+                    @if (!empty($filters['search']) || (($filters['status'] ?? 'all') !== 'all'))
+                        (filtered)
+                    @endif
+                    • Total no_matriks in list: <span class="font-semibold">{{ $totalEntriesCount ?? $matriksEntries->count() }}</span>
+                </div>
+
+                <div
+                    class="mb-5 rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm animate-fade-up delay-2">
+                    <form method="GET" action="{{ route('admin.users.no-matriks') }}"
+                        class="grid gap-3 sm:grid-cols-[minmax(0,1fr)_220px_auto_auto] sm:items-end">
+                        <div>
+                            <label for="search" class="mb-1 block text-sm font-medium text-slate-700">Search
+                                no_matriks</label>
+                            <input id="search" name="search" type="text"
+                                value="{{ $filters['search'] ?? '' }}"
+                                placeholder="e.g. BKV0625"
+                                class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 focus:border-sky-400 focus:ring-sky-400">
+                        </div>
+                        <div>
+                            <label for="status" class="mb-1 block text-sm font-medium text-slate-700">Category</label>
+                            <select id="status" name="status"
+                                class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 focus:border-sky-400 focus:ring-sky-400">
+                                <option value="all" @selected(($filters['status'] ?? 'all') === 'all')>All entries</option>
+                                <option value="used" @selected(($filters['status'] ?? 'all') === 'used')>Used by user</option>
+                                <option value="unused" @selected(($filters['status'] ?? 'all') === 'unused')>Not used yet</option>
+                            </select>
+                        </div>
+                        <button type="submit"
+                            class="inline-flex h-10 items-center justify-center rounded-xl border border-sky-200 bg-sky-50 px-4 text-sm font-semibold text-sky-700 hover:bg-sky-100">
+                            Apply
+                        </button>
+                        <a href="{{ route('admin.users.no-matriks') }}"
+                            class="inline-flex h-10 items-center justify-center rounded-xl border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                            Reset
+                        </a>
+                    </form>
                 </div>
 
                 <div
@@ -196,10 +232,16 @@
                                             {{ optional($entry->created_at)->diffForHumans() }}</td>
                                         <td class="px-4 py-3">
                                             @if ($entry->is_used)
-                                                <span
-                                                    class="inline-flex rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-700">
+                                                <button type="button"
+                                                    class="used-by-user-btn inline-flex rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-700 hover:bg-emerald-200 transition"
+                                                    data-user-name="{{ $entry->used_by_user?->name ?? 'Unknown' }}"
+                                                    data-user-email="{{ $entry->used_by_user?->email ?? 'N/A' }}"
+                                                    data-user-phone="{{ $entry->used_by_user?->phone ?? 'N/A' }}"
+                                                    data-user-id="{{ $entry->used_by_user?->id ?? 'N/A' }}"
+                                                    data-user-created="{{ optional($entry->used_by_user?->created_at)?->diffForHumans() ?? 'N/A' }}"
+                                                    data-user-no-matriks="{{ $entry->no_matriks }}">
                                                     Used by user
-                                                </span>
+                                                </button>
                                             @else
                                                 <span
                                                     class="inline-flex rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">
@@ -226,6 +268,45 @@
             </div>
         </section>
     </main>
+
+    <div id="user-info-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/50 px-4"
+        aria-hidden="true">
+        <div class="w-full max-w-md rounded-2xl bg-white p-5 shadow-2xl">
+            <h3 class="text-lg font-semibold text-slate-900">User account information</h3>
+            <dl class="mt-3 space-y-2 text-sm text-slate-700">
+                <div class="grid grid-cols-[120px_1fr] gap-2">
+                    <dt class="font-semibold text-slate-500">User ID</dt>
+                    <dd id="modal-user-id">-</dd>
+                </div>
+                <div class="grid grid-cols-[120px_1fr] gap-2">
+                    <dt class="font-semibold text-slate-500">Name</dt>
+                    <dd id="modal-user-name">-</dd>
+                </div>
+                <div class="grid grid-cols-[120px_1fr] gap-2">
+                    <dt class="font-semibold text-slate-500">Email</dt>
+                    <dd id="modal-user-email">-</dd>
+                </div>
+                <div class="grid grid-cols-[120px_1fr] gap-2">
+                    <dt class="font-semibold text-slate-500">Phone</dt>
+                    <dd id="modal-user-phone">-</dd>
+                </div>
+                <div class="grid grid-cols-[120px_1fr] gap-2">
+                    <dt class="font-semibold text-slate-500">no_matriks</dt>
+                    <dd id="modal-user-no-matriks">-</dd>
+                </div>
+                <div class="grid grid-cols-[120px_1fr] gap-2">
+                    <dt class="font-semibold text-slate-500">Registered</dt>
+                    <dd id="modal-user-created">-</dd>
+                </div>
+            </dl>
+            <div class="mt-5 flex justify-end">
+                <button id="close-user-info-modal" type="button"
+                    class="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700 transition">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
     <script>
         (() => {
             const input = document.getElementById('no_matriks_file');
@@ -318,6 +399,56 @@
                     }
                 });
             }
+
+            const userInfoModal = document.getElementById('user-info-modal');
+            const closeUserInfoModal = document.getElementById('close-user-info-modal');
+            const usedByUserButtons = Array.from(document.querySelectorAll('.used-by-user-btn'));
+
+            const modalUserId = document.getElementById('modal-user-id');
+            const modalUserName = document.getElementById('modal-user-name');
+            const modalUserEmail = document.getElementById('modal-user-email');
+            const modalUserPhone = document.getElementById('modal-user-phone');
+            const modalUserNoMatriks = document.getElementById('modal-user-no-matriks');
+            const modalUserCreated = document.getElementById('modal-user-created');
+
+            const hideUserInfoModal = () => {
+                if (!userInfoModal) return;
+                userInfoModal.classList.add('hidden');
+                userInfoModal.classList.remove('flex');
+                userInfoModal.setAttribute('aria-hidden', 'true');
+            };
+
+            const showUserInfoModal = () => {
+                if (!userInfoModal) return;
+                userInfoModal.classList.remove('hidden');
+                userInfoModal.classList.add('flex');
+                userInfoModal.setAttribute('aria-hidden', 'false');
+            };
+
+            usedByUserButtons.forEach((button) => {
+                button.addEventListener('click', () => {
+                    if (modalUserId) modalUserId.textContent = button.dataset.userId || '-';
+                    if (modalUserName) modalUserName.textContent = button.dataset.userName || '-';
+                    if (modalUserEmail) modalUserEmail.textContent = button.dataset.userEmail || '-';
+                    if (modalUserPhone) modalUserPhone.textContent = button.dataset.userPhone || '-';
+                    if (modalUserNoMatriks) modalUserNoMatriks.textContent = button.dataset.userNoMatriks ||
+                        '-';
+                    if (modalUserCreated) modalUserCreated.textContent = button.dataset.userCreated || '-';
+                    showUserInfoModal();
+                });
+            });
+
+            if (closeUserInfoModal) {
+                closeUserInfoModal.addEventListener('click', hideUserInfoModal);
+            }
+            if (userInfoModal) {
+                userInfoModal.addEventListener('click', (event) => {
+                    if (event.target === userInfoModal) hideUserInfoModal();
+                });
+            }
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape') hideUserInfoModal();
+            });
 
             refreshBulkDeleteButton();
         })();

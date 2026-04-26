@@ -356,7 +356,8 @@
                                 <h2 class="text-base sm:text-lg font-semibold text-slate-800">Live Counsellor Current
                                     Status
                                 </h2>
-                                <span class="text-xs text-slate-500">Updated now</span>
+                                <span class="text-xs text-slate-500">Updated
+                                    {{ $currentTimeLabel ?? now()->format('g:i A') }}</span>
                             </div>
 
                             <div class="space-y-2">
