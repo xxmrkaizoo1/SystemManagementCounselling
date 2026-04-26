@@ -139,6 +139,9 @@
                                 <label for="no_matriks_file" class="block cursor-pointer">
                                     Drop image / TXT / CSV here, or click to choose file.
                                 </label>
+                                <p
+                                    class="mt-1 inline-flex rounded-full bg-violet-100 px-2 py-0.5 text-[11px] font-semibold text-violet-700">
+                                    AI OCR reads labels: Nama, Angka Giliran, Nombor Matriks </p>
                                 <input id="no_matriks_file" name="no_matriks_file" type="file" class="sr-only"
                                     accept=".txt,.csv,image/png,image/jpeg,image/webp">
                                 <p id="file-name" class="mt-1 text-xs text-slate-500">No file selected.</p>

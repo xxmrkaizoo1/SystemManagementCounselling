@@ -464,23 +464,79 @@ Route::middleware('auth')->group(function () {
             return null;
         };
 
-        $extractMatriksFromText = static function (string $text) use ($normalizeLikelyOcrMistakes): array {
-            $upperText = strtoupper($text);
-            return collect(preg_split('/\R+/', $upperText))
-                ->flatMap(static function (?string $line): array {
-                    if ($line === null) {
+        $extractEntriesFromText = static function (string $text) use ($normalizeLikelyOcrMistakes): array {
+            $sanitizeLabelName = static function (string $value): string {
+                $value = trim((string) preg_replace('/\s+/', ' ', $value));
+                $value = (string) preg_replace('/^(?:NAMA(?:\s+CALON)?|ANGKA\s+GILIRAN|NOMBOR\s+MATRIKS|NO\.?\s*KAD\s*PENGENALAN)\s*[:\-]?\s*/iu', '', $value);
+                $value = (string) preg_replace('/^\d+\s*/', '', $value);
+                $value = trim((string) preg_replace('/^[\-\:\|\;\,\.\)\(]+/', '', $value));
+
+                if ($value === '' || preg_match('/[A-Za-z]/', $value) !== 1) {
+                    return '';
+                }
+
+                return mb_substr($value, 0, 120);
+            };
+
+            $lines = collect(preg_split('/\R+/', $text))
+                ->map(static fn(?string $line): string => trim((string) $line))
+                ->filter(static fn(string $line): bool => $line !== '')
+                ->values();
+            return $lines
+                ->flatMap(static function (string $line, int $lineIndex) use ($lines, $normalizeLikelyOcrMistakes, $sanitizeLabelName): array {
+
+                    $upperLine = strtoupper($line);
+                    preg_match_all('/[A-Z0-9]{6,50}/', $upperLine, $lineMatches, PREG_OFFSET_CAPTURE);
+                    $matches = $lineMatches[0] ?? [];
+
+                    if ($matches === []) {
                         return [];
                     }
+                    $labelFromExplicitTag = '';
+                    if (preg_match('/NAMA(?:\s+CALON)?\s*[:\-]?\s*(.+?)(?:\s+ANGKA\s+GILIRAN|\s+NOMBOR\s+MATRIKS|$)/iu', $line, $tagMatch) === 1) {
+                        $labelFromExplicitTag = $sanitizeLabelName((string) ($tagMatch[1] ?? ''));
+                    }
+                    $entries = [];
+                    foreach ($matches as $index => $matchInfo) {
+                        $matchedId = (string) ($matchInfo[0] ?? '');
+                        $normalizedMatriks = preg_replace('/[^A-Z0-9]/', '', $matchedId) ?? '';
+                        $normalizedMatriks = $normalizeLikelyOcrMistakes($normalizedMatriks);
 
-                    preg_match_all('/[A-Z0-9]{5,}/', $line, $lineMatches);
-                    return $lineMatches[0] ?? [];
+                        if (
+                            $normalizedMatriks === ''
+                            || strlen($normalizedMatriks) < 6
+                            || strlen($normalizedMatriks) > 50
+                            || preg_match('/[A-Z]/', $normalizedMatriks) !== 1
+                            || preg_match('/\d/', $normalizedMatriks) !== 1
+                        ) {
+                            continue;
+                        }
+
+                        $labelName = $labelFromExplicitTag;
+                        if ($labelName === '' && $index === 0) {
+                            $start = (int) ($matchInfo[1] ?? 0);
+                            $beforeId = $sanitizeLabelName((string) substr($line, 0, $start));
+                            $afterId = $sanitizeLabelName((string) substr($line, $start + strlen($matchedId)));
+
+                            $labelName = $beforeId !== '' ? $beforeId : $afterId;
+                        }
+
+                        if ($labelName === '' && $lineIndex > 0) {
+                            $prevLine = (string) $lines->get($lineIndex - 1, '');
+                            if ($prevLine !== '') {
+                                $labelName = $sanitizeLabelName($prevLine);
+                            }
+                        }
+
+                        $entries[] = [
+                            'no_matriks' => $normalizedMatriks,
+                            'label_name' => $labelName,
+                        ];
+                    }
+
+                    return $entries;
                 })
-                ->map(static fn(string $value): string => preg_replace('/[^A-Z0-9]/', '', $value) ?? '')
-                ->map($normalizeLikelyOcrMistakes)
-                ->filter(static fn(string $value): bool => $value !== '')
-                ->filter(static fn(string $value): bool => strlen($value) >= 6 && strlen($value) <= 50)
-                ->filter(static fn(string $value): bool => preg_match('/[A-Z]/', $value) === 1 && preg_match('/\d/', $value) === 1)
-                ->unique()
+                ->unique('no_matriks')
                 ->values()
                 ->all();
         };
@@ -541,8 +597,13 @@ Route::middleware('auth')->group(function () {
                 }
 
                 $ocrMerged = implode("\n", $ocrTexts);
-                $ocrCandidates = $extractMatriksFromText($ocrMerged);
-                $ocrInputToMerge = !empty($ocrCandidates) ? implode("\n", $ocrCandidates) : $ocrMerged;
+                $ocrCandidates = $extractEntriesFromText($ocrMerged);
+                $ocrInputToMerge = !empty($ocrCandidates)
+                    ? collect($ocrCandidates)->map(static fn(array $entry): string => $entry['label_name'] !== ''
+                        ? "{$entry['no_matriks']} | {$entry['label_name']}"
+                        : $entry['no_matriks'])
+                    ->implode("\n")
+                    : $ocrMerged;
                 $rawInput = trim($rawInput . "\n" . $ocrInputToMerge);
             } else {
                 $fileText = @file_get_contents($uploadedFile->getRealPath());
