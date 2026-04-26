@@ -58,6 +58,12 @@
     </div>
 
     <main class="mx-auto w-full max-w-7xl px-4 py-6 sm:px-8 sm:py-10 lg:px-10">
+        @if (session('status'))
+            <div class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+                {{ session('status') }}
+            </div>
+        @endif
+
         <section
             class="overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white/85 shadow-2xl ring-1 ring-white/70 backdrop-blur-xl">
             <header class="border-b border-slate-200/90 bg-white/85 px-4 py-4 sm:px-6 sm:py-5 lg:px-8 lg:py-6">
@@ -274,10 +280,18 @@
                                 ? 'Tomorrow'
                                 : $requestDate->format('d M Y'));
                     @endphp
-                    <a href="{{ route('chat.index') }}" data-chat-item="true"
+                    <button type="button" data-chat-item="true"
+                        data-booking-request-id="{{ $item['booking_request_id'] ?? '' }}"
+                        data-student-id="{{ $item['student_id'] ?? '' }}"
+                        data-email="{{ $item['student_email'] ?? '' }}"
+                        data-student-name="{{ $item['student'] ?? 'Student' }}"
+                        data-display-date="{{ $displayDate }}"
+                        data-request-date="{{ $item['request_date'] }}"
+                        data-topic="{{ $item['topic'] ?: 'General counseling support' }}"
+                        data-reminder-url="{{ isset($item['booking_request_id']) ? route('counsellor.booking-request.reminder', $item['booking_request_id']) : '' }}"
                         data-name="{{ strtolower($item['student'] ?? 'student') }}"
-                        data-topic="{{ strtolower($item['topic'] ?: 'general counseling support') }}"
-                        class="flex items-start gap-3 rounded-xl border border-slate-100 px-2 py-2 transition hover:bg-slate-50">
+                        data-topic-search="{{ strtolower($item['topic'] ?: 'general counseling support') }}"
+                        class="flex w-full items-start gap-3 rounded-xl border border-slate-100 px-2 py-2 text-left transition hover:bg-slate-50">
                         <div
                             class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-sky-100 to-violet-100 font-semibold text-slate-700">
                             {{ strtoupper(substr($item['student'] ?? 'S', 0, 1)) }}
@@ -299,7 +313,7 @@
                                 </div>
                             </div>
                         </div>
-                    </a>
+                    </button>
                 @empty
                     <div id="chat-empty"
                         class="rounded-xl border border-slate-100 bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">
@@ -315,6 +329,54 @@
         </div>
     </aside>
 
+    <div id="chat-popup-backdrop" class="fixed inset-0 z-40 hidden bg-slate-950/50 p-4">
+        <div id="chat-popup"
+            class="fixed left-1/2 top-20 z-50 w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 rounded-2xl border border-slate-200 bg-white shadow-2xl">
+            <div id="chat-popup-header"
+                class="flex cursor-move items-center justify-between border-b border-slate-200 px-4 py-3">
+                <div>
+                    <p class="text-sm text-slate-500">Counsellor Chatbox</p>
+                    <h4 id="chat-popup-student" class="text-base font-semibold text-slate-900">Student</h4>
+                </div>
+                <div class="flex items-center gap-1">
+                    <button id="chat-popup-minimize" type="button"
+                        class="rounded-md px-2 py-1 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
+                        aria-label="Minimize popup">—</button>
+                    <button id="chat-popup-close" type="button"
+                        class="rounded-md px-2 py-1 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
+                        aria-label="Close popup">✕</button>
+                </div>
+            </div>
+            <div id="chat-popup-body" class="space-y-3 px-4 py-4">
+                <div class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600">
+                    <p><span class="font-medium text-slate-700">Topic:</span> <span id="chat-popup-topic"></span></p>
+                    <p><span class="font-medium text-slate-700">Request date:</span> <span id="chat-popup-date"></span></p>
+                    <p><span class="font-medium text-slate-700">Email:</span> <span id="chat-popup-email"></span></p>
+                </div>
+                <form id="reminder-form" method="POST" action="">
+                    @csrf
+                    <div id="chat-popup-thread"
+                        class="max-h-56 space-y-2 overflow-y-auto rounded-xl border border-slate-200 bg-slate-50 p-3"></div>
+                    <label for="chat-popup-message-input" class="mb-1 mt-3 block text-sm font-medium text-slate-700">Chat message</label>
+                    <div class="flex items-center gap-2">
+                        <input id="chat-popup-message-input" type="text"
+                            class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100"
+                            placeholder="Type a message..." />
+                        <button id="chat-popup-send" type="button"
+                            class="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100">Send</button>
+                    </div>
+                    <input id="chat-popup-reminder" type="hidden" name="reminder_message" />
+                    <div class="mt-3 flex items-center justify-end gap-2">
+                        <button id="chat-popup-cancel" type="button"
+                            class="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50">Cancel</button>
+                        <button type="submit"
+                            class="rounded-lg bg-sky-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-sky-700">Send reminder email</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const toggleButton = document.getElementById('messages-toggle');
@@ -323,6 +385,22 @@
             const chatList = document.getElementById('chat-list');
             const chatRows = chatList ? Array.from(chatList.querySelectorAll('[data-chat-item="true"]')) : [];
             const noResults = document.getElementById('chat-no-results');
+            const chatPopupBackdrop = document.getElementById('chat-popup-backdrop');
+            const chatPopup = document.getElementById('chat-popup');
+            const chatPopupHeader = document.getElementById('chat-popup-header');
+            const chatPopupBody = document.getElementById('chat-popup-body');
+            const chatPopupClose = document.getElementById('chat-popup-close');
+            const chatPopupMinimize = document.getElementById('chat-popup-minimize');
+            const chatPopupCancel = document.getElementById('chat-popup-cancel');
+            const reminderForm = document.getElementById('reminder-form');
+            const chatPopupThread = document.getElementById('chat-popup-thread');
+            const chatPopupMessageInput = document.getElementById('chat-popup-message-input');
+            const chatPopupSend = document.getElementById('chat-popup-send');
+            const chatPopupStudent = document.getElementById('chat-popup-student');
+            const chatPopupTopic = document.getElementById('chat-popup-topic');
+            const chatPopupDate = document.getElementById('chat-popup-date');
+            const chatPopupEmail = document.getElementById('chat-popup-email');
+            const chatPopupReminder = document.getElementById('chat-popup-reminder');
             const heroImage = document.getElementById('counsellor-hero-image');
             const heroTag = document.getElementById('counsellor-hero-tag');
             const heroTitle = document.getElementById('counsellor-hero-title');
@@ -424,7 +502,7 @@
 
                     chatRows.forEach(function(row) {
                         const name = row.dataset.name || '';
-                        const topic = row.dataset.topic || '';
+                        const topic = row.dataset.topicSearch || '';
                         const matches = name.includes(query) || topic.includes(query);
                         row.classList.toggle('hidden', !matches);
                         if (matches) visibleCount += 1;
@@ -434,6 +512,142 @@
                         noResults.classList.toggle('hidden', visibleCount > 0);
                     }
                 });
+            }
+
+            const closeChatPopup = function() {
+                if (!chatPopupBackdrop) return;
+                chatPopupBackdrop.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+            };
+
+            const appendChatBubble = function(message, type) {
+                if (!chatPopupThread) return;
+                const bubble = document.createElement('div');
+                bubble.className = type === 'outgoing' ?
+                    'ml-auto max-w-[88%] rounded-xl bg-sky-600 px-3 py-2 text-sm text-white' :
+                    'max-w-[88%] rounded-xl bg-white px-3 py-2 text-sm text-slate-700 border border-slate-200';
+                bubble.textContent = message;
+                chatPopupThread.appendChild(bubble);
+                chatPopupThread.scrollTop = chatPopupThread.scrollHeight;
+            };
+
+            const sendPopupChatMessage = function() {
+                if (!chatPopupMessageInput || !chatPopupReminder) return;
+                const message = chatPopupMessageInput.value.trim();
+                if (message === '') return;
+                appendChatBubble(message, 'outgoing');
+                chatPopupReminder.value = message;
+                chatPopupMessageInput.value = '';
+            };
+
+            if (chatRows.length > 0 && chatPopupBackdrop && reminderForm) {
+                chatRows.forEach(function(row) {
+                    row.addEventListener('click', function() {
+                        const studentName = row.dataset.studentName || 'Student';
+                        const topic = row.dataset.topic || 'General counseling support';
+                        const displayDate = row.dataset.displayDate || row.dataset.requestDate || '-';
+                        const email = row.dataset.email || 'No email found';
+                        const reminderUrl = row.dataset.reminderUrl || '';
+
+                        if (!reminderUrl) {
+                            return;
+                        }
+
+                        chatPopupStudent.textContent = studentName;
+                        chatPopupTopic.textContent = topic;
+                        chatPopupDate.textContent = displayDate;
+                        chatPopupEmail.textContent = email;
+                        reminderForm.setAttribute('action', reminderUrl);
+                        const defaultMessage =
+                            'Hi ' + studentName + ', this is a reminder to respond to your counselling request about "' + topic + '".';
+                        chatPopupReminder.value = defaultMessage;
+                        if (chatPopupThread) {
+                            chatPopupThread.innerHTML = '';
+                            appendChatBubble('Chat started with ' + studentName + '.', 'incoming');
+                            appendChatBubble(defaultMessage, 'outgoing');
+                        }
+                        if (chatPopupMessageInput) {
+                            chatPopupMessageInput.value = defaultMessage;
+                            chatPopupMessageInput.focus();
+                        }
+                        if (chatPopupBody) {
+                            chatPopupBody.classList.remove('hidden');
+                        }
+
+                        chatPopupBackdrop.classList.remove('hidden');
+                        document.body.classList.add('overflow-hidden');
+                    });
+                });
+            }
+
+            [chatPopupClose, chatPopupCancel].forEach(function(button) {
+                if (!button) return;
+                button.addEventListener('click', closeChatPopup);
+            });
+
+            if (chatPopupBackdrop) {
+                chatPopupBackdrop.addEventListener('click', function(event) {
+                    if (event.target === chatPopupBackdrop) {
+                        closeChatPopup();
+                    }
+                });
+            }
+
+            if (chatPopupSend) {
+                chatPopupSend.addEventListener('click', sendPopupChatMessage);
+            }
+
+            if (chatPopupMessageInput) {
+                chatPopupMessageInput.addEventListener('keydown', function(event) {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        sendPopupChatMessage();
+                    }
+                });
+            }
+
+            if (chatPopupMinimize && chatPopupBody) {
+                chatPopupMinimize.addEventListener('click', function() {
+                    const hidden = chatPopupBody.classList.toggle('hidden');
+                    chatPopupMinimize.textContent = hidden ? '+' : '—';
+                });
+            }
+
+            if (chatPopup && chatPopupHeader) {
+                let isDragging = false;
+                let dragOffsetX = 0;
+                let dragOffsetY = 0;
+
+                chatPopupHeader.addEventListener('pointerdown', function(event) {
+                    if (event.target.closest('button')) return;
+                    const rect = chatPopup.getBoundingClientRect();
+                    isDragging = true;
+                    dragOffsetX = event.clientX - rect.left;
+                    dragOffsetY = event.clientY - rect.top;
+                    chatPopupHeader.setPointerCapture(event.pointerId);
+                });
+
+                chatPopupHeader.addEventListener('pointermove', function(event) {
+                    if (!isDragging) return;
+                    const maxLeft = window.innerWidth - chatPopup.offsetWidth - 8;
+                    const maxTop = window.innerHeight - chatPopup.offsetHeight - 8;
+                    const nextLeft = Math.min(Math.max(8, event.clientX - dragOffsetX), Math.max(8, maxLeft));
+                    const nextTop = Math.min(Math.max(8, event.clientY - dragOffsetY), Math.max(8, maxTop));
+                    chatPopup.style.left = nextLeft + 'px';
+                    chatPopup.style.top = nextTop + 'px';
+                    chatPopup.style.transform = 'none';
+                });
+
+                const endDrag = function(event) {
+                    if (!isDragging) return;
+                    isDragging = false;
+                    if (typeof event.pointerId === 'number') {
+                        chatPopupHeader.releasePointerCapture(event.pointerId);
+                    }
+                };
+
+                chatPopupHeader.addEventListener('pointerup', endDrag);
+                chatPopupHeader.addEventListener('pointercancel', endDrag);
             }
 
             if (heroImage && heroTag && heroTitle && heroSubtitle) {

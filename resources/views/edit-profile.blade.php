@@ -10,6 +10,10 @@
         .profile-shell {
             background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.95));
         }
+
+        .profile-shell--counsellor {
+            background: linear-gradient(145deg, rgba(238, 242, 255, 0.94), rgba(243, 244, 246, 0.96));
+        }
     </style>
 </head>
 
@@ -21,6 +25,16 @@
             'admin' => 'admin.dashboard',
             default => 'home.session',
         };
+        $isCounsellor = $role === 'counsellor';
+        $mainActionClass = $isCounsellor
+            ? 'w-full rounded-xl bg-indigo-600 text-white font-semibold py-2.5 hover:bg-indigo-700 transition shadow-sm'
+            : 'w-full rounded-xl bg-sky-600 text-white font-semibold py-2.5 hover:bg-sky-700 transition shadow-sm';
+        $panelClass = $isCounsellor
+            ? 'rounded-2xl border border-indigo-100 bg-gradient-to-b from-indigo-100/70 to-white p-4 shadow-sm'
+            : 'rounded-2xl border border-sky-100 bg-gradient-to-b from-sky-100/70 to-white p-4 shadow-sm';
+        $panelBadgeClass = $isCounsellor
+            ? 'text-xs uppercase tracking-wide text-indigo-700'
+            : 'text-xs uppercase tracking-wide text-sky-700';
     @endphp
 
     @if (session('status'))
@@ -46,21 +60,22 @@
     </div>
 
     <div class="fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
-        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_#e0f2fe_0%,_#f8fafc_35%,_#f1f5f9_100%)]">
+        <div
+            class="absolute inset-0 {{ $isCounsellor ? 'bg-[radial-gradient(circle_at_top_left,_#e0e7ff_0%,_#f8fafc_38%,_#eef2ff_100%)]' : 'bg-[radial-gradient(circle_at_top_left,_#e0f2fe_0%,_#f8fafc_35%,_#f1f5f9_100%)]' }}">
         </div>
         <div class="absolute inset-0 bg-grid-pattern opacity-30"></div>
         <div class="absolute inset-0 bg-noise-layer opacity-15"></div>
         <div
-            class="absolute -top-32 -left-24 w-[34rem] h-[34rem] bg-sky-300/35 rounded-full blur-3xl animate-blob-float">
+            class="absolute -top-32 -left-24 w-[34rem] h-[34rem] {{ $isCounsellor ? 'bg-indigo-300/35' : 'bg-sky-300/35' }} rounded-full blur-3xl animate-blob-float">
         </div>
         <div
-            class="absolute top-24 -right-32 w-[36rem] h-[36rem] bg-violet-300/30 rounded-full blur-3xl animate-aurora-drift animation-delay-2">
+            class="absolute top-24 -right-32 w-[36rem] h-[36rem] {{ $isCounsellor ? 'bg-fuchsia-300/25' : 'bg-violet-300/30' }} rounded-full blur-3xl animate-aurora-drift animation-delay-2">
         </div>
     </div>
 
     <main id="loginContent" class="min-h-screen p-4 sm:p-8 opacity-0 translate-y-2 transition-all duration-700">
         <section
-            class="profile-shell max-w-[96rem] mx-auto rounded-[2rem] border border-slate-200/80 bg-white/75 backdrop-blur-xl shadow-2xl overflow-hidden">
+            class="profile-shell {{ $isCounsellor ? 'profile-shell--counsellor border-indigo-100/90' : 'border-slate-200/80' }} max-w-[96rem] mx-auto rounded-[2rem] bg-white/75 backdrop-blur-xl shadow-2xl overflow-hidden">
             <header
                 class="px-5 sm:px-8 py-5 border-b border-slate-200/80 bg-white/85 flex items-center justify-between gap-4">
                 <div>
@@ -201,22 +216,21 @@
                             </aside>
                         @endif
 
-                        <aside
-                            class="rounded-2xl border border-sky-100 bg-gradient-to-b from-sky-100/70 to-white p-4 shadow-sm">
+                        <aside class="{{ $panelClass }}">
                             <div class="flex flex-col items-center text-center gap-2">
                                 <img src="{{ $user->profile_pic ?: '/images/default-profile.svg' }}" alt="Profile"
-                                    class="w-24 h-24 rounded-full border border-sky-200 object-cover bg-sky-50" />
+                                    class="w-24 h-24 rounded-full {{ $isCounsellor ? 'border-indigo-200 bg-indigo-50' : 'border-sky-200 bg-sky-50' }} object-cover" />
                                 <p class="font-semibold text-slate-800">{{ $user->full_name ?: $user->name }}</p>
-                                <p class="text-xs uppercase tracking-wide text-sky-700">{{ ucfirst($role) }}</p>
+                                <p class="{{ $panelBadgeClass }}">{{ ucfirst($role) }}</p>
                             </div>
 
                             <form method="POST" action="{{ route('profile.picture.update') }}"
                                 enctype="multipart/form-data" class="mt-4 space-y-2">
                                 @csrf
                                 <input type="file" name="profile_pic" accept=".jpg,.jpeg,.png,.webp"
-                                    class="block w-full rounded-lg border border-sky-200 bg-white px-2.5 py-2 text-xs" />
+                                    class="block w-full rounded-lg {{ $isCounsellor ? 'border-indigo-200' : 'border-sky-200' }} bg-white px-2.5 py-2 text-xs" />
                                 <button type="submit"
-                                    class="w-full rounded-xl bg-sky-600 px-3 py-2 text-sm font-semibold text-white hover:bg-sky-700 transition">Update
+                                    class="{{ $isCounsellor ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-sky-600 hover:bg-sky-700' }} w-full rounded-xl px-3 py-2 text-sm font-semibold text-white transition">Update
                                     Photo</button>
                                 <p class="text-[11px] text-slate-500 text-center">Recommended: square image, max 2MB.
                                 </p>
@@ -280,8 +294,7 @@
                                 </div>
                             @endif
 
-                            <button type="submit"
-                                class="w-full rounded-xl bg-sky-600 text-white font-semibold py-2.5 hover:bg-sky-700 transition shadow-sm">Save
+                            <button type="submit" class="{{ $mainActionClass }}">Save
                                 Changes</button>
 
                             @if ($role === 'admin')

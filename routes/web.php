@@ -718,7 +718,10 @@ Route::middleware('auth')->group(function () {
             ->values()
             ->map(static function (BookingRequest $booking) use ($statusLabel): array {
                 return [
+                    'booking_request_id' => $booking->id,
+                    'student_id' => $booking->user?->id,
                     'student' => $booking->user?->full_name ?: $booking->user?->name ?: 'Pelajar',
+                    'student_email' => $booking->user?->email,
                     'request_date' => (string) $booking->booking_date,
                     'topic' => $booking->topic ?: 'General support',
                     'status' => $statusLabel($booking->status),
@@ -859,6 +862,62 @@ Route::middleware('auth')->group(function () {
 
         return back()->with('status', 'Booking status updated successfully.');
     })->name('counsellor.booking-request.status');
+
+
+    Route::post('/counsellor/booking-requests/{bookingRequest}/reminder', function (Request $request, BookingRequest $bookingRequest) {
+        $user = $request->user();
+        $role = $user?->roles()->value('name');
+
+        abort_unless($role === 'counsellor', 403);
+
+        $normalizeCounsellorName = static fn(?string $name): string => preg_replace('/\s+/', '', mb_strtolower(trim((string) $name)));
+        $counsellorNames = array_values(array_filter([
+            $user?->full_name,
+            $user?->name,
+        ]));
+        $normalizedCounsellorNames = array_values(array_unique(array_map(
+            $normalizeCounsellorName,
+            $counsellorNames
+        )));
+
+        abort_unless(
+            in_array($normalizeCounsellorName($bookingRequest->counsellor_name), $normalizedCounsellorNames, true),
+            403
+        );
+
+        $validated = $request->validate([
+            'reminder_message' => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        $recipient = $bookingRequest->user;
+        if (! $recipient) {
+            return back()->with('status', 'Reminder could not be sent because the student account is missing.');
+        }
+
+        $defaultMessage = 'Reminder: your counselling request on '
+            . $bookingRequest->booking_date
+            . ' (' . $bookingRequest->booking_time . ') with '
+            . $bookingRequest->counsellor_name
+            . ' still needs your attention.';
+        $reminderMessage = trim((string) ($validated['reminder_message'] ?? ''));
+        if ($reminderMessage === '') {
+            $reminderMessage = $defaultMessage;
+        }
+
+        $recipient->inboxNotifications()->create([
+            'title' => 'Counselling reminder',
+            'message' => $reminderMessage,
+        ]);
+
+        if (! empty($recipient->email)) {
+            Mail::raw($reminderMessage, static function ($message) use ($recipient): void {
+                $message->to($recipient->email)
+                    ->subject('CollegeCare Counselling Reminder');
+            });
+        }
+
+        return back()->with('status', 'Reminder sent to student inbox and email.');
+    })->name('counsellor.booking-request.reminder');
 
     Route::get('/counsellor/session-status-list', function () {
         $user = request()->user();
@@ -1031,6 +1090,7 @@ Route::middleware('auth')->group(function () {
             'counsellor_name' => ['required', 'string', 'max:255'],
             'reason' => ['required', 'string', 'max:120'],
             'reason_other' => ['nullable', 'string', 'max:120'],
+            'reason_other' => ['nullable', 'string', 'max:120'],
             'note' => ['required', 'string', 'max:700'],
         ]);
 
@@ -1061,6 +1121,44 @@ Route::middleware('auth')->group(function () {
                 'message' => 'Selected counsellor is not available.',
             ], 422);
         }
+
+        $noteUppercase = mb_strtoupper((string) ($validated['note'] ?? ''));
+        $isEmergencyRequest = $request->boolean('is_emergency')
+            || str_contains($noteUppercase, '[EMERGENCY]');
+        $activeBookingCount = BookingRequest::query()
+            ->where('user_id', $user->id)
+            ->whereIn('status', ['pending', 'approved'])
+            ->count();
+        $maxActiveBookingCount = $isEmergencyRequest ? 2 : 1;
+
+        if ($activeBookingCount >= $maxActiveBookingCount) {
+            $limitMessage = $isEmergencyRequest
+                ? 'Emergency booking dibenarkan maksimum 2 booking aktif sahaja.'
+                : 'Anda hanya boleh ada 1 booking aktif sahaja. Guna pilihan emergency jika benar-benar perlu.';
+
+            return response()->json([
+                'message' => $limitMessage,
+            ], 422);
+        }
+
+        if ($isEmergencyRequest) {
+            $hasEmergencyBookingOnDate = BookingRequest::query()
+                ->where('user_id', $user->id)
+                ->whereDate('booking_date', $validated['booking_date'])
+                ->whereIn('status', ['pending', 'approved'])
+                ->where(static function ($query) {
+                    $query
+                        ->where('topic', 'like', '[EMERGENCY]%')
+                        ->orWhere('note', 'like', '[EMERGENCY]%');
+                })
+                ->exists();
+
+            if ($hasEmergencyBookingOnDate) {
+                return response()->json([
+                    'message' => 'Emergency booking hanya dibenarkan 1 kali sehari untuk setiap pengguna.',
+                ], 422);
+            }
+        }
         $existingSlot = BookingRequest::query()
             ->whereDate('booking_date', $validated['booking_date'])
             ->where('booking_time', $validated['booking_time'])
@@ -1077,6 +1175,7 @@ Route::middleware('auth')->group(function () {
         $bookingTopic = $validated['reason'] === 'Lain-lain'
             ? ($validated['reason_other'] ?? 'General support')
             : $validated['reason'];
+        $bookingTopic = $isEmergencyRequest ? '[EMERGENCY] ' . $bookingTopic : $bookingTopic;
 
         BookingRequest::create([
             'user_id' => $user->id,
@@ -1092,9 +1191,15 @@ Route::middleware('auth')->group(function () {
             'title' => 'Booking request sent',
             'message' => 'Your counselling request for ' . $validated['booking_date'] . ' (' . $validated['booking_time'] . ') with ' . $validated['counsellor_name'] . ' has been submitted.',
         ]);
+        $counsellorNotificationTitle = $isEmergencyRequest
+            ? 'Emergency counselling request'
+            : 'New counselling request';
+        $counsellorNotificationMessage = ($user->full_name ?: $user->name ?: 'A student') . ' submitted '
+            . ($isEmergencyRequest ? 'an EMERGENCY ' : 'a ')
+            . 'counselling request for ' . $validated['booking_date'] . ' (' . $validated['booking_time'] . ').';
         $selectedCounsellor->inboxNotifications()->create([
-            'title' => 'New counselling request',
-            'message' => ($user->full_name ?: $user->name ?: 'A student') . ' submitted a counselling request for ' . $validated['booking_date'] . ' (' . $validated['booking_time'] . ').',
+            'title' => $counsellorNotificationTitle,
+            'message' => $counsellorNotificationMessage,
         ]);
 
         return response()->json([

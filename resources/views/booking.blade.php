@@ -361,6 +361,13 @@
                         class="form-control min-h-[120px] resize-y"></textarea>
                     <p class="form-hint">Maksimum 420 aksara. <span id="request-note-counter">0</span>/420</p>
                 </div>
+                <div class="request-card">
+                    <label class="inline-flex items-center gap-2 text-sm font-medium text-rose-700">
+                        <input id="request-emergency" type="checkbox"
+                            class="h-4 w-4 rounded border-rose-300 text-rose-600 focus:ring-rose-500" />
+                        Emergency request (dibenarkan maksimum 2 booking aktif)
+                    </label>
+                </div>
                 <div class="flex justify-end gap-2">
                     <button type="button" id="request-cancel"
                         class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-600 hover:border-slate-300 hover:bg-slate-50 transition">Cancel</button>
@@ -401,6 +408,7 @@
             const requestReasonOther = document.getElementById('request-reason-other');
             const requestNote = document.getElementById('request-note');
             const requestNoteCounter = document.getElementById('request-note-counter');
+            const requestEmergency = document.getElementById('request-emergency');
             const csrfMeta = document.querySelector('meta[name="csrf-token"]');
             const csrfToken = csrfMeta ? csrfMeta.getAttribute('content') : '';
             const toastContainer = document.getElementById('booking-toast-container');
@@ -420,7 +428,7 @@
                 scheduleModalClose);
             const hasRequestModal = Boolean(requestModal && requestModalClose && requestCancel && requestForm &&
                 requestDate && requestTime && requestCounsellor && requestReason && requestReasonOtherWrap &&
-                requestReasonOther && requestNote && requestModalPanel);
+                requestReasonOther && requestNote && requestModalPanel && requestEmergency);
 
             const openAnimatedModal = (overlay, panel) => {
                 overlay.classList.remove('hidden');
@@ -568,6 +576,7 @@
                 requestReasonOther.value = '';
                 requestReasonOtherWrap.classList.add('hidden', 'opacity-0', '-translate-y-1');
                 requestNote.value = '';
+                requestEmergency.checked = false;
                 openAnimatedModal(requestModal, requestModalPanel);
             };
 
@@ -726,7 +735,9 @@
 
                     const resolvedReason = selectedReason === 'Lain-lain' ? reasonDetail :
                         selectedReason;
-                    const finalNote = `[Sebab sesi: ${resolvedReason}] ${note}`;
+                    const isEmergency = requestEmergency.checked;
+                    const finalNote =
+                        `${isEmergency ? '[EMERGENCY] ' : ''}[Sebab sesi: ${resolvedReason}] ${note}`;
 
                     const requestDateValue = selectedScheduleDate.toISOString().slice(0, 10);
                     if (selectedScheduleDate < todayStart) {
@@ -767,6 +778,7 @@
                                 counsellor_name: selectedCounsellor,
                                 reason: selectedReason,
                                 reason_other: reasonDetail,
+                                is_emergency: isEmergency,
                                 note: finalNote,
                             }),
                         });
