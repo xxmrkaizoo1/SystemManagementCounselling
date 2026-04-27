@@ -16,8 +16,8 @@ class DatabaseSeeder extends Seeder
      * Seed the application's database.
      */
 
-    //Admin user with email
-    // ['email' => 'thehas322@gmail.com '],
+     //Admin user with email
+            // ['email' => 'thehas322@gmail.com '],
     public function run(): void
     {
         $this->call(RoleSeeder::class);
