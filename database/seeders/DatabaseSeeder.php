@@ -15,6 +15,9 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database.
      */
+
+    //Admin user with email
+    // ['email' => 'thehas322@gmail.com '],
     public function run(): void
     {
         $this->call(RoleSeeder::class);
@@ -22,7 +25,10 @@ class DatabaseSeeder extends Seeder
         $adminRole = Role::where('name', 'admin')->first();
 
         $adminUser = User::updateOrCreate(
-            ['email' => 'thehas322@gmail.com'],
+
+
+
+            ['email' => 'admincollegecare@gmail.com'],
             [
                 'name' => 'System Admin',
                 'full_name' => 'System Administrator',
@@ -39,10 +45,10 @@ class DatabaseSeeder extends Seeder
         }
 
         User::factory()->create([
-            'name' => 'Test User',
-            'full_name' => 'Test User',
-            'phone' => '0100000000',
-            'email' => 'test@example.com',
+            'name' => 'Dummy name',
+            'full_name' => 'Dummy name',
+            'phone' => '67676676767',
+            'email' => ' test@example.com',
             'password' => 'password',
         ]);
     }
