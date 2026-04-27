@@ -1299,6 +1299,9 @@ Route::middleware('auth')->group(function () {
         $user->inboxNotifications()->create([
             'title' => 'Booking cancelled',
             'message' => 'Your counselling booking for ' . $bookingRequest->booking_date . ' (' . $bookingRequest->booking_time . ') with ' . $bookingRequest->counsellor_name . ' has been cancelled. Reason: ' . $cancelReason . '.',
+
+
+
         ]);
 
         $normalizedCounsellorName = preg_replace('/\s+/', '', mb_strtolower(trim((string) $bookingRequest->counsellor_name)));
