@@ -100,7 +100,8 @@
                                     Name</label>
                                 <input id="full_name" name="full_name" type="text" value="{{ old('full_name') }}"
                                     x-model="fullName" placeholder="Enter your full name"
-                                    class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition" />
+                                    class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition"
+                                     readonly  />
                                 @error('full_name')
                                     <p class="mt-1 text-xs text-rose-600">{{ $message }}</p>
                                 @enderror
@@ -225,6 +226,7 @@
                         <div x-show="role === 'student'" x-transition class="mx-auto w-full sm:w-1/2">
                             <label for="no_matriks"
                                 class="block text-sm font-medium text-slate-700 mb-1.5 text-center">No matriks</label>
+
                             <input id="no_matriks" name="no_matriks" type="text" value="{{ old('no_matriks') }}"
                                 x-on:input.debounce.450ms="lookupNoMatriksName($event.target.value)"
                                 x-bind:disabled="role !== 'student'" placeholder="Enter no matriks"
