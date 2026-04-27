@@ -240,7 +240,6 @@
                                 ✕
                             </button>
                         </div>
-
                         <div class="flex items-center gap-3 mb-4 pb-3 border-b border-slate-200">
                             <img src="{{ $user->profile_pic ?: '/images/default-profile.svg' }}" alt="Profile"
                                 class="w-11 h-11 rounded-full border border-slate-200 object-cover bg-sky-50" />
@@ -447,6 +446,7 @@
                 </footer>
             </section>
         </main>
+
         <script>
             document.addEventListener('DOMContentLoaded', () => {
                 const slide = document.getElementById('session-slide');
@@ -462,7 +462,7 @@
                         image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1400&q=80',
                     },
                     {
-                        title: 'Need to change time? Use Booking History to reschedule your active appointment.',
+                                                title: 'Need to change time? Use Booking History to reschedule your active appointment.',
                         subtitle: 'Keep your session on track with quick, guided rescheduling.',
                         tag: 'Booking Tips',
                         image: 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1400&q=80',
@@ -583,10 +583,18 @@
 
                 const rawCounsellorNames = @json($counsellorNames ?? []);
                 const rawBookingSlots = @json($bookingSlots ?? []);
+                const rawUserActiveBookings = @json($userActiveBookings ?? []);
                 const counsellors = Array.isArray(rawCounsellorNames) ? rawCounsellorNames : Object.values(
                     rawCounsellorNames || {});
                 const bookingSlots = Array.isArray(rawBookingSlots) ? rawBookingSlots : Object.values(
                     rawBookingSlots || {});
+                const userActiveBookings = Array.isArray(rawUserActiveBookings) ? rawUserActiveBookings : Object.values(
+                    rawUserActiveBookings || {});
+                const availableCounsellors = counsellors.filter(Boolean).length ? counsellors.filter(Boolean) : [
+                    'Counsellor'
+                ];
+                const bookingPageUrl = @json(route('booking.index'));
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
                 const statusClass = {
                     Available: 'text-emerald-700 bg-emerald-50 border-emerald-200',
                     Booked: 'text-sky-700 bg-sky-50 border-sky-200',
@@ -614,27 +622,33 @@
                     return [];
                 };
 
-                const bookingSlotsByDateTime = bookingSlots.reduce((carry, slot) => {
-                    const key = `${slot.date}|${slot.time}`;
-                    const normalizedStatus = slot.status === 'pending' ? 'Pending' : 'Booked';
-                    const normalizedCounsellor = String(slot.counsellor || '').trim();
+                const bookedSlotsByKey = new Map(
+                    bookingSlots.map((slot) => [
+                        `${slot.date}|${slot.time}|${slot.counsellor}`,
+                        slot.status === 'pending' ? 'Pending' : 'Booked'
+                    ])
+                );
+                const formatDateForApi = (date) => {
+                    const year = date.getFullYear();
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                    const day = String(date.getDate()).padStart(2, '0');
 
-                    if (!carry.has(key)) {
-                        carry.set(key, []);
-                    }
+                    return `${year}-${month}-${day}`;
+                };
 
-                    carry.get(key).push({
-                        status: normalizedStatus,
-                        counsellor: normalizedCounsellor,
-                    });
-
-                    return carry;
-                }, new Map());
-
-                const slotKey = (date, time) => `${date.toISOString().slice(0, 10)}|${time}`;
+                const slotKey = (date, time, counsellor) =>
+                    `${formatDateForApi(date)}|${time}|${counsellor}`;
+                const computedStatus = (date, time, counsellor) => bookedSlotsByKey.get(slotKey(date, time,
+                        counsellor)) ??
+                    'Available';
 
                 const getSlotStatusMeta = (date, time) => {
-                    const occupied = bookingSlotsByDateTime.get(slotKey(date, time)) ?? [];
+                    const occupied = availableCounsellors
+                        .map((counsellor) => ({
+                            counsellor,
+                            status: computedStatus(date, time, counsellor),
+                        }))
+                        .filter((item) => item.status !== 'Available');
 
                     if (occupied.length === 0) {
                         return {
@@ -646,10 +660,7 @@
                     const allPending = occupied.every((item) => item.status === 'Pending');
 
                     return {
-                        counsellorLabel: occupied
-                            .map((item) => item.counsellor)
-                            .filter(Boolean)
-                            .join(', ') || '-',
+                        counsellorLabel: occupied.map((item) => item.counsellor).join(', '),
                         status: allPending ? 'Pending' : 'Booked',
                     };
                 };
@@ -683,7 +694,7 @@
                     slotTimes.forEach((time) => {
                         const {
                             counsellorLabel,
-                            status
+                                                        status
                         } = getSlotStatusMeta(date, time);
                         const actionMarkup =
                             `<span class="inline-flex items-center rounded-lg bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-500">View only</span>`;
@@ -692,7 +703,7 @@
                         tr.innerHTML = `
                             <td class="px-6 py-4 whitespace-nowrap font-semibold text-slate-700 bg-white border-y border-l border-slate-200 rounded-l-xl group-hover:border-sky-200 transition">${time}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-slate-700 bg-white border-y border-slate-200 group-hover:border-sky-200 transition">${counsellorLabel}</td>
-                                                        <td class="px-6 py-4 text-center bg-white border-y border-slate-200 group-hover:border-sky-200 transition">
+                            <td class="px-6 py-4 text-center bg-white border-y border-slate-200 group-hover:border-sky-200 transition">
                                 <span class="inline-flex min-w-[104px] justify-center rounded-full border px-3 py-1 text-sm font-semibold ${statusClass[status]}">${status}</span>
                             </td>
                             <td class="px-6 py-4 text-center bg-white border-y border-r border-slate-200 rounded-r-xl group-hover:border-sky-200 transition">${actionMarkup}</td>
