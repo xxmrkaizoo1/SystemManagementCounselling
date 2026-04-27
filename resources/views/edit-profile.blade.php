@@ -112,22 +112,7 @@
                     </div>
                 @endif
 
-                {{-- @if (!$user->phone_verified_at)
 
-                    @if (blank($user->phone))
-                        <div class="rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-                            Add your phone number first, then save profile changes to start phone verification.
-                        </div>
-                    @elseif (is_null($user->phone_verified_at))
-                        <div
-                            class="rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800 flex items-center justify-between gap-3">
-                            <span>Your phone number is not verified yet. Please verify to confirm this is your real
-                                number.</span>
-                            <a href="{{ route('phone.otp.form') }}"
-                                class="shrink-0 rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-amber-600 transition">Verify
-                                Number</a>
-                        </div>
-                    @endif --}}
 
 
 
