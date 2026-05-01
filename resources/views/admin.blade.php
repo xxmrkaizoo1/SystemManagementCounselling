@@ -149,106 +149,119 @@
                     @php
                         $bookingBase = max((int) ($stats['total_bookings'] ?? 0), 1);
                         $pendingRatio = (int) round(((int) ($stats['pending_bookings'] ?? 0) / $bookingBase) * 100);
+                        $overviewValues = [
+                            (int) ($stats['total_users'] ?? 0),
+                            (int) ($stats['total_roles'] ?? 0),
+                            (int) ($stats['total_messages'] ?? 0),
+                            (int) ($stats['total_notifications'] ?? 0),
+                            (int) ($stats['total_bookings'] ?? 0),
+                            (int) ($stats['pending_bookings'] ?? 0),
+                        ];
+                        $maxOverviewValue = max(max($overviewValues), 1);
                     @endphp
 
                     <div id="overview"
                         class="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 2xl:grid-cols-6">
-                        <article
+                        <article data-stat-card
                             class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md animate-fade-up animation-delay-1">
                             <div class="flex items-start justify-between gap-3">
                                 <div>
                                     <p class="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Users
                                     </p>
-                                    <p class="mt-2 text-2xl font-bold text-slate-900">{{ $stats['total_users'] }}</p>
+                                    <p data-view="number" class="mt-2 text-2xl font-bold text-slate-900">
+                                        {{ $stats['total_users'] }}</p>
+                                    <div data-view="graph" class="mt-3 hidden">
+                                        <div class="h-2.5 w-28 rounded-full bg-slate-100">
+                                            <div class="h-2.5 rounded-full bg-sky-500"
+                                                style="width: {{ (int) round(((int) ($stats['total_users'] ?? 0) / $maxOverviewValue) * 100) }}%">
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <span
-                                    class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-sky-100 text-sky-700">
-                                    👥
-                                </span>
+                                <div class="flex flex-col items-end gap-2">
+                                    <span
+                                        class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-sky-100 text-sky-700">👥</span>
+                                    <button type="button" data-toggle-view
+                                        class="text-[11px] font-semibold text-sky-700">Graph</button>
+                                </div>
+
                             </div>
                             <p class="mt-2 text-xs font-medium text-emerald-700">Active accounts</p>
                         </article>
 
-                        <article
+                        <article data-stat-card
                             class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md animate-fade-up animation-delay-1">
                             <div class="flex items-start justify-between gap-3">
                                 <div>
                                     <p class="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Roles
                                     </p>
-                                    <p class="mt-2 text-2xl font-bold text-slate-900">{{ $stats['total_roles'] }}</p>
+                                    <p data-view="number" class="mt-2 text-2xl font-bold text-slate-900">
+                                        {{ $stats['total_roles'] }}</p>
+                                    <div data-view="graph" class="mt-3 hidden">
+                                        <div class="h-2.5 w-28 rounded-full bg-slate-100">
+                                            <div class="h-2.5 rounded-full bg-indigo-500"
+                                                style="width: {{ (int) round(((int) ($stats['total_roles'] ?? 0) / $maxOverviewValue) * 100) }}%">
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <span
-                                    class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-100 text-indigo-700">
-                                    🛡️
-                                </span>
+                                <div class="flex flex-col items-end gap-2"><span
+                                        class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-100 text-indigo-700">🛡️</span><button
+                                        type="button" data-toggle-view
+                                        class="text-[11px] font-semibold text-indigo-700">Graph</button></div>
                             </div>
                             <p class="mt-2 text-xs font-medium text-indigo-700">Access levels</p>
                         </article>
 
-                        <article
-                            class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md animate-fade-up animation-delay-2">
-                            <div class="flex items-start justify-between gap-3">
-                                <div>
-                                    <p class="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Chats
-                                    </p>
-                                    <p class="mt-2 text-2xl font-bold text-slate-900">{{ $stats['total_messages'] }}
-                                    </p>
-                                </div>
-                                <span
-                                    class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-violet-100 text-violet-700">
-                                    💬
-                                </span>
-                            </div>
-                            <p class="mt-2 text-xs font-medium text-violet-700">Conversation log</p>
-                        </article>
 
-                        <article
-                            class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md animate-fade-up animation-delay-2">
-                            <div class="flex items-start justify-between gap-3">
-                                <div>
-                                    <p class="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Inbox
-                                    </p>
-                                    <p class="mt-2 text-2xl font-bold text-slate-900">
-                                        {{ $stats['total_notifications'] }}</p>
-                                </div>
-                                <span
-                                    class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-cyan-100 text-cyan-700">
-                                    🔔
-                                </span>
-                            </div>
-                            <p class="mt-2 text-xs font-medium text-cyan-700">Latest alerts</p>
-                        </article>
 
-                        <article
+
+
+                        <article data-stat-card
                             class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md animate-fade-up animation-delay-3">
                             <div class="flex items-start justify-between gap-3">
                                 <div>
                                     <p class="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Bookings
                                     </p>
-                                    <p class="mt-2 text-2xl font-bold text-slate-900">{{ $stats['total_bookings'] }}
+                                    <p data-view="number" class="mt-2 text-2xl font-bold text-slate-900">
+                                        {{ $stats['total_bookings'] }}
                                     </p>
+                                    <div data-view="graph" class="mt-3 hidden">
+                                        <div class="h-2.5 w-28 rounded-full bg-slate-100">
+                                            <div class="h-2.5 rounded-full bg-emerald-500"
+                                                style="width: {{ (int) round(((int) ($stats['total_bookings'] ?? 0) / $maxOverviewValue) * 100) }}%">
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <span
-                                    class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
-                                    📅
-                                </span>
+                                <div class="flex flex-col items-end gap-2"><span
+                                        class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">📅</span><button
+                                        type="button" data-toggle-view
+                                        class="text-[11px] font-semibold text-emerald-700">Graph</button></div>
                             </div>
                             <p class="mt-2 text-xs font-medium text-emerald-700">Scheduled total</p>
                         </article>
 
-                        <article
+                        <article data-stat-card
                             class="rounded-2xl border border-amber-200 bg-amber-50/70 p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md animate-fade-up animation-delay-3">
                             <div class="flex items-start justify-between gap-3">
                                 <div>
                                     <p class="text-xs font-semibold uppercase tracking-[0.12em] text-amber-700">Pending
                                     </p>
-                                    <p class="mt-2 text-2xl font-bold text-amber-700">{{ $stats['pending_bookings'] }}
-                                    </p>
+                                    <p data-view="number" class="mt-2 text-2xl font-bold text-amber-700">
+                                        {{ $stats['pending_bookings'] }} </p>
+                                    <div data-view="graph" class="mt-3 hidden">
+                                        <div class="h-2.5 w-28 rounded-full bg-amber-100">
+                                            <div class="h-2.5 rounded-full bg-amber-500"
+                                                style="width: {{ (int) round(((int) ($stats['pending_bookings'] ?? 0) / $maxOverviewValue) * 100) }}%">
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <span
-                                    class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-amber-100 text-amber-700">
-                                    ⏳
-                                </span>
+                                <div class="flex flex-col items-end gap-2"><span
+                                        class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-amber-100 text-amber-700">⏳</span><button
+                                        type="button" data-toggle-view
+                                        class="text-[11px] font-semibold text-amber-700">Graph</button></div>
                             </div>
                             <p class="mt-2 text-xs font-medium text-amber-700">{{ $pendingRatio }}% of bookings</p>
                         </article>
@@ -347,6 +360,19 @@
             </div>
         </section>
     </main>
+    <script>
+        document.querySelectorAll('[data-stat-card]').forEach((card) => {
+            const toggleButton = card.querySelector('[data-toggle-view]');
+            const numberView = card.querySelector('[data-view="number"]');
+            const graphView = card.querySelector('[data-view="graph"]');
+            toggleButton?.addEventListener('click', () => {
+                const showingNumber = !numberView.classList.contains('hidden');
+                numberView.classList.toggle('hidden', showingNumber);
+                graphView.classList.toggle('hidden', !showingNumber);
+                toggleButton.textContent = showingNumber ? 'Number' : 'Graph';
+            });
+        });
+    </script>
 </body>
 
 </html>
