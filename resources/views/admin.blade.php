@@ -78,14 +78,16 @@
             visibility: hidden;
             pointer-events: none;
         }
-
     </style>
 </head>
 
 <body class="min-h-screen bg-slate-100 text-slate-700 overflow-x-hidden">
-    <div id="adminLoader" class="admin-loader fixed inset-0 z-[90] bg-purple-700 flex items-center justify-center">
-        <div class="h-56 w-56 rounded-full bg-white flex items-center justify-center shadow-2xl">
-            <p class="text-3xl font-extrabold text-sky-500 tracking-tight">CollegeCare</p>
+
+
+    <!-- LOADER -->
+    <div id="loader" class="fixed inset-0 bg-sky-500 flex items-center justify-center z-50">
+        <div id="circle" class="w-64 h-64 bg-white rounded-full flex items-center justify-center">
+            <span id="logoText" class="text-sky-500 font-bold text-2xl">CollegeCare</span>
         </div>
     </div>
 
@@ -388,24 +390,6 @@
             </div>
         </section>
     </main>
-    <script>
-        window.addEventListener('load', () => {
-            const loader = document.getElementById('adminLoader');
-            loader?.classList.add('is-hidden');
-        });
-
-        document.querySelectorAll('[data-stat-card]').forEach((card) => {
-            const toggleButton = card.querySelector('[data-toggle-view]');
-            const numberView = card.querySelector('[data-view="number"]');
-            const graphView = card.querySelector('[data-view="graph"]');
-            toggleButton?.addEventListener('click', () => {
-                const showingNumber = !numberView.classList.contains('hidden');
-                numberView.classList.toggle('hidden', showingNumber);
-                graphView.classList.toggle('hidden', !showingNumber);
-                toggleButton.textContent = showingNumber ? 'Number' : 'Graph';
-            });
-        });
-    </script>
 </body>
 
 </html>
