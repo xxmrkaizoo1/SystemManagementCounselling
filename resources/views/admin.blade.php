@@ -273,12 +273,27 @@
                             <h2 class="text-lg font-semibold text-slate-900">Users by role</h2>
                             <p class="text-sm text-slate-600 mt-1">Snapshot based on current role assignments.</p>
 
-                            <div class="mt-4 space-y-2">
+                            @php
+                                $maxRoleCount = max((int) collect($userCountsByRole)->max(), 1);
+                            @endphp
+
+                            <div class="mt-4 space-y-3">
                                 @forelse ($userCountsByRole as $roleName => $total)
+                                    @php
+                                        $rolePercent = (int) round(((int) $total / $maxRoleCount) * 100);
+                                    @endphp
                                     <div
-                                        class="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 transition hover:border-sky-200 hover:bg-sky-50/40">
-                                        <span class="capitalize font-medium text-slate-700">{{ $roleName }}</span>
-                                        <span class="text-sm font-semibold text-indigo-700">{{ $total }}</span>
+                                        class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 transition hover:border-sky-200 hover:bg-sky-50/40">
+                                        <div class="flex items-center justify-between">
+                                            <span
+                                                class="capitalize font-medium text-slate-700">{{ $roleName }}</span>
+                                            <span
+                                                class="text-sm font-semibold text-indigo-700">{{ $total }}</span>
+                                        </div>
+                                        <div class="mt-2 h-2.5 w-full rounded-full bg-slate-200/70">
+                                            <div class="h-2.5 rounded-full bg-gradient-to-r from-sky-500 to-indigo-500"
+                                                style="width: {{ $rolePercent }}%"></div>
+                                        </div>
                                     </div>
                                 @empty
                                     <p class="text-sm text-slate-500">No role assignments found yet.</p>
