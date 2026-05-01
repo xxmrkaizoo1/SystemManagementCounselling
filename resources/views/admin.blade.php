@@ -68,10 +68,27 @@
         .animation-delay-3 {
             animation-delay: .6s;
         }
+
+        .admin-loader {
+            transition: opacity .35s ease, visibility .35s ease;
+        }
+
+        .admin-loader.is-hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
     </style>
 </head>
 
 <body class="min-h-screen bg-slate-100 text-slate-700 overflow-x-hidden">
+    <div id="adminLoader" class="admin-loader fixed inset-0 z-[90] bg-purple-700 flex items-center justify-center">
+        <div class="h-56 w-56 rounded-full bg-white flex items-center justify-center shadow-2xl">
+            <p class="text-3xl font-extrabold text-sky-500 tracking-tight">CollegeCare</p>
+        </div>
+    </div>
+
     <div class="fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
         <div
             class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_#dbeafe_0%,_#e0f2fe_28%,_#eef2ff_55%,_#f8fafc_100%)]">
@@ -124,21 +141,21 @@
                         <p class="text-xs uppercase tracking-[0.12em] text-slate-500 mb-2">Admin menu</p>
                         <a href="{{ route('admin.accounts.manage') }}"
                             class="block rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:border-sky-200 hover:text-sky-700 transition hover:-translate-y-0.5">
-                            Manage user accounts
+                            👤 Manage user accounts
                         </a>
                         <a href="{{ route('admin.users.no-matriks') }}"
                             class="mt-2 block rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:border-sky-200 hover:text-sky-700 transition hover:-translate-y-0.5">
-                            View no_matriks list
+                            🧾 View no_matriks list
                         </a>
 
 
                         <a href="{{ route('admin.student-statistics') }}"
                             class="mt-2 block rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:border-sky-200 hover:text-sky-700 transition hover:-translate-y-0.5">
-                            Student booking statistics
+                            📊 Student booking statistics
                         </a>
                         <a href="{{ route('admin.counsellor.signup') }}"
                             class="mt-2 block rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:border-sky-200 hover:text-sky-700 transition hover:-translate-y-0.5">
-                            Sign up counsellor
+                            🧑‍⚕️ Sign up counsellor
                         </a>
                     </div>
 
@@ -212,10 +229,6 @@
                             </div>
                             <p class="mt-2 text-xs font-medium text-indigo-700">Access levels</p>
                         </article>
-
-
-
-
 
                         <article data-stat-card
                             class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md animate-fade-up animation-delay-3">
@@ -376,6 +389,11 @@
         </section>
     </main>
     <script>
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('adminLoader');
+            loader?.classList.add('is-hidden');
+        });
+
         document.querySelectorAll('[data-stat-card]').forEach((card) => {
             const toggleButton = card.querySelector('[data-toggle-view]');
             const numberView = card.querySelector('[data-view="number"]');
