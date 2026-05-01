@@ -11,10 +11,6 @@
 // });
 
 require __DIR__.'/auth.php';
-
-
-
-
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Models\NoMatriksEntry;
