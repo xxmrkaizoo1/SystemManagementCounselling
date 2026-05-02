@@ -72,9 +72,10 @@
                     <div class="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
                         <div class="flex items-center gap-3 sm:gap-4">
                             <a href="{{ route('profile.edit') }}"
-                                class="flex h-14 w-14 shrink-0 items-center justify-center rounded-[18px] border border-sky-200 bg-slate-100 text-base font-bold text-slate-700 shadow-[0_3px_10px_rgba(15,23,42,0.08)] transition hover:-translate-y-0.5 hover:border-sky-300 hover:text-sky-700"
+                                class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-[18px] border border-sky-200 bg-slate-100 text-base font-bold text-slate-700 shadow-[0_3px_10px_rgba(15,23,42,0.08)] transition hover:-translate-y-0.5 hover:border-sky-300 hover:text-sky-700"
                                 title="Profile">
-                                {{ strtoupper(substr($user->name ?? 'D', 0, 1)) }}
+                                <img src="{{ $user->profile_pic ?: '/images/default-profile.svg' }}"
+                                    alt="Counsellor profile" class="h-full w-full object-cover" />
                             </a>
 
                             <div class="rounded-2xl border border-slate-200 bg-white/95 px-5 py-3.5 shadow-sm">
@@ -287,6 +288,7 @@
                         data-student-id="{{ $item['student_id'] ?? '' }}"
                         data-email="{{ $item['student_email'] ?? '' }}"
                         data-phone="{{ $item['student_phone'] ?? '' }}"
+                        data-student-phone="{{ $item['student_phone'] ?? '' }}"
                         data-student-name="{{ $item['student'] ?? 'Student' }}"
                         data-display-date="{{ $displayDate }}" data-request-date="{{ $item['request_date'] }}"
                         data-request-time="{{ $item['request_time'] ?? '' }}"
@@ -564,7 +566,7 @@
                         const displayDate = row.dataset.requestDate || '-';
                         const roleLabel = row.dataset.requesterRole || 'Student';
                         const email = row.dataset.email || '-';
-                        const phone = row.dataset.phone || '-';
+                        const phone = row.dataset.phone || row.dataset.studentPhone || '-';
                         const reminderUrl = row.dataset.reminderUrl || '';
 
                         if (!reminderUrl) {

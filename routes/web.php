@@ -868,7 +868,7 @@ Route::middleware('auth')->group(function () {
                     'student_id' => $booking->user?->id,
                     'student' => $booking->user?->full_name ?: $booking->user?->name ?: 'Pelajar',
                     'student_email' => $booking->user?->email,
-                    'student_phone' => $booking->user?->phone,
+                    'student_phone' => data_get($booking, 'user.phone') ?: data_get($booking, 'user.mobile') ?: data_get($booking, 'user.phone_number'),
                     'requester_role' => (
                         $booking->user?->roles
                         ?->pluck('name')
