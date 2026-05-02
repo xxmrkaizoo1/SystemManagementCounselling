@@ -283,9 +283,17 @@
                         </nav>
                     </div>
 
-                    <div class="mt-auto space-y-3">
-                        <div class="sidebar-search-panel rounded-xl border border-slate-200 bg-slate-50 p-3">
-                            <form method="GET" action="{{ route('chat.index') }}" class="flex gap-2 items-end">
+                </aside>
+
+                <section
+                    class="home-main rounded-2xl border border-slate-200 bg-white/90 p-4 sm:p-6 shadow-sm min-h-[34rem] flex flex-col gap-4">
+                    <div
+                        class="rounded-2xl border border-slate-200/80 bg-gradient-to-br from-slate-50 to-white p-4 sm:p-5 shadow-sm space-y-4">
+
+                        <div
+                            class="sidebar-search-panel rounded-2xl border border-slate-200 bg-white p-3.5 sm:p-4 shadow-sm">
+                            <form method="GET" action="{{ route('chat.index') }}"
+                                class="flex flex-col sm:flex-row gap-2 sm:items-end">
                                 @if ($selectedUser)
                                     <input type="hidden" name="user_id" value="{{ $selectedUser->id }}" />
                                 @endif
@@ -295,19 +303,23 @@
                                         user</label>
                                     <input id="search" type="text" name="search" value="{{ $search }}"
                                         placeholder="Name / email"
-                                        class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:border-sky-400 focus:ring-sky-200" />
+                                        class="w-full rounded-xl border border-slate-300 bg-slate-50/60 px-3 py-2.5 text-sm focus:border-sky-400 focus:ring-sky-200" />
                                 </div>
                                 <button type="submit"
-                                    class="rounded-xl border border-sky-200 bg-sky-50 px-4 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-100 transition">Search</button>
+                                    class="rounded-xl border border-sky-200 bg-sky-50 px-5 py-2.5 text-sm font-semibold text-sky-700 hover:bg-sky-100 transition">Search</button>
                             </form>
                         </div>
 
-                        <div class="space-y-2 max-h-80 overflow-auto pr-1">
-                            @forelse ($users as $listedUser)
+                        <div class="grid gap-3 max-h-80 overflow-auto pr-1">
+                            @php
+                                $displayedUsers = $users->take(3);
+                            @endphp
+                            @forelse ($displayedUsers as $listedUser)
                                 <a href="{{ route('chat.index', ['user_id' => $listedUser->id, 'search' => $search]) }}"
-                                    class="block rounded-xl border px-3 py-2 text-sm transition {{ $selectedUser?->id === $listedUser->id ? 'border-sky-300 bg-sky-50 text-sky-700' : 'border-slate-200 bg-white hover:border-sky-200' }}">
-                                    <p class="font-semibold">{{ $listedUser->name }}</p>
-                                    <p class="text-xs text-slate-500">{{ $listedUser->email }}</p>
+                                    class="group block rounded-2xl border px-4 py-3 text-sm shadow-sm transition {{ $selectedUser?->id === $listedUser->id ? 'border-sky-300 bg-sky-50/80 text-sky-700 ring-1 ring-sky-200' : 'border-slate-200 bg-white hover:-translate-y-0.5 hover:border-sky-200 hover:shadow-md' }}">
+                                    <p class="font-semibold text-slate-800 group-hover:text-sky-700">
+                                        {{ $listedUser->name }}</p>
+                                    <p class="text-xs text-slate-500 mt-0.5">{{ $listedUser->email }}</p>
                                 </a>
                             @empty
                                 <p
@@ -316,11 +328,11 @@
                                 </p>
                             @endforelse
                         </div>
-                    </div>
-                </aside>
 
-                <section
-                    class="home-main rounded-2xl border border-slate-200 bg-white/90 p-4 sm:p-5 shadow-sm min-h-[34rem] flex flex-col">
+
+                    </div>
+
+
                     @if (session('status'))
                         <div
                             class="mb-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-700">
@@ -334,10 +346,16 @@
                                 <p class="font-semibold text-slate-800">{{ $selectedUser->name }}</p>
                                 <p class="text-xs text-slate-500">{{ $selectedUser->email }}</p>
                             </div>
-                            <span
-                                class="text-xs rounded-full border border-sky-200 bg-sky-50 px-2.5 py-1 text-sky-700">
-                                Conversation
-                            </span>
+                            <div class="flex items-center gap-2">
+                                <button type="button" id="open-profile-popup"
+                                    class="text-xs rounded-full border border-violet-200 bg-violet-50 px-3 py-1 font-semibold text-violet-700 hover:bg-violet-100 transition">
+                                    View Profile
+                                </button>
+                                <span
+                                    class="text-xs rounded-full border border-sky-200 bg-sky-50 px-2.5 py-1 text-sky-700">
+                                    Conversation
+                                </span>
+                            </div>
                         </div>
 
                         <div id="chat-scroll" class="flex-1 overflow-auto py-3 space-y-2 pr-1">
@@ -364,7 +382,7 @@
                             @csrf
                             <input type="hidden" name="receiver_id" value="{{ $selectedUser->id }}" />
                             <textarea name="message" rows="3" maxlength="3000" required placeholder="Type your message..."
-                                class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:border-sky-400 focus:ring-sky-200">{{ old('message') }}</textarea>
+                                class="w-full rounded-xl border border-slate-300 bg-slate-50/60 px-3 py-2.5 text-sm focus:border-sky-400 focus:ring-sky-200">{{ old('message') }}</textarea>
                             @error('message')
                                 <p class="text-xs text-rose-600">{{ $message }}</p>
                             @enderror
@@ -390,6 +408,46 @@
                 </section>
             </div>
 
+
+            @if ($selectedUser)
+                <div id="profile-popup"
+                    class="fixed inset-0 z-[95] hidden items-center justify-center bg-slate-900/45 p-4">
+                    <div class="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-5 shadow-2xl">
+                        <div class="flex items-start justify-between gap-3">
+                            <div>
+                                <p class="text-xs uppercase tracking-[0.14em] text-slate-500">User Profile</p>
+                                <h3 class="mt-1 text-lg font-semibold text-slate-800">{{ $selectedUser->name }}</h3>
+                            </div>
+                            <button type="button" id="close-profile-popup"
+                                class="rounded-lg border border-slate-200 px-2.5 py-1 text-sm text-slate-600 hover:border-slate-300 hover:text-slate-800">✕</button>
+                        </div>
+
+                        <div class="mt-4 flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
+                            <img src="{{ $selectedUser->profile_pic ?: '/images/default-profile.svg' }}"
+                                alt="{{ $selectedUser->name }} profile"
+                                class="h-14 w-14 rounded-full border border-slate-200 object-cover bg-white" />
+                            <div class="min-w-0">
+                                <p class="font-semibold text-slate-800 break-words">
+                                    {{ $selectedUser->full_name ?: $selectedUser->name }}</p>
+                                <p class="text-sm text-slate-500 break-words">{{ $selectedUser->email }}</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 grid grid-cols-2 gap-2 text-sm">
+                            <div class="rounded-lg border border-slate-200 bg-white px-3 py-2">
+                                <p class="text-xs uppercase tracking-wide text-slate-500">Role</p>
+                                <p class="font-medium text-slate-700">{{ ucfirst($selectedUser->role ?? 'User') }}</p>
+                            </div>
+                            <div class="rounded-lg border border-slate-200 bg-white px-3 py-2">
+                                <p class="text-xs uppercase tracking-wide text-slate-500">Status</p>
+                                <p class="font-medium text-emerald-600">Available</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
+
             <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
 
             <footer
@@ -405,6 +463,21 @@
             const sidebarToggle = document.getElementById('sidebar-toggle');
             const sidebarClose = document.getElementById('sidebar-close');
             const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+            const profilePopup = document.getElementById('profile-popup');
+            const openProfilePopup = document.getElementById('open-profile-popup');
+            const closeProfilePopup = document.getElementById('close-profile-popup');
+
+            const hideProfilePopup = () => {
+                if (!profilePopup) return;
+                profilePopup.classList.add('hidden');
+                profilePopup.classList.remove('flex');
+            };
+
+            const showProfilePopup = () => {
+                if (!profilePopup) return;
+                profilePopup.classList.remove('hidden');
+                profilePopup.classList.add('flex');
+            };
 
             const closeSidebar = () => {
                 if (!sidebar || !sidebarBackdrop) return;
@@ -426,6 +499,19 @@
             }
             if (sidebarBackdrop) {
                 sidebarBackdrop.addEventListener('click', closeSidebar);
+            }
+                  if (openProfilePopup) {
+                openProfilePopup.addEventListener('click', showProfilePopup);
+            }
+            if (closeProfilePopup) {
+                closeProfilePopup.addEventListener('click', hideProfilePopup);
+            }
+            if (profilePopup) {
+                profilePopup.addEventListener('click', (event) => {
+                    if (event.target === profilePopup) {
+                        hideProfilePopup();
+                    }
+                });
             }
         });
     </script>

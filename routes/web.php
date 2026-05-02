@@ -264,8 +264,11 @@ Route::middleware('auth')->group(function () {
             ->all();
 
         $now = now();
+        $isWeekend = $now->isWeekend();
         $currentMinutes = ((int) $now->format('H')) * 60 + ((int) $now->format('i'));
-        $nextSlotLabel = $now->copy()->addHour()->startOfHour()->format('g:i A');
+        $nextSlotLabel = $isWeekend
+            ? 'Monday 9:00 AM'
+            : $now->copy()->addHour()->startOfHour()->format('g:i A');
 
         $occupiedNow = BookingRequest::query()
             ->whereDate('booking_date', $now->toDateString())
@@ -293,11 +296,25 @@ Route::middleware('auth')->group(function () {
 
         $occupiedLookup = array_flip($occupiedNow);
         $counsellors = collect($counsellorNames)
-            ->map(static fn(string $name): array => [
-                'name' => $name,
-                'available' => !array_key_exists($name, $occupiedLookup),
-                'next_slot' => $nextSlotLabel,
-            ])
+            ->map(static function (string $name) use ($occupiedLookup, $nextSlotLabel, $isWeekend): array {
+                if ($isWeekend) {
+                    return [
+                        'name' => $name,
+                        'available' => false,
+                        'status_label' => 'Unavailable',
+                        'next_slot' => $nextSlotLabel,
+                    ];
+                }
+
+                $available = !array_key_exists($name, $occupiedLookup);
+
+                return [
+                    'name' => $name,
+                    'available' => $available,
+                    'status_label' => $available ? 'Available' : 'In Session',
+                    'next_slot' => $nextSlotLabel,
+                ];
+            })
             ->values()
             ->all();
 

@@ -85,7 +85,7 @@
 
 
     <!-- LOADER -->
-    <div id="loader" class="fixed inset-0 bg-purple-800 flex items-center justify-center z-50">
+    <div id="loader" data-admin-loader="true" class="fixed inset-0 bg-purple-800 flex items-center justify-center z-50">
         <div id="circle"
             class="w-64 h-64 bg-white rounded-full flex flex-col items-center justify-center text-center px-4">
             <span id="logoText" class="text-purple-800 font-bold text-2xl">CollegeCare</span>
@@ -118,8 +118,7 @@
                 <div class="min-w-0">
                     <p class="text-xs uppercase tracking-[0.14em] text-indigo-500 font-semibold">CollegeCare</p>
                     <h1 class="text-xl sm:text-2xl font-bold text-slate-900 leading-tight">Admin Dashboard</h1>
-                    <p class="text-sm text-slate-600 mt-1 truncate">Welcome back, {{ $user->full_name ?: $user->name }}
-                    </p>
+                    <p class="text-sm text-indigo-500 mt-1 truncate">Welcome back, <a class="text-sm text-indigo-500 mt-1 truncate font-semibold">{{ $user->full_name ?: $user->name }}</a></p>
                 </div>
 
                 <form method="POST" action="{{ route('logout') }}">

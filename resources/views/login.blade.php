@@ -67,18 +67,33 @@
                             slots, and view updates.</p>
                     </div>
 
+                    @php
+                        $supportStatusValue = $supportStatus ?? 'Offline';
+                        $statusCardClass = match ($supportStatusValue) {
+                            'Online' => 'border-emerald-200 bg-emerald-50/80 shadow-emerald-100',
+                            'Busy' => 'border-amber-200 bg-amber-50/80 shadow-amber-100',
+                            default => 'border-rose-200 bg-rose-50/80 shadow-rose-100',
+                        };
+                        $statusTextClass = match ($supportStatusValue) {
+                            'Online' => 'text-emerald-700',
+                            'Busy' => 'text-amber-700',
+                            default => 'text-rose-700',
+                        };
+                    @endphp
+
                     <div class="mt-6 grid sm:grid-cols-3 gap-3">
                         <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                             <p class="text-xs text-slate-500">Active Queue</p>
-                            <p class="text-lg font-bold text-slate-800">8</p>
+                            <p class="text-lg font-bold text-slate-800">{{ $activeQueue ?? 0 }}</p>
                         </div>
                         <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                             <p class="text-xs text-slate-500">Available Slots</p>
-                            <p class="text-lg font-bold text-slate-800">12</p>
+                            <p class="text-lg font-bold text-slate-800">{{ $availableSlots ?? 0 }}</p>
                         </div>
-                        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                        <div
+                            class="rounded-2xl border p-4 shadow-sm transition-all duration-300 {{ $statusCardClass }}">
                             <p class="text-xs text-slate-500">Status</p>
-                            <p class="text-lg font-bold text-emerald-700">Online</p>
+                            <p class="text-lg font-bold {{ $statusTextClass }}">{{ $supportStatusValue }}</p>
                         </div>
                     </div>
 
@@ -176,7 +191,8 @@
                         <h2 class="mt-2 text-2xl font-bold text-slate-800">Sign in</h2>
                         <p class="mt-2 text-sm text-slate-600">Use your college email and password.</p>
 
-                        <form class="mt-6 space-y-4" action="{{ route('login.attempt') }}" method="POST">
+                        <form class="mt-6 space-y-4" action="{{ route('login.attempt') }}" method="POST"
+                            data-login-form>
                             @csrf
                             <div>
                                 <label for="email"

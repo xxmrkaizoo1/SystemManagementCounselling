@@ -48,6 +48,13 @@ if (cursorDot && cursorRing && window.matchMedia('(pointer: fine)').matches) {
 
 
 window.addEventListener('load', () => {
+    const loginForm = document.querySelector('form[data-login-form]');
+    if (loginForm) {
+        loginForm.addEventListener('submit', () => {
+            window.sessionStorage.setItem('showAdminLoader', '1');
+        });
+    }
+
     // Home page loader animation
     const circle = document.getElementById('circle');
     const loader = document.getElementById('loader');
@@ -55,30 +62,39 @@ window.addEventListener('load', () => {
     const logoText = document.getElementById('logoText');
 
     if (circle && loader && logoText) {
-        circle.style.transition = 'transform 1.2s ease-in-out';
-        loader.style.transition = 'opacity 0.8s ease';
-        logoText.style.transition = 'opacity 0.5s ease';
-
-        setTimeout(() => {
-            logoText.style.opacity = '0';
-        }, 500);
-
-        setTimeout(() => {
-            circle.style.transform = 'scale(25)';
-        }, 800);
-
-        setTimeout(() => {
-            loader.style.opacity = '0';
-        }, 1600);
-
-        setTimeout(() => {
+        const isAdminLoader = loader.dataset.adminLoader === 'true';
+        const shouldShowAdminLoader = window.sessionStorage.getItem('showAdminLoader') === '1';
+        if (isAdminLoader && !shouldShowAdminLoader) {
             loader.style.display = 'none';
-            if (content) {
-                content.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
-                content.style.opacity = '1';
-                content.style.transform = 'translateY(0px)';
+        } else {
+            if (isAdminLoader) {
+                window.sessionStorage.removeItem('showAdminLoader');
             }
-        }, 2200);
+            circle.style.transition = 'transform 1.2s ease-in-out';
+            loader.style.transition = 'opacity 0.8s ease';
+            logoText.style.transition = 'opacity 0.5s ease';
+
+            setTimeout(() => {
+                logoText.style.opacity = '0';
+            }, 500);
+
+            setTimeout(() => {
+                circle.style.transform = 'scale(25)';
+            }, 800);
+
+            setTimeout(() => {
+                loader.style.opacity = '0';
+            }, 1600);
+
+            setTimeout(() => {
+                loader.style.display = 'none';
+                if (content) {
+                    content.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+                    content.style.opacity = '1';
+                    content.style.transform = 'translateY(0px)';
+                }
+            }, 2200);
+        }
     }
 
     // Login page loader animation
@@ -120,7 +136,4 @@ window.addEventListener('load', () => {
             doctorTipText.classList.add('tip-swap');
         }, tipLoopMs);
     }
-
-
-
 });

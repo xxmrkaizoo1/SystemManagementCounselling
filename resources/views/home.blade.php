@@ -392,7 +392,7 @@
                                     </div>
                                     <div class="quick-stat rounded-xl px-4 py-3">
                                         <p class="text-xs uppercase tracking-wide text-sky-100/90">Current Time</p>
-                                        <p class="text-base font-semibold">
+                                        <p id="current-time-display" class="text-base font-semibold">
                                             {{ $currentTimeLabel ?? now()->format('g:i A') }}</p>
                                     </div>
                                     <div class="quick-stat rounded-xl px-4 py-3">
@@ -434,7 +434,8 @@
                                     Status
                                 </h2>
                                 <span class="text-xs text-slate-500">Updated
-                                    {{ $currentTimeLabel ?? now()->format('g:i A') }}</span>
+                                    <span
+                                        id="status-updated-time">{{ $currentTimeLabel ?? now()->format('g:i A') }}</span></span>
                             </div>
 
                             <div class="space-y-2">
@@ -448,7 +449,8 @@
                                         </div>
                                         <span
                                             class="text-sm font-medium {{ $counsellor['available'] ? 'text-emerald-700' : 'text-rose-700' }}">
-                                            {{ $counsellor['available'] ? 'Available' : 'In Session' }} • Next
+                                            {{ $counsellor['status_label'] ?? ($counsellor['available'] ? 'Available' : 'In Session') }}
+                                            • Next
                                             {{ $counsellor['next_slot'] }}
                                         </span>
                                     </div>
@@ -605,6 +607,25 @@
                         renderSlide(slides[idx]);
                     }, 6000);
                 }
+
+                const malaysiaTimeFormatter = new Intl.DateTimeFormat('en-US', {
+                    timeZone: 'Asia/Kuala_Lumpur',
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    hour12: true,
+                });
+
+                const currentTimeDisplay = document.getElementById('current-time-display');
+                const statusUpdatedTime = document.getElementById('status-updated-time');
+
+                const syncMalaysiaTime = () => {
+                    const formattedTime = malaysiaTimeFormatter.format(new Date());
+                    if (currentTimeDisplay) currentTimeDisplay.textContent = formattedTime;
+                    if (statusUpdatedTime) statusUpdatedTime.textContent = formattedTime;
+                };
+
+                syncMalaysiaTime();
+                window.setInterval(syncMalaysiaTime, 1000);
 
                 const calendarGrid = document.getElementById('calendar-grid');
                 const calendarTitle = document.getElementById('calendar-title');

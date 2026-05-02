@@ -84,9 +84,9 @@
             <header
                 class="px-5 sm:px-7 py-5 border-b border-slate-200/80 bg-white/90 flex items-center justify-between gap-3">
                 <div>
-                    <p class="text-xs uppercase tracking-[0.14em] text-slate-500">CollegeCare</p>
+                    <p class="text-xs uppercase tracking-[0.14em] text-indigo-500 font-semibold">CollegeCare</p>
                     <h1 class="text-xl sm:text-2xl font-bold text-slate-800">Urus Akaun Pengguna</h1>
-                    <p class="mt-1 text-sm text-slate-500">Kelola akaun pelajar, pensyarah, dan kaunselor dengan
+                    <p class="mt-1 text-sm text-indigo-500">Kelola akaun pelajar, pensyarah, dan kaunselor dengan
                         cadangan automatik.</p>
                 </div>
                 <a href="{{ route('admin.dashboard') }}"

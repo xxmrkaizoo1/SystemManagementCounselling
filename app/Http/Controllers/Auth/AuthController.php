@@ -33,7 +33,36 @@ class AuthController extends Controller
 
     public function showLogin(): View
     {
-        return view('login');
+        $today = now();
+        $weekdayIso = (int) $today->dayOfWeekIso;
+
+        $hourlySlotCount = match (true) {
+            $weekdayIso >= 1 && $weekdayIso <= 4 => 9,
+            $weekdayIso === 5 => 4,
+            default => 0,
+        };
+
+        $counsellorCount = User::query()
+            ->whereHas('roles', static fn($query) => $query->where('name', 'counsellor'))
+            ->count();
+
+        $totalTodaySlots = $hourlySlotCount * $counsellorCount;
+
+        $bookedTodaySlots = \App\Models\BookingRequest::query()
+            ->whereDate('booking_date', $today->toDateString())
+            ->whereIn('status', ['pending', 'approved'])
+            ->count();
+
+        $openTodaySlots = max($totalTodaySlots - $bookedTodaySlots, 0);
+        $supportStatus = $counsellorCount === 0
+            ? 'Offline'
+            : ($openTodaySlots > 0 ? 'Online' : 'Busy');
+
+        return view('login', [
+            'activeQueue' => $bookedTodaySlots,
+            'availableSlots' => $openTodaySlots,
+            'supportStatus' => $supportStatus,
+        ]);
     }
 
     public function showSignup(): View

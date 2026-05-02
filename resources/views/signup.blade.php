@@ -101,7 +101,7 @@
                                 <input id="full_name" name="full_name" type="text" value="{{ old('full_name') }}"
                                     x-model="fullName" placeholder="Enter your full name"
                                     class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition"
-                                    readonly = "readonly" />
+                                    x-bind:readonly="role === 'student'" />
                                 @error('full_name')
                                     <p class="mt-1 text-xs text-rose-600">{{ $message }}</p>
                                 @enderror
@@ -267,6 +267,12 @@
                 profilePreview: null,
                 profileFileName: '',
                 matriksLookupStatus: '',
+                init() {
+                    this.$watch('role', () => {
+                        this.fullName = '';
+                        this.matriksLookupStatus = '';
+                    });
+                },
                 async lookupNoMatriksName(rawValue) {
                     if (this.role !== 'student') {
                         return;

@@ -76,17 +76,20 @@
                 <div>
                     <p class="text-xs uppercase tracking-[0.14em] text-indigo-500 font-semibold">CollegeCare</p>
                     <h1 class="text-2xl sm:text-3xl font-bold text-slate-900">Admin • Number Matriks Users</h1>
-                    <p class="text-sm text-slate-600 mt-1">Manage your no_matriks list with a cleaner experience.</p>
+                    <p class="text-sm text-indigo-500 mt-1">Manage your number matriks list with a cleaner experience.</p>
                 </div>
 
                 <a href="{{ route('admin.dashboard') }}"
-                    class="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white/90 px-3 py-2 text-sm font-medium text-slate-700 hover:border-sky-300 hover:text-sky-700 transition hover:-translate-y-0.5">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4">
-                        <path fill-rule="evenodd"
-                            d="M17 10a.75.75 0 0 1-.75.75H5.56l3.22 3.22a.75.75 0 1 1-1.06 1.06l-4.5-4.5a.75.75 0 0 1 0-1.06l4.5-4.5a.75.75 0 0 1 1.06 1.06L5.56 9.25h10.69A.75.75 0 0 1 17 10Z"
-                            clip-rule="evenodd" />
+                    class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">
+
+                    <!-- Curved Back Icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 14L4 9l5-5M4 9h10a7 7 0 110 14h-3" />
                     </svg>
-                    <span>Back</span>
+
+
                 </a>
             </header>
 
