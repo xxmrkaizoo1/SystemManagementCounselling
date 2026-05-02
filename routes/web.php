@@ -447,10 +447,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/no-matriks-users', function (Request $request) {
         $user = request()->user();
         $role = $user?->roles()->value('name');
-        $validated = $request->validate([
-            'cancel_reason' => ['required', 'string', 'max:255'],
-        ]);
-        $cancelReason = trim((string) ($validated['cancel_reason'] ?? ''));
+
 
         abort_unless($role === 'admin', 403);
 

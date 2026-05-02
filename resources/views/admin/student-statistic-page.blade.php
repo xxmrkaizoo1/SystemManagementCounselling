@@ -76,6 +76,21 @@
                     </article>
                 </section>
 
+                {{-- Graphs --}}
+                <section class="grid lg:grid-cols-2 gap-4">
+                    <article class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm animate-fade-up">
+                        <h2 class="text-lg font-semibold text-slate-900">Booking status overview graph</h2>
+                        <p class="text-sm text-slate-600 mt-1">Quick visual split of all booking request states.</p>
+                        <div class="mt-4 h-64" id="status-chart" role="img" aria-label="Booking status bar chart"></div>
+                    </article>
+
+                    <article class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm animate-fade-up animation-delay-1">
+                        <h2 class="text-lg font-semibold text-slate-900">Top topics graph</h2>
+                        <p class="text-sm text-slate-600 mt-1">Most requested counselling topics (top 6).</p>
+                        <div class="mt-4 h-64" id="topic-chart" role="img" aria-label="Top topic bar chart"></div>
+                    </article>
+                </section>
+
                 <section class="grid lg:grid-cols-2 gap-4">
                     <article class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm animate-fade-up animation-delay-1">
                         <h2 class="text-lg font-semibold text-slate-900">Bookings by topic / category</h2>
@@ -150,6 +165,53 @@
             </div>
         </section>
     </main>
-</body>
 
+    <script>
+        const createBarChart = (containerId, entries, options = {}) => {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            if (!Array.isArray(entries) || entries.length === 0) {
+                container.innerHTML = '<p class="text-sm text-slate-500">No data available for graph yet.</p>';
+                return;
+            }
+
+            const maxValue = Math.max(...entries.map((item) => Number(item.value) || 0), 1);
+            const barColor = options.barColor || 'from-sky-500 to-indigo-600';
+
+            container.innerHTML = `
+                <div class="space-y-3">
+                    ${entries.map((item) => {
+                        const value = Number(item.value) || 0;
+                        const width = Math.max((value / maxValue) * 100, value > 0 ? 4 : 0);
+                        return `
+                            <div>
+                                <div class="flex items-center justify-between text-xs text-slate-600 mb-1">
+                                    <span class="truncate pr-3">${item.label}</span>
+                                    <span class="font-semibold text-slate-700">${value}</span>
+                                </div>
+                                <div class="h-3 rounded-full bg-slate-100 overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r ${barColor} rounded-full" style="width: ${width}%"></div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        };
+
+        createBarChart('status-chart', [
+            { label: 'Pending', value: @json($statusTotals['pending']) },
+            { label: 'Approved', value: @json($statusTotals['approved']) },
+            { label: 'Rejected', value: @json($statusTotals['rejected']) },
+            { label: 'Completed', value: @json($statusTotals['completed']) },
+        ], { barColor: 'from-amber-500 to-rose-500' });
+
+        createBarChart('topic-chart', @json(collect($topicStats)->take(6)->map(fn ($topic) => [
+            'label' => $topic['topic'],
+            'value' => $topic['total'],
+        ])->values()), { barColor: 'from-emerald-500 to-sky-500' });
+    </script>
+
+</body>
 </html>
