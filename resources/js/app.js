@@ -54,7 +54,7 @@ window.addEventListener('load', () => {
     const content = document.getElementById('content');
     const logoText = document.getElementById('logoText');
 
-    if (circle && loader && content && logoText) {
+    if (circle && loader && logoText) {
         circle.style.transition = 'transform 1.2s ease-in-out';
         loader.style.transition = 'opacity 0.8s ease';
         logoText.style.transition = 'opacity 0.5s ease';
@@ -73,9 +73,11 @@ window.addEventListener('load', () => {
 
         setTimeout(() => {
             loader.style.display = 'none';
-            content.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
-            content.style.opacity = '1';
-            content.style.transform = 'translateY(0px)';
+            if (content) {
+                content.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+                content.style.opacity = '1';
+                content.style.transform = 'translateY(0px)';
+            }
         }, 2200);
     }
 
