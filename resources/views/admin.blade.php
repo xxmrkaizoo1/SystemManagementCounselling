@@ -153,7 +153,7 @@
                             </svg>
                             <span>Manage user accounts</span>
                         </a>
-                        <a href="{{ route('admin.no-matriks-users') }}"
+                        <a href="{{ route('admin.users.no-matriks') }}"
                             class="mt-2 flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:border-sky-200 hover:text-sky-700 transition hover:-translate-y-0.5">
                             <svg class="h-4 w-4 text-slate-500" viewBox="0 0 20 20" fill="currentColor"
                                 aria-hidden="true">

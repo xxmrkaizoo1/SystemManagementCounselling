@@ -1342,10 +1342,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/inbox', function (Request $request) {
         $user = $request->user();
         $role = $user?->roles()->value('name');
-        $validated = $request->validate([
-            'cancel_reason' => ['required', 'string', 'max:255'],
-        ]);
-        $cancelReason = trim((string) ($validated['cancel_reason'] ?? ''));
 
         abort_unless(in_array($role, ['student', 'teacher'], true), 403);
 
