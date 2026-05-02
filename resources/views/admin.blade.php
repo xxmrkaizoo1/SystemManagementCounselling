@@ -85,9 +85,12 @@
 
 
     <!-- LOADER -->
-    <div id="loader" class="fixed inset-0 bg-sky-500 flex items-center justify-center z-50">
-        <div id="circle" class="w-64 h-64 bg-white rounded-full flex items-center justify-center">
-            <span id="logoText" class="text-sky-500 font-bold text-2xl">CollegeCare</span>
+    <div id="loader" class="fixed inset-0 bg-purple-800 flex items-center justify-center z-50">
+        <div id="circle"
+            class="w-64 h-64 bg-white rounded-full flex flex-col items-center justify-center text-center px-4">
+            <span id="logoText" class="text-purple-800 font-bold text-2xl">CollegeCare</span>
+            <span class="mt-1 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Welcome to admin</span>
+
         </div>
     </div>
 
@@ -143,16 +146,20 @@
                         <p class="text-xs uppercase tracking-[0.12em] text-slate-500 mb-2">Admin menu</p>
                         <a href="{{ route('admin.accounts.manage') }}"
                             class="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:border-sky-200 hover:text-sky-700 transition hover:-translate-y-0.5">
-                            <svg class="h-4 w-4 text-slate-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <svg class="h-4 w-4 text-slate-500" viewBox="0 0 20 20" fill="currentColor"
+                                aria-hidden="true">
                                 <path d="M10 9a3 3 0 100-6 3 3 0 000 6z" />
                                 <path fill-rule="evenodd" d="M3 16a7 7 0 1114 0H3z" clip-rule="evenodd" />
                             </svg>
                             <span>Manage user accounts</span>
                         </a>
-                        <a href="{{ route('admin.users.no-matriks') }}"
+                        <a href="{{ route('admin.no-matriks-users') }}"
                             class="mt-2 flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:border-sky-200 hover:text-sky-700 transition hover:-translate-y-0.5">
-                            <svg class="h-4 w-4 text-slate-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V7.414A2 2 0 0017.414 6L14 2.586A2 2 0 0012.586 2H4zm3 6a1 1 0 000 2h6a1 1 0 100-2H7zm0 4a1 1 0 000 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
+                            <svg class="h-4 w-4 text-slate-500" viewBox="0 0 20 20" fill="currentColor"
+                                aria-hidden="true">
+                                <path fill-rule="evenodd"
+                                    d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V7.414A2 2 0 0017.414 6L14 2.586A2 2 0 0012.586 2H4zm3 6a1 1 0 000 2h6a1 1 0 100-2H7zm0 4a1 1 0 000 2h6a1 1 0 100-2H7z"
+                                    clip-rule="evenodd" />
                             </svg>
                             <span>View no_matriks list</span>
                         </a>
@@ -160,15 +167,20 @@
 
                         <a href="{{ route('admin.student-statistics') }}"
                             class="mt-2 flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:border-sky-200 hover:text-sky-700 transition hover:-translate-y-0.5">
-                            <svg class="h-4 w-4 text-slate-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5H2v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9H8V7zM14 3a1 1 0 011-1h2a1 1 0 011 1v13h-4V3z" />
+                            <svg class="h-4 w-4 text-slate-500" viewBox="0 0 20 20" fill="currentColor"
+                                aria-hidden="true">
+                                <path
+                                    d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5H2v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9H8V7zM14 3a1 1 0 011-1h2a1 1 0 011 1v13h-4V3z" />
                             </svg>
                             <span>Student booking statistics</span>
                         </a>
                         <a href="{{ route('admin.counsellor.signup') }}"
                             class="mt-2 flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:border-sky-200 hover:text-sky-700 transition hover:-translate-y-0.5">
-                            <svg class="h-4 w-4 text-slate-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                <path fill-rule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a2 2 0 00-2 2v7a2 2 0 002 2h10a2 2 0 002-2V9a2 2 0 00-2-2h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4z" clip-rule="evenodd" />
+                            <svg class="h-4 w-4 text-slate-500" viewBox="0 0 20 20" fill="currentColor"
+                                aria-hidden="true">
+                                <path fill-rule="evenodd"
+                                    d="M10 2a4 4 0 00-4 4v1H5a2 2 0 00-2 2v7a2 2 0 002 2h10a2 2 0 002-2V9a2 2 0 00-2-2h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4z"
+                                    clip-rule="evenodd" />
                             </svg>
                             <span>Sign up counsellor</span>
                         </a>
@@ -193,9 +205,9 @@
                     @endphp
 
                     <div id="overview"
-                        class="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 2xl:grid-cols-6">
+                        class="mx-auto grid w-full max-w-6xl grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                         <article data-stat-card
-                            class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md animate-fade-up animation-delay-1">
+                            class="group rounded-2xl border border-slate-200/80 bg-gradient-to-br from-white to-slate-50 p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-sky-200 hover:shadow-lg animate-fade-up animation-delay-1">
                             <div class="flex items-start justify-between gap-3">
                                 <div>
                                     <p class="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Users
@@ -222,7 +234,7 @@
                         </article>
 
                         <article data-stat-card
-                            class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md animate-fade-up animation-delay-1">
+                            class="group rounded-2xl border border-slate-200/80 bg-gradient-to-br from-white to-slate-50 p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-sky-200 hover:shadow-lg animate-fade-up animation-delay-1">
                             <div class="flex items-start justify-between gap-3">
                                 <div>
                                     <p class="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Roles
@@ -246,10 +258,11 @@
                         </article>
 
                         <article data-stat-card
-                            class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md animate-fade-up animation-delay-3">
+                            class="group rounded-2xl border border-slate-200/80 bg-gradient-to-br from-white to-slate-50 p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-emerald-200 hover:shadow-lg animate-fade-up animation-delay-3">
                             <div class="flex items-start justify-between gap-3">
                                 <div>
-                                    <p class="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Bookings
+                                    <p class="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
+                                        Bookings
                                     </p>
                                     <p data-view="number" class="mt-2 text-2xl font-bold text-slate-900">
                                         {{ $stats['total_bookings'] }}
@@ -271,7 +284,7 @@
                         </article>
 
                         <article data-stat-card
-                            class="rounded-2xl border border-amber-200 bg-amber-50/70 p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md animate-fade-up animation-delay-3">
+                            class="group rounded-2xl border border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50 p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg animate-fade-up animation-delay-3">
                             <div class="flex items-start justify-between gap-3">
                                 <div>
                                     <p class="text-xs font-semibold uppercase tracking-[0.12em] text-amber-700">Pending
@@ -364,41 +377,7 @@
                         </article>
                     </div>
 
-                    <article id="notifications"
-                        class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm animate-fade-up animation-delay-3">
-                        <div class="flex items-start justify-between gap-3">
-                            <div>
-                                <h2 class="text-lg font-semibold text-slate-900">Recent inbox notifications</h2>
-                                <p class="text-sm text-slate-600 mt-1">Most recent system notices sent to users.</p>
-                            </div>
 
-                            {{-- <a href="{{ route('inbox') }}"
-                                class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-sky-200 hover:text-sky-700 hover:bg-sky-50/60">
-                                <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                    <path
-                                        d="M2.5 4.75A2.25 2.25 0 0 1 4.75 2.5h10.5A2.25 2.25 0 0 1 17.5 4.75v10.5a2.25 2.25 0 0 1-2.25 2.25H4.75A2.25 2.25 0 0 1 2.5 15.25V4.75Zm8.28 2.47a.75.75 0 0 0-1.06 0L6.97 9.97a.75.75 0 1 0 1.06 1.06l1.47-1.47V13a.75.75 0 0 0 1.5 0V9.56l1.47 1.47a.75.75 0 1 0 1.06-1.06l-2.75-2.75Z" />
-                                </svg>
-                                View all
-                            </a> --}}
-                        </div>
-
-                        <div class="mt-4 grid sm:grid-cols-2 xl:grid-cols-3 gap-3">
-                            @forelse ($recentNotifications as $notification)
-                                <div
-                                    class="rounded-xl border border-slate-200 bg-slate-50 p-3 transition hover:-translate-y-0.5 hover:shadow-sm hover:border-sky-200">
-                                    <p class="text-xs text-slate-500">
-                                        {{ optional($notification->created_at)->diffForHumans() }}</p>
-                                    <p class="font-semibold text-slate-800 mt-1">
-                                        {{ $notification->title ?: 'Notification' }}</p>
-                                    <p class="text-sm text-slate-600 mt-1">{{ $notification->message }}</p>
-                                    <p class="text-xs text-slate-500 mt-2">To:
-                                        {{ $notification->user?->name ?: 'Unknown user' }}</p>
-                                </div>
-                            @empty
-                                <p class="text-sm text-slate-500">No notifications found.</p>
-                            @endforelse
-                        </div>
-                    </article>
                 </section>
             </div>
         </section>
