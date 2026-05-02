@@ -286,6 +286,7 @@
                         data-booking-request-id="{{ $item['booking_request_id'] ?? '' }}"
                         data-student-id="{{ $item['student_id'] ?? '' }}"
                         data-email="{{ $item['student_email'] ?? '' }}"
+                        data-phone="{{ $item['student_phone'] ?? '' }}"
                         data-student-name="{{ $item['student'] ?? 'Student' }}"
                         data-display-date="{{ $displayDate }}" data-request-date="{{ $item['request_date'] }}"
                         data-request-time="{{ $item['request_time'] ?? '' }}"
@@ -353,12 +354,13 @@
             <div id="chat-popup-body" class="space-y-3 px-4 py-4">
                 <div class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600">
                     <p><span class="font-medium text-slate-700">Topic:</span> <span id="chat-popup-topic"></span></p>
-                    <p><span class="font-medium text-slate-700">Request date:</span> <span
-                            id="chat-popup-date"></span></p>
                     <p><span class="font-medium text-slate-700">Request slot:</span> <span
+                            id="chat-popup-slot"></span></p>
+                    <p><span class="font-medium text-slate-700">Request date:</span> <span
                             id="chat-popup-date"></span></p>
                     <p><span class="font-medium text-slate-700">Status:</span> <span id="chat-popup-role"></span></p>
                     <p><span class="font-medium text-slate-700">Email:</span> <span id="chat-popup-email"></span></p>
+                    <p><span class="font-medium text-slate-700">Phone:</span> <span id="chat-popup-phone"></span></p>
                 </div>
                 <form id="reminder-form" method="POST" action="">
                     @csrf
@@ -408,9 +410,11 @@
             const chatPopupSend = document.getElementById('chat-popup-send');
             const chatPopupStudent = document.getElementById('chat-popup-student');
             const chatPopupTopic = document.getElementById('chat-popup-topic');
+            const chatPopupSlot = document.getElementById('chat-popup-slot');
             const chatPopupDate = document.getElementById('chat-popup-date');
             const chatPopupRole = document.getElementById('chat-popup-role');
             const chatPopupEmail = document.getElementById('chat-popup-email');
+            const chatPopupPhone = document.getElementById('chat-popup-phone');
             const chatPopupReminder = document.getElementById('chat-popup-reminder');
             const heroImage = document.getElementById('counsellor-hero-image');
             const heroTag = document.getElementById('counsellor-hero-tag');
@@ -556,10 +560,11 @@
                     row.addEventListener('click', function() {
                         const studentName = row.dataset.studentName || 'Student';
                         const topic = row.dataset.topic || 'General counseling support';
-                        const displayDate = row.dataset.displayDate || row.dataset.requestDate ||
-                            '-';
+                        const requestSlot = row.dataset.requestTime || '-';
+                        const displayDate = row.dataset.requestDate || '-';
                         const roleLabel = row.dataset.requesterRole || 'Student';
                         const email = row.dataset.email || '-';
+                        const phone = row.dataset.phone || '-';
                         const reminderUrl = row.dataset.reminderUrl || '';
 
                         if (!reminderUrl) {
@@ -568,16 +573,20 @@
 
                         chatPopupStudent.textContent = studentName;
                         chatPopupTopic.textContent = topic;
+                        chatPopupSlot.textContent = requestSlot;
                         chatPopupDate.textContent = displayDate;
                         if (chatPopupRole) {
                             chatPopupRole.textContent = roleLabel;
                         }
                         chatPopupEmail.textContent = email;
+                        if (chatPopupPhone) {
+                            chatPopupPhone.textContent = phone;
+                        }
                         reminderForm.setAttribute('action', reminderUrl);
                         const defaultMessage =
                             'Hi ' + studentName +
                             ', this is a reminder to respond to your counselling request about "' +
-                            topic + '".';
+                            topic + '" for the exact slot ' + requestSlot + '.';
                         chatPopupReminder.value = defaultMessage;
                         if (chatPopupThread) {
                             chatPopupThread.innerHTML = '';

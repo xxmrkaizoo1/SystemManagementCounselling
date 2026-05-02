@@ -310,24 +310,42 @@
                             </form>
                         </div>
 
-                        <div class="grid gap-3 max-h-80 overflow-auto pr-1">
-                            @php
-                                $displayedUsers = $users->take(3);
-                            @endphp
-                            @forelse ($displayedUsers as $listedUser)
-                                <a href="{{ route('chat.index', ['user_id' => $listedUser->id, 'search' => $search]) }}"
-                                    class="group block rounded-2xl border px-4 py-3 text-sm shadow-sm transition {{ $selectedUser?->id === $listedUser->id ? 'border-sky-300 bg-sky-50/80 text-sky-700 ring-1 ring-sky-200' : 'border-slate-200 bg-white hover:-translate-y-0.5 hover:border-sky-200 hover:shadow-md' }}">
-                                    <p class="font-semibold text-slate-800 group-hover:text-sky-700">
-                                        {{ $listedUser->name }}</p>
-                                    <p class="text-xs text-slate-500 mt-0.5">{{ $listedUser->email }}</p>
-                                </a>
-                            @empty
-                                <p
-                                    class="rounded-xl border border-dashed border-slate-300 bg-white px-3 py-2 text-xs text-slate-500">
-                                    No users found.
-                                </p>
-                            @endforelse
-                        </div>
+                        @if ($search !== '')
+                            <div class="grid gap-3 max-h-80 overflow-auto pr-1">
+                                @php
+                                    $displayedUsers = $users->take(6);
+                                @endphp
+                                @forelse ($displayedUsers as $listedUser)
+                                    <a href="{{ route('chat.index', ['user_id' => $listedUser->id, 'search' => $search]) }}"
+                                        class="group block rounded-2xl border px-4 py-3 text-sm shadow-sm transition {{ $selectedUser?->id === $listedUser->id ? 'border-sky-300 bg-sky-50/80 text-sky-700 ring-1 ring-sky-200' : 'border-slate-200 bg-white hover:-translate-y-0.5 hover:border-sky-200 hover:shadow-md' }}">
+                                        <p class="font-semibold text-slate-800 group-hover:text-sky-700">
+                                            {{ $listedUser->name }}</p>
+                                        <p class="text-xs text-slate-500 mt-0.5">{{ $listedUser->email }}</p>
+                                    </a>
+                                @empty
+                                    <p
+                                        class="rounded-xl border border-dashed border-slate-300 bg-white px-3 py-2 text-xs text-slate-500">
+                                        No users found.
+                                    </p>
+                                @endforelse
+                            </div>
+                        @else
+                            <div class="space-y-2">
+                                <p class="text-xs uppercase tracking-[0.12em] text-slate-500">Recent conversations</p>
+                                @forelse ($conversationUsers as $conversationUser)
+                                    <a href="{{ route('chat.index', ['user_id' => $conversationUser->id]) }}"
+                                        class="group block rounded-2xl border px-4 py-3 text-sm shadow-sm transition {{ $selectedUser?->id === $conversationUser->id ? 'border-sky-300 bg-sky-50/80 text-sky-700 ring-1 ring-sky-200' : 'border-slate-200 bg-white hover:-translate-y-0.5 hover:border-sky-200 hover:shadow-md' }}">
+                                        <p class="font-semibold text-slate-800 group-hover:text-sky-700">
+                                            {{ $conversationUser->name }}</p>
+                                        <p class="text-xs text-slate-500 mt-0.5">{{ $conversationUser->email }}</p>
+                                    </a>
+                                @empty
+                                    <p class="rounded-xl border border-dashed border-slate-300 bg-white px-3 py-2 text-xs text-slate-500">
+                                        Start typing in the search box to see user recommendations.
+                                    </p>
+                                @endforelse
+                            </div>
+                        @endif
 
 
                     </div>
@@ -500,7 +518,7 @@
             if (sidebarBackdrop) {
                 sidebarBackdrop.addEventListener('click', closeSidebar);
             }
-                  if (openProfilePopup) {
+            if (openProfilePopup) {
                 openProfilePopup.addEventListener('click', showProfilePopup);
             }
             if (closeProfilePopup) {

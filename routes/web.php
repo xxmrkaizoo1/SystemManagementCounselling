@@ -845,7 +845,7 @@ Route::middleware('auth')->group(function () {
         )));
 
         $bookingsQuery = BookingRequest::query()
-            ->with('user:id,name,full_name')
+            ->with(['user:id,name,full_name,email', 'user.roles:id,name'])
             ->whereIn(DB::raw('LOWER(TRIM(counsellor_name))'), $normalizedCounsellorNames)
             ->latest('booking_date')
             ->latest('booking_time');
@@ -868,6 +868,7 @@ Route::middleware('auth')->group(function () {
                     'student_id' => $booking->user?->id,
                     'student' => $booking->user?->full_name ?: $booking->user?->name ?: 'Pelajar',
                     'student_email' => $booking->user?->email,
+                    'student_phone' => $booking->user?->phone,
                     'requester_role' => (
                         $booking->user?->roles
                         ?->pluck('name')
@@ -938,7 +939,7 @@ Route::middleware('auth')->group(function () {
         )));
 
         $pendingRequests = BookingRequest::query()
-            ->with('user:id,name,full_name')
+            ->with(['user:id,name,full_name,email', 'user.roles:id,name'])
             ->whereIn(DB::raw("LOWER(REPLACE(TRIM(counsellor_name), ' ', ''))"), $normalizedCounsellorNames)
             ->where('status', 'pending')
             ->latest('booking_date')

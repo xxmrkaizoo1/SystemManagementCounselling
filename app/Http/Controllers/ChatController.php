@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ChatController extends Controller
 {
@@ -34,6 +35,31 @@ class ChatController extends Controller
             ->limit(20);
 
         $users = $usersQuery->get();
+
+        $conversationMessages = ChatMessage::query()
+            ->selectRaw('receiver_id as other_user_id, id as message_id')
+            ->where('sender_id', $user->id)
+            ->unionAll(
+                ChatMessage::query()
+                    ->selectRaw('sender_id as other_user_id, id as message_id')
+                    ->where('receiver_id', $user->id)
+            );
+
+        $conversationUsers = User::query()
+            ->select('users.*')
+            ->joinSub(
+                DB::query()
+                    ->fromSub($conversationMessages, 'conversation_messages')
+                    ->selectRaw('other_user_id, MAX(message_id) as latest_message_id')
+                    ->groupBy('other_user_id'),
+                'latest_conversations',
+                'latest_conversations.other_user_id',
+                '=',
+                'users.id'
+            )
+            ->orderByDesc('latest_conversations.latest_message_id')
+            ->limit(10)
+            ->get();
 
         $selectedUser = null;
         $messages = collect();
@@ -67,6 +93,7 @@ class ChatController extends Controller
             'role' => $role,
             'users' => $users,
             'search' => $search,
+            'conversationUsers' => $conversationUsers,
             'selectedUser' => $selectedUser,
             'messages' => $messages,
         ]);
