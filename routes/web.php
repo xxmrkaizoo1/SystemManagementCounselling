@@ -503,7 +503,11 @@ Route::middleware('auth')->group(function () {
             ],
             'totalEntriesCount' => NoMatriksEntry::query()->count(),
         ]);
+    })->name('admin.no-matriks-users');
+    Route::get('/admin/users/no-matriks', static function () {
+        return redirect()->route('admin.no-matriks-users');
     })->name('admin.users.no-matriks');
+
 
 
     Route::post('/admin/no-matriks-users/{managedUser?}', function (Request $request) {
