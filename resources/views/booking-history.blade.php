@@ -29,22 +29,25 @@
         <div class="absolute top-24 -right-16 h-80 w-80 rounded-full bg-indigo-300/25 blur-3xl"></div>
     </div>
 
-    <div id="loginLoader" class="fixed inset-0 z-[90] flex items-center justify-center bg-sky-500/95 transition-opacity duration-700">
+    <div id="loginLoader"
+        class="fixed inset-0 z-[90] flex items-center justify-center bg-sky-500/95 transition-opacity duration-700">
         <div class="flex flex-col items-center gap-3">
             <span class="h-16 w-16 animate-spin rounded-full border-8 border-white/30 border-t-white"></span>
-            <p class="text-xl font-semibold text-white">Loading  hsitory portal...</p>
+            <p class="text-xl font-semibold text-white">Loading hsitory portal...</p>
         </div>
     </div>
 
     <div id="loginContent"
         class="max-w-[96rem] mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-7 opacity-0 translate-y-2 transition-all duration-700">
-        <div class="history-shell rounded-[2rem] border border-slate-200/80 backdrop-blur-xl shadow-2xl overflow-hidden">
+        <div
+            class="history-shell rounded-[2rem] border border-slate-200/80 backdrop-blur-xl shadow-2xl overflow-hidden">
             <header
                 class="px-5 sm:px-8 py-5 border-b border-slate-200/80 bg-white/85 flex items-center justify-between gap-4">
                 <div>
                     <p class="text-xs uppercase tracking-[0.14em] text-slate-500">CollegeCare</p>
                     <h1 class="text-xl sm:text-2xl font-bold text-slate-800">Booking History ({{ ucfirst($role) }})</h1>
-                    <p class="text-sm text-slate-500 mt-1">Semua rekod tempahan sesi kaunseling anda, disusun kemas untuk semakan pantas.</p>
+                    <p class="text-sm text-slate-500 mt-1">Semua rekod tempahan sesi kaunseling anda, disusun kemas
+                        untuk semakan pantas.</p>
                 </div>
                 <div class="flex items-center gap-2">
                     <a href="{{ route('home.session') }}"
@@ -160,7 +163,8 @@
                         </div>
                         <div class="rounded-xl border border-rose-200 bg-rose-50 p-3">
                             <p class="text-xs uppercase tracking-wide text-rose-700">Rejected</p>
-                            <p class="mt-1 text-lg font-bold text-rose-700">{{ $bookingStats['rejected'] }}</p>
+                            <p class="mt-1 text-lg font-bold text-rose-700">
+                                {{ $bookingStats['rejected'] + $bookingStats['cancelled'] }}</p>
                         </div>
                         <div class="rounded-xl border border-slate-300 bg-slate-100 p-3">
                             <p class="text-xs uppercase tracking-wide text-slate-600">Completed</p>
@@ -181,6 +185,7 @@
                                         <option value="pending" @selected($selectedStatus === 'pending')>Pending</option>
                                         <option value="approved" @selected($selectedStatus === 'approved')>Approved</option>
                                         <option value="rejected" @selected($selectedStatus === 'rejected')>Rejected</option>
+                                        <option value="cancelled" @selected($selectedStatus === 'cancelled')>Cancelled</option>
                                         <option value="completed" @selected($selectedStatus === 'completed')>Completed</option>
                                     </select>
                                 </div>
@@ -234,7 +239,7 @@
                                     class="rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-2 text-emerald-800">
                                     Approved — session accepted.</li>
                                 <li class="rounded-lg border border-rose-200 bg-rose-50 px-2.5 py-2 text-rose-800">
-                                    Rejected — request was declined.</li>
+                                    Rejected — request was declined or cancelled.</li>
                                 <li class="rounded-lg border border-slate-300 bg-slate-100 px-2.5 py-2 text-slate-700">
                                     Completed — session finished.</li>
                             </ul>

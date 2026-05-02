@@ -90,7 +90,16 @@
                                     <td class="px-4 py-3 text-slate-600">{{ $request['topic'] ?: 'General support' }}
                                     </td>
 
-                                    <td class="px-4 py-3 text-slate-600">{{ $request['notes'] ?: 'No note provided' }}
+                                    <td class="px-4 py-3 text-slate-600">
+                                        <button type="button"
+                                            class="note-trigger inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100"
+                                            data-student="{{ $request['student'] }}"
+                                            data-topic="{{ $request['topic'] ?: 'General support' }}"
+                                            data-date="{{ $request['date'] }}" data-time="{{ $request['time'] }}"
+                                            data-note="{{ $request['notes'] ?: 'No note provided' }}"
+                                            title="View notes" aria-label="View notes">
+                                            📝
+                                        </button>
                                     </td>
                                     <td class="px-4 py-3">
                                         <div class="flex items-center justify-center gap-2">
@@ -136,6 +145,71 @@
             </div>
         </section>
     </main>
+
+
+    <div id="note-popup" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/45 px-4">
+        <div class="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-5 shadow-xl">
+            <div class="flex items-start justify-between gap-3">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Student Note</p>
+                    <h2 id="popup-student" class="mt-1 text-lg font-bold text-slate-800">-</h2>
+                </div>
+                <button id="close-note-popup" type="button"
+                    class="rounded-lg border border-slate-300 px-2 py-1 text-slate-600 hover:bg-slate-100">✕</button>
+            </div>
+            <div class="mt-4 space-y-2 text-sm">
+                <p><span class="font-semibold text-slate-700">Topic:</span> <span id="popup-topic"
+                        class="text-slate-600">-</span></p>
+                <p><span class="font-semibold text-slate-700">Date:</span> <span id="popup-date"
+                        class="text-slate-600">-</span></p>
+                <p><span class="font-semibold text-slate-700">Time:</span> <span id="popup-time"
+                        class="text-slate-600">-</span></p>
+                <div class="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                    <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Notes</p>
+                    <p id="popup-note" class="whitespace-pre-wrap text-slate-700">-</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const notePopup = document.getElementById('note-popup');
+        const closeNotePopup = document.getElementById('close-note-popup');
+        const popupStudent = document.getElementById('popup-student');
+        const popupTopic = document.getElementById('popup-topic');
+        const popupDate = document.getElementById('popup-date');
+        const popupTime = document.getElementById('popup-time');
+        const popupNote = document.getElementById('popup-note');
+
+        document.querySelectorAll('.note-trigger').forEach((button) => {
+            button.addEventListener('click', () => {
+                popupStudent.textContent = button.dataset.student || '-';
+                popupTopic.textContent = button.dataset.topic || '-';
+                popupDate.textContent = button.dataset.date || '-';
+                popupTime.textContent = button.dataset.time || '-';
+                popupNote.textContent = button.dataset.note || 'No note provided';
+                notePopup.classList.remove('hidden');
+                notePopup.classList.add('flex');
+            });
+        });
+
+        const hidePopup = () => {
+            notePopup.classList.add('hidden');
+            notePopup.classList.remove('flex');
+        };
+
+        closeNotePopup?.addEventListener('click', hidePopup);
+        notePopup?.addEventListener('click', (event) => {
+            if (event.target === notePopup) {
+                hidePopup();
+            }
+        });
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && !notePopup.classList.contains('hidden')) {
+                hidePopup();
+            }
+        });
+    </script>
 </body>
 
 </html>

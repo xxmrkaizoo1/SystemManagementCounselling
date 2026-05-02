@@ -67,54 +67,59 @@
         <section
             class="overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white/85 shadow-2xl ring-1 ring-white/70 backdrop-blur-xl">
             <header class="border-b border-slate-200/90 bg-white/85 px-4 py-4 sm:px-6 sm:py-5 lg:px-8 lg:py-6">
-                <div class="rounded-2xl border border-slate-200 bg-slate-100/80 p-4 shadow-sm sm:p-5">
-                    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                <div
+                    class="rounded-3xl border border-white/70 bg-gradient-to-br from-white via-slate-50 to-sky-50/40 p-4 shadow-[0_18px_40px_-28px_rgba(15,23,42,0.65)] sm:p-6">
+                    <div class="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
                         <div class="flex items-center gap-3 sm:gap-4">
                             <a href="{{ route('profile.edit') }}"
-                                class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-slate-300 bg-white text-base font-bold text-slate-600 shadow-sm transition hover:border-sky-300 hover:text-sky-700"
+                                class="flex h-14 w-14 shrink-0 items-center justify-center rounded-[18px] border border-sky-200 bg-slate-100 text-base font-bold text-slate-700 shadow-[0_3px_10px_rgba(15,23,42,0.08)] transition hover:-translate-y-0.5 hover:border-sky-300 hover:text-sky-700"
                                 title="Profile">
                                 {{ strtoupper(substr($user->name ?? 'D', 0, 1)) }}
                             </a>
 
-                            <div class="rounded-xl border border-slate-300/80 bg-white px-4 py-3 shadow-sm">
-                                <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                            <div class="rounded-2xl border border-slate-200 bg-white/95 px-5 py-3.5 shadow-sm">
+                                <p class="text-[11px] font-semibold uppercase tracking-[0.24em] text-sky-500/80">
                                     CollegeCare</p>
                                 <h1 class="text-lg font-semibold text-slate-800 lg:text-xl">Counsellor Session Dashboard
                                 </h1>
                             </div>
                         </div>
 
-                        <div class="flex w-full flex-wrap items-center gap-2 lg:w-auto lg:justify-end">
+                        <div class="flex w-full flex-wrap items-center gap-2.5 lg:w-auto lg:justify-end">
                             <a href="{{ route('counsellor.dashboard') }}"
-                                class="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-600 shadow-sm transition hover:-translate-y-0.5 hover:border-sky-300 hover:text-sky-700">
+                                class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 shadow-sm transition hover:-translate-y-0.5 hover:border-sky-300 hover:text-sky-700">
                                 Refresh
                             </a>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <button type="submit"
-                                    class="rounded-xl bg-sky-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700">
+                                    class="rounded-xl bg-gradient-to-r from-sky-600 to-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:from-sky-700 hover:to-blue-700">
                                     Logout
                                 </button>
                             </form>
                         </div>
                     </div>
 
-                    <div class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
-                        <div class="rounded-xl border border-amber-200 bg-amber-50/80 px-4 py-3 text-sm">
-                            <p class="font-medium text-amber-700">Pending</p>
-                            <p class="text-xl font-bold text-amber-800">{{ $pendingCount }}</p>
+                    <div class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                        <div
+                            class="group rounded-2xl border border-amber-200/80 bg-gradient-to-br from-amber-50 to-white px-4 py-3 text-sm shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+                            <p class="font-semibold text-amber-700">Pending</p>
+                            <p class="text-2xl font-bold text-amber-800">{{ $pendingCount }}</p>
                         </div>
-                        <div class="rounded-xl border border-emerald-200 bg-emerald-50/80 px-4 py-3 text-sm">
-                            <p class="font-medium text-emerald-700">Approved</p>
-                            <p class="text-xl font-bold text-emerald-800">{{ $approvedCount }}</p>
+                        <div
+                            class="group rounded-2xl border border-emerald-200/80 bg-gradient-to-br from-emerald-50 to-white px-4 py-3 text-sm shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+                            <p class="font-semibold text-emerald-700">Approved</p>
+                            <p class="text-2xl font-bold text-emerald-800">{{ $approvedCount }}</p>
                         </div>
-                        <div class="rounded-xl border border-sky-200 bg-sky-50/80 px-4 py-3 text-sm">
-                            <p class="font-medium text-sky-700">Booked</p>
-                            <p class="text-xl font-bold text-sky-800">{{ $bookedSlots }}</p>
+                        <div
+                            class="group rounded-2xl border border-sky-200/80 bg-gradient-to-br from-sky-50 to-white px-4 py-3 text-sm shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+                            <p class="font-semibold text-sky-700">Booked</p>
+                            <p class="text-2xl font-bold text-sky-800">{{ $bookedSlots }}</p>
                         </div>
-                        <div class="rounded-xl border border-violet-200 bg-violet-50/80 px-4 py-3 text-sm">
-                            <p class="font-medium text-violet-700">Completed</p>
-                            <p class="text-xl font-bold text-violet-800">{{ $completedCount }}</p>
+                        <div
+                            class="group rounded-2xl border border-violet-200/80 bg-gradient-to-br from-violet-50 to-white px-4 py-3 text-sm shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+                            <p class="font-semibold text-violet-700">Completed</p>
+                            <p class="text-2xl font-bold text-violet-800">{{ $completedCount }}</p>
                         </div>
                     </div>
                 </div>

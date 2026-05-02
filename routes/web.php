@@ -266,9 +266,75 @@ Route::middleware('auth')->group(function () {
         $now = now();
         $isWeekend = $now->isWeekend();
         $currentMinutes = ((int) $now->format('H')) * 60 + ((int) $now->format('i'));
-        $nextSlotLabel = $isWeekend
-            ? 'Monday 9:00 AM'
-            : $now->copy()->addHour()->startOfHour()->format('g:i A');
+        $buildDailySlots = static function (Carbon $date): array {
+            $weekdayIso = (int) $date->dayOfWeekIso;
+
+            $startHour = 9;
+            $endHour = match (true) {
+                $weekdayIso >= 1 && $weekdayIso <= 4 => 17,
+                $weekdayIso === 5 => 12,
+                default => 9,
+            };
+
+            if ($weekdayIso >= 6) {
+                return [];
+            }
+
+            $slots = [];
+            for ($hour = $startHour; $hour < $endHour; $hour++) {
+                $slots[] = sprintf('%02d:00 - %02d:00', $hour, $hour + 1);
+            }
+
+            return $slots;
+        };
+
+        $occupiedSlots = BookingRequest::query()
+            ->whereIn('status', ['pending', 'approved'])
+            ->whereDate('booking_date', '>=', $now->toDateString())
+            ->get(['booking_date', 'booking_time', 'counsellor_name'])
+            ->map(static fn(BookingRequest $booking): array => [
+                'date' => (string) $booking->booking_date,
+                'time' => trim((string) $booking->booking_time),
+                'counsellor' => trim((string) $booking->counsellor_name),
+            ])
+            ->all();
+
+        $occupiedSlotLookup = [];
+        foreach ($occupiedSlots as $slot) {
+            if ($slot['date'] === '' || $slot['time'] === '' || $slot['counsellor'] === '') {
+                continue;
+            }
+
+            $occupiedSlotLookup[$slot['counsellor']][$slot['date']][$slot['time']] = true;
+        }
+
+        $findNextAvailableSlot = static function (string $counsellorName) use ($now, $buildDailySlots, $occupiedSlotLookup): string {
+            $today = $now->copy()->startOfDay();
+
+            for ($dayOffset = 0; $dayOffset <= 60; $dayOffset++) {
+                $date = $today->copy()->addDays($dayOffset);
+                $slots = $buildDailySlots($date);
+
+                foreach ($slots as $slot) {
+                    [$startTime] = array_map('trim', explode('-', $slot));
+                    $slotStart = Carbon::createFromFormat('Y-m-d H:i', $date->toDateString() . ' ' . $startTime);
+
+                    if ($slotStart->lessThanOrEqualTo($now)) {
+                        continue;
+                    }
+
+                    if (isset($occupiedSlotLookup[$counsellorName][$date->toDateString()][$slot])) {
+                        continue;
+                    }
+
+                    return $slotStart->isSameDay($now)
+                        ? $slotStart->format('g:i A')
+                        : $slotStart->format('D, M j g:i A');
+                }
+            }
+
+            return 'No upcoming slot';
+        };
 
         $occupiedNow = BookingRequest::query()
             ->whereDate('booking_date', $now->toDateString())
@@ -296,13 +362,13 @@ Route::middleware('auth')->group(function () {
 
         $occupiedLookup = array_flip($occupiedNow);
         $counsellors = collect($counsellorNames)
-            ->map(static function (string $name) use ($occupiedLookup, $nextSlotLabel, $isWeekend): array {
+            ->map(static function (string $name) use ($occupiedLookup, $isWeekend, $findNextAvailableSlot): array {
                 if ($isWeekend) {
                     return [
                         'name' => $name,
                         'available' => false,
                         'status_label' => 'Unavailable',
-                        'next_slot' => $nextSlotLabel,
+                        'next_slot' => $findNextAvailableSlot($name),
                     ];
                 }
 
@@ -312,7 +378,7 @@ Route::middleware('auth')->group(function () {
                     'name' => $name,
                     'available' => $available,
                     'status_label' => $available ? 'Available' : 'In Session',
-                    'next_slot' => $nextSlotLabel,
+                    'next_slot' => $findNextAvailableSlot($name),
                 ];
             })
             ->values()
@@ -997,7 +1063,11 @@ Route::middleware('auth')->group(function () {
             'title' => 'Counselling reminder',
             'message' => $reminderMessage,
         ]);
-
+        ChatMessage::create([
+            'sender_id' => $user->id,
+            'receiver_id' => $recipient->id,
+            'message' => $reminderMessage,
+        ]);
         if (! empty($recipient->email)) {
             Mail::raw($reminderMessage, static function ($message) use ($recipient): void {
                 $message->to($recipient->email)
@@ -1114,7 +1184,7 @@ Route::middleware('auth')->group(function () {
         abort_unless(in_array($role, ['student', 'teacher'], true), 403);
 
         $filters = $request->validate([
-            'status' => ['nullable', 'in:all,pending,approved,rejected,completed'],
+            'status' => ['nullable', 'in:all,pending,approved,rejected,cancelled,completed'],
         ]);
 
         $selectedStatus = $filters['status'] ?? 'all';
@@ -1123,6 +1193,7 @@ Route::middleware('auth')->group(function () {
             'pending' => 'Pending',
             'approved' => 'Approved',
             'rejected' => 'Rejected',
+            'cancelled' => 'Cancelled',
             'completed' => 'Completed',
             default => ucfirst($status),
         };
@@ -1130,6 +1201,7 @@ Route::middleware('auth')->group(function () {
         $statusBadgeClass = static fn(string $status): string => match ($status) {
             'approved' => 'border-emerald-200 bg-emerald-50 text-emerald-700',
             'rejected' => 'border-rose-200 bg-rose-50 text-rose-700',
+            'cancelled' => 'border-rose-200 bg-rose-50 text-rose-700',
             'completed' => 'border-slate-300 bg-slate-100 text-slate-700',
             default => 'border-amber-200 bg-amber-50 text-amber-700',
         };
@@ -1175,6 +1247,7 @@ Route::middleware('auth')->group(function () {
                 'pending' => (int) ($bookingStats['pending'] ?? 0),
                 'approved' => (int) ($bookingStats['approved'] ?? 0),
                 'rejected' => (int) ($bookingStats['rejected'] ?? 0),
+                'cancelled' => (int) ($bookingStats['cancelled'] ?? 0),
                 'completed' => (int) ($bookingStats['completed'] ?? 0),
             ],
         ]);
@@ -1323,7 +1396,7 @@ Route::middleware('auth')->group(function () {
         }
 
         $bookingRequest->update([
-            'status' => 'rejected',
+            'status' => 'cancelled',
         ]);
 
         $user->inboxNotifications()->create([

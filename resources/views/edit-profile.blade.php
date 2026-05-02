@@ -75,7 +75,7 @@
 
     <main id="loginContent" class="min-h-screen p-4 sm:p-8 opacity-0 translate-y-2 transition-all duration-700">
         <section
-            class="profile-shell {{ $isCounsellor ? 'profile-shell--counsellor border-indigo-100/90' : 'border-slate-200/80' }} max-w-[96rem] mx-auto rounded-[2rem] bg-white/75 backdrop-blur-xl shadow-2xl overflow-hidden">
+            class="profile-shell {{ $isCounsellor ? 'profile-shell--counsellor border-indigo-100/90' : 'border-slate-200/80' }} max-w-6xl mx-auto rounded-[2rem] bg-white/75 backdrop-blur-xl shadow-2xl overflow-hidden">
             <header
                 class="px-5 sm:px-8 py-5 border-b border-slate-200/80 bg-white/85 flex items-center justify-between gap-4">
                 <div>
@@ -224,6 +224,7 @@
                             </form>
                         </aside>
 
+                        <div class="space-y-5 max-w-3xl w-full">
                         <form method="POST" action="{{ route('profile.update') }}"
                             class="rounded-2xl border border-sky-100 bg-white/95 p-4 sm:p-5 shadow-sm space-y-4">
                             @csrf
@@ -291,8 +292,37 @@
                                 </a>
                             @endif
                         </form>
+
+                        <form method="POST" action="{{ route('password.update') }}"
+                            class="rounded-2xl border border-violet-100 bg-white/95 p-4 sm:p-5 shadow-sm space-y-4">
+                            @csrf
+                            @method('PUT')
+                            <div class="rounded-xl border border-violet-100 bg-violet-50/70 px-3 py-2">
+                                <p class="text-xs font-semibold uppercase tracking-[0.12em] text-violet-700">Security</p>
+                                <p class="mt-0.5 text-xs text-slate-600">Change your password to keep your account safe.</p>
+                            </div>
+                            <div>
+                                <label for="current_password" class="block text-sm font-medium text-slate-700 mb-1.5">Current Password</label>
+                                <input id="current_password" name="current_password" type="password"
+                                    class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500 transition" required />
+                            </div>
+                            <div class="grid gap-4 sm:grid-cols-2">
+                                <div>
+                                    <label for="password" class="block text-sm font-medium text-slate-700 mb-1.5">New Password</label>
+                                    <input id="password" name="password" type="password"
+                                        class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500 transition" required />
+                                </div>
+                                <div>
+                                    <label for="password_confirmation" class="block text-sm font-medium text-slate-700 mb-1.5">Confirm Password</label>
+                                    <input id="password_confirmation" name="password_confirmation" type="password"
+                                        class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500 transition" required />
+                                </div>
+                            </div>
+                            <button type="submit" class="w-full rounded-xl bg-violet-600 text-white font-semibold py-2.5 hover:bg-violet-700 transition shadow-sm">Update Password</button>
+                        </form>
+                        </div>
                     </div>
-                @endif
+
             </div>
 
             <footer
