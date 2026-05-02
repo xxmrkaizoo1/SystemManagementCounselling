@@ -37,6 +37,11 @@
         .hero-fade-enter {
             animation: heroFadeUp 0.55s ease;
         }
+
+        .glass-card {
+            background: linear-gradient(140deg, rgba(255, 255, 255, 0.9), rgba(241, 245, 249, 0.78));
+            backdrop-filter: blur(10px);
+        }
     </style>
 </head>
 
@@ -105,22 +110,34 @@
                         <div
                             class="group rounded-2xl border border-amber-200/80 bg-gradient-to-br from-amber-50 to-white px-4 py-3 text-sm shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
                             <p class="font-semibold text-amber-700">Pending</p>
-                            <p class="text-2xl font-bold text-amber-800">{{ $pendingCount }}</p>
+                            <div class="mt-1 flex items-end justify-between">
+                                <p class="text-2xl font-bold text-amber-800">{{ $pendingCount }}</p>
+                                <span class="text-xs font-medium text-amber-600/80">Needs action</span>
+                            </div>
                         </div>
                         <div
                             class="group rounded-2xl border border-emerald-200/80 bg-gradient-to-br from-emerald-50 to-white px-4 py-3 text-sm shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
                             <p class="font-semibold text-emerald-700">Approved</p>
-                            <p class="text-2xl font-bold text-emerald-800">{{ $approvedCount }}</p>
+                            <div class="mt-1 flex items-end justify-between">
+                                <p class="text-2xl font-bold text-emerald-800">{{ $approvedCount }}</p>
+                                <span class="text-xs font-medium text-emerald-600/80">Ready</span>
+                            </div>
                         </div>
                         <div
                             class="group rounded-2xl border border-sky-200/80 bg-gradient-to-br from-sky-50 to-white px-4 py-3 text-sm shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
                             <p class="font-semibold text-sky-700">Booked</p>
-                            <p class="text-2xl font-bold text-sky-800">{{ $bookedSlots }}</p>
+                            <div class="mt-1 flex items-end justify-between">
+                                <p class="text-2xl font-bold text-sky-800">{{ $bookedSlots }}</p>
+                                <span class="text-xs font-medium text-sky-600/80">Scheduled</span>
+                            </div>
                         </div>
                         <div
                             class="group rounded-2xl border border-violet-200/80 bg-gradient-to-br from-violet-50 to-white px-4 py-3 text-sm shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
                             <p class="font-semibold text-violet-700">Completed</p>
-                            <p class="text-2xl font-bold text-violet-800">{{ $completedCount }}</p>
+                            <div class="mt-1 flex items-end justify-between">
+                                <p class="text-2xl font-bold text-violet-800">{{ $completedCount }}</p>
+                                <span class="text-xs font-medium text-violet-600/80">Closed</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -163,9 +180,9 @@
                     </div>
                 </section>
 
-                <section class="grid gap-6 lg:grid-cols-2">
+                <section class="grid gap-6 xl:grid-cols-12">
                     <article
-                        class="rounded-3xl border border-slate-200/90 bg-gradient-to-br from-white via-sky-50/45 to-sky-100/55 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md sm:p-8 lg:min-h-[430px]">
+                        class="rounded-3xl border border-slate-200/90 bg-gradient-to-br from-white via-sky-50/45 to-sky-100/55 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md sm:p-8 xl:col-span-5 xl:min-h-[440px]">
                         <div
                             class="mx-auto flex h-20 w-20 items-center justify-center rounded-full border border-sky-200 bg-white text-3xl shadow-sm">
                             🧑‍🏫
@@ -189,15 +206,14 @@
                     </article>
 
                     <article
-                        class="rounded-3xl border border-slate-200/90 bg-gradient-to-br from-white via-violet-50/45 to-violet-100/55 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md sm:p-8 lg:min-h-[430px]">
+                        class="rounded-3xl border border-slate-200/90 bg-gradient-to-br from-white via-violet-50/45 to-violet-100/55 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md sm:p-8 xl:col-span-4 xl:min-h-[440px]">
                         <div
                             class="mx-auto flex h-20 w-20 items-center justify-center rounded-full border border-violet-200 bg-white text-3xl shadow-sm">
                             📅
                         </div>
 
                         <h2 class="mt-5 text-center text-2xl font-semibold text-slate-800">Session Status</h2>
-                        <p class="mt-2 text-center text-base text-slate-500">Lihat status sesi yang telah approved,
-                            booked, dan complete.</p>
+                        <p class="mt-2 text-center text-base text-slate-500">Lihat status sesi yang telah approved,                            booked, dan complete.</p>
 
                         <div class="mt-6 grid grid-cols-3 gap-3 text-center text-xs sm:text-sm">
                             <div class="rounded-xl border border-emerald-100 bg-emerald-50 px-2 py-3 sm:px-3">
@@ -218,6 +234,30 @@
                             <a href="{{ route('counsellor.session-status-list') }}"
                                 class="inline-flex min-w-[260px] justify-center rounded-full bg-violet-600 px-6 py-3 text-base font-semibold text-white shadow-sm transition hover:bg-violet-700">
                                 View Approved • Booked • Completed
+                            </a>
+                        </div>
+                    </article>
+
+                    <article
+                        class="glass-card rounded-3xl border border-slate-200/90 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md sm:p-8 xl:col-span-3">
+                        <h2 class="text-lg font-semibold text-slate-800">Quick Actions</h2>
+                        <p class="mt-2 text-sm text-slate-500">Jump into your most common daily tasks.</p>
+
+                        <div class="mt-6 space-y-3">
+                            <a href="{{ route('counsellor.pending-requests') }}"
+                                class="flex items-center justify-between rounded-2xl border border-sky-100 bg-white/80 px-4 py-3 text-sm font-medium text-sky-700 transition hover:border-sky-300 hover:bg-sky-50">
+                                <span>Review Pending Requests</span>
+                                <span class="rounded-full bg-sky-100 px-2 py-0.5 text-xs font-semibold">{{ $pendingCount }}</span>
+                            </a>
+                            <a href="{{ route('counsellor.session-status-list') }}"
+                                class="flex items-center justify-between rounded-2xl border border-violet-100 bg-white/80 px-4 py-3 text-sm font-medium text-violet-700 transition hover:border-violet-300 hover:bg-violet-50">
+                                <span>View Session Progress</span>
+                                <span class="rounded-full bg-violet-100 px-2 py-0.5 text-xs font-semibold">{{ $bookedSlots + $completedCount }}</span>
+                            </a>
+                            <a href="{{ route('profile.edit') }}"
+                                class="flex items-center justify-between rounded-2xl border border-emerald-100 bg-white/80 px-4 py-3 text-sm font-medium text-emerald-700 transition hover:border-emerald-300 hover:bg-emerald-50">
+                                <span>Update Profile</span>
+                                <span class="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold">Account</span>
                             </a>
                         </div>
                     </article>
@@ -377,14 +417,15 @@
                             placeholder="Type a message..." />
                         <button id="chat-popup-send" type="button"
                             class="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100">Send</button>
-                    </div>
-                    <input id="chat-popup-reminder" type="hidden" name="reminder_message" />
-                    <div class="mt-3 flex items-center justify-end gap-2">
-                        <button id="chat-popup-cancel" type="button"
-                            class="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50">Cancel</button>
+
+                                                </div>
+                    <div class="mt-3 grid grid-cols-2 gap-2">
                         <button type="submit"
-                            class="rounded-lg bg-sky-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-sky-700">Send
-                            reminder email</button>
+                            class="rounded-xl bg-sky-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-sky-700">Send
+                            Reminder</button>
+                        <a id="chat-popup-open-full" href="{{ route('chat.index') }}"
+                            class="rounded-xl border border-slate-300 px-3 py-2 text-center text-sm font-semibold text-slate-700 transition hover:bg-slate-100">Open
+                            full chat</a>
                     </div>
                 </form>
             </div>
@@ -392,313 +433,275 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const toggleButton = document.getElementById('messages-toggle');
-            const widgetBody = document.getElementById('messages-body');
-            const searchInput = document.getElementById('chat-search');
-            const chatList = document.getElementById('chat-list');
-            const chatRows = chatList ? Array.from(chatList.querySelectorAll('[data-chat-item="true"]')) : [];
-            const noResults = document.getElementById('chat-no-results');
-            const chatPopupBackdrop = document.getElementById('chat-popup-backdrop');
-            const chatPopup = document.getElementById('chat-popup');
-            const chatPopupHeader = document.getElementById('chat-popup-header');
-            const chatPopupBody = document.getElementById('chat-popup-body');
-            const chatPopupClose = document.getElementById('chat-popup-close');
-            const chatPopupMinimize = document.getElementById('chat-popup-minimize');
-            const chatPopupCancel = document.getElementById('chat-popup-cancel');
-            const reminderForm = document.getElementById('reminder-form');
-            const chatPopupThread = document.getElementById('chat-popup-thread');
-            const chatPopupMessageInput = document.getElementById('chat-popup-message-input');
-            const chatPopupSend = document.getElementById('chat-popup-send');
-            const chatPopupStudent = document.getElementById('chat-popup-student');
-            const chatPopupTopic = document.getElementById('chat-popup-topic');
-            const chatPopupSlot = document.getElementById('chat-popup-slot');
-            const chatPopupDate = document.getElementById('chat-popup-date');
-            const chatPopupRole = document.getElementById('chat-popup-role');
-            const chatPopupEmail = document.getElementById('chat-popup-email');
-            const chatPopupPhone = document.getElementById('chat-popup-phone');
-            const chatPopupReminder = document.getElementById('chat-popup-reminder');
-            const heroImage = document.getElementById('counsellor-hero-image');
-            const heroTag = document.getElementById('counsellor-hero-tag');
-            const heroTitle = document.getElementById('counsellor-hero-title');
-            const heroSubtitle = document.getElementById('counsellor-hero-subtitle');
-            const heroPrev = document.getElementById('counsellor-hero-prev');
-            const heroNext = document.getElementById('counsellor-hero-next');
-            const heroDots = document.getElementById('counsellor-hero-dots');
-
-            const heroSlides = [{
+        (function() {
+            const slides = [{
                     image: 'https://images.unsplash.com/photo-1714976694525-71eb29a7c500?auto=format&fit=crop&w=1400&q=80',
                     tag: 'CollegeCare Focus',
                     title: 'Guide every student with empathy and structure.',
-                    subtitle: 'Review requests, confirm sessions, and keep counselling support consistent every week.',
+                    subtitle: 'Review requests, confirm sessions, and keep counselling support consistent every week.'
                 },
                 {
-                    image: 'https://images.unsplash.com/photo-1714976694867-bc0e012fab70?auto=format&fit=crop&w=1400&q=80',
-                    tag: 'Student Readiness',
-                    title: 'Support better academic focus with timely check-ins.',
-                    subtitle: 'Approve important sessions quickly to help students stay on track.',
+                    image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?auto=format&fit=crop&w=1400&q=80',
+                    tag: 'Session Planning',
+                    title: 'Coordinate sessions without losing context.',
+                    subtitle: 'Track approved requests and align each booking with the right follow-up actions.'
                 },
                 {
-                    image: 'https://plus.unsplash.com/premium_photo-1668613402936-98ce515c5cc5?auto=format&fit=crop&w=1400&q=80',
-                    tag: 'Wellbeing Reminder',
-                    title: 'Promote healthy routines beyond the counselling room.',
-                    subtitle: 'Encourage practical habits students can follow every day.',
+                    image: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1400&q=80',
+                    tag: 'Student Support',
+                    title: 'Build trust through timely communication.',
+                    subtitle: 'Respond to requests quickly and maintain meaningful support for every student.'
                 }
             ];
-            let currentHeroSlide = 0;
-            let heroSlideInterval = null;
 
-            const renderHeroDots = function() {
-                if (!heroDots) return;
-                heroDots.innerHTML = '';
-                heroSlides.forEach(function(_, index) {
-                    const dot = document.createElement('button');
-                    dot.type = 'button';
-                    dot.className = 'h-2.5 w-2.5 rounded-full transition ' + (index ===
-                        currentHeroSlide ?
-                        'bg-white' : 'bg-white/40 hover:bg-white/70');
-                    dot.setAttribute('aria-label', 'Go to slide ' + (index + 1));
-                    dot.addEventListener('click', function() {
-                        setHeroSlide(index);
-                    });
-                    heroDots.appendChild(dot);
-                });
-            };
+            const imageEl = document.getElementById('counsellor-hero-image');
+            const tagEl = document.getElementById('counsellor-hero-tag');
+            const titleEl = document.getElementById('counsellor-hero-title');
+            const subtitleEl = document.getElementById('counsellor-hero-subtitle');
+            const prevBtn = document.getElementById('counsellor-hero-prev');
+            const nextBtn = document.getElementById('counsellor-hero-next');
+            const dotsWrap = document.getElementById('counsellor-hero-dots');
 
-            const setHeroSlide = function(index) {
-                if (!heroImage || !heroTag || !heroTitle || !heroSubtitle) return;
-                currentHeroSlide = (index + heroSlides.length) % heroSlides.length;
-                const slide = heroSlides[currentHeroSlide];
-
-                heroImage.classList.add('opacity-40');
-                setTimeout(function() {
-                    heroImage.src = slide.image;
-                    heroTag.textContent = slide.tag;
-                    heroTitle.textContent = slide.title;
-                    heroSubtitle.textContent = slide.subtitle;
-
-                    [heroTag, heroTitle, heroSubtitle].forEach(function(el) {
-                        el.classList.remove('hero-fade-enter');
-                        void el.offsetWidth;
-                        el.classList.add('hero-fade-enter');
-                    });
-
-                    heroImage.classList.remove('opacity-40');
-                }, 120);
-
-                renderHeroDots();
-            };
-
-            const startHeroAutoplay = function() {
-                if (!heroImage) return;
-                if (heroSlideInterval) {
-                    clearInterval(heroSlideInterval);
-                }
-                heroSlideInterval = setInterval(function() {
-                    setHeroSlide(currentHeroSlide + 1);
-                }, 4500);
-            };
-
-            if (toggleButton && widgetBody) {
-                const chevronPath = 'm6 9 6 6 6-6';
-                const chevronUpPath = 'm18 15-6-6-6 6';
-                const chevronIcon = toggleButton.querySelector('path');
-                toggleButton.addEventListener('click', function() {
-                    const collapsed = widgetBody.classList.toggle('hidden');
-                    toggleButton.setAttribute('aria-expanded', String(!collapsed));
-                    if (chevronIcon) {
-                        chevronIcon.setAttribute('d', collapsed ? chevronUpPath : chevronPath);
-                    }
-                });
+            if (!imageEl || !tagEl || !titleEl || !subtitleEl || !prevBtn || !nextBtn || !dotsWrap || !slides.length) {
+                return;
             }
 
-            if (searchInput && chatRows.length > 0) {
-                searchInput.addEventListener('input', function() {
+            let current = 0;
+            let intervalId;
+
+            const renderDots = () => {
+                dotsWrap.innerHTML = '';
+                slides.forEach((_, index) => {
+                    const dot = document.createElement('button');
+                    dot.type = 'button';
+                    dot.className = `h-2.5 rounded-full transition ${index === current ? 'w-6 bg-white' : 'w-2.5 bg-white/40 hover:bg-white/70'}`;
+                    dot.setAttribute('aria-label', `Go to slide ${index + 1}`);
+                    dot.addEventListener('click', () => {
+                        current = index;
+                        applySlide();
+                        restartInterval();
+                    });
+                    dotsWrap.appendChild(dot);
+                });
+            };
+
+            const applySlide = () => {
+                const slide = slides[current];
+                imageEl.classList.remove('hero-fade-enter');
+                titleEl.classList.remove('hero-fade-enter');
+                subtitleEl.classList.remove('hero-fade-enter');
+
+                imageEl.style.opacity = '0.3';
+
+                window.requestAnimationFrame(() => {
+                    imageEl.src = slide.image;
+                    tagEl.textContent = slide.tag;
+                    titleEl.textContent = slide.title;
+                    subtitleEl.textContent = slide.subtitle;
+
+                    imageEl.classList.add('hero-fade-enter');
+                    titleEl.classList.add('hero-fade-enter');
+                    subtitleEl.classList.add('hero-fade-enter');
+                    imageEl.style.opacity = '0.7';
+                    renderDots();
+                });
+            };
+
+            const nextSlide = () => {
+                current = (current + 1) % slides.length;
+                applySlide();
+            };
+
+            const prevSlide = () => {
+                current = (current - 1 + slides.length) % slides.length;
+                applySlide();
+            };
+
+            const restartInterval = () => {
+                if (intervalId) {
+                    clearInterval(intervalId);
+                }
+                intervalId = setInterval(nextSlide, 6500);
+            };
+
+            nextBtn.addEventListener('click', () => {
+                nextSlide();
+                restartInterval();
+            });
+
+            prevBtn.addEventListener('click', () => {
+                prevSlide();
+                restartInterval();
+            });
+
+            applySlide();
+            restartInterval();
+        })();
+
+        (function() {
+            const widget = document.getElementById('messages-widget');
+            const toggleBtn = document.getElementById('messages-toggle');
+            const body = document.getElementById('messages-body');
+            const list = document.getElementById('chat-list');
+            const searchInput = document.getElementById('chat-search');
+            const noResults = document.getElementById('chat-no-results');
+            const popupBackdrop = document.getElementById('chat-popup-backdrop');
+            const popup = document.getElementById('chat-popup');
+            const popupStudent = document.getElementById('chat-popup-student');
+            const popupTopic = document.getElementById('chat-popup-topic');
+            const popupSlot = document.getElementById('chat-popup-slot');
+            const popupDate = document.getElementById('chat-popup-date');
+            const popupRole = document.getElementById('chat-popup-role');
+            const popupEmail = document.getElementById('chat-popup-email');
+            const popupPhone = document.getElementById('chat-popup-phone');
+            const popupThread = document.getElementById('chat-popup-thread');
+            const popupMessageInput = document.getElementById('chat-popup-message-input');
+            const popupSendBtn = document.getElementById('chat-popup-send');
+            const popupCloseBtn = document.getElementById('chat-popup-close');
+            const popupMinBtn = document.getElementById('chat-popup-minimize');
+            const reminderForm = document.getElementById('reminder-form');
+            const popupOpenFull = document.getElementById('chat-popup-open-full');
+
+            if (!widget || !toggleBtn || !body || !list || !popupBackdrop || !popup || !popupCloseBtn || !popupMinBtn) {
+                return;
+            }
+
+            let collapsed = false;
+            let dragOffsetX = 0;
+            let dragOffsetY = 0;
+            let isDragging = false;
+
+            const escapeHtml = (str) => String(str || '')
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;')
+                .replaceAll("'", '&#039;');
+
+            const setCollapsed = (value) => {
+                collapsed = value;
+                body.classList.toggle('hidden', collapsed);
+                toggleBtn.setAttribute('aria-expanded', String(!collapsed));
+                toggleBtn.innerHTML = collapsed ?
+                    `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>` :
+                    `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`;
+            };
+
+            toggleBtn.addEventListener('click', () => setCollapsed(!collapsed));
+
+            const setPopupPosition = (x, y) => {
+                popup.style.left = `${x}px`;
+                popup.style.top = `${y}px`;
+                popup.style.transform = 'translate(0, 0)';
+            };
+
+            const openPopup = (button) => {
+                const student = button.dataset.studentName || 'Student';
+                const topic = button.dataset.topic || 'General counseling support';
+                const date = button.dataset.displayDate || '-';
+                const role = button.dataset.requesterRole || 'Student';
+                const email = button.dataset.email || '-';
+                const phone = button.dataset.phone || '-';
+                const reminderUrl = button.dataset.reminderUrl || '';
+                const bookingRequestId = button.dataset.bookingRequestId || '';
+                const studentId = button.dataset.studentId || '';
+
+                popupStudent.textContent = student;
+                popupTopic.textContent = topic;
+                popupSlot.textContent = button.dataset.requestTime || '-';
+                popupDate.textContent = date;
+                popupRole.textContent = role;
+                popupEmail.textContent = email;
+                popupPhone.textContent = phone;
+
+                popupThread.innerHTML = `
+                    <div class="rounded-lg bg-white px-3 py-2 text-sm text-slate-700 shadow-sm">Hi ${escapeHtml(student)}, this is your counsellor. I reviewed your request for <span class="font-medium">${escapeHtml(topic)}</span>.</div>
+                    <div class="rounded-lg bg-sky-50 px-3 py-2 text-sm text-sky-900 shadow-sm">Please confirm if <span class="font-medium">${escapeHtml(date)}</span> still works for you.</div>
+                `;
+
+                reminderForm.action = reminderUrl;
+                reminderForm.dataset.bookingRequestId = bookingRequestId;
+                reminderForm.dataset.studentId = studentId;
+
+                popupOpenFull.href = `{{ route('chat.index') }}?student_id=${encodeURIComponent(studentId)}&booking_request_id=${encodeURIComponent(bookingRequestId)}`;
+
+                popupBackdrop.classList.remove('hidden');
+                setPopupPosition(window.innerWidth / 2 - popup.offsetWidth / 2, 80);
+                popupMessageInput.focus();
+            };
+
+            const closePopup = () => {
+                popupBackdrop.classList.add('hidden');
+            };
+
+            list.querySelectorAll('[data-chat-item="true"]').forEach((button) => {
+                button.addEventListener('click', () => openPopup(button));
+            });
+
+            popupCloseBtn.addEventListener('click', closePopup);
+            popupMinBtn.addEventListener('click', closePopup);
+            popupBackdrop.addEventListener('click', (event) => {
+                if (event.target === popupBackdrop) closePopup();
+            });
+
+            popupSendBtn.addEventListener('click', () => {
+                const value = popupMessageInput.value.trim();
+                if (!value) return;
+                const bubble = document.createElement('div');
+                bubble.className = 'rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-900 shadow-sm';
+                bubble.textContent = value;
+                popupThread.appendChild(bubble);
+                popupThread.scrollTop = popupThread.scrollHeight;
+                popupMessageInput.value = '';
+                popupMessageInput.focus();
+            });
+
+            popupMessageInput.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    popupSendBtn.click();
+                }
+            });
+
+            const popupHeader = document.getElementById('chat-popup-header');
+
+            popupHeader.addEventListener('mousedown', (event) => {
+                isDragging = true;
+                const rect = popup.getBoundingClientRect();
+                dragOffsetX = event.clientX - rect.left;
+                dragOffsetY = event.clientY - rect.top;
+                popupHeader.classList.add('cursor-grabbing');
+            });
+
+            window.addEventListener('mousemove', (event) => {
+                if (!isDragging) return;
+                const x = Math.max(8, Math.min(window.innerWidth - popup.offsetWidth - 8, event.clientX - dragOffsetX));
+                const y = Math.max(8, Math.min(window.innerHeight - popup.offsetHeight - 8, event.clientY - dragOffsetY));
+                setPopupPosition(x, y);
+            });
+
+            window.addEventListener('mouseup', () => {
+                isDragging = false;
+                popupHeader.classList.remove('cursor-grabbing');
+            });
+
+            if (searchInput) {
+                searchInput.addEventListener('input', () => {
                     const query = searchInput.value.trim().toLowerCase();
                     let visibleCount = 0;
 
-                    chatRows.forEach(function(row) {
-                        const name = row.dataset.name || '';
-                        const topic = row.dataset.topicSearch || '';
-                        const matches = name.includes(query) || topic.includes(query);
-                        row.classList.toggle('hidden', !matches);
-                        if (matches) visibleCount += 1;
+                    list.querySelectorAll('[data-chat-item="true"]').forEach((item) => {
+                        const name = item.dataset.name || '';
+                        const topic = item.dataset.topicSearch || '';
+                        const show = !query || name.includes(query) || topic.includes(query);
+                        item.classList.toggle('hidden', !show);
+                        if (show) visibleCount++;
                     });
 
-                    if (noResults) {
-                        noResults.classList.toggle('hidden', visibleCount > 0);
-                    }
+                    noResults.classList.toggle('hidden', visibleCount !== 0);
                 });
             }
-
-            const closeChatPopup = function() {
-                if (!chatPopupBackdrop) return;
-                chatPopupBackdrop.classList.add('hidden');
-                document.body.classList.remove('overflow-hidden');
-            };
-
-            const appendChatBubble = function(message, type) {
-                if (!chatPopupThread) return;
-                const bubble = document.createElement('div');
-                bubble.className = type === 'outgoing' ?
-                    'ml-auto max-w-[88%] rounded-xl bg-sky-600 px-3 py-2 text-sm text-white' :
-                    'max-w-[88%] rounded-xl bg-white px-3 py-2 text-sm text-slate-700 border border-slate-200';
-                bubble.textContent = message;
-                chatPopupThread.appendChild(bubble);
-                chatPopupThread.scrollTop = chatPopupThread.scrollHeight;
-            };
-
-            const sendPopupChatMessage = function() {
-                if (!chatPopupMessageInput || !chatPopupReminder) return;
-                const message = chatPopupMessageInput.value.trim();
-                if (message === '') return;
-                appendChatBubble(message, 'outgoing');
-                chatPopupReminder.value = message;
-                chatPopupMessageInput.value = '';
-            };
-
-            if (chatRows.length > 0 && chatPopupBackdrop && reminderForm) {
-                chatRows.forEach(function(row) {
-                    row.addEventListener('click', function() {
-                        const studentName = row.dataset.studentName || 'Student';
-                        const topic = row.dataset.topic || 'General counseling support';
-                        const requestSlot = row.dataset.requestTime || '-';
-                        const displayDate = row.dataset.requestDate || '-';
-                        const roleLabel = row.dataset.requesterRole || 'Student';
-                        const email = row.dataset.email || '-';
-                        const phone = row.dataset.phone || row.dataset.studentPhone || '-';
-                        const reminderUrl = row.dataset.reminderUrl || '';
-
-                        if (!reminderUrl) {
-                            return;
-                        }
-
-                        chatPopupStudent.textContent = studentName;
-                        chatPopupTopic.textContent = topic;
-                        chatPopupSlot.textContent = requestSlot;
-                        chatPopupDate.textContent = displayDate;
-                        if (chatPopupRole) {
-                            chatPopupRole.textContent = roleLabel;
-                        }
-                        chatPopupEmail.textContent = email;
-                        if (chatPopupPhone) {
-                            chatPopupPhone.textContent = phone;
-                        }
-                        reminderForm.setAttribute('action', reminderUrl);
-                        const defaultMessage =
-                            'Hi ' + studentName +
-                            ', this is a reminder to respond to your counselling request about "' +
-                            topic + '" for the exact slot ' + requestSlot + '.';
-                        chatPopupReminder.value = defaultMessage;
-                        if (chatPopupThread) {
-                            chatPopupThread.innerHTML = '';
-                            appendChatBubble('Chat started with ' + studentName + '.', 'incoming');
-                            appendChatBubble(defaultMessage, 'outgoing');
-                        }
-                        if (chatPopupMessageInput) {
-                            chatPopupMessageInput.value = defaultMessage;
-                            chatPopupMessageInput.focus();
-                        }
-                        if (chatPopupBody) {
-                            chatPopupBody.classList.remove('hidden');
-                        }
-
-                        chatPopupBackdrop.classList.remove('hidden');
-                        document.body.classList.add('overflow-hidden');
-                    });
-                });
-            }
-
-            [chatPopupClose, chatPopupCancel].forEach(function(button) {
-                if (!button) return;
-                button.addEventListener('click', closeChatPopup);
-            });
-
-            if (chatPopupBackdrop) {
-                chatPopupBackdrop.addEventListener('click', function(event) {
-                    if (event.target === chatPopupBackdrop) {
-                        closeChatPopup();
-                    }
-                });
-            }
-
-            if (chatPopupSend) {
-                chatPopupSend.addEventListener('click', sendPopupChatMessage);
-            }
-
-            if (chatPopupMessageInput) {
-                chatPopupMessageInput.addEventListener('keydown', function(event) {
-                    if (event.key === 'Enter') {
-                        event.preventDefault();
-                        sendPopupChatMessage();
-                    }
-                });
-            }
-
-            if (chatPopupMinimize && chatPopupBody) {
-                chatPopupMinimize.addEventListener('click', function() {
-                    const hidden = chatPopupBody.classList.toggle('hidden');
-                    chatPopupMinimize.textContent = hidden ? '+' : '—';
-                });
-            }
-
-            if (chatPopup && chatPopupHeader) {
-                let isDragging = false;
-                let dragOffsetX = 0;
-                let dragOffsetY = 0;
-
-                chatPopupHeader.addEventListener('pointerdown', function(event) {
-                    if (event.target.closest('button')) return;
-                    const rect = chatPopup.getBoundingClientRect();
-                    isDragging = true;
-                    dragOffsetX = event.clientX - rect.left;
-                    dragOffsetY = event.clientY - rect.top;
-                    chatPopupHeader.setPointerCapture(event.pointerId);
-                });
-
-                chatPopupHeader.addEventListener('pointermove', function(event) {
-                    if (!isDragging) return;
-                    const maxLeft = window.innerWidth - chatPopup.offsetWidth - 8;
-                    const maxTop = window.innerHeight - chatPopup.offsetHeight - 8;
-                    const nextLeft = Math.min(Math.max(8, event.clientX - dragOffsetX), Math.max(8,
-                        maxLeft));
-                    const nextTop = Math.min(Math.max(8, event.clientY - dragOffsetY), Math.max(8, maxTop));
-                    chatPopup.style.left = nextLeft + 'px';
-                    chatPopup.style.top = nextTop + 'px';
-                    chatPopup.style.transform = 'none';
-                });
-
-                const endDrag = function(event) {
-                    if (!isDragging) return;
-                    isDragging = false;
-                    if (typeof event.pointerId === 'number') {
-                        chatPopupHeader.releasePointerCapture(event.pointerId);
-                    }
-                };
-
-                chatPopupHeader.addEventListener('pointerup', endDrag);
-                chatPopupHeader.addEventListener('pointercancel', endDrag);
-            }
-
-            if (heroImage && heroTag && heroTitle && heroSubtitle) {
-                setHeroSlide(0);
-                startHeroAutoplay();
-
-                if (heroPrev) {
-                    heroPrev.addEventListener('click', function() {
-                        setHeroSlide(currentHeroSlide - 1);
-                        startHeroAutoplay();
-                    });
-                }
-
-                if (heroNext) {
-                    heroNext.addEventListener('click', function() {
-                        setHeroSlide(currentHeroSlide + 1);
-                        startHeroAutoplay();
-                    });
-                }
-            }
-        });
+        })();
     </script>
 </body>
 
