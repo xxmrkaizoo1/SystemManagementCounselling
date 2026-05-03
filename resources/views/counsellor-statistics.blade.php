@@ -65,11 +65,6 @@
                                     <option value="8">Last 8 weeks</option>
                                     <option value="12" selected>Last 12 weeks</option>
                                 </select>
-
-                                <input id="emergency-date-from" type="date"
-                                    class="rounded-lg border border-rose-300 px-3 py-2 text-sm" />
-                                <input id="emergency-date-to" type="date"
-                                    class="rounded-lg border border-rose-300 px-3 py-2 text-sm" />
                                 <input id="topics-start-date" type="date"
                                     class="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
                                 <input id="topics-end-date" type="date"
@@ -195,33 +190,9 @@
             if (!value) return null;
             const raw = String(value).trim();
             if (!raw) return null;
-            const isoDateMatch = raw.match(/^(\d{4})-(\d{2})-(\d{2})(?:[ T].*)?$/);
-            if (isoDateMatch) {
-                const [, y, m, d] = isoDateMatch;
-                return new Date(Number(y), Number(m) - 1, Number(d));
-            }
-
-            const dmyMatch = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s.*)?$/);
-            if (dmyMatch) {
-                const [, d, m, y] = dmyMatch;
-                return new Date(Number(y), Number(m) - 1, Number(d));
-            }
             const hasTime = raw.includes('T') || raw.includes(' ');
-            const parsed = new Date(hasTime ? raw : `${raw}T00:00:00`);
-            return Number.isNaN(parsed.getTime()) ? null : parsed;
-        };
-
-        const inRange = (date, fromRaw, toRaw) => {
-            if (!date) return false;
-            const from = toDate(fromRaw);
-            const to = toDate(toRaw);
-            if (from && date < from) return false;
-            if (to) {
-                const toInclusive = new Date(to);
-                toInclusive.setHours(23, 59, 59, 999);
-                if (date > toInclusive) return false;
-            }
-            return true;
+            const date = new Date(hasTime ? raw : `${raw}T00:00:00`);
+            return Number.isNaN(date.getTime()) ? null : date;
         };
 
         const weekStart = (value) => {
@@ -303,10 +274,11 @@
                     datasets: [{
                         label: 'Bookings',
                         data: values,
-                        backgroundColor: hasData ? ['#0ea5e9', '#38bdf8', '#7dd3fc', '#0284c7', '#0369a1',
-                            '#14b8a6', '#22d3ee',
-                            '#60a5fa'
-                        ] : ['#cbd5e1']
+                        backgroundColor: hasData ?
+                            ['#0ea5e9', '#38bdf8', '#7dd3fc', '#0284c7', '#0369a1', '#14b8a6', '#22d3ee',
+                                '#60a5fa'
+                            ] :
+                            ['#cbd5e1']
                     }]
                 },
                 options: {
@@ -319,7 +291,8 @@
                         tooltip: {
                             callbacks: {
                                 label: (context) => hasData ?
-                                    `${context.label}: ${context.raw}` : 'No topic bookings found'
+                                    `${context.label}: ${context.raw}` :
+                                    'No topic bookings found'
                             }
                         }
                     }
@@ -327,7 +300,7 @@
             });
         }
 
-        function renderEmergencyLine(weeks, fromDate = null, toDateValue = null) {
+        function renderEmergencyLine(weeks, startDateValue = null, endDateValue = null) {
             const range = getDateRangeWeeks(weeks, startDateValue, endDateValue);
             const weekList = range.mode === 'weeks' ? range.weekList : getLastWeeks(weeks);
             const counts = Object.fromEntries(weekList.map(w => [w, 0]));

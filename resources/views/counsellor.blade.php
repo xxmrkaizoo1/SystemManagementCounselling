@@ -506,7 +506,7 @@
             const logoutModal = document.getElementById('counsellor-logout-modal');
             const logoutCancel = document.getElementById('counsellor-logout-cancel');
             const logoutConfirm = document.getElementById('counsellor-logout-confirm');
-            let logoutConfirmed = false;
+
 
             const closeLogoutModal = () => {
                 if (!logoutModal) return;
@@ -522,10 +522,7 @@
 
             if (logoutForm && logoutModal) {
                 logoutForm.addEventListener('submit', (event) => {
-                    if (logoutConfirmed) {
-                        logoutConfirmed = false;
-                        return;
-                    }
+
 
                     event.preventDefault();
                     openLogoutModal();
@@ -537,9 +534,8 @@
 
                 if (logoutConfirm) {
                     logoutConfirm.addEventListener('click', () => {
-                        logoutConfirmed = true;
                         closeLogoutModal();
-                        logoutForm.requestSubmit();
+                        logoutForm.submit();
                     });
                 }
 
