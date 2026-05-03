@@ -40,7 +40,7 @@
                             <path d="M5 10v10h14V10"></path>
                             <path d="M9 20v-6h6v6"></path>
                         </svg>
-                        <span>Back to Dashboard</span>
+
                     </a>
                 </div>
 

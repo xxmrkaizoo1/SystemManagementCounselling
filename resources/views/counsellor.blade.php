@@ -194,10 +194,21 @@
                         </div>
                     </div>
                 </section>
-                <div class="mb-6 flex justify-center">
+                <div class="mb-7 flex justify-center">
                     <a href="{{ route('counsellor.statistics') }}"
-                        class="inline-flex items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 px-6 py-3 text-sm font-semibold text-emerald-700 shadow-sm transition hover:border-emerald-300 hover:bg-emerald-100">
-                        View Statistics: Students & Topics
+                        class="group inline-flex items-center gap-2 rounded-full border border-emerald-300/90 bg-gradient-to-r from-emerald-50 via-white to-teal-50 px-7 py-3.5 text-sm font-semibold text-emerald-700 shadow-[0_10px_24px_-16px_rgba(16,185,129,0.8)] transition duration-200 hover:-translate-y-0.5 hover:border-emerald-400 hover:from-emerald-100 hover:to-teal-100 hover:shadow-[0_14px_32px_-16px_rgba(16,185,129,0.95)]">
+                        <span
+                            class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 transition group-hover:bg-emerald-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M3 3v18h18" />
+                                <path d="m7 14 4-4 3 3 5-5" />
+                            </svg>
+                        </span>
+                        <span>View Statistics: Students & Topics</span>
+                        <span
+                            class="rounded-full bg-emerald-200/80 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-emerald-800">New</span>
                     </a>
                 </div>
                 <section class="grid gap-6 xl:grid-cols-12">
@@ -205,7 +216,14 @@
                         class="rounded-3xl border border-slate-200/90 bg-gradient-to-br from-white via-sky-50/45 to-sky-100/55 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md sm:p-8 xl:col-span-5 xl:min-h-[440px]">
                         <div
                             class="mx-auto flex h-20 w-20 items-center justify-center rounded-full border border-sky-200 bg-white text-3xl shadow-sm">
-                            🧑‍🏫
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-9 text-sky-600" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M4 6l8-4 8 4-8 4-8-4z" />
+                                <path d="M8 10v4c0 1.7 1.8 3 4 3s4-1.3 4-3v-4" />
+                                <path d="M20 10v6" />
+                                <path d="M20 18a1.5 1.5 0 1 1-3 0c0-1 1.5-2.6 1.5-2.6S20 17 20 18z" />
+                            </svg>
                         </div>
 
                         <h2 class="mt-5 text-center text-2xl font-semibold text-slate-800">Pending Requests</h2>
@@ -230,7 +248,13 @@
                         class="rounded-3xl border border-slate-200/90 bg-gradient-to-br from-white via-violet-50/45 to-violet-100/55 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md sm:p-8 xl:col-span-4 xl:min-h-[440px]">
                         <div
                             class="mx-auto flex h-20 w-20 items-center justify-center rounded-full border border-violet-200 bg-white text-3xl shadow-sm">
-                            📅
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-9 text-violet-600"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="5" width="18" height="16" rx="2" />
+                                <path d="M16 3v4M8 3v4M3 10h18" />
+                                <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01" />
+                            </svg>
                         </div>
 
                         <h2 class="mt-5 text-center text-2xl font-semibold text-slate-800">Session Status</h2>

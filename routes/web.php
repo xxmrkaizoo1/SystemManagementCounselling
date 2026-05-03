@@ -1112,7 +1112,43 @@ Route::middleware('auth')->group(function () {
             ->take(10)
             ->all();
 
+
+        $chartBookings = $bookings
+            ->map(static fn(BookingRequest $booking): array => [
+                'date' => (string) $booking->booking_date,
+                'topic' => trim((string) ($booking->topic ?: 'General support')),
+                'is_emergency' => str_contains(mb_strtolower((string) $booking->topic), 'emergency'),
+            ])
+            ->values()
+            ->all();
+
         $topTopics = $bookings
+            ->groupBy(static fn(BookingRequest $booking): string => trim((string) ($booking->topic ?: 'General support')))
+            ->map(static fn($items, string $topic): array => [
+                'topic' => $topic,
+                'total' => $items->count(),
+            ])
+            ->sortByDesc('total')
+            ->values()
+            ->take(10)
+            ->all();
+
+        $emergencyBookings = $bookings
+            ->filter(static fn(BookingRequest $booking): bool => str_contains(mb_strtolower((string) $booking->topic), 'emergency'))
+            ->values();
+
+        $emergencyTopStudents = $emergencyBookings
+            ->groupBy(static fn(BookingRequest $booking): string => $booking->user?->full_name ?: $booking->user?->name ?: 'Unknown Student')
+            ->map(static fn($items, string $student): array => [
+                'student' => $student,
+                'total' => $items->count(),
+            ])
+            ->sortByDesc('total')
+            ->values()
+            ->take(10)
+            ->all();
+
+        $emergencyTopTopics = $emergencyBookings
             ->groupBy(static fn(BookingRequest $booking): string => trim((string) ($booking->topic ?: 'General support')))
             ->map(static fn($items, string $topic): array => [
                 'topic' => $topic,
@@ -1128,6 +1164,10 @@ Route::middleware('auth')->group(function () {
             'topStudents' => $topStudents,
             'topTopics' => $topTopics,
             'totalBookings' => $bookings->count(),
+            'emergencyBookingsCount' => $emergencyBookings->count(),
+            'emergencyTopStudents' => $emergencyTopStudents,
+            'emergencyTopTopics' => $emergencyTopTopics,
+            'chartBookings' => $chartBookings,
         ]);
     })->name('counsellor.statistics');
 
