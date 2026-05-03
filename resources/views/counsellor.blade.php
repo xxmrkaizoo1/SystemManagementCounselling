@@ -104,7 +104,7 @@
                                 </svg>
                                 <span>Refresh</span>
                             </a>
-                            <form method="POST" action="{{ route('logout') }}">
+                            <form id="counsellor-logout-form" method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <button type="submit"
                                     class="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-sky-600 to-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:from-sky-700 hover:to-blue-700">
@@ -486,8 +486,71 @@
         </div>
     </div>
 
-    <script>
+    <div id="counsellor-logout-modal"
+        class="fixed inset-0 z-[90] hidden items-center justify-center bg-slate-900/50 p-4">
+        <div class="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl">
+            <h3 class="text-lg font-semibold text-slate-800">Confirm logout</h3>
+            <p class="mt-2 text-sm text-slate-600">Are you sure you want to logout?</p>
+            <div class="mt-5 flex justify-end gap-2">
+                <button id="counsellor-logout-cancel" type="button"
+                    class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition hover:border-sky-200 hover:text-sky-700">Cancel</button>
+                <button id="counsellor-logout-confirm" type="button"
+                    class="rounded-xl bg-sky-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-700">Yes,
+                    logout</button>
+            </div>
+        </div>
+    </div <script>
         (function() {
+
+            const logoutForm = document.getElementById('counsellor-logout-form');
+            const logoutModal = document.getElementById('counsellor-logout-modal');
+            const logoutCancel = document.getElementById('counsellor-logout-cancel');
+            const logoutConfirm = document.getElementById('counsellor-logout-confirm');
+            let logoutConfirmed = false;
+
+            const closeLogoutModal = () => {
+                if (!logoutModal) return;
+                logoutModal.classList.add('hidden');
+                logoutModal.classList.remove('flex');
+            };
+
+            const openLogoutModal = () => {
+                if (!logoutModal) return;
+                logoutModal.classList.remove('hidden');
+                logoutModal.classList.add('flex');
+            };
+
+            if (logoutForm && logoutModal) {
+                logoutForm.addEventListener('submit', (event) => {
+                    if (logoutConfirmed) {
+                        logoutConfirmed = false;
+                        return;
+                    }
+
+                    event.preventDefault();
+                    openLogoutModal();
+                });
+
+                if (logoutCancel) {
+                    logoutCancel.addEventListener('click', closeLogoutModal);
+                }
+
+                if (logoutConfirm) {
+                    logoutConfirm.addEventListener('click', () => {
+                        logoutConfirmed = true;
+                        closeLogoutModal();
+                        logoutForm.requestSubmit();
+                    });
+                }
+
+                logoutModal.addEventListener('click', (event) => {
+                    if (event.target === logoutModal) closeLogoutModal();
+                });
+
+                document.addEventListener('keydown', (event) => {
+                    if (event.key === 'Escape') closeLogoutModal();
+                });
+            }
             const slides = [{
                     image: 'https://images.unsplash.com/photo-1714976694525-71eb29a7c500?auto=format&fit=crop&w=1400&q=80',
                     tag: 'CollegeCare Focus',

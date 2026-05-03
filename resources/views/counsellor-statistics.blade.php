@@ -25,8 +25,16 @@
                         <p class="mt-2 text-sm text-slate-500">Top Topics</p>
                     </div>
                     <a href="{{ route('counsellor.dashboard') }}"
-                        class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-600 shadow-sm transition hover:border-sky-300 hover:text-sky-700">←
-                        Back to Dashboard</a>
+                        class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-sky-300 hover:bg-sky-50 hover:text-sky-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            aria-hidden="true">
+                            <path d="M3 9.5 12 3l9 6.5"></path>
+                            <path d="M5 10v10h14V10"></path>
+                            <path d="M9 20v-6h6v6"></path>
+                        </svg>
+
+                    </a>
                 </div>
             </header>
 
@@ -50,12 +58,23 @@
                     <article class="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm">
                         <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
                             <h2 class="text-xl font-semibold text-slate-800">Top Topics (Pie Chart)</h2>
-                            <select id="topics-weeks-filter"
-                                class="rounded-lg border border-slate-300 px-3 py-2 text-sm">
-                                <option value="4">Last 4 weeks</option>
-                                <option value="8">Last 8 weeks</option>
-                                <option value="12" selected>Last 12 weeks</option>
-                            </select>
+                            <div class="flex flex-wrap items-center gap-2">
+                                <select id="topics-weeks-filter"
+                                    class="rounded-lg border border-slate-300 px-3 py-2 text-sm">
+                                    <option value="4">Last 4 weeks</option>
+                                    <option value="8">Last 8 weeks</option>
+                                    <option value="12" selected>Last 12 weeks</option>
+                                </select>
+
+                                <input id="emergency-date-from" type="date"
+                                    class="rounded-lg border border-rose-300 px-3 py-2 text-sm" />
+                                <input id="emergency-date-to" type="date"
+                                    class="rounded-lg border border-rose-300 px-3 py-2 text-sm" />
+                                <input id="topics-start-date" type="date"
+                                    class="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+                                <input id="topics-end-date" type="date"
+                                    class="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+                            </div>
                         </div>
                         <div class="relative h-80 w-full"><canvas id="topicsPieChart"></canvas></div>
                     </article>
@@ -63,12 +82,18 @@
                     <article class="rounded-3xl border border-rose-200/90 bg-white p-6 shadow-sm">
                         <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
                             <h2 class="text-xl font-semibold text-rose-800">Emergency Booking Trend (Line Chart)</h2>
-                            <select id="emergency-weeks-filter"
-                                class="rounded-lg border border-rose-300 px-3 py-2 text-sm">
-                                <option value="4">Last 4 weeks</option>
-                                <option value="8">Last 8 weeks</option>
-                                <option value="12" selected>Last 12 weeks</option>
-                            </select>
+                            <div class="flex flex-wrap items-center gap-2">
+                                <select id="emergency-weeks-filter"
+                                    class="rounded-lg border border-rose-300 px-3 py-2 text-sm">
+                                    <option value="4">Last 4 weeks</option>
+                                    <option value="8">Last 8 weeks</option>
+                                    <option value="12" selected>Last 12 weeks</option>
+                                </select>
+                                <input id="emergency-start-date" type="date"
+                                    class="rounded-lg border border-rose-300 px-3 py-2 text-sm" />
+                                <input id="emergency-end-date" type="date"
+                                    class="rounded-lg border border-rose-300 px-3 py-2 text-sm" />
+                            </div>
                         </div>
                         <canvas id="emergencyLineChart" height="120"></canvas>
                     </article>
@@ -81,7 +106,7 @@
                             <span class="rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-700">Top
                                 {{ count($topStudents) }}</span>
                         </div>
-                        <div class="overflow-hidden rounded-2xl border border-slate-100">
+                        <div class="relative overflow-visible rounded-2xl border border-slate-100">
                             <table class="min-w-full divide-y divide-slate-100 text-sm">
                                 <thead class="bg-slate-50 text-slate-700">
                                     <tr>
@@ -93,11 +118,14 @@
                                     @forelse($topStudents as $item)
                                         <tr>
                                             <td class="px-4 py-3">
-                                                <div class="group relative inline-block">
-                                                    <span
-                                                        class="cursor-help underline decoration-dotted underline-offset-2">{{ $item['student'] }}</span>
+                                                <div class="relative inline-block student-popup-wrap">
+                                                    <button type="button"
+                                                        class="student-popup-trigger underline decoration-dotted underline-offset-2 text-left"
+                                                        aria-expanded="false">
+                                                        {{ $item['student'] }}
+                                                    </button>
                                                     <div
-                                                        class="invisible absolute left-0 top-full z-20 mt-2 w-72 rounded-xl border border-indigo-200 bg-white p-3 text-xs text-slate-700 opacity-0 shadow-xl transition group-hover:visible group-hover:opacity-100">
+                                                        class="student-popup hidden absolute left-full top-1/2 z-30 ml-3 w-72 -translate-y-1/2 rounded-xl border border-indigo-200 bg-white p-3 text-xs text-slate-700 shadow-xl">
                                                         <p><span class="font-semibold text-indigo-700">Name:</span>
                                                             {{ $item['user_info']['name'] ?? 'N/A' }}</p>
                                                         <p><span class="font-semibold text-indigo-700">Email:</span>
@@ -130,7 +158,7 @@
                             <span class="rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold text-sky-700">Top
                                 {{ count($topTopics) }}</span>
                         </div>
-                        <div class="relative overflow-visible rounded-2xl border border-slate-100">
+                        <div class="overflow-hidden rounded-2xl border border-slate-100">
                             <table class="min-w-full divide-y divide-slate-100 text-sm">
                                 <thead class="bg-slate-50 text-slate-700">
                                     <tr>
@@ -167,9 +195,33 @@
             if (!value) return null;
             const raw = String(value).trim();
             if (!raw) return null;
+            const isoDateMatch = raw.match(/^(\d{4})-(\d{2})-(\d{2})(?:[ T].*)?$/);
+            if (isoDateMatch) {
+                const [, y, m, d] = isoDateMatch;
+                return new Date(Number(y), Number(m) - 1, Number(d));
+            }
+
+            const dmyMatch = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s.*)?$/);
+            if (dmyMatch) {
+                const [, d, m, y] = dmyMatch;
+                return new Date(Number(y), Number(m) - 1, Number(d));
+            }
             const hasTime = raw.includes('T') || raw.includes(' ');
-            const date = new Date(hasTime ? raw : `${raw}T00:00:00`);
-            return Number.isNaN(date.getTime()) ? null : date;
+            const parsed = new Date(hasTime ? raw : `${raw}T00:00:00`);
+            return Number.isNaN(parsed.getTime()) ? null : parsed;
+        };
+
+        const inRange = (date, fromRaw, toRaw) => {
+            if (!date) return false;
+            const from = toDate(fromRaw);
+            const to = toDate(toRaw);
+            if (from && date < from) return false;
+            if (to) {
+                const toInclusive = new Date(to);
+                toInclusive.setHours(23, 59, 59, 999);
+                if (date > toInclusive) return false;
+            }
+            return true;
         };
 
         const weekStart = (value) => {
@@ -197,16 +249,43 @@
             });
         };
 
+        const getDateRangeWeeks = (weeks, startValue, endValue) => {
+            const startDate = toDate(startValue);
+            const endDate = toDate(endValue);
+
+            if (startDate && endDate && startDate <= endDate) {
+                startDate.setHours(0, 0, 0, 0);
+                endDate.setHours(23, 59, 59, 999);
+                return {
+                    mode: 'date',
+                    startDate,
+                    endDate
+                };
+            }
+
+            return {
+                mode: 'weeks',
+                weekList: getLastWeeks(weeks)
+            };
+        };
+
         const topicChartCtx = document.getElementById('topicsPieChart');
         const emergencyChartCtx = document.getElementById('emergencyLineChart');
         let topicChart;
         let emergencyChart;
 
-        function renderTopicsPie(weeks) {
-            const weekList = getLastWeeks(weeks);
+        function renderTopicsPie(weeks, startDateValue = null, endDateValue = null) {
+            const range = getDateRangeWeeks(weeks, startDateValue, endDateValue);
             const selected = bookings.filter((b) => {
-                const week = weekStart(b.date);
-                return week ? weekList.includes(fmt(week)) : false;
+                const dateObj = toDate(b.date);
+                if (!dateObj) return false;
+
+                if (range.mode === 'date') {
+                    return dateObj >= range.startDate && dateObj <= range.endDate;
+                }
+
+                const week = weekStart(dateObj);
+                return week ? range.weekList.includes(fmt(week)) : false;
             });
             const topicCount = {};
             selected.forEach(b => topicCount[b.topic] = (topicCount[b.topic] || 0) + 1);
@@ -248,11 +327,17 @@
             });
         }
 
-        function renderEmergencyLine(weeks) {
-            const weekList = getLastWeeks(weeks);
+        function renderEmergencyLine(weeks, fromDate = null, toDateValue = null) {
+            const range = getDateRangeWeeks(weeks, startDateValue, endDateValue);
+            const weekList = range.mode === 'weeks' ? range.weekList : getLastWeeks(weeks);
             const counts = Object.fromEntries(weekList.map(w => [w, 0]));
             bookings.filter(b => b.is_emergency).forEach(b => {
-                const week = weekStart(b.date);
+                const dateObj = toDate(b.date);
+                if (!dateObj) return;
+
+                if (range.mode === 'date' && (dateObj < range.startDate || dateObj > range.endDate)) return;
+
+                const week = weekStart(dateObj);
                 if (!week) return;
                 const w = fmt(week);
                 if (counts[w] !== undefined) counts[w]++;
@@ -279,12 +364,59 @@
         }
 
         const topicsFilter = document.getElementById('topics-weeks-filter');
+        const topicsStartDate = document.getElementById('topics-start-date');
+        const topicsEndDate = document.getElementById('topics-end-date');
         const emergencyFilter = document.getElementById('emergency-weeks-filter');
-        topicsFilter.addEventListener('change', () => renderTopicsPie(parseInt(topicsFilter.value, 10)));
-        emergencyFilter.addEventListener('change', () => renderEmergencyLine(parseInt(emergencyFilter.value, 10)));
+        const emergencyStartDate = document.getElementById('emergency-start-date');
+        const emergencyEndDate = document.getElementById('emergency-end-date');
 
-        renderTopicsPie(parseInt(topicsFilter.value, 10));
-        renderEmergencyLine(parseInt(emergencyFilter.value, 10));
+        const renderTopics = () => renderTopicsPie(
+            parseInt(topicsFilter.value, 10),
+            topicsStartDate.value,
+            topicsEndDate.value
+        );
+
+        const renderEmergency = () => renderEmergencyLine(
+            parseInt(emergencyFilter.value, 10),
+            emergencyStartDate.value,
+            emergencyEndDate.value
+        );
+
+        topicsFilter.addEventListener('change', renderTopics);
+        topicsStartDate.addEventListener('change', renderTopics);
+        topicsEndDate.addEventListener('change', renderTopics);
+        emergencyFilter.addEventListener('change', renderEmergency);
+        emergencyStartDate.addEventListener('change', renderEmergency);
+        emergencyEndDate.addEventListener('change', renderEmergency);
+
+        renderTopics();
+        renderEmergency();
+
+        document.querySelectorAll('.student-popup-wrap').forEach((wrap) => {
+            const trigger = wrap.querySelector('.student-popup-trigger');
+            const popup = wrap.querySelector('.student-popup');
+            if (!trigger || !popup) return;
+
+            trigger.addEventListener('click', (event) => {
+                event.stopPropagation();
+                const isHidden = popup.classList.contains('hidden');
+
+                document.querySelectorAll('.student-popup').forEach((item) => item.classList.add('hidden'));
+                document.querySelectorAll('.student-popup-trigger').forEach((btn) => btn.setAttribute(
+                    'aria-expanded', 'false'));
+
+                if (isHidden) {
+                    popup.classList.remove('hidden');
+                    trigger.setAttribute('aria-expanded', 'true');
+                }
+            });
+        });
+
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.student-popup').forEach((item) => item.classList.add('hidden'));
+            document.querySelectorAll('.student-popup-trigger').forEach((btn) => btn.setAttribute('aria-expanded',
+                'false'));
+        });
     </script>
 </body>
 
