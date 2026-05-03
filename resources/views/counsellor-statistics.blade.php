@@ -130,7 +130,7 @@
                             <span class="rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold text-sky-700">Top
                                 {{ count($topTopics) }}</span>
                         </div>
-                        <div class="overflow-hidden rounded-2xl border border-slate-100">
+                        <div class="relative overflow-visible rounded-2xl border border-slate-100">
                             <table class="min-w-full divide-y divide-slate-100 text-sm">
                                 <thead class="bg-slate-50 text-slate-700">
                                     <tr>
@@ -224,11 +224,10 @@
                     datasets: [{
                         label: 'Bookings',
                         data: values,
-                        backgroundColor: hasData ?
-                            ['#0ea5e9', '#38bdf8', '#7dd3fc', '#0284c7', '#0369a1', '#14b8a6', '#22d3ee',
-                                '#60a5fa'
-                            ] :
-                            ['#cbd5e1']
+                        backgroundColor: hasData ? ['#0ea5e9', '#38bdf8', '#7dd3fc', '#0284c7', '#0369a1',
+                            '#14b8a6', '#22d3ee',
+                            '#60a5fa'
+                        ] : ['#cbd5e1']
                     }]
                 },
                 options: {
@@ -241,8 +240,7 @@
                         tooltip: {
                             callbacks: {
                                 label: (context) => hasData ?
-                                    `${context.label}: ${context.raw}` :
-                                    'No topic bookings found'
+                                    `${context.label}: ${context.raw}` : 'No topic bookings found'
                             }
                         }
                     }
