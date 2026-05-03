@@ -1097,7 +1097,7 @@ Route::middleware('auth')->group(function () {
         )));
 
         $bookings = BookingRequest::query()
-            ->with(['user:id,name,full_name'])
+            ->with(['user:id,name,full_name,email,phone,years,programme'])
             ->whereIn(DB::raw("LOWER(REPLACE(TRIM(counsellor_name), ' ', ''))"), $normalizedCounsellorNames)
             ->get();
 
@@ -1106,6 +1106,13 @@ Route::middleware('auth')->group(function () {
             ->map(static fn($items, string $student): array => [
                 'student' => $student,
                 'total' => $items->count(),
+                'user_info' => [
+                    'name' => $items->first()?->user?->full_name ?: $items->first()?->user?->name ?: 'Unknown Student',
+                    'email' => $items->first()?->user?->email ?: 'N/A',
+                    'phone' => $items->first()?->user?->phone ?: 'N/A',
+                    'years' => $items->first()?->user?->years ?: 'N/A',
+                    'programme' => $items->first()?->user?->programme ?: 'N/A',
+                ],
             ])
             ->sortByDesc('total')
             ->values()
@@ -1142,6 +1149,13 @@ Route::middleware('auth')->group(function () {
             ->map(static fn($items, string $student): array => [
                 'student' => $student,
                 'total' => $items->count(),
+                  'user_info' => [
+                    'name' => $items->first()?->user?->full_name ?: $items->first()?->user?->name ?: 'Unknown Student',
+                    'email' => $items->first()?->user?->email ?: 'N/A',
+                    'phone' => $items->first()?->user?->phone ?: 'N/A',
+                    'years' => $items->first()?->user?->years ?: 'N/A',
+                    'programme' => $items->first()?->user?->programme ?: 'N/A',
+                ],
             ])
             ->sortByDesc('total')
             ->values()
