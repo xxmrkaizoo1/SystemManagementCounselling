@@ -1079,6 +1079,58 @@ Route::middleware('auth')->group(function () {
         return back()->with('status', 'Reminder sent to student inbox and email.');
     })->name('counsellor.booking-request.reminder');
 
+
+    Route::get('/counsellor/statistics', function () {
+        $user = request()->user();
+        $role = $user?->roles()->value('name');
+
+        abort_unless($role === 'counsellor', 403);
+
+        $normalizeCounsellorName = static fn(?string $name): string => preg_replace('/\s+/', '', mb_strtolower(trim((string) $name)));
+        $counsellorNames = array_values(array_filter([
+            $user->full_name,
+            $user->name,
+        ]));
+        $normalizedCounsellorNames = array_values(array_unique(array_map(
+            $normalizeCounsellorName,
+            $counsellorNames
+        )));
+
+        $bookings = BookingRequest::query()
+            ->with(['user:id,name,full_name'])
+            ->whereIn(DB::raw("LOWER(REPLACE(TRIM(counsellor_name), ' ', ''))"), $normalizedCounsellorNames)
+            ->get();
+
+        $topStudents = $bookings
+            ->groupBy(static fn(BookingRequest $booking): string => $booking->user?->full_name ?: $booking->user?->name ?: 'Unknown Student')
+            ->map(static fn($items, string $student): array => [
+                'student' => $student,
+                'total' => $items->count(),
+            ])
+            ->sortByDesc('total')
+            ->values()
+            ->take(10)
+            ->all();
+
+        $topTopics = $bookings
+            ->groupBy(static fn(BookingRequest $booking): string => trim((string) ($booking->topic ?: 'General support')))
+            ->map(static fn($items, string $topic): array => [
+                'topic' => $topic,
+                'total' => $items->count(),
+            ])
+            ->sortByDesc('total')
+            ->values()
+            ->take(10)
+            ->all();
+
+        return view('counsellor-statistics', [
+            'user' => $user,
+            'topStudents' => $topStudents,
+            'topTopics' => $topTopics,
+            'totalBookings' => $bookings->count(),
+        ]);
+    })->name('counsellor.statistics');
+
     Route::get('/counsellor/session-status-list', function () {
         $user = request()->user();
         $role = $user?->roles()->value('name');

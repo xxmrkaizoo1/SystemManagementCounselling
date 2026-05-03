@@ -93,14 +93,29 @@
 
                         <div class="flex w-full flex-wrap items-center gap-2.5 lg:w-auto lg:justify-end">
                             <a href="{{ route('counsellor.dashboard') }}"
-                                class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 shadow-sm transition hover:-translate-y-0.5 hover:border-sky-300 hover:text-sky-700">
-                                Refresh
+                                class="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 shadow-sm transition hover:-translate-y-0.5 hover:border-sky-300 hover:text-sky-700">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M21 2v6h-6"></path>
+                                    <path d="M3 12a9 9 0 0 1 15.55-6.36L21 8"></path>
+                                    <path d="M3 22v-6h6"></path>
+                                    <path d="M21 12a9 9 0 0 1-15.55 6.36L3 16"></path>
+                                </svg>
+                                <span>Refresh</span>
                             </a>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <button type="submit"
-                                    class="rounded-xl bg-gradient-to-r from-sky-600 to-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:from-sky-700 hover:to-blue-700">
-                                    Logout
+                                    class="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-sky-600 to-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:from-sky-700 hover:to-blue-700">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" aria-hidden="true">
+                                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                        <polyline points="16 17 21 12 16 7"></polyline>
+                                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                                    </svg>
+                                    <span>Logout</span>
                                 </button>
                             </form>
                         </div>
@@ -179,7 +194,12 @@
                         </div>
                     </div>
                 </section>
-
+                <div class="mb-6 flex justify-center">
+                    <a href="{{ route('counsellor.statistics') }}"
+                        class="inline-flex items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 px-6 py-3 text-sm font-semibold text-emerald-700 shadow-sm transition hover:border-emerald-300 hover:bg-emerald-100">
+                        View Statistics: Students & Topics
+                    </a>
+                </div>
                 <section class="grid gap-6 xl:grid-cols-12">
                     <article
                         class="rounded-3xl border border-slate-200/90 bg-gradient-to-br from-white via-sky-50/45 to-sky-100/55 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md sm:p-8 xl:col-span-5 xl:min-h-[440px]">
@@ -192,7 +212,8 @@
                         <p class="mt-2 text-center text-base text-slate-500">Semak permohonan pelajar yang masih
                             menunggu kelulusan.</p>
 
-                        <div class="mt-6 rounded-2xl border border-sky-100 bg-white/80 px-4 py-4 text-center shadow-sm">
+                        <div
+                            class="mt-6 rounded-2xl border border-sky-100 bg-white/80 px-4 py-4 text-center shadow-sm">
                             <p class="text-xs uppercase tracking-wide text-sky-700">Current pending</p>
                             <p class="mt-1 text-4xl font-bold text-sky-800">{{ $pendingCount }}</p>
                         </div>
@@ -213,7 +234,8 @@
                         </div>
 
                         <h2 class="mt-5 text-center text-2xl font-semibold text-slate-800">Session Status</h2>
-                        <p class="mt-2 text-center text-base text-slate-500">Lihat status sesi yang telah approved,                            booked, dan complete.</p>
+                        <p class="mt-2 text-center text-base text-slate-500">Lihat status sesi yang telah approved,
+                            booked, dan complete.</p>
 
                         <div class="mt-6 grid grid-cols-3 gap-3 text-center text-xs sm:text-sm">
                             <div class="rounded-xl border border-emerald-100 bg-emerald-50 px-2 py-3 sm:px-3">
@@ -247,17 +269,25 @@
                             <a href="{{ route('counsellor.pending-requests') }}"
                                 class="flex items-center justify-between rounded-2xl border border-sky-100 bg-white/80 px-4 py-3 text-sm font-medium text-sky-700 transition hover:border-sky-300 hover:bg-sky-50">
                                 <span>Review Pending Requests</span>
-                                <span class="rounded-full bg-sky-100 px-2 py-0.5 text-xs font-semibold">{{ $pendingCount }}</span>
+                                <span
+                                    class="rounded-full bg-sky-100 px-2 py-0.5 text-xs font-semibold">{{ $pendingCount }}</span>
                             </a>
                             <a href="{{ route('counsellor.session-status-list') }}"
                                 class="flex items-center justify-between rounded-2xl border border-violet-100 bg-white/80 px-4 py-3 text-sm font-medium text-violet-700 transition hover:border-violet-300 hover:bg-violet-50">
                                 <span>View Session Progress</span>
-                                <span class="rounded-full bg-violet-100 px-2 py-0.5 text-xs font-semibold">{{ $bookedSlots + $completedCount }}</span>
+                                <span
+                                    class="rounded-full bg-violet-100 px-2 py-0.5 text-xs font-semibold">{{ $bookedSlots + $completedCount }}</span>
+                            </a>
+                            <a href="{{ route('counsellor.statistics') }}"
+                                class="flex items-center justify-between rounded-2xl border border-amber-100 bg-white/80 px-4 py-3 text-sm font-medium text-amber-700 transition hover:border-amber-300 hover:bg-amber-50">
+                                <span>View Statistics</span>
+                                <span class="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold">New</span>
                             </a>
                             <a href="{{ route('profile.edit') }}"
                                 class="flex items-center justify-between rounded-2xl border border-emerald-100 bg-white/80 px-4 py-3 text-sm font-medium text-emerald-700 transition hover:border-emerald-300 hover:bg-emerald-50">
                                 <span>Update Profile</span>
-                                <span class="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold">Account</span>
+                                <span
+                                    class="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold">Account</span>
                             </a>
                         </div>
                     </article>
@@ -303,11 +333,7 @@
                     <input id="chat-search" type="text" placeholder="Search"
                         class="w-full border-none bg-transparent text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-0" />
                 </div>
-                <a href="{{ route('chat.index') }}"
-                    class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-300 bg-white text-slate-500 transition hover:bg-slate-50"
-                    title="Open full chat">
-                    ☰
-                </a>
+
             </div>
 
             <div class="flex items-center justify-between text-sm">
@@ -411,6 +437,10 @@
                     </div>
                     <label for="chat-popup-message-input"
                         class="mb-1 mt-3 block text-sm font-medium text-slate-700">Chat message</label>
+                    <button id="chat-popup-suggest" type="button"
+                        class="mb-2 rounded-lg border border-sky-200 bg-sky-50 px-3 py-1.5 text-sm font-medium text-sky-700 transition hover:bg-sky-100">
+                        Suggest message from appointment
+                    </button>
                     <div class="flex items-center gap-2">
                         <input id="chat-popup-message-input" type="text"
                             class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100"
@@ -418,7 +448,7 @@
                         <button id="chat-popup-send" type="button"
                             class="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100">Send</button>
 
-                                                </div>
+                    </div>
                     <div class="mt-3 grid grid-cols-2 gap-2">
                         <button type="submit"
                             class="rounded-xl bg-sky-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-sky-700">Send
@@ -474,7 +504,8 @@
                 slides.forEach((_, index) => {
                     const dot = document.createElement('button');
                     dot.type = 'button';
-                    dot.className = `h-2.5 rounded-full transition ${index === current ? 'w-6 bg-white' : 'w-2.5 bg-white/40 hover:bg-white/70'}`;
+                    dot.className =
+                        `h-2.5 rounded-full transition ${index === current ? 'w-6 bg-white' : 'w-2.5 bg-white/40 hover:bg-white/70'}`;
                     dot.setAttribute('aria-label', `Go to slide ${index + 1}`);
                     dot.addEventListener('click', () => {
                         current = index;
@@ -557,6 +588,7 @@
             const popupThread = document.getElementById('chat-popup-thread');
             const popupMessageInput = document.getElementById('chat-popup-message-input');
             const popupSendBtn = document.getElementById('chat-popup-send');
+            const popupSuggestBtn = document.getElementById('chat-popup-suggest');
             const popupCloseBtn = document.getElementById('chat-popup-close');
             const popupMinBtn = document.getElementById('chat-popup-minimize');
             const reminderForm = document.getElementById('reminder-form');
@@ -623,8 +655,12 @@
                 reminderForm.dataset.bookingRequestId = bookingRequestId;
                 reminderForm.dataset.studentId = studentId;
 
-                popupOpenFull.href = `{{ route('chat.index') }}?student_id=${encodeURIComponent(studentId)}&booking_request_id=${encodeURIComponent(bookingRequestId)}`;
-
+                popupOpenFull.href =
+                    `{{ route('chat.index') }}?student_id=${encodeURIComponent(studentId)}&booking_request_id=${encodeURIComponent(bookingRequestId)}`;
+                popup.dataset.student = student;
+                popup.dataset.topic = topic;
+                popup.dataset.date = date;
+                popup.dataset.slot = button.dataset.requestTime || '-';
                 popupBackdrop.classList.remove('hidden');
                 setPopupPosition(window.innerWidth / 2 - popup.offsetWidth / 2, 80);
                 popupMessageInput.focus();
@@ -662,7 +698,17 @@
                     popupSendBtn.click();
                 }
             });
-
+            if (popupSuggestBtn) {
+                popupSuggestBtn.addEventListener('click', () => {
+                    const student = popup.dataset.student || 'Student';
+                    const topic = popup.dataset.topic || 'your counselling request';
+                    const date = popup.dataset.date || 'your requested date';
+                    const slot = popup.dataset.slot || 'your requested time';
+                    popupMessageInput.value =
+                        `Hi ${student}, this is a reminder for your appointment about ${topic} on ${date} (${slot}). Please reply to confirm your availability.`;
+                    popupMessageInput.focus();
+                });
+            }
             const popupHeader = document.getElementById('chat-popup-header');
 
             popupHeader.addEventListener('mousedown', (event) => {
@@ -675,8 +721,10 @@
 
             window.addEventListener('mousemove', (event) => {
                 if (!isDragging) return;
-                const x = Math.max(8, Math.min(window.innerWidth - popup.offsetWidth - 8, event.clientX - dragOffsetX));
-                const y = Math.max(8, Math.min(window.innerHeight - popup.offsetHeight - 8, event.clientY - dragOffsetY));
+                const x = Math.max(8, Math.min(window.innerWidth - popup.offsetWidth - 8, event.clientX -
+                    dragOffsetX));
+                const y = Math.max(8, Math.min(window.innerHeight - popup.offsetHeight - 8, event.clientY -
+                    dragOffsetY));
                 setPopupPosition(x, y);
             });
 
