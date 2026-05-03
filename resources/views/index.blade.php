@@ -313,8 +313,14 @@
                                     @endphp
                                     <div
                                         class="flex items-center justify-between bg-slate-50 p-4 rounded-2xl border border-slate-200">
-                                        <span
-                                            class="text-slate-700 font-medium">{{ $counsellor['name'] ?? '-' }}</span>
+                                        <div class="flex items-center gap-3">
+                                            <div
+                                                class="flex h-10 w-10 items-center justify-center rounded-full bg-sky-100 text-sm font-semibold text-sky-700">
+                                                {{ strtoupper(substr(trim((string) ($counsellor['name'] ?? '-')), 0, 1)) }}
+                                            </div>
+                                            <span
+                                                class="text-slate-700 font-medium">{{ $counsellor['name'] ?? '-' }}</span>
+                                        </div>s
                                         <span
                                             class="text-xs px-3 py-1 rounded-full {{ $isAvailable ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700' }}">
                                             {{ $isAvailable ? 'Available' : 'Busy' }}
@@ -323,7 +329,13 @@
                                 @empty
                                     <div
                                         class="flex items-center justify-between bg-slate-50 p-4 rounded-2xl border border-slate-200">
-                                        <span class="text-slate-500">No counsellors available yet</span>
+                                        <div class="flex items-center gap-3">
+                                            <div
+                                                class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-200 text-sm font-semibold text-slate-600">
+                                                ?
+                                            </div>
+                                            <span class="text-slate-500">No counsellors available yet</span>
+                                        </div>
                                         <span
                                             class="text-xs px-3 py-1 rounded-full bg-slate-200 text-slate-600">Offline</span>
                                     </div>
@@ -356,7 +368,8 @@
                                                 S</div>
                                             <div>
                                                 <p class="font-semibold text-slate-800">Student</p>
-                                                <p class="text-sm text-slate-500">Book sessions, follow progress, and get
+                                                <p class="text-sm text-slate-500">Book sessions, follow progress, and
+                                                    get
                                                     wellbeing support.</p>
                                             </div>
                                         </div>
@@ -374,7 +387,8 @@
                                                 C</div>
                                             <div>
                                                 <p class="font-semibold text-slate-800">Counsellor</p>
-                                                <p class="text-sm text-slate-500">Manage appointments, notes, and student
+                                                <p class="text-sm text-slate-500">Manage appointments, notes, and
+                                                    student
                                                     support plans.</p>
                                             </div>
                                         </div>
@@ -403,13 +417,16 @@
                                 </article>
                             </div>
 
-                            <div class="border-t border-slate-100 px-5 py-3 flex items-center justify-between bg-slate-50/70">
+                            <div
+                                class="border-t border-slate-100 px-5 py-3 flex items-center justify-between bg-slate-50/70">
                                 <div id="roleSlideDots" class="flex items-center gap-2">
                                     <button type="button" class="role-slide-dot w-2.5 h-2.5 rounded-full bg-sky-500"
                                         aria-label="Show role slide 1"></button>
-                                    <button type="button" class="role-slide-dot w-2.5 h-2.5 rounded-full bg-slate-300"
+                                    <button type="button"
+                                        class="role-slide-dot w-2.5 h-2.5 rounded-full bg-slate-300"
                                         aria-label="Show role slide 2"></button>
-                                    <button type="button" class="role-slide-dot w-2.5 h-2.5 rounded-full bg-slate-300"
+                                    <button type="button"
+                                        class="role-slide-dot w-2.5 h-2.5 rounded-full bg-slate-300"
                                         aria-label="Show role slide 3"></button>
                                 </div>
                                 <span class="text-xs text-slate-500">Role overview</span>

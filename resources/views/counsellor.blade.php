@@ -319,6 +319,13 @@
 
                 <div class="mt-6 rounded-2xl border border-slate-200 bg-slate-50/90 px-4 py-3 text-sm text-slate-600">
                     <span>Total Applications: {{ count($applications) }}</span>
+
+                    <div class="mt-3">
+                        <a href="{{ route('messages.index') }}"
+                            class="inline-flex items-center gap-2 rounded-lg border border-sky-200 bg-white px-3 py-2 text-sm font-medium text-sky-700 transition hover:border-sky-300 hover:bg-sky-50">
+                            Go to Messages Page
+                        </a>
+                    </div>
                 </div>
             </div>
         </section>
@@ -499,7 +506,9 @@
                     logout</button>
             </div>
         </div>
-    </div <script>
+    </div>
+
+    <script>
         (function() {
 
             const logoutForm = document.getElementById('counsellor-logout-form');
@@ -794,28 +803,30 @@
             }
             const popupHeader = document.getElementById('chat-popup-header');
 
-            popupHeader.addEventListener('mousedown', (event) => {
-                isDragging = true;
-                const rect = popup.getBoundingClientRect();
-                dragOffsetX = event.clientX - rect.left;
-                dragOffsetY = event.clientY - rect.top;
-                popupHeader.classList.add('cursor-grabbing');
-            });
+            if (popupHeader) {
+                popupHeader.addEventListener('mousedown', (event) => {
+                    isDragging = true;
+                    const rect = popup.getBoundingClientRect();
+                    dragOffsetX = event.clientX - rect.left;
+                    dragOffsetY = event.clientY - rect.top;
+                    popupHeader.classList.add('cursor-grabbing');
+                });
 
-            window.addEventListener('mousemove', (event) => {
-                if (!isDragging) return;
-                const x = Math.max(8, Math.min(window.innerWidth - popup.offsetWidth - 8, event.clientX -
-                    dragOffsetX));
-                const y = Math.max(8, Math.min(window.innerHeight - popup.offsetHeight - 8, event.clientY -
-                    dragOffsetY));
-                setPopupPosition(x, y);
-            });
+                window.addEventListener('mousemove', (event) => {
+                    if (!isDragging) return;
+                    const x = Math.max(8, Math.min(window.innerWidth - popup.offsetWidth - 8, event.clientX -
+                        dragOffsetX));
+                    const y = Math.max(8, Math.min(window.innerHeight - popup.offsetHeight - 8, event.clientY -
+                        dragOffsetY));
+                    setPopupPosition(x, y);
+                });
 
-            window.addEventListener('mouseup', () => {
-                isDragging = false;
-                popupHeader.classList.remove('cursor-grabbing');
-            });
+                window.addEventListener('mouseup', () => {
+                    isDragging = false;
+                    popupHeader.classList.remove('cursor-grabbing');
+                });
 
+            }
             if (searchInput) {
                 searchInput.addEventListener('input', () => {
                     const query = searchInput.value.trim().toLowerCase();

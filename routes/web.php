@@ -396,6 +396,15 @@ Route::middleware('auth')->group(function () {
         ]);
     })->name('home.session');
 
+    Route::get('/messages', function (Request $request) {
+        $user = $request->user();
+        $role = $user?->roles()->value('name');
+
+        abort_unless(in_array($role, ['student', 'teacher'], true), 403);
+
+        return view('messages');
+    })->name('messages.index');
+
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
     Route::post('/chat', [ChatController::class, 'store'])->name('chat.store');
 
@@ -1149,7 +1158,7 @@ Route::middleware('auth')->group(function () {
             ->map(static fn($items, string $student): array => [
                 'student' => $student,
                 'total' => $items->count(),
-                  'user_info' => [
+                'user_info' => [
                     'name' => $items->first()?->user?->full_name ?: $items->first()?->user?->name ?: 'Unknown Student',
                     'email' => $items->first()?->user?->email ?: 'N/A',
                     'phone' => $items->first()?->user?->phone ?: 'N/A',
@@ -1241,7 +1250,7 @@ Route::middleware('auth')->group(function () {
         $user = request()->user();
         $role = $user?->roles()->value('name');
 
-        abort_unless(in_array($role, ['student', 'teacher'], true), 403);
+        abort_unless(in_array($role, ['student', 'teacher', 'counsellor'], true), 403);
 
         $counsellors = User::query()
             ->whereHas('roles', static fn($query) => $query->where('name', 'counsellor'))
@@ -1288,7 +1297,7 @@ Route::middleware('auth')->group(function () {
         $user = $request->user();
         $role = $user?->roles()->value('name');
 
-        abort_unless(in_array($role, ['student', 'teacher'], true), 403);
+        abort_unless(in_array($role, ['student', 'teacher', 'counsellor'], true), 403);
 
         $filters = $request->validate([
             'status' => ['nullable', 'in:all,pending,approved,rejected,cancelled,completed'],
@@ -1365,7 +1374,7 @@ Route::middleware('auth')->group(function () {
         $user = $request->user();
         $role = $user?->roles()->value('name');
 
-        abort_unless(in_array($role, ['student', 'teacher'], true), 403);
+        abort_unless(in_array($role, ['student', 'teacher', 'counsellor'], true), 403);
 
         $validated = $request->validate([
             'booking_date' => ['required', 'date', 'after_or_equal:today'],
@@ -1493,7 +1502,7 @@ Route::middleware('auth')->group(function () {
         $user = $request->user();
         $role = $user?->roles()->value('name');
 
-        abort_unless(in_array($role, ['student', 'teacher'], true), 403);
+        abort_unless(in_array($role, ['student', 'teacher', 'counsellor'], true), 403);
         abort_unless((int) $bookingRequest->user_id === (int) $user?->id, 403);
 
         if (! in_array($bookingRequest->status, ['pending', 'approved'], true)) {
@@ -1542,7 +1551,7 @@ Route::middleware('auth')->group(function () {
         $user = $request->user();
         $role = $user?->roles()->value('name');
 
-        abort_unless(in_array($role, ['student', 'teacher'], true), 403);
+        abort_unless(in_array($role, ['student', 'teacher', 'counsellor'], true), 403);
 
         $filters = $request->validate([
             'date_from' => ['nullable', 'date'],
@@ -1578,7 +1587,7 @@ Route::middleware('auth')->group(function () {
         $user = $request->user();
         $role = $user?->roles()->value('name');
 
-        abort_unless(in_array($role, ['student', 'teacher'], true), 403);
+        abort_unless(in_array($role, ['student', 'teacher', 'counsellor'], true), 403);
 
         $validated = $request->validate([
             'notification_ids' => ['required', 'array', 'min:1'],
@@ -1599,7 +1608,7 @@ Route::middleware('auth')->group(function () {
         $user = request()->user();
         $role = $user?->roles()->value('name');
 
-        abort_unless(in_array($role, ['student', 'teacher'], true), 403);
+        abort_unless(in_array($role, ['student', 'teacher', 'counsellor'], true), 403);
         abort_unless((int) $notification->user_id === (int) $user?->id, 403);
 
         $notification->delete();
