@@ -212,7 +212,7 @@ $autoRejectExpiredBookings = static function (): void {
 
 Route::matched(static function () use ($autoRejectExpiredBookings): void {
     if (auth()->check()) {
-        $autoRejectExpiredBookings();
+        // $autoRejectExpiredBookings();
     }
 });
 $autoRejectExpiredBookings();

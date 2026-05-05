@@ -12,7 +12,7 @@
     <div class="relative min-h-screen overflow-hidden">
         <div class="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,_#e0f2fe_0%,_#eef2ff_40%,_#f8fafc_100%)]"></div>
 
-        {{-- <main class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+        <main class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
             <section class="grid gap-6 lg:grid-cols-[18rem_1fr]">
                 <aside class="rounded-3xl border border-white/80 bg-white/90 p-5 shadow-xl backdrop-blur">
                     <div class="mb-6">
@@ -108,9 +108,7 @@
                     </div>
                 </section>
             </section>
-        </main> --}}
-
-        {{-- clear  function main  --}}
+        </main>
     </div>
 
     <script>
