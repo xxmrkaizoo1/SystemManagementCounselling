@@ -75,14 +75,23 @@ Route::get('/', function () {
     $supportStatus = $counsellorCount === 0
         ? 'Offline'
         : ($openTodaySlots > 0 ? 'Live' : 'Busy');
-    $counsellorNames = User::query()
+    $counsellors = User::query()
         ->whereHas('roles', static fn($query) => $query->where('name', 'counsellor'))
         ->orderBy('full_name')
         ->orderBy('name')
-        ->get()
-        ->map(static fn(User $counsellor): string => trim((string) ($counsellor->full_name ?: $counsellor->name)))
+        ->get(['name', 'full_name', 'profile_pic'])
+        ->map(static fn(User $counsellor): array => [
+            'name' => trim((string) ($counsellor->full_name ?: $counsellor->name)),
+            'profile_pic' => $counsellor->profile_pic ?: '/images/default-profile.svg',
+        ])
+        ->filter(static fn(array $counsellor): bool => $counsellor['name'] !== '')
+        ->unique('name')
+        ->values()
+        ->all();
+
+    $counsellorNames = collect($counsellors)
+        ->pluck('name')
         ->filter()
-        ->unique()
         ->values()
         ->all();
 
@@ -97,10 +106,11 @@ Route::get('/', function () {
         ->all();
 
     $occupiedCounsellorLookup = array_flip($occupiedCounsellors);
-    $landingCounsellors = collect($counsellorNames)
-        ->map(static fn(string $name): array => [
-            'name' => $name,
-            'status' => array_key_exists($name, $occupiedCounsellorLookup) ? 'Busy' : 'Available',
+    $landingCounsellors = collect($counsellors)
+        ->map(static fn(array $counsellor): array => [
+            'name' => $counsellor['name'],
+            'profile_pic' => $counsellor['profile_pic'],
+            'status' => array_key_exists($counsellor['name'], $occupiedCounsellorLookup) ? 'Busy' : 'Available',
         ])
         ->values()
         ->all();
@@ -398,9 +408,11 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/messages', function (Request $request) {
         $user = $request->user();
-        $role = $user?->roles()->value('name');
+        $hasAllowedRole = $user?->roles()
+            ->whereIn(DB::raw('LOWER(TRIM(name))'), ['student', 'teacher', 'counsellor'])
+            ->exists();
 
-        abort_unless(in_array($role, ['student', 'teacher'], true), 403);
+        abort_unless($hasAllowedRole, 403);
 
         return view('messages');
     })->name('messages.index');

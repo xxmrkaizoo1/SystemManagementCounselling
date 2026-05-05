@@ -314,10 +314,9 @@
                                     <div
                                         class="flex items-center justify-between bg-slate-50 p-4 rounded-2xl border border-slate-200">
                                         <div class="flex items-center gap-3">
-                                            <div
-                                                class="flex h-10 w-10 items-center justify-center rounded-full bg-sky-100 text-sm font-semibold text-sky-700">
-                                                {{ strtoupper(substr(trim((string) ($counsellor['name'] ?? '-')), 0, 1)) }}
-                                            </div>
+                                            <img src="{{ $counsellor['profile_pic'] ?? '/images/default-profile.svg' }}"
+                                                alt="{{ ($counsellor['name'] ?? 'Counsellor') . ' profile picture' }}"
+                                                class="h-10 w-10 rounded-full border border-slate-200 object-cover">
                                             <span
                                                 class="text-slate-700 font-medium">{{ $counsellor['name'] ?? '-' }}</span>
                                         </div>s
