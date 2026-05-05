@@ -15,6 +15,8 @@ for conf in \
   [ -f "$conf" ] || continue
   sed -i 's#root /var/www/html;#root /var/www/html/public;#g' "$conf" || true
   sed -i 's#root /usr/share/nginx/html;#root /var/www/html/public;#g' "$conf" || true
+  sed -i 's#try_files $uri $uri/ =404;#try_files $uri $uri/ /index.php?$query_string;#g' "$conf" || true
+  sed -i 's#try_files $uri =404;#try_files $uri $uri/ /index.php?$query_string;#g' "$conf" || true
 done
 
 exec /usr/bin/supervisord -n -c /etc/supervisord.conf
