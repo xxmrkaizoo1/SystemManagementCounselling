@@ -215,7 +215,7 @@ Route::matched(static function () use ($autoRejectExpiredBookings): void {
         // $autoRejectExpiredBookings();
     }
 });
-$autoRejectExpiredBookings();
+// $autoRejectExpiredBookings();
 
 Route::middleware('auth')->group(function () {
     Route::get('/admin', function () {
