@@ -84,11 +84,11 @@
         </div>
     </div>
 
-    <main class="min-h-screen p-3 sm:p-6 lg:p-8">
+    <main class="min-h-screen p-2 sm:p-6 lg:p-8">
         <section
             class="max-w-[96rem] mx-auto rounded-[1.6rem] sm:rounded-[2rem] border border-slate-200/80 bg-white/80 backdrop-blur-xl shadow-2xl overflow-hidden animate-fade-up">
             <header
-                class="px-4 sm:px-7 py-4 border-b border-slate-200/80 bg-white/85 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                class="px-4 sm:px-7 py-4 border-b border-slate-200/80 bg-white/85 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div class="min-w-0">
                     <p class="text-xs uppercase tracking-[0.14em] text-indigo-500 font-semibold">CollegeCare</p>
                     <h1 class="text-xl sm:text-2xl font-bold text-slate-900 leading-tight">Student Booking Statistics
@@ -142,12 +142,10 @@
 
                 {{-- Graphs --}}
                 <section class="grid grid-cols-1 xl:grid-cols-2 gap-4">
-                    <article
-                        class="rounded-2xl border border-slate-200 bg-white/95 p-4 sm:p-5 shadow-sm animate-fade-up">
+                    <article class="rounded-2xl border border-slate-200 bg-white/95 p-4 sm:p-5 shadow-sm animate-fade-up">
                         <h2 class="text-lg font-semibold text-slate-900">Booking status overview graph</h2>
                         <p class="text-sm text-slate-600 mt-1">Quick visual split of all booking request states.</p>
-                        <div class="mt-4 min-h-64" id="status-chart" role="img"
-                            aria-label="Booking status bar chart">
+                        <div class="mt-4 min-h-64" id="status-chart" role="img" aria-label="Booking status bar chart">
                         </div>
                     </article>
 
@@ -155,8 +153,7 @@
                         class="rounded-2xl border border-slate-200 bg-white/95 p-4 sm:p-5 shadow-sm animate-fade-up animation-delay-1">
                         <h2 class="text-lg font-semibold text-slate-900">Top topics graph</h2>
                         <p class="text-sm text-slate-600 mt-1">Most requested counselling topics (top 6).</p>
-                        <div class="mt-4 min-h-64" id="topic-chart" role="img" aria-label="Top topic line chart">
-                        </div>
+                        <div class="mt-4 min-h-64" id="topic-chart" role="img" aria-label="Top topic line chart"></div>
                     </article>
                 </section>
 
@@ -204,8 +201,7 @@
                         class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm animate-fade-up animation-delay-2">
                         <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                             <div>
-                                <h2 class="text-lg font-semibold text-slate-900">Students & lecturers booking activity
-                                </h2>
+                                <h2 class="text-lg font-semibold text-slate-900">Students & lecturers booking activity</h2>
                                 <p class="text-sm text-slate-600 mt-1">Switch between listing and bar chart, then filter
                                     by user type.</p>
                             </div>
@@ -242,14 +238,11 @@
             <div class="p-4 sm:p-6 lg:p-7">
                 <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
                     <div>
-                        <p class="text-xs uppercase tracking-[0.14em] text-rose-600 font-semibold">Urgent Monitoring
-                        </p>
+                        <p class="text-xs uppercase tracking-[0.14em] text-rose-600 font-semibold">Urgent Monitoring</p>
                         <h2 class="text-xl sm:text-2xl font-bold text-rose-900">Emergency booking statistics</h2>
-                        <p class="text-sm text-rose-700 mt-1">Filter by date and review status distribution in pie
-                            chart.</p>
+                        <p class="text-sm text-rose-700 mt-1">Filter by date and review status distribution in pie chart.</p>
                     </div>
-                    <form method="GET" action="{{ route('admin.student-statistics') }}"
-                        class="grid grid-cols-1 sm:grid-cols-4 gap-2 w-full lg:w-auto">
+                    <form method="GET" action="{{ route('admin.student-statistics') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 w-full lg:w-auto">
                         <label class="text-xs font-semibold text-rose-700">
                             From date
                             <input type="date" name="emergency_from" value="{{ $emergencyDateFilter['from'] }}"
@@ -270,7 +263,7 @@
                             </select>
                         </label>
                         <button type="submit"
-                            class="self-end rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold px-4 py-2 transition">Apply
+                            class="self-end w-full lg:w-auto rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold px-4 py-2 transition">Apply
                             filter</button>
                     </form>
                 </div>
@@ -283,61 +276,39 @@
                             $pendingPercent = round(($emergencyStats['pending'] / $emergencyTotal) * 100, 2);
                             $approvedPercent = round(($emergencyStats['approved'] / $emergencyTotal) * 100, 2);
                             $rejectedPercent = round(($emergencyStats['rejected'] / $emergencyTotal) * 100, 2);
-                            $completedPercent = max(
-                                0,
-                                round(100 - ($pendingPercent + $approvedPercent + $rejectedPercent), 2),
-                            );
-                            $lecturerPercent = round(
-                                (($emergencyStats['lecturer_total'] ?? 0) / $emergencyTotal) * 100,
-                                2,
-                            );
+                            $completedPercent = max(0, round(100 - ($pendingPercent + $approvedPercent + $rejectedPercent), 2));
+                            $lecturerPercent = round((($emergencyStats['lecturer_total'] ?? 0) / $emergencyTotal) * 100, 2);
                             $studentPercent = max(0, round(100 - $lecturerPercent, 2));
 
                             $pieBackground = $isAllRole
                                 ? "conic-gradient(#8b5cf6 0% {$lecturerPercent}%, #0ea5e9 {$lecturerPercent}% 100%)"
-                                : "conic-gradient(#f59e0b 0% {$pendingPercent}%, #0ea5e9 {$pendingPercent}% " .
-                                    ($pendingPercent + $approvedPercent) .
-                                    '%, #f43f5e ' .
-                                    ($pendingPercent + $approvedPercent) .
-                                    '% ' .
-                                    ($pendingPercent + $approvedPercent + $rejectedPercent) .
-                                    '%, #10b981 ' .
-                                    ($pendingPercent + $approvedPercent + $rejectedPercent) .
-                                    '% 100%)';
+                                : "conic-gradient(#f59e0b 0% {$pendingPercent}%, #0ea5e9 {$pendingPercent}% " . ($pendingPercent + $approvedPercent) . "%, #f43f5e " . ($pendingPercent + $approvedPercent) . "% " . ($pendingPercent + $approvedPercent + $rejectedPercent) . "%, #10b981 " . ($pendingPercent + $approvedPercent + $rejectedPercent) . "% 100%)";
                         @endphp
                         <h3 class="text-sm font-semibold text-rose-800 uppercase tracking-wide">
                             {{ $isAllRole ? 'Emergency role comparison pie chart' : 'Emergency status pie chart' }}
                         </h3>
-                        <div class="mt-4 mx-auto h-52 w-52 rounded-full border-8 border-white shadow-inner"
-                            style="background: {{ $pieBackground }}"></div>
+                        <div class="mt-4 mx-auto h-52 w-52 rounded-full border-8 border-white shadow-inner" style="background: {{ $pieBackground }}"></div>
                         <p class="mt-3 text-center text-sm text-slate-600">Total emergency bookings: <span
                                 class="font-bold text-rose-700">{{ $emergencyStats['total'] }}</span></p>
                         <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                             @if ($isAllRole)
-                                <div
-                                    class="rounded-lg border border-violet-200 bg-violet-50 px-3 py-2 text-violet-700">
-                                    Lecturer:
+                                <div class="rounded-lg border border-violet-200 bg-violet-50 px-3 py-2 text-violet-700">Lecturer:
                                     <span class="font-semibold">{{ $emergencyStats['lecturer_total'] }}</span>
                                 </div>
                                 <div class="rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-sky-700">Student:
                                     <span class="font-semibold">{{ $emergencyStats['student_total'] }}</span>
                                 </div>
                             @else
-                                <div class="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-amber-700">
-                                    Pending:
+                                <div class="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-amber-700">Pending:
                                     <span class="font-semibold">{{ $emergencyStats['pending'] }}</span>
                                 </div>
-                                <div class="rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-sky-700">
-                                    Approved:
+                                <div class="rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-sky-700">Approved:
                                     <span class="font-semibold">{{ $emergencyStats['approved'] }}</span>
                                 </div>
-                                <div class="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-rose-700">
-                                    Rejected:
+                                <div class="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-rose-700">Rejected:
                                     <span class="font-semibold">{{ $emergencyStats['rejected'] }}</span>
                                 </div>
-                                <div
-                                    class="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-emerald-700">
-                                    Completed:
+                                <div class="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-emerald-700">Completed:
                                     <span class="font-semibold">{{ $emergencyStats['completed'] }}</span>
                                 </div>
                             @endif
@@ -385,7 +356,8 @@
                                             <td class="py-2 pr-3 font-medium text-slate-700">
                                                 <button type="button"
                                                     class="text-left text-sky-700 hover:text-sky-900 underline decoration-sky-300"
-                                                    data-profile-open data-name="{{ $item['name'] }}"
+                                                    data-profile-open
+                                                    data-name="{{ $item['name'] }}"
                                                     data-email="{{ $item['email'] }}"
                                                     data-role="{{ $item['role'] }}"
                                                     data-status="{{ $item['status'] }}"
@@ -408,8 +380,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td class="py-2 text-slate-500" colspan="4">No emergency booking names
-                                                for
+                                            <td class="py-2 text-slate-500" colspan="4">No emergency booking names for
                                                 this filter.</td>
                                         </tr>
                                     @endforelse
@@ -421,47 +392,29 @@
             </div>
         </section>
 
-        <div id="profile-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 p-4">
-            <div class="w-full max-w-lg rounded-2xl bg-white shadow-2xl border border-slate-200">
-                <div class="p-4 sm:p-5 border-b border-slate-200 flex items-center justify-between">
-                    <h3 class="text-lg font-bold text-slate-900">User Profile Details</h3>
-                    <button type="button" id="profile-modal-close"
-                        class="rounded-lg border border-slate-200 px-2.5 py-1 text-sm text-slate-600 hover:bg-slate-50">Close</button>
-                </div>
-                <div class="p-4 sm:p-5">
-                    <div class="flex items-center gap-4">
+        <div id="profile-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/70 p-2 sm:p-4">
+            <div class="w-full max-w-lg max-h-[92vh] overflow-y-auto overflow-x-hidden rounded-2xl bg-white shadow-2xl border border-slate-200">
+                <div class="h-24 bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200"></div>
+                <div class="px-4 sm:px-5 pb-5 -mt-12">
+                    <div class="flex items-start justify-end">
+                        <button type="button" id="profile-modal-close"
+                            class="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-sm text-slate-600 hover:bg-slate-50">✕</button>
+                    </div>
+                    <div class="-mt-8 flex flex-col items-center text-center">
                         <img id="profile-modal-pic" src="/images/default-profile.svg" alt="Profile picture"
-                            class="h-20 w-20 rounded-full object-cover border border-slate-200" />
-                        <div>
-                            <p id="profile-modal-name" class="text-lg font-semibold text-slate-900">-</p>
-                            <p id="profile-modal-role" class="text-sm text-slate-600 capitalize">-</p>
-                        </div>
+                            class="h-24 w-24 rounded-full object-cover border-4 border-white shadow" />
+                        <p id="profile-modal-name" class="mt-3 text-xl font-bold text-slate-900">-</p>
+                        <p id="profile-modal-role" class="text-sm text-slate-500 capitalize">-</p>
+                    </div>
+                    <div class="mt-4 grid grid-cols-2 gap-2 text-xs sm:text-sm">
+                        <div class="rounded-lg bg-slate-50 border border-slate-200 px-3 py-2"><span class="text-slate-500">Status</span><p id="profile-modal-status" class="font-semibold text-slate-800 capitalize">-</p></div>
+                        <div class="rounded-lg bg-slate-50 border border-slate-200 px-3 py-2"><span class="text-slate-500">Phone</span><p id="profile-modal-phone" class="font-semibold text-slate-800">-</p></div>
                     </div>
                     <dl class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                        <div>
-                            <dt class="text-slate-500">Email</dt>
-                            <dd id="profile-modal-email" class="font-medium text-slate-800">-</dd>
-                        </div>
-                        <div>
-                            <dt class="text-slate-500">Phone</dt>
-                            <dd id="profile-modal-phone" class="font-medium text-slate-800">-</dd>
-                        </div>
-                        <div>
-                            <dt class="text-slate-500">No Matriks</dt>
-                            <dd id="profile-modal-matriks" class="font-medium text-slate-800">-</dd>
-                        </div>
-                        <div>
-                            <dt class="text-slate-500">Programme</dt>
-                            <dd id="profile-modal-programme" class="font-medium text-slate-800">-</dd>
-                        </div>
-                        <div>
-                            <dt class="text-slate-500">Year</dt>
-                            <dd id="profile-modal-years" class="font-medium text-slate-800">-</dd>
-                        </div>
-                        <div>
-                            <dt class="text-slate-500">Emergency Status</dt>
-                            <dd id="profile-modal-status" class="font-medium text-slate-800 capitalize">-</dd>
-                        </div>
+                        <div><dt class="text-slate-500">Email</dt><dd id="profile-modal-email" class="font-medium text-slate-800 break-words">-</dd></div>
+                        <div><dt class="text-slate-500">No Matriks</dt><dd id="profile-modal-matriks" class="font-medium text-slate-800">-</dd></div>
+                        <div><dt class="text-slate-500">Programme</dt><dd id="profile-modal-programme" class="font-medium text-slate-800">-</dd></div>
+                        <div><dt class="text-slate-500">Year</dt><dd id="profile-modal-years" class="font-medium text-slate-800">-</dd></div>
                     </dl>
                 </div>
             </div>
@@ -507,12 +460,12 @@
                     <svg viewBox="0 0 ${chartWidth} ${chartHeight}" class="w-full min-w-[520px]" role="img" aria-label="Bar chart for booking status overview">
                         <line x1="${paddingX}" y1="${chartHeight - paddingY}" x2="${chartWidth - paddingX}" y2="${chartHeight - paddingY}" stroke="#94a3b8" stroke-width="1.2" />
                         ${bars.map((bar) => `
-                                        <g>
-                                            <rect x="${bar.x}" y="${bar.y}" width="${barWidth}" height="${bar.barHeight}" rx="8" fill="url(#statusBarGradient)" />
-                                            <text x="${bar.x + (barWidth / 2)}" y="${bar.y - 8}" text-anchor="middle" font-size="12" fill="#334155" font-weight="600">${bar.value}</text>
-                                            <text x="${bar.x + (barWidth / 2)}" y="${chartHeight - 10}" text-anchor="middle" font-size="11" fill="#475569">${bar.label}</text>
-                                        </g>
-                                    `).join('')}
+                            <g>
+                                <rect x="${bar.x}" y="${bar.y}" width="${barWidth}" height="${bar.barHeight}" rx="8" fill="url(#statusBarGradient)" />
+                                <text x="${bar.x + (barWidth / 2)}" y="${bar.y - 8}" text-anchor="middle" font-size="12" fill="#334155" font-weight="600">${bar.value}</text>
+                                <text x="${bar.x + (barWidth / 2)}" y="${chartHeight - 10}" text-anchor="middle" font-size="11" fill="#475569">${bar.label}</text>
+                            </g>
+                        `).join('')}
                         <defs>
                             <linearGradient id="statusBarGradient" x1="0" y1="0" x2="1" y2="0">
                                 <stop offset="0%" stop-color="#f59e0b" />
@@ -547,8 +500,7 @@
             const points = entries.map((item, index) => {
                 const value = Number(item.value) || 0;
                 const x = paddingX + (index * stepX);
-                const y = paddingY + plotHeight - (((value - minValue) / (maxValue - minValue || 1)) *
-                    plotHeight);
+                const y = paddingY + plotHeight - (((value - minValue) / (maxValue - minValue || 1)) * plotHeight);
                 return {
                     label: item.label,
                     value,
@@ -574,29 +526,29 @@
                 <div class="w-full overflow-x-auto pb-1">
                     <svg viewBox="0 0 ${chartWidth} ${chartHeight}" class="w-full min-w-[560px]" role="img" aria-label="Line graph for top requested counselling topics">
                         ${yAxisLines.map((line) => `
-                                        <line x1="${paddingX}" y1="${line.y}" x2="${chartWidth - paddingX}" y2="${line.y}" stroke="#e2e8f0" stroke-width="1" />
-                                        <text x="${paddingX - 12}" y="${line.y + 4}" text-anchor="end" font-size="10" fill="#64748b">${line.value}</text>
-                                    `).join('')}
+                            <line x1="${paddingX}" y1="${line.y}" x2="${chartWidth - paddingX}" y2="${line.y}" stroke="#e2e8f0" stroke-width="1" />
+                            <text x="${paddingX - 12}" y="${line.y + 4}" text-anchor="end" font-size="10" fill="#64748b">${line.value}</text>
+                        `).join('')}
                         <line x1="${paddingX}" y1="${chartHeight - paddingY}" x2="${chartWidth - paddingX}" y2="${chartHeight - paddingY}" stroke="#94a3b8" stroke-width="1.2" />
                         <path d="${path}" fill="none" stroke="${color}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
                         ${points.map((point) => `
-                                        <g>
-                                            <circle cx="${point.x}" cy="${point.y}" r="5" fill="${color}" />
-                                            <title>${point.label}: ${point.value}</title>
-                                        </g>
-                                    `).join('')}
+                            <g>
+                                <circle cx="${point.x}" cy="${point.y}" r="5" fill="${color}" />
+                                <title>${point.label}: ${point.value}</title>
+                            </g>
+                        `).join('')}
                         ${points.map((point) => `
-                                        <text x="${point.x}" y="${chartHeight - 12}" text-anchor="middle" font-size="10" fill="#475569">${point.label.length > 16 ? `${point.label.slice(0, 16)}…` : point.label}</text>
-                                    `).join('')}
+                            <text x="${point.x}" y="${chartHeight - 12}" text-anchor="middle" font-size="10" fill="#475569">${point.label.length > 16 ? `${point.label.slice(0, 16)}…` : point.label}</text>
+                        `).join('')}
                     </svg>
                 </div>
                 <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
                     ${entries.map((entry) => `
-                                    <div class="rounded-lg border border-slate-200 px-3 py-2 text-sm flex items-center justify-between bg-slate-50/70">
-                                        <span class="text-slate-600 truncate pr-2">${entry.label}</span>
-                                        <span class="font-semibold text-slate-800">${Number(entry.value) || 0}</span>
-                                    </div>
-                                `).join('')}
+                        <div class="rounded-lg border border-slate-200 px-3 py-2 text-sm flex items-center justify-between bg-slate-50/70">
+                            <span class="text-slate-600 truncate pr-2">${entry.label}</span>
+                            <span class="font-semibold text-slate-800">${Number(entry.value) || 0}</span>
+                        </div>
+                    `).join('')}
                 </div>
             `;
         };
@@ -623,22 +575,22 @@
                                 ? 'bg-violet-100 text-violet-700'
                                 : 'bg-sky-100 text-sky-700';
                             return `
-                                            <div>
-                                                <div class="flex items-center justify-between gap-2 text-xs sm:text-sm mb-1">
-                                                    <div class="min-w-0">
-                                                        <p class="font-semibold text-slate-700 truncate">${item.student}</p>
-                                                        <p class="text-slate-500 truncate">${item.email}</p>
-                                                    </div>
-                                                    <div class="text-right shrink-0">
-                                                        <span class="inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold ${badgeClass}">${item.role}</span>
-                                                        <p class="text-slate-700 font-semibold mt-1">${value}</p>
-                                                    </div>
-                                                </div>
-                                                <div class="h-3 rounded-full bg-slate-100 overflow-hidden">
-                                                    <div class="h-full bg-gradient-to-r from-indigo-500 to-cyan-500 rounded-full" style="width: ${width}%"></div>
-                                                </div>
-                                            </div>
-                                        `;
+                                <div>
+                                    <div class="flex items-center justify-between gap-2 text-xs sm:text-sm mb-1">
+                                        <div class="min-w-0">
+                                            <p class="font-semibold text-slate-700 truncate">${item.student}</p>
+                                            <p class="text-slate-500 truncate">${item.email}</p>
+                                        </div>
+                                        <div class="text-right shrink-0">
+                                            <span class="inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold ${badgeClass}">${item.role}</span>
+                                            <p class="text-slate-700 font-semibold mt-1">${value}</p>
+                                        </div>
+                                    </div>
+                                    <div class="h-3 rounded-full bg-slate-100 overflow-hidden">
+                                        <div class="h-full bg-gradient-to-r from-indigo-500 to-cyan-500 rounded-full" style="width: ${width}%"></div>
+                                    </div>
+                                </div>
+                            `;
                         }).join('')}
                     </div>
                 `;
@@ -660,17 +612,17 @@
                         </thead>
                         <tbody>
                             ${filtered.map((item) => `
-                                            <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
-                                                <td class="py-2 pr-3 font-medium text-slate-700">${item.student}</td>
-                                                <td class="py-2 pr-3 text-slate-600">${item.email}</td>
-                                                <td class="py-2 pr-3">
-                                                    <span class="inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold ${item.role === 'lecturer' ? 'bg-violet-100 text-violet-700' : 'bg-sky-100 text-sky-700'}">${item.role}</span>
-                                                </td>
-                                                <td class="py-2 pr-3 text-slate-700">${item.total}</td>
-                                                <td class="py-2 pr-3 text-amber-700">${item.active_pending}</td>
-                                                <td class="py-2 text-sky-700">${item.active_approved}</td>
-                                            </tr>
-                                        `).join('')}
+                                <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+                                    <td class="py-2 pr-3 font-medium text-slate-700">${item.student}</td>
+                                    <td class="py-2 pr-3 text-slate-600">${item.email}</td>
+                                    <td class="py-2 pr-3">
+                                        <span class="inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold ${item.role === 'lecturer' ? 'bg-violet-100 text-violet-700' : 'bg-sky-100 text-sky-700'}">${item.role}</span>
+                                    </td>
+                                    <td class="py-2 pr-3 text-slate-700">${item.total}</td>
+                                    <td class="py-2 pr-3 text-amber-700">${item.active_pending}</td>
+                                    <td class="py-2 text-sky-700">${item.active_approved}</td>
+                                </tr>
+                            `).join('')}
                         </tbody>
                     </table>
                 </div>
@@ -716,7 +668,19 @@
         roleSelect?.addEventListener('change', rerenderPeople);
         rerenderPeople();
 
-          const profileModal = document.getElementById('profile-modal');
+        const profileModal = document.getElementById('profile-modal');
+        const prettyValue = (value) => {
+            if (!value || value === '-' || value === 'null' || value === 'undefined') {
+                return 'N/A';
+            }
+            return value;
+        };
+        const prettyRole = (value) => {
+            const normalized = String(value || '').toLowerCase();
+            if (normalized === 'lecturer') return 'Lecturer';
+            if (normalized === 'student') return 'Student';
+            return prettyValue(value);
+        };
         const closeProfileModal = () => {
             profileModal?.classList.add('hidden');
             profileModal?.classList.remove('flex');
@@ -724,14 +688,14 @@
 
         document.querySelectorAll('[data-profile-open]').forEach((button) => {
             button.addEventListener('click', () => {
-                document.getElementById('profile-modal-name').textContent = button.dataset.name || '-';
-                document.getElementById('profile-modal-email').textContent = button.dataset.email || '-';
-                document.getElementById('profile-modal-role').textContent = button.dataset.role || '-';
-                document.getElementById('profile-modal-phone').textContent = button.dataset.phone || '-';
-                document.getElementById('profile-modal-matriks').textContent = button.dataset.matriks || '-';
-                document.getElementById('profile-modal-programme').textContent = button.dataset.programme || '-';
-                document.getElementById('profile-modal-years').textContent = button.dataset.years || '-';
-                document.getElementById('profile-modal-status').textContent = button.dataset.status || '-';
+                document.getElementById('profile-modal-name').textContent = prettyValue(button.dataset.name);
+                document.getElementById('profile-modal-email').textContent = prettyValue(button.dataset.email);
+                document.getElementById('profile-modal-role').textContent = prettyRole(button.dataset.role);
+                document.getElementById('profile-modal-phone').textContent = prettyValue(button.dataset.phone);
+                document.getElementById('profile-modal-matriks').textContent = prettyValue(button.dataset.matriks);
+                document.getElementById('profile-modal-programme').textContent = prettyValue(button.dataset.programme);
+                document.getElementById('profile-modal-years').textContent = prettyValue(button.dataset.years);
+                document.getElementById('profile-modal-status').textContent = prettyValue(button.dataset.status);
                 document.getElementById('profile-modal-pic').src = button.dataset.pic || '/images/default-profile.svg';
 
                 profileModal?.classList.remove('hidden');
