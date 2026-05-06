@@ -36,7 +36,7 @@ Route::get('/', function () {
     if ($user) {
         $role = $user->roles()->value('name');
 
-        if (in_array($role, ['student', 'teacher'], true)) {
+        if (in_array($role, ['student', 'teacher', 'lecturer'], true)) {
             return redirect()->route('home.session');
         }
         if ($role === 'admin') {
@@ -230,8 +230,7 @@ Route::middleware('auth')->group(function () {
         $user = request()->user();
         $role = $user?->roles()->value('name');
 
-        abort_unless(in_array($role, ['student', 'teacher'], true), 403);
-
+        abort_unless(in_array($role, ['student', 'teacher', 'lecturer'], true), 403);
         $announcements = [
             'Counselling slots for this week are now open. Book early to secure your preferred time.',
             'Need to change time? Use Booking History to reschedule your active appointment.',
@@ -409,7 +408,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/messages', function (Request $request) {
         $user = $request->user();
         $hasAllowedRole = $user?->roles()
-            ->whereIn(DB::raw('LOWER(TRIM(name))'), ['student', 'teacher', 'counsellor'])
+            ->whereIn(DB::raw('LOWER(TRIM(name))'), ['student', 'teacher', 'lecturer', 'counsellor'])
             ->exists();
 
         abort_unless($hasAllowedRole, 403);
@@ -800,7 +799,7 @@ Route::middleware('auth')->group(function () {
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $managedUser->id],
             'phone' => ['nullable', 'string', 'max:30'],
-            'role' => ['required', 'in:student,teacher,counsellor,admin,unassigned'],
+            'role' => ['required', 'in:student,teacher,lecturer,counsellor,admin,unassigned'],
         ]);
 
         $managedUser->name = $validated['name'];
@@ -894,7 +893,7 @@ Route::middleware('auth')->group(function () {
                         $booking->user?->roles
                         ?->pluck('name')
                         ->map(static fn(string $name): string => mb_strtolower($name))
-                        ->first(static fn(string $name): bool => in_array($name, ['student', 'teacher'], true))
+                        ->first(static fn(string $name): bool => in_array($name, ['student', 'teacher', 'lecturer'], true))
                     ) === 'teacher'
                         ? 'Lecturer'
                         : 'Student',
@@ -1262,7 +1261,7 @@ Route::middleware('auth')->group(function () {
         $user = request()->user();
         $role = $user?->roles()->value('name');
 
-        abort_unless(in_array($role, ['student', 'teacher', 'counsellor'], true), 403);
+        abort_unless(in_array($role, ['student', 'teacher', 'lecturer', 'counsellor'], true), 403);
 
         $counsellors = User::query()
             ->whereHas('roles', static fn($query) => $query->where('name', 'counsellor'))
@@ -1309,8 +1308,7 @@ Route::middleware('auth')->group(function () {
         $user = $request->user();
         $role = $user?->roles()->value('name');
 
-        abort_unless(in_array($role, ['student', 'teacher', 'counsellor'], true), 403);
-
+        abort_unless(in_array($role, ['student', 'teacher', 'lecturer', 'counsellor'], true), 403);
         $filters = $request->validate([
             'status' => ['nullable', 'in:all,pending,approved,rejected,cancelled,completed'],
         ]);
@@ -1386,8 +1384,7 @@ Route::middleware('auth')->group(function () {
         $user = $request->user();
         $role = $user?->roles()->value('name');
 
-        abort_unless(in_array($role, ['student', 'teacher', 'counsellor'], true), 403);
-
+        abort_unless(in_array($role, ['student', 'teacher', 'lecturer', 'counsellor'], true), 403);
         $validated = $request->validate([
             'booking_date' => ['required', 'date', 'after_or_equal:today'],
             'booking_time' => ['required', 'string', 'max:50'],
@@ -1514,7 +1511,7 @@ Route::middleware('auth')->group(function () {
         $user = $request->user();
         $role = $user?->roles()->value('name');
 
-        abort_unless(in_array($role, ['student', 'teacher', 'counsellor'], true), 403);
+        abort_unless(in_array($role, ['student', 'teacher', 'lecturer', 'counsellor'], true), 403);
         abort_unless((int) $bookingRequest->user_id === (int) $user?->id, 403);
 
         if (! in_array($bookingRequest->status, ['pending', 'approved'], true)) {
@@ -1563,7 +1560,7 @@ Route::middleware('auth')->group(function () {
         $user = $request->user();
         $role = $user?->roles()->value('name');
 
-        abort_unless(in_array($role, ['student', 'teacher', 'counsellor'], true), 403);
+        abort_unless(in_array($role, ['student', 'teacher', 'lecturer', 'counsellor'], true), 403);
 
         $filters = $request->validate([
             'date_from' => ['nullable', 'date'],
@@ -1604,7 +1601,7 @@ Route::middleware('auth')->group(function () {
         $user = $request->user();
         $role = $user?->roles()->value('name');
 
-        abort_unless(in_array($role, ['student', 'teacher', 'counsellor'], true), 403);
+        abort_unless(in_array($role, ['student', 'teacher', 'lecturer', 'counsellor'], true), 403);
 
         $validated = $request->validate([
             'notification_ids' => ['required', 'array', 'min:1'],
@@ -1625,7 +1622,7 @@ Route::middleware('auth')->group(function () {
         $user = request()->user();
         $role = $user?->roles()->value('name');
 
-        abort_unless(in_array($role, ['student', 'teacher', 'counsellor'], true), 403);
+        abort_unless(in_array($role, ['student', 'teacher', 'lecturer', 'counsellor'], true), 403);
         abort_unless((int) $notification->user_id === (int) $user?->id, 403);
 
         $notification->delete();
