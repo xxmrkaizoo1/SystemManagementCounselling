@@ -118,10 +118,12 @@
                 <div class="min-w-0">
                     <p class="text-xs uppercase tracking-[0.14em] text-indigo-500 font-semibold">CollegeCare</p>
                     <h1 class="text-xl sm:text-2xl font-bold text-slate-900 leading-tight">Admin Dashboard</h1>
-                    <p class="text-sm text-indigo-500 mt-1 truncate">Welcome back, <a class="text-sm text-indigo-500 mt-1 truncate font-semibold">{{ $user->full_name ?: $user->name }}</a></p>
+                    <p class="text-sm text-indigo-500 mt-1 truncate">Welcome back, <a
+                            class="text-sm text-indigo-500 mt-1 truncate font-semibold">{{ $user->full_name ?: $user->name }}</a>
+                    </p>
                 </div>
 
-                <form method="POST" action="{{ route('logout') }}">
+                <form id="admin-logout-form" method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit"
                         class="rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:from-sky-700 hover:to-indigo-700 transition hover:-translate-y-0.5 shadow-sm">Logout</button>
@@ -381,6 +383,55 @@
             </div>
         </section>
     </main>
+
+    <div id="admin-logout-modal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-[80] p-4">
+        <div class="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl border border-slate-200">
+            <h3 class="text-lg font-semibold text-slate-800">Confirm logout</h3>
+            <p class="mt-2 text-sm text-slate-600">Are you sure you want to logout?</p>
+            <div class="mt-5 flex justify-end gap-3">
+                <button id="admin-logout-cancel" type="button"
+                    class="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Cancel</button>
+                <button id="admin-logout-confirm" type="button"
+                    class="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700">Yes,
+                    logout</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const logoutForm = document.getElementById('admin-logout-form');
+            const logoutModal = document.getElementById('admin-logout-modal');
+            const logoutCancel = document.getElementById('admin-logout-cancel');
+            const logoutConfirm = document.getElementById('admin-logout-confirm');
+
+            const closeLogoutModal = () => {
+                if (!logoutModal) return;
+                logoutModal.classList.add('hidden');
+                logoutModal.classList.remove('flex');
+            };
+
+            const openLogoutModal = () => {
+                if (!logoutModal) return;
+                logoutModal.classList.remove('hidden');
+                logoutModal.classList.add('flex');
+            };
+
+            if (logoutForm && logoutModal) {
+                logoutForm.addEventListener('submit', (event) => {
+                    event.preventDefault();
+                    openLogoutModal();
+                });
+
+                logoutCancel?.addEventListener('click', closeLogoutModal);
+                logoutConfirm?.addEventListener('click', () => logoutForm.submit());
+
+                logoutModal.addEventListener('click', (event) => {
+                    if (event.target === logoutModal) closeLogoutModal();
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>
