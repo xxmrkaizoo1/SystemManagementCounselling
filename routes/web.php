@@ -478,7 +478,7 @@ Route::middleware('auth')->group(function () {
     })->name('admin.accounts.manage');
 
 
-    Route::get('/admin/student-statistics', function () {
+    Route::get('/admin/student-statistics', function (Request $request) {
         $user = request()->user();
         $role = $user?->roles()->value('name');
 
@@ -523,17 +523,15 @@ Route::middleware('auth')->group(function () {
             ->leftJoin('user_role', 'user_role.user_id', '=', 'users.id')
             ->leftJoin('roles', 'roles.id', '=', 'user_role.role_id')
             ->select('users.id', 'users.name', 'users.full_name', 'users.email')
-            ->selectRaw("COALESCE(roles.name, 'student') as role_name")
-            ->selectRaw('COUNT(booking_requests.id) as total_bookings')
+            ->selectRaw("MAX(CASE WHEN LOWER(roles.name) IN ('counsellor', 'lecturer' , 'teacher') THEN 1 ELSE 0 END) as has_lecturer_role")->selectRaw('COUNT(booking_requests.id) as total_bookings')
             ->selectRaw("SUM(CASE WHEN booking_requests.status = 'pending' THEN 1 ELSE 0 END) as active_pending")
             ->selectRaw("SUM(CASE WHEN booking_requests.status = 'approved' THEN 1 ELSE 0 END) as active_approved")
-            ->groupBy('users.id', 'users.name', 'users.full_name', 'users.email', 'roles.name')
+            ->groupBy('users.id', 'users.name', 'users.full_name', 'users.email')
             ->orderByDesc('total_bookings')
             ->limit(30)
             ->get()
             ->map(static function ($row): array {
-                $rawRole = strtolower((string) $row->role_name);
-                $normalizedRole = in_array($rawRole, ['counsellor', 'lecturer'], true) ? 'lecturer' : 'student';
+                $normalizedRole = (int) $row->has_lecturer_role === 1 ? 'lecturer' : 'student';
 
                 return [
                     'student' => (string) ($row->full_name ?: $row->name),
@@ -545,11 +543,27 @@ Route::middleware('auth')->group(function () {
                 ];
             });
 
+        $emergencyStats = BookingRequest::query()
+            ->where('topic', 'like', '[EMERGENCY]%')
+            ->selectRaw('COUNT(*) as total')
+            ->selectRaw("SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending_total")
+            ->selectRaw("SUM(CASE WHEN status = 'approved' THEN 1 ELSE 0 END) as approved_total")
+            ->selectRaw("SUM(CASE WHEN status = 'rejected' THEN 1 ELSE 0 END) as rejected_total")
+            ->selectRaw("SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed_total")
+            ->first();
+
         return view('admin.student-statistic-page', [
             'user' => $user,
             'statusTotals' => $statusTotals,
             'topicStats' => $topicStats,
             'studentStats' => $studentStats,
+            'emergencyStats' => [
+                'total' => (int) ($emergencyStats->total ?? 0),
+                'pending' => (int) ($emergencyStats->pending_total ?? 0),
+                'approved' => (int) ($emergencyStats->approved_total ?? 0),
+                'rejected' => (int) ($emergencyStats->rejected_total ?? 0),
+                'completed' => (int) ($emergencyStats->completed_total ?? 0),
+            ],
         ]);
     })->name('admin.student-statistics');
 

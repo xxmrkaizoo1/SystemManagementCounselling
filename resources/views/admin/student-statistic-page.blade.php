@@ -91,7 +91,7 @@
                 class="px-4 sm:px-7 py-4 border-b border-slate-200/80 bg-white/85 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div class="min-w-0">
                     <p class="text-xs uppercase tracking-[0.14em] text-indigo-500 font-semibold">CollegeCare</p>
-                    <h1 class="text-xl sm:text-2xl font-bold text-slate-900 leading-tight">Student Booking Statistics
+                    <h1 class="text-xl sm:text-2xl font-bold text-slate-900 leading-tight">Student / Lecturer Booking Statistics
                     </h1>
                     <p class="text-sm text-slate-600 mt-1 truncate">Analysis of booking topics and current request
                         states.</p>
@@ -232,6 +232,36 @@
                 </section>
             </div>
         </section>
+
+              <section>
+                    <article class="rounded-2xl border border-rose-200 bg-rose-50/70 p-4 sm:p-5 shadow-sm animate-fade-up">
+                        <h2 class="text-lg font-semibold text-rose-900">Emergency bookings statistics</h2>
+                        <p class="text-sm text-rose-700 mt-1">Overall count for bookings marked as emergency.</p>
+
+                        <div class="mt-4 grid grid-cols-2 sm:grid-cols-5 gap-3">
+                            <div class="rounded-xl border border-rose-200 bg-white/70 p-3">
+                                <p class="text-xs uppercase tracking-wide text-rose-700 font-semibold">Total</p>
+                                <p class="mt-1 text-xl font-bold text-rose-900">{{ $emergencyStats['total'] }}</p>
+                            </div>
+                            <div class="rounded-xl border border-amber-200 bg-white/70 p-3">
+                                <p class="text-xs uppercase tracking-wide text-amber-700 font-semibold">Pending</p>
+                                <p class="mt-1 text-xl font-bold text-amber-700">{{ $emergencyStats['pending'] }}</p>
+                            </div>
+                            <div class="rounded-xl border border-sky-200 bg-white/70 p-3">
+                                <p class="text-xs uppercase tracking-wide text-sky-700 font-semibold">Approved</p>
+                                <p class="mt-1 text-xl font-bold text-sky-700">{{ $emergencyStats['approved'] }}</p>
+                            </div>
+                            <div class="rounded-xl border border-rose-200 bg-white/70 p-3">
+                                <p class="text-xs uppercase tracking-wide text-rose-700 font-semibold">Rejected</p>
+                                <p class="mt-1 text-xl font-bold text-rose-700">{{ $emergencyStats['rejected'] }}</p>
+                            </div>
+                            <div class="rounded-xl border border-emerald-200 bg-white/70 p-3">
+                                <p class="text-xs uppercase tracking-wide text-emerald-700 font-semibold">Completed</p>
+                                <p class="mt-1 text-xl font-bold text-emerald-700">{{ $emergencyStats['completed'] }}</p>
+                            </div>
+                        </div>
+                    </article>
+                </section>
     </main>
 
     <script>
