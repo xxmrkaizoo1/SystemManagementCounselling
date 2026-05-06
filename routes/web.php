@@ -543,27 +543,74 @@ Route::middleware('auth')->group(function () {
                 ];
             });
 
-        $emergencyStats = BookingRequest::query()
+        $fromDate = trim((string) $request->query('emergency_from', ''));
+        $toDate = trim((string) $request->query('emergency_to', ''));
+        $emergencyRoleFilter = (string) $request->query('emergency_role', 'all');
+        if (!in_array($emergencyRoleFilter, ['all', 'lecturer', 'student'], true)) {
+            $emergencyRoleFilter = 'all';
+        }
+
+        $emergencyQuery = BookingRequest::query()
             ->where('topic', 'like', '[EMERGENCY]%')
-            ->selectRaw('COUNT(*) as total')
-            ->selectRaw("SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending_total")
-            ->selectRaw("SUM(CASE WHEN status = 'approved' THEN 1 ELSE 0 END) as approved_total")
-            ->selectRaw("SUM(CASE WHEN status = 'rejected' THEN 1 ELSE 0 END) as rejected_total")
-            ->selectRaw("SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed_total")
-            ->first();
+            ->leftJoin('users', 'users.id', '=', 'booking_requests.user_id')
+            ->leftJoin('user_role', 'user_role.user_id', '=', 'users.id')
+            ->leftJoin('roles', 'roles.id', '=', 'user_role.role_id')
+            ->groupBy('booking_requests.id')
+            ->select(
+                'booking_requests.id',
+                'booking_requests.status',
+                'booking_requests.created_at',
+                'users.name',
+                'users.full_name',
+                'users.email',
+                'users.phone',
+                'users.no_matriks',
+                'users.years',
+                'users.programme',
+                'users.profile_pic'
+            )
+            ->selectRaw("MAX(CASE WHEN LOWER(roles.name) IN ('counsellor', 'lecturer', 'teacher') THEN 1 ELSE 0 END) as has_lecturer_role")
+            ->when($fromDate !== '', static fn($query) => $query->whereDate('booking_requests.created_at', '>=', $fromDate))
+            ->when($toDate !== '', static fn($query) => $query->whereDate('booking_requests.created_at', '<=', $toDate));
+        $emergencyRows = (clone $emergencyQuery)->get()->map(static function ($row): array {
+            return [
+                'status' => (string) $row->status,
+                'role' => (int) $row->has_lecturer_role === 1 ? 'lecturer' : 'student',
+                'name' => (string) ($row->full_name ?: $row->name ?: 'Unknown'),
+                'email' => (string) ($row->email ?? '-'),
+                'phone' => (string) ($row->phone ?? '-'),
+                'no_matriks' => (string) ($row->no_matriks ?? '-'),
+                'years' => (string) ($row->years ?? '-'),
+                'programme' => (string) ($row->programme ?? '-'),
+                'profile_pic' => (string) ($row->profile_pic ?: '/images/default-profile.svg'),
+            ];
+        });
+
+
+        $filteredEmergencyRows = $emergencyRows->filter(static fn($row) => $emergencyRoleFilter === 'all' || $row['role'] === $emergencyRoleFilter)->values();
+        $emergencyStats = [
+            'total' => $filteredEmergencyRows->count(),
+            'pending' => $filteredEmergencyRows->where('status', 'pending')->count(),
+            'approved' => $filteredEmergencyRows->where('status', 'approved')->count(),
+            'rejected' => $filteredEmergencyRows->where('status', 'rejected')->count(),
+            'completed' => $filteredEmergencyRows->where('status', 'completed')->count(),
+            'lecturer_total' => $filteredEmergencyRows->where('role', 'lecturer')->count(),
+            'student_total' => $filteredEmergencyRows->where('role', 'student')->count(),
+        ];
 
         return view('admin.student-statistic-page', [
             'user' => $user,
             'statusTotals' => $statusTotals,
             'topicStats' => $topicStats,
             'studentStats' => $studentStats,
-            'emergencyStats' => [
-                'total' => (int) ($emergencyStats->total ?? 0),
-                'pending' => (int) ($emergencyStats->pending_total ?? 0),
-                'approved' => (int) ($emergencyStats->approved_total ?? 0),
-                'rejected' => (int) ($emergencyStats->rejected_total ?? 0),
-                'completed' => (int) ($emergencyStats->completed_total ?? 0),
+            'emergencyStats' => $emergencyStats,
+
+            'emergencyDateFilter' => [
+                'from' => $fromDate,
+                'to' => $toDate,
+                'role' => $emergencyRoleFilter,
             ],
+            'emergencyListing' => $filteredEmergencyRows->take(20)->values(),
         ]);
     })->name('admin.student-statistics');
 
