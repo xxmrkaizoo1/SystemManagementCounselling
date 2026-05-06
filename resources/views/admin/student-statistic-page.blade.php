@@ -106,8 +106,6 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M9 14L4 9l5-5M4 9h10a7 7 0 110 14h-3" />
                     </svg>
-
-
                 </a>
             </header>
 
@@ -141,19 +139,22 @@
                 </section>
 
                 {{-- Graphs --}}
-                <section class="grid lg:grid-cols-2 gap-4">
-                    <article class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm animate-fade-up">
+                <section class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                    <article
+                        class="rounded-2xl border border-slate-200 bg-white/95 p-4 sm:p-5 shadow-sm animate-fade-up">
                         <h2 class="text-lg font-semibold text-slate-900">Booking status overview graph</h2>
                         <p class="text-sm text-slate-600 mt-1">Quick visual split of all booking request states.</p>
-                        <div class="mt-4 h-64" id="status-chart" role="img" aria-label="Booking status bar chart">
+                        <div class="mt-4 min-h-64" id="status-chart" role="img"
+                            aria-label="Booking status bar chart">
                         </div>
                     </article>
 
                     <article
-                        class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm animate-fade-up animation-delay-1">
+                        class="rounded-2xl border border-slate-200 bg-white/95 p-4 sm:p-5 shadow-sm animate-fade-up animation-delay-1">
                         <h2 class="text-lg font-semibold text-slate-900">Top topics graph</h2>
                         <p class="text-sm text-slate-600 mt-1">Most requested counselling topics (top 6).</p>
-                        <div class="mt-4 h-64" id="topic-chart" role="img" aria-label="Top topic bar chart"></div>
+                        <div class="mt-4 min-h-64" id="topic-chart" role="img" aria-label="Top topic line chart">
+                        </div>
                     </article>
                 </section>
 
@@ -199,40 +200,34 @@
 
                     <article
                         class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm animate-fade-up animation-delay-2">
-                        <h2 class="text-lg font-semibold text-slate-900">Top students by booking activity</h2>
-                        <p class="text-sm text-slate-600 mt-1">Current booking load per student (pending + approved
-                            active requests).</p>
-
-                        <div class="mt-4 overflow-auto">
-                            <table class="w-full min-w-[620px] text-sm">
-                                <thead>
-                                    <tr class="text-left text-slate-500 border-b border-slate-200">
-                                        <th class="py-2 pr-3">Student</th>
-                                        <th class="py-2 pr-3">Email</th>
-                                        <th class="py-2 pr-3">Total</th>
-                                        <th class="py-2 pr-3">Pending</th>
-                                        <th class="py-2">Approved</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse ($studentStats as $student)
-                                        <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
-                                            <td class="py-2 pr-3 font-medium text-slate-700">{{ $student['student'] }}
-                                            </td>
-                                            <td class="py-2 pr-3 text-slate-600">{{ $student['email'] }}</td>
-                                            <td class="py-2 pr-3 text-slate-700">{{ $student['total'] }}</td>
-                                            <td class="py-2 pr-3 text-amber-700">{{ $student['active_pending'] }}</td>
-                                            <td class="py-2 text-sky-700">{{ $student['active_approved'] }}</td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td class="py-2 text-slate-500" colspan="5">No student booking data
-                                                available yet.</td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
+                        <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                            <div>
+                                <h2 class="text-lg font-semibold text-slate-900">Students & lecturers booking activity
+                                </h2>
+                                <p class="text-sm text-slate-600 mt-1">Switch between listing and bar chart, then filter
+                                    by user type.</p>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full sm:w-auto">
+                                <label class="text-xs font-semibold text-slate-500">
+                                    View
+                                    <select id="people-view-mode"
+                                        class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-sm text-slate-700">
+                                        <option value="list">Listing</option>
+                                        <option value="bar">Bar chart</option>
+                                    </select>
+                                </label>
+                                <label class="text-xs font-semibold text-slate-500">
+                                    Filter
+                                    <select id="people-role-filter"
+                                        class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-sm text-slate-700">
+                                        <option value="all">All (student + lecturer)</option>
+                                        <option value="lecturer">Lecturer only</option>
+                                        <option value="student">Student only</option>
+                                    </select>
+                                </label>
+                            </div>
                         </div>
+                        <div class="mt-4" id="people-activity-container"></div>
                     </article>
                 </section>
             </div>
@@ -250,28 +245,204 @@
             }
 
             const maxValue = Math.max(...entries.map((item) => Number(item.value) || 0), 1);
-            const barColor = options.barColor || 'from-sky-500 to-indigo-600';
+            const chartWidth = 720;
+            const chartHeight = 300;
+            const paddingX = 44;
+            const paddingY = 32;
+            const plotWidth = chartWidth - (paddingX * 2);
+            const plotHeight = chartHeight - (paddingY * 2);
+            const barGap = 18;
+            const barWidth = Math.max((plotWidth - (barGap * (entries.length - 1))) / entries.length, 26);
+
+            const bars = entries.map((item, index) => {
+                const value = Number(item.value) || 0;
+                const barHeight = maxValue === 0 ? 0 : (value / maxValue) * plotHeight;
+                const x = paddingX + (index * (barWidth + barGap));
+                const y = paddingY + (plotHeight - barHeight);
+                return {
+                    label: item.label,
+                    value,
+                    x,
+                    y,
+                    barHeight
+                };
+            });
 
             container.innerHTML = `
-                <div class="space-y-3">
-                    ${entries.map((item) => {
-                        const value = Number(item.value) || 0;
-                        const width = Math.max((value / maxValue) * 100, value > 0 ? 4 : 0);
-                        return `
-                                <div>
-                                    <div class="flex items-center justify-between text-xs text-slate-600 mb-1">
-                                        <span class="truncate pr-3">${item.label}</span>
-                                        <span class="font-semibold text-slate-700">${value}</span>
-                                    </div>
-                                    <div class="h-3 rounded-full bg-slate-100 overflow-hidden">
-                                        <div class="h-full bg-gradient-to-r ${barColor} rounded-full" style="width: ${width}%"></div>
-                                    </div>
-                                </div>
-                            `;
-                    }).join('')}
+                <div class="w-full overflow-x-auto pb-1">
+                    <svg viewBox="0 0 ${chartWidth} ${chartHeight}" class="w-full min-w-[520px]" role="img" aria-label="Bar chart for booking status overview">
+                        <line x1="${paddingX}" y1="${chartHeight - paddingY}" x2="${chartWidth - paddingX}" y2="${chartHeight - paddingY}" stroke="#94a3b8" stroke-width="1.2" />
+                        ${bars.map((bar) => `
+                                                <g>
+                                                    <rect x="${bar.x}" y="${bar.y}" width="${barWidth}" height="${bar.barHeight}" rx="8" fill="url(#statusBarGradient)" />
+                                                    <text x="${bar.x + (barWidth / 2)}" y="${bar.y - 8}" text-anchor="middle" font-size="12" fill="#334155" font-weight="600">${bar.value}</text>
+                                                    <text x="${bar.x + (barWidth / 2)}" y="${chartHeight - 10}" text-anchor="middle" font-size="11" fill="#475569">${bar.label}</text>
+                                                </g>
+                                            `).join('')}
+                        <defs>
+                            <linearGradient id="statusBarGradient" x1="0" y1="0" x2="1" y2="0">
+                                <stop offset="0%" stop-color="#f59e0b" />
+                                <stop offset="100%" stop-color="#f43f5e" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
                 </div>
             `;
         };
+
+        const createLineChart = (containerId, entries, options = {}) => {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            if (!Array.isArray(entries) || entries.length === 0) {
+                container.innerHTML = '<p class="text-sm text-slate-500">No data available for graph yet.</p>';
+                return;
+            }
+
+            const color = options.color || '#0ea5e9';
+            const maxValue = Math.max(...entries.map((item) => Number(item.value) || 0), 1);
+            const minValue = 0;
+            const chartWidth = 760;
+            const chartHeight = 320;
+            const paddingX = 50;
+            const paddingY = 36;
+            const plotWidth = chartWidth - (paddingX * 2);
+            const plotHeight = chartHeight - (paddingY * 2);
+            const stepX = entries.length > 1 ? plotWidth / (entries.length - 1) : 0;
+
+            const points = entries.map((item, index) => {
+                const value = Number(item.value) || 0;
+                const x = paddingX + (index * stepX);
+                const y = paddingY + plotHeight - (((value - minValue) / (maxValue - minValue || 1)) *
+                    plotHeight);
+                return {
+                    label: item.label,
+                    value,
+                    x,
+                    y
+                };
+            });
+
+            const path = points.map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`).join(' ');
+            const ticks = 4;
+            const yAxisLines = Array.from({
+                length: ticks + 1
+            }, (_, index) => {
+                const value = Math.round((maxValue / ticks) * (ticks - index));
+                const y = paddingY + ((plotHeight / ticks) * index);
+                return {
+                    value,
+                    y
+                };
+            });
+
+            container.innerHTML = `
+                <div class="w-full overflow-x-auto pb-1">
+                    <svg viewBox="0 0 ${chartWidth} ${chartHeight}" class="w-full min-w-[560px]" role="img" aria-label="Line graph for top requested counselling topics">
+                        ${yAxisLines.map((line) => `
+                                                <line x1="${paddingX}" y1="${line.y}" x2="${chartWidth - paddingX}" y2="${line.y}" stroke="#e2e8f0" stroke-width="1" />
+                                                <text x="${paddingX - 12}" y="${line.y + 4}" text-anchor="end" font-size="10" fill="#64748b">${line.value}</text>
+                                            `).join('')}
+                        <line x1="${paddingX}" y1="${chartHeight - paddingY}" x2="${chartWidth - paddingX}" y2="${chartHeight - paddingY}" stroke="#94a3b8" stroke-width="1.2" />
+                        <path d="${path}" fill="none" stroke="${color}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                        ${points.map((point) => `
+                                                <g>
+                                                    <circle cx="${point.x}" cy="${point.y}" r="5" fill="${color}" />
+                                                    <title>${point.label}: ${point.value}</title>
+                                                </g>
+                                            `).join('')}
+                        ${points.map((point) => `
+                                                <text x="${point.x}" y="${chartHeight - 12}" text-anchor="middle" font-size="10" fill="#475569">${point.label.length > 16 ? `${point.label.slice(0, 16)}…` : point.label}</text>
+                                            `).join('')}
+                    </svg>
+                </div>
+                <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    ${entries.map((entry) => `
+                                            <div class="rounded-lg border border-slate-200 px-3 py-2 text-sm flex items-center justify-between bg-slate-50/70">
+                                                <span class="text-slate-600 truncate pr-2">${entry.label}</span>
+                                                <span class="font-semibold text-slate-800">${Number(entry.value) || 0}</span>
+                                            </div>
+                                        `).join('')}
+                </div>
+            `;
+        };
+
+        const renderPeopleActivity = (entries, filter = 'all', view = 'list') => {
+            const container = document.getElementById('people-activity-container');
+            if (!container) return;
+
+            const filtered = entries.filter((entry) => filter === 'all' ? true : entry.role === filter);
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<p class="text-sm text-slate-500">No booking data found for this filter.</p>';
+                return;
+            }
+
+            if (view === 'bar') {
+                const maxValue = Math.max(...filtered.map((item) => Number(item.total) || 0), 1);
+                container.innerHTML = `
+                    <div class="space-y-3">
+                        ${filtered.map((item) => {
+                            const value = Number(item.total) || 0;
+                            const width = Math.max((value / maxValue) * 100, value > 0 ? 4 : 0);
+                            const badgeClass = item.role === 'lecturer'
+                                ? 'bg-violet-100 text-violet-700'
+                                : 'bg-sky-100 text-sky-700';
+                            return `
+                                            <div>
+                                                <div class="flex items-center justify-between gap-2 text-xs sm:text-sm mb-1">
+                                                    <div class="min-w-0">
+                                                        <p class="font-semibold text-slate-700 truncate">${item.student}</p>
+                                                        <p class="text-slate-500 truncate">${item.email}</p>
+                                                    </div>
+                                                    <div class="text-right shrink-0">
+                                                        <span class="inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold ${badgeClass}">${item.role}</span>
+                                                        <p class="text-slate-700 font-semibold mt-1">${value}</p>
+                                                    </div>
+                                                </div>
+                                                <div class="h-3 rounded-full bg-slate-100 overflow-hidden">
+                                                    <div class="h-full bg-gradient-to-r from-indigo-500 to-cyan-500 rounded-full" style="width: ${width}%"></div>
+                                                </div>
+                                            </div>
+                                        `;
+                        }).join('')}
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="overflow-auto">
+                    <table class="w-full min-w-[680px] text-sm">
+                        <thead>
+                            <tr class="text-left text-slate-500 border-b border-slate-200">
+                                <th class="py-2 pr-3">Name</th>
+                                <th class="py-2 pr-3">Email</th>
+                                <th class="py-2 pr-3">Role</th>
+                                <th class="py-2 pr-3">Total</th>
+                                <th class="py-2 pr-3">Pending</th>
+                                <th class="py-2">Approved</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${filtered.map((item) => `
+                                            <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+                                                <td class="py-2 pr-3 font-medium text-slate-700">${item.student}</td>
+                                                <td class="py-2 pr-3 text-slate-600">${item.email}</td>
+                                                <td class="py-2 pr-3">
+                                                    <span class="inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold ${item.role === 'lecturer' ? 'bg-violet-100 text-violet-700' : 'bg-sky-100 text-sky-700'}">${item.role}</span>
+                                                </td>
+                                                <td class="py-2 pr-3 text-slate-700">${item.total}</td>
+                                                <td class="py-2 pr-3 text-amber-700">${item.active_pending}</td>
+                                                <td class="py-2 text-sky-700">${item.active_approved}</td>
+                                            </tr>
+                                        `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        };
+
 
         createBarChart('status-chart', [{
                 label: 'Pending',
@@ -293,12 +464,24 @@
             barColor: 'from-amber-500 to-rose-500'
         });
 
-        createBarChart('topic-chart', @json(collect($topicStats)->take(6)->map(fn($topic) => [
+        createLineChart('topic-chart', @json(collect($topicStats)->take(6)->map(fn($topic) => [
                         'label' => $topic['topic'],
                         'value' => $topic['total'],
                     ])->values()), {
-            barColor: 'from-emerald-500 to-sky-500'
+            color: '#10b981'
         });
+
+        const peopleStats = @json($studentStats);
+        const viewSelect = document.getElementById('people-view-mode');
+        const roleSelect = document.getElementById('people-role-filter');
+
+        const rerenderPeople = () => {
+            renderPeopleActivity(peopleStats, roleSelect?.value || 'all', viewSelect?.value || 'list');
+        };
+
+        viewSelect?.addEventListener('change', rerenderPeople);
+        roleSelect?.addEventListener('change', rerenderPeople);
+        rerenderPeople();
     </script>
 
 </body>

@@ -520,18 +520,25 @@ Route::middleware('auth')->group(function () {
 
         $studentStats = BookingRequest::query()
             ->join('users', 'users.id', '=', 'booking_requests.user_id')
+            ->leftJoin('user_role', 'user_role.user_id', '=', 'users.id')
+            ->leftJoin('roles', 'roles.id', '=', 'user_role.role_id')
             ->select('users.id', 'users.name', 'users.full_name', 'users.email')
+            ->selectRaw("COALESCE(roles.name, 'student') as role_name")
             ->selectRaw('COUNT(booking_requests.id) as total_bookings')
             ->selectRaw("SUM(CASE WHEN booking_requests.status = 'pending' THEN 1 ELSE 0 END) as active_pending")
             ->selectRaw("SUM(CASE WHEN booking_requests.status = 'approved' THEN 1 ELSE 0 END) as active_approved")
-            ->groupBy('users.id', 'users.name', 'users.full_name', 'users.email')
+            ->groupBy('users.id', 'users.name', 'users.full_name', 'users.email', 'roles.name')
             ->orderByDesc('total_bookings')
-            ->limit(10)
+            ->limit(30)
             ->get()
             ->map(static function ($row): array {
+                $rawRole = strtolower((string) $row->role_name);
+                $normalizedRole = in_array($rawRole, ['counsellor', 'lecturer'], true) ? 'lecturer' : 'student';
+
                 return [
                     'student' => (string) ($row->full_name ?: $row->name),
                     'email' => (string) $row->email,
+                    'role' => $normalizedRole,
                     'total' => (int) $row->total_bookings,
                     'active_pending' => (int) $row->active_pending,
                     'active_approved' => (int) $row->active_approved,
