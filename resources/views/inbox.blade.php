@@ -189,7 +189,7 @@
                     </p>
                     <nav class="space-y-3 text-sm">
                         <a href="{{ route('inbox') }}" title="Inbox" aria-label="Inbox"
-                            class="flex w-full items-center gap-3 rounded-xl border border-sky-200 bg-sky-50 px-3 py-2.5 text-sky-700 transition">
+                            class="relative flex w-full items-center gap-3 rounded-xl border border-sky-200 bg-sky-50 px-3 py-2.5 text-sky-700 transition">
                             <span
                                 class="inline-flex h-12 w-12 items-center justify-center rounded-xl border border-sky-200 bg-white">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24"

@@ -298,8 +298,13 @@
                         <p class="text-xs uppercase tracking-[0.12em] text-slate-500 mb-3">Menu</p>
                         <nav class="space-y-3 text-sm">
                             <a href="{{ route('inbox') }}" title="Inbox" aria-label="Inbox"
-                                class="menu-card flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">
-                                <span
+                                class="menu-card relative flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">
+                                @if (!empty($showInboxNotificationDot))
+                                    <span
+                                        class="absolute ml-8 -mt-5 h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-white"
+                                        aria-hidden="true"></span>
+                                @endif
+                                 <span
                                     class="inline-flex h-12 w-12 items-center justify-center rounded-xl border border-slate-200 bg-slate-50">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24"
                                         fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"

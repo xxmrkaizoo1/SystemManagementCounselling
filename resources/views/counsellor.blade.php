@@ -157,8 +157,7 @@
                     </div>
                 </div>
             </header>
-
-            <div class="px-4 pb-6 pt-6 sm:px-6 sm:pb-8 lg:px-8 lg:pb-10 lg:pt-8">
+                        <div class="px-4 pb-6 pt-6 sm:px-6 sm:pb-8 lg:px-8 lg:pb-10 lg:pt-8">
                 <section
                     class="mb-6 overflow-hidden rounded-3xl border border-slate-200/90 bg-gradient-to-r from-slate-900 via-sky-900 to-violet-900 shadow-xl">
                     <div class="relative h-64 sm:h-72 lg:h-80">
@@ -283,8 +282,7 @@
                             </a>
                         </div>
                     </article>
-
-                    <article
+                                        <article
                         class="glass-card rounded-3xl border border-slate-200/90 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md sm:p-8 xl:col-span-3">
                         <h2 class="text-lg font-semibold text-slate-800">Quick Actions</h2>
                         <p class="mt-2 text-sm text-slate-500">Jump into your most common daily tasks.</p>
@@ -335,7 +333,7 @@
         class="fixed bottom-4 right-4 z-40 w-[calc(100%-2rem)] max-w-md overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-2xl ring-1 ring-slate-200/70 sm:bottom-6 sm:right-6">
         <div
             class="flex items-center justify-between bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 px-4 py-3 text-white">
-            <h3 class="text-lg font-semibold">Messages</h3>
+            <h3 class="text-lg font-semibold">Notifications</h3>
             <div class="flex items-center gap-2">
                 <span
                     class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-amber-400/20 text-amber-200"
@@ -348,7 +346,7 @@
                 </span>
                 <button id="messages-toggle" type="button" aria-expanded="true"
                     class="rounded p-1 text-slate-200 transition hover:bg-white/10"
-                    aria-label="Collapse messages panel">
+                    aria-label="Collapse notifications panel">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="m6 9 6 6 6-6" />
@@ -361,14 +359,20 @@
             <div class="flex items-center gap-3">
                 <div class="flex flex-1 items-center gap-2 rounded-full border border-slate-300 bg-slate-50 px-3 py-2">
                     <span class="text-slate-500">🔎</span>
-                    <input id="chat-search" type="text" placeholder="Search"
+                    <input id="chat-search" type="text" placeholder="Search notifications"
                         class="w-full border-none bg-transparent text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-0" />
                 </div>
+                <select id="notification-filter"
+                    class="rounded-full border border-slate-300 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-600 focus:border-sky-500 focus:outline-none focus:ring-0">
+                    <option value="all">All</option>
+                    <option value="today">Today</option>
+                    <option value="upcoming">Upcoming</option>
+                </select>
 
             </div>
 
             <div class="flex items-center justify-between text-sm">
-                <p class="font-semibold text-slate-900">Chats</p>
+                <p class="font-semibold text-slate-900">Notification Box</p>
                 <a href="{{ route('counsellor.pending-requests') }}"
                     class="font-medium text-sky-600 hover:text-sky-700">Requests</a>
             </div>
@@ -420,19 +424,18 @@
                 @empty
                     <div id="chat-empty"
                         class="rounded-xl border border-slate-100 bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">
-                        No chats yet. New student requests will appear here.
+                        No notifications yet. New student requests will appear here.
                     </div>
                 @endforelse
             </div>
 
             <div id="chat-no-results"
                 class="hidden rounded-xl border border-slate-100 bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">
-                No matching chats found.
+                No matching notifications found.
             </div>
         </div>
     </aside>
-
-    <div id="chat-popup-backdrop" class="fixed inset-0 z-40 hidden bg-slate-950/50 p-4">
+        <div id="chat-popup-backdrop" class="fixed inset-0 z-40 hidden bg-slate-950/50 p-4">
         <div id="chat-popup"
             class="fixed left-1/2 top-20 z-50 w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 rounded-2xl border border-slate-200 bg-white shadow-2xl">
             <div id="chat-popup-header"
@@ -668,6 +671,7 @@
             const list = document.getElementById('chat-list');
             const searchInput = document.getElementById('chat-search');
             const noResults = document.getElementById('chat-no-results');
+            const notificationFilter = document.getElementById('notification-filter');
             const popupBackdrop = document.getElementById('chat-popup-backdrop');
             const popup = document.getElementById('chat-popup');
             const popupStudent = document.getElementById('chat-popup-student');
@@ -827,22 +831,36 @@
                 });
 
             }
-            if (searchInput) {
-                searchInput.addEventListener('input', () => {
-                    const query = searchInput.value.trim().toLowerCase();
-                    let visibleCount = 0;
+            const applyNotificationFilters = () => {
+                const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
+                const filterValue = notificationFilter ? notificationFilter.value : 'all';
+                const today = new Date().toISOString().slice(0, 10);
+                let visibleCount = 0;
 
-                    list.querySelectorAll('[data-chat-item="true"]').forEach((item) => {
-                        const name = item.dataset.name || '';
-                        const topic = item.dataset.topicSearch || '';
-                        const show = !query || name.includes(query) || topic.includes(query);
-                        item.classList.toggle('hidden', !show);
-                        if (show) visibleCount++;
-                    });
+                list.querySelectorAll('[data-chat-item="true"]').forEach((item) => {
+                    const name = item.dataset.name || '';
+                    const topic = item.dataset.topicSearch || '';
+                    const requestDate = item.dataset.requestDate || '';
+                    const matchesSearch = !query || name.includes(query) || topic.includes(query);
+                    const matchesDate = filterValue === 'all' ||
+                        (filterValue === 'today' && requestDate === today) ||
+                        (filterValue === 'upcoming' && requestDate > today);
+                    const show = matchesSearch && matchesDate;
 
-                    noResults.classList.toggle('hidden', visibleCount !== 0);
+                    item.classList.toggle('hidden', !show);
+                    if (show) visibleCount++;
                 });
+
+                noResults.classList.toggle('hidden', visibleCount !== 0);
+            };
+
+            if (searchInput) {
+                searchInput.addEventListener('input', applyNotificationFilters);
             }
+            if (notificationFilter) {
+                notificationFilter.addEventListener('change', applyNotificationFilters);
+            }
+            applyNotificationFilters();
         })();
     </script>
 </body>

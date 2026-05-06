@@ -1573,6 +1573,11 @@ Route::middleware('auth')->group(function () {
         ]);
 
         $notificationsQuery = $user->inboxNotifications()->latest();
+        $latestNotificationId = (int) $user->inboxNotifications()->max('id');
+
+        if ($latestNotificationId > 0) {
+            $request->session()->put('inbox_last_seen_notification_id', $latestNotificationId);
+        }
 
         if (!empty($filters['date_from'])) {
             $notificationsQuery->whereDate('created_at', '>=', $filters['date_from']);
