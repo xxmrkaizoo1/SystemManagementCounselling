@@ -123,17 +123,40 @@
                     </p>
                 </div>
 
-                <form id="admin-logout-form" method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit"
-                        class="rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:from-sky-700 hover:to-indigo-700 transition hover:-translate-y-0.5 shadow-sm">Logout</button>
-                </form>
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <button id="admin-sidebar-open" type="button"
+                        class="inline-flex xl:hidden items-center justify-center rounded-xl border border-slate-200 bg-white p-2 text-slate-700 hover:bg-slate-50"
+                        aria-controls="admin-sidebar" aria-expanded="false" aria-label="Open admin menu">
+                        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd"
+                                d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm1 4a1 1 0 100 2h12a1 1 0 100-2H4z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <form id="admin-logout-form" method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit"
+                            class="rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:from-sky-700 hover:to-indigo-700 transition hover:-translate-y-0.5 shadow-sm">Logout</button>
+                    </form>
                 </div>
             </header>
 
             <div class="p-4 sm:p-6 lg:p-7 grid xl:grid-cols-[240px_1fr] gap-4 lg:gap-5">
-                <aside
-                    class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm flex flex-col animate-fade-up animation-delay-1">
+                <div id="admin-sidebar-overlay" class="fixed inset-0 z-40 hidden bg-slate-900/45 xl:hidden"></div>
+                <aside id="admin-sidebar"
+                    class="fixed xl:static inset-y-0 left-0 z-50 w-[85vw] max-w-[320px] xl:w-auto xl:max-w-none -translate-x-full xl:translate-x-0 transition-transform duration-300 rounded-none xl:rounded-2xl border-0 xl:border border-slate-200 bg-white/95 p-4 shadow-2xl xl:shadow-sm flex flex-col animate-fade-up animation-delay-1">
+                    <div class="mb-3 flex items-center justify-between xl:hidden">
+                        <p class="text-xs uppercase tracking-[0.12em] text-slate-500 font-semibold">Admin menu</p>
+                        <button id="admin-sidebar-close" type="button"
+                            class="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white p-2 text-slate-700 hover:bg-slate-50"
+                            aria-label="Close admin menu">
+                            <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd"
+                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    </div>
                     <div class="flex items-center gap-3 mb-4 pb-3 border-b border-slate-200">
                         <img src="{{ $user->profile_pic ?: '/images/default-profile.svg' }}" alt="Profile"
                             class="w-11 h-11 rounded-full border border-slate-200 object-cover bg-sky-50" />
@@ -144,8 +167,8 @@
                     </div>
 
                     <div class="flex-1">
-                        <p class="text-xs uppercase tracking-[0.12em] text-slate-500 mb-2">Admin menu</p>
-                        <a href="{{ route('admin.accounts.manage') }}"
+                        <p class="hidden xl:block text-xs uppercase tracking-[0.12em] text-slate-500 mb-2">Admin menu
+                        </p> <a href="{{ route('admin.accounts.manage') }}"
                             class="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:border-sky-200 hover:text-sky-700 transition hover:-translate-y-0.5">
                             <svg class="h-4 w-4 text-slate-500" viewBox="0 0 20 20" fill="currentColor"
                                 aria-hidden="true">
@@ -400,10 +423,51 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            const sidebar = document.getElementById('admin-sidebar');
+            const sidebarOverlay = document.getElementById('admin-sidebar-overlay');
+            const sidebarOpen = document.getElementById('admin-sidebar-open');
+            const sidebarClose = document.getElementById('admin-sidebar-close');
             const logoutForm = document.getElementById('admin-logout-form');
             const logoutModal = document.getElementById('admin-logout-modal');
             const logoutCancel = document.getElementById('admin-logout-cancel');
             const logoutConfirm = document.getElementById('admin-logout-confirm');
+
+            const desktopMediaQuery = window.matchMedia('(min-width: 1280px)');
+
+            const syncSidebarButtonState = (isOpen) => {
+                sidebarOpen?.setAttribute('aria-expanded', String(isOpen));
+            };
+
+            const closeSidebar = () => {
+                if (!sidebar || !sidebarOverlay || desktopMediaQuery.matches) return;
+                sidebar.classList.add('-translate-x-full');
+                sidebarOverlay.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+                syncSidebarButtonState(false);
+            };
+
+            const openSidebar = () => {
+                if (!sidebar || !sidebarOverlay || desktopMediaQuery.matches) return;
+                sidebar.classList.remove('-translate-x-full');
+                sidebarOverlay.classList.remove('hidden');
+                document.body.classList.add('overflow-hidden');
+                syncSidebarButtonState(true);
+            };
+
+            const handleViewportChange = () => {
+                if (!sidebar || !sidebarOverlay) return;
+                if (desktopMediaQuery.matches) {
+                    sidebar.classList.remove('-translate-x-full');
+                    sidebarOverlay.classList.add('hidden');
+                    document.body.classList.remove('overflow-hidden');
+                    syncSidebarButtonState(false);
+                    return;
+                }
+                sidebar.classList.add('-translate-x-full');
+                sidebarOverlay.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+                syncSidebarButtonState(false);
+            };
 
             const closeLogoutModal = () => {
                 if (!logoutModal) return;
@@ -430,6 +494,18 @@
                     if (event.target === logoutModal) closeLogoutModal();
                 });
             }
+
+            sidebarOpen?.addEventListener('click', openSidebar);
+            sidebarClose?.addEventListener('click', closeSidebar);
+            sidebarOverlay?.addEventListener('click', closeSidebar);
+            window.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape') {
+                    closeSidebar();
+                    closeLogoutModal();
+                }
+            });
+            desktopMediaQuery.addEventListener('change', handleViewportChange);
+            handleViewportChange();
         });
     </script>
 </body>
