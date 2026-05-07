@@ -245,6 +245,11 @@
         let topicChart;
         let emergencyChart;
 
+        const normalizeTopic = (topic) => {
+            if (!topic) return 'Unknown topic';
+            return String(topic).replace(/^\s*\[EMERGENCY\]\s*/i, '').trim() || 'Unknown topic';
+        };
+
         function renderTopicsPie(weeks, startDateValue = null, endDateValue = null) {
             const range = getDateRangeWeeks(weeks, startDateValue, endDateValue);
             const selected = bookings.filter((b) => {
@@ -259,7 +264,10 @@
                 return week ? range.weekList.includes(fmt(week)) : false;
             });
             const topicCount = {};
-            selected.forEach(b => topicCount[b.topic] = (topicCount[b.topic] || 0) + 1);
+            selected.forEach((b) => {
+                const topicName = normalizeTopic(b.topic);
+                topicCount[topicName] = (topicCount[topicName] || 0) + 1;
+            });
             const top = Object.entries(topicCount).sort((a, b) => b[1] - a[1]).slice(0, 8);
 
             const hasData = top.length > 0;
@@ -274,11 +282,10 @@
                     datasets: [{
                         label: 'Bookings',
                         data: values,
-                        backgroundColor: hasData ?
-                            ['#0ea5e9', '#38bdf8', '#7dd3fc', '#0284c7', '#0369a1', '#14b8a6', '#22d3ee',
-                                '#60a5fa'
-                            ] :
-                            ['#cbd5e1']
+                        backgroundColor: hasData ? ['#0ea5e9', '#38bdf8', '#7dd3fc', '#0284c7', '#0369a1',
+                            '#14b8a6', '#22d3ee',
+                            '#60a5fa'
+                        ] : ['#cbd5e1']
                     }]
                 },
                 options: {
@@ -291,8 +298,7 @@
                         tooltip: {
                             callbacks: {
                                 label: (context) => hasData ?
-                                    `${context.label}: ${context.raw}` :
-                                    'No topic bookings found'
+                                    `${context.label}: ${context.raw}` : 'No topic bookings found'
                             }
                         }
                     }

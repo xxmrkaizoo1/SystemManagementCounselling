@@ -35,10 +35,17 @@ class AuthController extends Controller
     {
         $today = now();
         $weekdayIso = (int) $today->dayOfWeekIso;
+        $currentHour = (int) $today->hour;
+
+        $isOpenNow = match (true) {
+            $weekdayIso >= 1 && $weekdayIso <= 4 => $currentHour < 17,
+            $weekdayIso === 5 => $currentHour < 12,
+            default => false,
+        };
 
         $hourlySlotCount = match (true) {
-            $weekdayIso >= 1 && $weekdayIso <= 4 => 9,
-            $weekdayIso === 5 => 4,
+            $weekdayIso >= 1 && $weekdayIso <= 4 && $isOpenNow => 9,
+            $weekdayIso === 5 && $isOpenNow => 4,
             default => 0,
         };
 

@@ -157,7 +157,7 @@
                     </div>
                 </div>
             </header>
-                        <div class="px-4 pb-6 pt-6 sm:px-6 sm:pb-8 lg:px-8 lg:pb-10 lg:pt-8">
+            <div class="px-4 pb-6 pt-6 sm:px-6 sm:pb-8 lg:px-8 lg:pb-10 lg:pt-8">
                 <section
                     class="mb-6 overflow-hidden rounded-3xl border border-slate-200/90 bg-gradient-to-r from-slate-900 via-sky-900 to-violet-900 shadow-xl">
                     <div class="relative h-64 sm:h-72 lg:h-80">
@@ -282,7 +282,7 @@
                             </a>
                         </div>
                     </article>
-                                        <article
+                    <article
                         class="glass-card rounded-3xl border border-slate-200/90 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md sm:p-8 xl:col-span-3">
                         <h2 class="text-lg font-semibold text-slate-800">Quick Actions</h2>
                         <p class="mt-2 text-sm text-slate-500">Jump into your most common daily tasks.</p>
@@ -315,14 +315,18 @@
                     </article>
                 </section>
 
-                <div class="mt-6 rounded-2xl border border-slate-200 bg-slate-50/90 px-4 py-3 text-sm text-slate-600">
-                    <span>Total Applications: {{ count($applications) }}</span>
 
-                    <div class="mt-3">
-                        <a href="{{ route('messages.index') }}"
-                            class="inline-flex items-center gap-2 rounded-lg border border-sky-200 bg-white px-3 py-2 text-sm font-medium text-sky-700 transition hover:border-sky-300 hover:bg-sky-50">
-                            Go to Messages Page
-                        </a>
+
+                    <div class="mt-4 grid gap-3 sm:grid-cols-2">
+                        <article
+                            class="rounded-2xl border border-sky-100 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+                            <h3 class="text-sm font-semibold text-slate-800">Messages</h3>
+                            <p class="mt-1 text-xs text-slate-500">Open your inbox to check and reply quickly.</p>
+                            <a href="{{ route('messages.index') }}"
+                                class="mt-3 inline-flex items-center gap-2 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-sm font-medium text-sky-700 transition hover:border-sky-300 hover:bg-sky-100">
+                                Go to Messages Page
+                            </a>
+                        </article>
                     </div>
                 </div>
             </div>
@@ -435,7 +439,7 @@
             </div>
         </div>
     </aside>
-        <div id="chat-popup-backdrop" class="fixed inset-0 z-40 hidden bg-slate-950/50 p-4">
+    <div id="chat-popup-backdrop" class="fixed inset-0 z-40 hidden bg-slate-950/50 p-4">
         <div id="chat-popup"
             class="fixed left-1/2 top-20 z-50 w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 rounded-2xl border border-slate-200 bg-white shadow-2xl">
             <div id="chat-popup-header"

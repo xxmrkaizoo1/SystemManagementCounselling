@@ -49,11 +49,17 @@ Route::get('/', function () {
 
     $today = now();
     $weekdayIso = (int) $today->dayOfWeekIso; // 1 (Mon) ... 7 (Sun)
+    $currentHour = (int) $today->hour;
 
+    $isOpenNow = match (true) {
+        $weekdayIso >= 1 && $weekdayIso <= 4 => $currentHour < 17, // Mon-Thu: close at 17:00
+        $weekdayIso === 5 => $currentHour < 12, // Fri: close at 12:00
+        default => false, // weekend closed
+    };
     $hourlySlotCount = match (true) {
-        $weekdayIso >= 1 && $weekdayIso <= 4 => 9, // 8:00-17:00
-        $weekdayIso === 5 => 4, // 8:00-12:00
-        default => 0, // weekend closed
+        $weekdayIso >= 1 && $weekdayIso <= 4 && $isOpenNow => 9, // 8:00-17:00
+        $weekdayIso === 5 && $isOpenNow => 4, // 8:00-12:00
+        default => 0,
     };
 
     $counsellorCount = User::query()
