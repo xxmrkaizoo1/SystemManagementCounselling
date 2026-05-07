@@ -437,16 +437,7 @@ Route::middleware('auth')->group(function () {
         ]);
     })->name('home.session');
 
-    Route::get('/messages', function (Request $request) {
-        $user = $request->user();
-        $hasAllowedRole = $user?->roles()
-            ->whereIn(DB::raw('LOWER(TRIM(name))'), ['student', 'teacher', 'lecturer', 'counsellor'])
-            ->exists();
-
-        abort_unless($hasAllowedRole, 403);
-
-        return view('messages');
-    })->name('messages.index');
+    Route::get('/messages', [ChatController::class, 'messagesHub'])->name('messages.index');
 
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
     Route::post('/chat', [ChatController::class, 'store'])->name('chat.store');

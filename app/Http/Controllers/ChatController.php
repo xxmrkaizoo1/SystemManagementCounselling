@@ -11,6 +11,83 @@ use Illuminate\Support\Facades\DB;
 
 class ChatController extends Controller
 {
+
+    public function messagesHub(Request $request): View
+    {
+        /** @var User $user */
+        $user = $request->user();
+        $hasAllowedRole = $user->roles()
+            ->whereIn(DB::raw('LOWER(TRIM(name))'), ['student', 'teacher', 'lecturer', 'counsellor'])
+            ->exists();
+
+        abort_unless($hasAllowedRole, 403);
+
+        $conversationMessages = ChatMessage::query()
+            ->selectRaw('receiver_id as other_user_id, id as message_id')
+            ->where('sender_id', $user->id)
+            ->unionAll(
+                ChatMessage::query()
+                    ->selectRaw('sender_id as other_user_id, id as message_id')
+                    ->where('receiver_id', $user->id)
+            );
+
+        $latestMessages = ChatMessage::query()
+            ->select('chat_messages.*')
+            ->joinSub(
+                DB::query()
+                    ->fromSub($conversationMessages, 'conversation_messages')
+                    ->selectRaw('other_user_id, MAX(message_id) as latest_message_id')
+                    ->groupBy('other_user_id'),
+                'latest_conversations',
+                'latest_conversations.latest_message_id',
+                '=',
+                'chat_messages.id'
+            )
+            ->with([
+                'sender:id,name,full_name',
+                'receiver:id,name,full_name',
+            ])
+            ->latest('chat_messages.id')
+            ->limit(40)
+            ->get();
+
+        $messageCards = $latestMessages->map(function (ChatMessage $message) use ($user): array {
+            $otherUser = $message->sender_id === $user->id ? $message->receiver : $message->sender;
+            $name = trim((string) ($otherUser?->full_name ?: $otherUser?->name ?: 'Unknown user'));
+            $topic = str($message->message)->limit(40, '…')->toString();
+            $category = $message->created_at && $message->created_at->gt(now()->subDays(14)) ? 'active' : 'archived';
+
+            return [
+                'user_id' => $otherUser?->id,
+                'name' => $name,
+                'initial' => strtoupper(substr($name, 0, 1)),
+                'topic' => $topic,
+                'preview' => str($message->message)->limit(90, '…')->toString(),
+                'time_ago' => $message->created_at?->diffForHumans() ?? 'Recently',
+                'category' => $category,
+                'search' => strtolower($name . ' ' . $message->message),
+            ];
+        })->filter(fn(array $card): bool => ! empty($card['user_id']))->values();
+
+        $requestCards = collect();
+
+        $counts = [
+            'active' => $messageCards->where('category', 'active')->count(),
+            'request' => $requestCards->count(),
+            'archived' => $messageCards->where('category', 'archived')->count(),
+        ];
+
+        $newNotifications = $user->inboxNotifications()
+            ->where('title', 'New chat message')
+            ->where('created_at', '>=', now()->subDays(7))
+            ->count();
+
+        return view('messages', [
+            'messageCards' => $messageCards,
+            'counts' => $counts,
+            'newNotifications' => $newNotifications,
+        ]);
+    }
     public function index(Request $request): View
     {
         /** @var User $user */

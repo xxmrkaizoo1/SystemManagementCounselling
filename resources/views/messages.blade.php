@@ -10,7 +10,9 @@
 
 <body class="min-h-screen bg-slate-100 text-slate-800">
     <div class="relative min-h-screen overflow-hidden">
-        <div class="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,_#e0f2fe_0%,_#eef2ff_40%,_#f8fafc_100%)]"></div>
+        <div
+            class="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,_#e0f2fe_0%,_#eef2ff_40%,_#f8fafc_100%)]">
+        </div>
 
         <main class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
             <section class="grid gap-6 lg:grid-cols-[18rem_1fr]">
@@ -25,17 +27,20 @@
                         <button type="button" data-filter="active"
                             class="filter-btn flex w-full items-center justify-between rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sky-700">
                             <span class="font-semibold">Active Chats</span>
-                            <span class="rounded-full bg-white px-2 py-0.5 text-xs font-bold">12</span>
+                            <span
+                                class="rounded-full bg-white px-2 py-0.5 text-xs font-bold">{{ $counts['active'] }}</span>
                         </button>
                         <button type="button" data-filter="request"
                             class="filter-btn flex w-full items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3 hover:border-sky-200 hover:text-sky-700">
                             <span class="font-medium">Requests</span>
-                            <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold">5</span>
+                            <span
+                                class="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold">{{ $counts['request'] }}</span>
                         </button>
                         <button type="button" data-filter="archived"
                             class="filter-btn flex w-full items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3 hover:border-sky-200 hover:text-sky-700">
                             <span class="font-medium">Archived</span>
-                            <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold">18</span>
+                            <span
+                                class="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold">{{ $counts['archived'] }}</span>
                         </button>
                     </div>
                 </aside>
@@ -51,58 +56,54 @@
                                 <p class="text-sm text-slate-300">Search, review, and reply quickly.</p>
                             </div>
                         </div>
-                        <button class="rounded-xl border border-amber-300/40 bg-amber-300/10 px-3 py-2 text-amber-200">🔔 3 New</button>
+                        <button
+                            class="rounded-xl border border-amber-300/40 bg-amber-300/10 px-3 py-2 text-amber-200">🔔 3
+                            New</button>
                     </header>
 
                     <div class="space-y-5 p-6">
-                        <label class="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                        <label
+                            class="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
                             <span>🔎</span>
                             <input id="message-search" type="text" placeholder="Search by name or topic"
                                 class="w-full bg-transparent outline-none placeholder:text-slate-400" />
                         </label>
 
                         <div id="message-list" class="grid gap-4 md:grid-cols-2">
-                            <article data-category="active" data-search="aidy ilham rafique tekanan akademik"
-                                class="message-card rounded-2xl border border-slate-200 bg-white p-4 shadow-sm hover:shadow-md transition">
-                                <div class="flex gap-3">
-                                    <div
-                                        class="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-100 font-bold text-indigo-700">
-                                        A</div>
-                                    <div>
-                                        <h3 class="font-semibold text-slate-800">Aidy Ilham Rafique</h3>
-                                        <p class="text-sm text-slate-500">Tekanan akademik</p>
+                            @forelse ($messageCards as $card)
+                                <article data-category="{{ $card['category'] }}" data-search="{{ $card['search'] }}"
+                                    class="message-card rounded-2xl border border-slate-200 bg-white p-4 shadow-sm hover:shadow-md transition">
+                                    <div class="flex gap-3">
+                                        <div
+                                            class="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-100 font-bold text-indigo-700">
+                                            {{ $card['initial'] }}</div>
+                                        <div>
+                                            <h3 class="font-semibold text-slate-800">{{ $card['name'] }}</h3>
+                                            <p class="text-sm text-slate-500">{{ $card['topic'] }}</p>
+                                        </div>
                                     </div>
-                                </div>
-                                <p class="mt-3 text-sm text-slate-600">"Hi counsellor, I need help balancing assignments
-                                    and exams."</p>
-                                <div class="mt-4 flex items-center justify-between text-xs text-slate-500">
-                                    <span>2 min ago</span>
-                                    <a href="{{ route('chat.index') }}"
-                                        class="rounded-lg bg-sky-600 px-3 py-1.5 font-semibold text-white">Open Chat</a>
-                                </div>
-                            </article>
 
-                            <article data-category="request" data-search="nur syafiqah family concern"
-                                class="message-card rounded-2xl border border-slate-200 bg-white p-4 shadow-sm hover:shadow-md transition">
-                                <div class="flex gap-3">
-                                    <div
-                                        class="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-100 font-bold text-emerald-700">
-                                        N</div>
-                                    <div>
-                                        <h3 class="font-semibold text-slate-800">Nur Syafiqah</h3>
-                                        <p class="text-sm text-slate-500">Family concern</p>
+                                    {{-- //dada --}}
+                                    <p class="mt-3 text-sm text-slate-600">{{ $card['preview'] }}</p>
+                                    <div class="mt-4 flex items-center justify-between text-xs text-slate-500">
+                                        <span>{{ $card['time_ago'] }}</span>
+                                        <a href="{{ route('chat.index', ['user_id' => $card['user_id']]) }}"
+                                            class="rounded-lg bg-sky-600 px-3 py-1.5 font-semibold text-white">Open
+                                            Chat</a>
                                     </div>
-                                </div>
-                                <p class="mt-3 text-sm text-slate-600">"Can we schedule a follow-up session this week?"</p>
-                                <div class="mt-4 flex items-center justify-between text-xs text-slate-500">
-                                    <span>18 min ago</span>
-                                    <a href="{{ route('chat.index') }}"
-                                        class="rounded-lg bg-sky-600 px-3 py-1.5 font-semibold text-white">Open Chat</a>
-                                </div>
-                            </article>
+
+
+                                </article>
+                            @empty
+                                <p
+                                    class="rounded-xl border border-dashed border-slate-300 p-5 text-sm text-slate-500 md:col-span-2">
+                                    No chats yet. Start one from the chat directory.
+                                </p>
+                            @endforelse
                         </div>
 
-                        <p id="empty-state" class="hidden rounded-xl border border-dashed border-slate-300 p-5 text-sm text-slate-500">
+                        <p id="empty-state"
+                            class="hidden rounded-xl border border-dashed border-slate-300 p-5 text-sm text-slate-500">
                             No messages found for this filter/search.
                         </p>
                     </div>
@@ -133,7 +134,7 @@
                     if (visible) visibleCount += 1;
                 });
 
-                emptyState?.classList.toggle('hidden', visibleCount > 0);
+                emptyState?.classList.toggle('hidden', visibleCount > 0 || cards.length === 0);
             };
 
             buttons.forEach((button) => {

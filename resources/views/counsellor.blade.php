@@ -7,7 +7,27 @@
     <title>Counsellor Dashboard • CollegeCare</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
+        .modern-shell {
+            background: linear-gradient(140deg, rgba(255, 255, 255, 0.9), rgba(238, 242, 255, 0.86));
+        }
 
+        .modern-header-card {
+            background: linear-gradient(130deg, rgba(255, 255, 255, 0.95), rgba(224, 242, 254, 0.75), rgba(237, 233, 254, 0.7));
+            box-shadow: 0 18px 50px -34px rgba(30, 41, 59, 0.55);
+        }
+
+        .metric-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.55), transparent 46%);
+            pointer-events: none;
+        }
     </style>
 </head>
 
@@ -36,10 +56,9 @@
         @endif
 
         <section
-            class="overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white/85 shadow-2xl ring-1 ring-white/70 backdrop-blur-xl">
+            class="modern-shell overflow-hidden rounded-[2rem] border border-slate-200/80 shadow-2xl ring-1 ring-white/70 backdrop-blur-xl">
             <header class="border-b border-slate-200/90 bg-white/85 px-4 py-4 sm:px-6 sm:py-5 lg:px-8 lg:py-6">
-                <div
-                    class="rounded-3xl border border-white/70 bg-gradient-to-br from-white via-slate-50 to-sky-50/40 p-4 shadow-[0_18px_40px_-28px_rgba(15,23,42,0.65)] sm:p-6">
+                <div class="modern-header-card rounded-3xl border border-white/70 p-4 sm:p-6">
                     <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-4">
                         <div class="flex min-w-0 flex-1 items-center gap-3 sm:gap-4">
                             <a href="{{ route('profile.edit') }}"
@@ -66,8 +85,16 @@
 
                         <div class="relative flex w-full items-center lg:w-auto lg:justify-end">
                             <button id="dashboard-actions-toggle" type="button" aria-expanded="false"
-                                class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-sky-300 hover:text-sky-700">
-                                <span>Actions</span>
+                                class="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-sky-300 hover:text-sky-700"
+                                aria-label="Open actions menu" title="Actions">
+                                <span class="sr-only">Actions</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" aria-hidden="true">
+                                    <circle cx="12" cy="5" r="1.6" />
+                                    <circle cx="12" cy="12" r="1.6" />
+                                    <circle cx="12" cy="19" r="1.6" />
+                                </svg>
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                     stroke-linejoin="round" aria-hidden="true">
@@ -98,7 +125,7 @@
 
                     <div class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
                         <div
-                            class="group rounded-2xl border border-amber-200/80 bg-gradient-to-br from-amber-50 to-white px-4 py-3 text-sm shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+                            class="metric-card group rounded-2xl border border-amber-200/80 bg-gradient-to-br from-amber-100 via-amber-50 to-white px-4 py-3 text-sm shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
                             <p class="font-semibold text-amber-700">Pending</p>
                             <div class="mt-1 flex items-end justify-between">
                                 <p class="text-2xl font-bold text-amber-800">{{ $pendingCount }}</p>
@@ -106,7 +133,7 @@
                             </div>
                         </div>
                         <div
-                            class="group rounded-2xl border border-emerald-200/80 bg-gradient-to-br from-emerald-50 to-white px-4 py-3 text-sm shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+                            class="metric-card group rounded-2xl border border-emerald-200/80 bg-gradient-to-br from-emerald-100 via-emerald-50 to-white px-4 py-3 text-sm shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
                             <p class="font-semibold text-emerald-700">Approved</p>
                             <div class="mt-1 flex items-end justify-between">
                                 <p class="text-2xl font-bold text-emerald-800">{{ $approvedCount }}</p>
@@ -114,7 +141,7 @@
                             </div>
                         </div>
                         <div
-                            class="group rounded-2xl border border-sky-200/80 bg-gradient-to-br from-sky-50 to-white px-4 py-3 text-sm shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+                            class="metric-card group rounded-2xl border border-sky-200/80 bg-gradient-to-br from-sky-100 via-sky-50 to-white px-4 py-3 text-sm shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
                             <p class="font-semibold text-sky-700">Booked</p>
                             <div class="mt-1 flex items-end justify-between">
                                 <p class="text-2xl font-bold text-sky-800">{{ $bookedSlots }}</p>
@@ -122,7 +149,7 @@
                             </div>
                         </div>
                         <div
-                            class="group rounded-2xl border border-violet-200/80 bg-gradient-to-br from-violet-50 to-white px-4 py-3 text-sm shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+                           class="metric-card group rounded-2xl border border-violet-200/80 bg-gradient-to-br from-violet-100 via-violet-50 to-white px-4 py-3 text-sm shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
                             <p class="font-semibold text-violet-700">Completed</p>
                             <div class="mt-1 flex items-end justify-between">
                                 <p class="text-2xl font-bold text-violet-800">{{ $completedCount }}</p>
