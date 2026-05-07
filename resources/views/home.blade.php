@@ -304,7 +304,7 @@
             @php
                 $dashboardRoleLabel = $role === 'teacher' ? 'Lecturer' : ucfirst($role);
                 $sidebarRoleLabel =
-                    $role === 'student' ? 'Pelajar' : ($role === 'teacher' ? 'Pensyarah' : ucfirst($role));
+                    $role === 'student' ? 'Pelajar' : ($role === 'teacher' ? 'Pensyarah'   : ucfirst($role));
             @endphp
             <section
                 class="max-w-[96rem] mx-auto rounded-[2rem] border border-slate-200 bg-white/90 backdrop-blur-md shadow-xl overflow-hidden">
@@ -532,6 +532,7 @@
                                     </span>
                                 </div>
                             </div>
+                            {{-- past, current, future --}}
                             <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                                 @php
                                     $statusCards = [
@@ -572,25 +573,24 @@
                                             in_array($currentStatus, ['completed', 'cancelled']) &&
                                             in_array($key, ['pending', 'booked']);
                                     @endphp
-                                    <div
-                                        class="status-step rounded-xl border {{ $isActive ? 'border-sky-300 bg-white shadow-sm ring-1 ring-sky-100' : 'border-slate-200 bg-white/90' }} p-3">
+                                    <div class="status-step rounded-xl border border-slate-200 bg-white/95 p-3.5">
                                         <div class="flex items-center justify-between">
                                             <span
                                                 class="text-sm font-semibold text-slate-700">{{ $config['label'] }}</span>
                                             <span
                                                 class="inline-flex h-7 min-w-7 items-center justify-center rounded-full text-sm {{ $config['class'] }}">{{ $config['icon'] }}</span>
                                         </div>
-                                        <p class="mt-2 text-xs text-slate-500">{{ $config['desc'] }}</p>
-                                        <div class="mt-3">
+                                        <p class="mt-3 text-[14px] text-slate-500">{{ $config['desc'] }}</p>
+                                        <div class="mt-4">
                                             @if ($isActive)
                                                 <span
-                                                    class="inline-flex rounded-full bg-slate-900 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-white">Current</span>
+                                                    class="inline-flex rounded-full bg-sky-100 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-sky-700">Active</span>
                                             @elseif($isPast)
                                                 <span
-                                                    class="inline-flex rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500">Past</span>
+                                                    class="inline-flex rounded-full bg-slate-200 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500">Past</span>
                                             @else
                                                 <span
-                                                    class="inline-flex rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500">Idle</span>
+                                                    class="inline-flex rounded-full bg-slate-100 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500">Idle</span>
                                             @endif
                                         </div>
                                     </div>
@@ -610,134 +610,142 @@
                                     </a>
                                 @endif
                             </div>
-                        </div>
 
-                        @php
-                            $showStats = $role === 'student';
+                            @php
+                                $showStats = $role === 'student';
 
-                            $statusCounts = collect($userActiveBookings ?? [])
-                                ->map(fn($booking) => strtolower($booking['status'] ?? ''))
-                                ->countBy();
+                                $statusCounts = collect($userActiveBookings ?? [])
+                                    ->map(fn($booking) => strtolower($booking['status'] ?? ''))
+                                    ->countBy();
 
-                            $activeStatusTotal =
-                                (int) $statusCounts->get('pending', 0) + (int) $statusCounts->get('booked', 0);
-                            $completedStatusTotal = (int) $statusCounts->get('completed', 0);
-                            $cancelledStatusTotal = (int) $statusCounts->get('cancelled', 0);
+                                $activeStatusTotal =
+                                    (int) $statusCounts->get('pending', 0) + (int) $statusCounts->get('booked', 0);
+                                $completedStatusTotal = (int) $statusCounts->get('completed', 0);
+                                $cancelledStatusTotal = (int) $statusCounts->get('cancelled', 0);
 
-                            $availableCounsellorsCount = collect($counsellorNames ?? [])
-                                ->filter(fn($name) => filled($name))
-                                ->count();
+                                $availableCounsellorsCount = collect($counsellorNames ?? [])
+                                    ->filter(fn($name) => filled($name))
+                                    ->count();
 
-                            $nextBooking = collect($userActiveBookings ?? [])->first(function ($booking) {
-                                if (empty($booking['booking_date']) || empty($booking['status'])) {
-                                    return false;
-                                }
+                                $nextBooking = collect($userActiveBookings ?? [])->first(function ($booking) {
+                                    if (empty($booking['booking_date']) || empty($booking['status'])) {
+                                        return false;
+                                    }
 
-                                return in_array(strtolower($booking['status']), ['pending', 'booked'], true);
-                            });
-                        @endphp
+                                    return in_array(strtolower($booking['status']), ['pending', 'booked'], true);
+                                });
+                            @endphp
 
-                        @if ($showStats)
-                            <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                                <div class="glass-panel rounded-2xl p-4">
-                                    <p class="text-xs uppercase tracking-[0.12em] text-slate-500">Active Booking</p>
-                                    <p class="mt-2 text-2xl font-semibold text-slate-800">{{ $activeStatusTotal }}</p>
-                                    <p class="mt-1 text-sm text-slate-500">Pending and booked counselling slots.</p>
-                                </div>
-                                <div class="glass-panel rounded-2xl p-4">
-                                    <p class="text-xs uppercase tracking-[0.12em] text-slate-500">Completed Session</p>
-                                    <p class="mt-2 text-2xl font-semibold text-emerald-700">
-                                        {{ $completedStatusTotal }}
-                                    </p>
-                                    <p class="mt-1 text-sm text-slate-500">Sessions completed successfully.</p>
-                                </div>
-                                <div class="glass-panel rounded-2xl p-4">
-                                    <p class="text-xs uppercase tracking-[0.12em] text-slate-500">Cancelled Request</p>
-                                    <p class="mt-2 text-2xl font-semibold text-rose-700">{{ $cancelledStatusTotal }}
-                                    </p>
-                                    <p class="mt-1 text-sm text-slate-500">Requests cancelled or rejected.</p>
-                                </div>
-                                <div class="glass-panel rounded-2xl p-4">
-                                    <p class="text-xs uppercase tracking-[0.12em] text-slate-500">Available Counsellor
-                                    </p>
-                                    <p class="mt-2 text-2xl font-semibold text-sky-700">
-                                        {{ $availableCounsellorsCount }}
-                                    </p>
-                                    <p class="mt-1 text-sm text-slate-500">Counsellors ready for consultation.</p>
-                                </div>
-                            </div>
-
-                            <div class="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-                                <div class="glass-panel rounded-2xl p-4">
-                                    <h3 class="text-sm font-semibold text-slate-800">Next Session Forecast</h3>
-                                    @if ($nextBooking)
-                                        @php
-                                            $nextBookingDate = \Carbon\Carbon::parse($nextBooking['booking_date']);
-                                            $nextBookingStatus = ucfirst(strtolower($nextBooking['status']));
-                                        @endphp
-                                        <p class="mt-2 text-lg font-semibold text-slate-800">
-                                            {{ $nextBookingDate->format('D, d M Y') }}</p>
-                                        <p class="text-sm text-slate-500">Status: {{ $nextBookingStatus }}</p>
-                                        @if (!empty($nextBooking['counsellor_name']))
-                                            <p class="mt-1 text-sm text-slate-500">Counsellor:
-                                                {{ $nextBooking['counsellor_name'] }}</p>
-                                        @endif
-                                    @else
-                                        <p class="mt-2 text-sm text-slate-500">No upcoming sessions yet. Select a slot
-                                            to
-                                            schedule your next appointment.</p>
-                                    @endif
-                                </div>
-
-                                <div class="glass-panel rounded-2xl p-4">
-                                    <h3 class="text-sm font-semibold text-slate-800">Booking Progress</h3>
-                                    <div class="mt-3 space-y-3">
-                                        @php
-                                            $progressCards = [
-                                                [
-                                                    'label' => 'Pending',
-                                                    'value' => (int) $statusCounts->get('pending', 0),
-                                                    'bar' => 'bg-amber-400',
-                                                ],
-                                                [
-                                                    'label' => 'Booked',
-                                                    'value' => (int) $statusCounts->get('booked', 0),
-                                                    'bar' => 'bg-sky-500',
-                                                ],
-                                                [
-                                                    'label' => 'Completed',
-                                                    'value' => (int) $statusCounts->get('completed', 0),
-                                                    'bar' => 'bg-emerald-500',
-                                                ],
-                                            ];
-
-                                            $progressTotal = collect($progressCards)->sum('value');
-                                        @endphp
-
-                                        @foreach ($progressCards as $item)
-                                            @php
-                                                $percent =
-                                                    $progressTotal > 0
-                                                        ? round(($item['value'] / $progressTotal) * 100)
-                                                        : 0;
-                                            @endphp
-                                            <div>
-                                                <div class="flex items-center justify-between text-xs text-slate-500">
-                                                    <span>{{ $item['label'] }}</span>
-                                                    <span>{{ $item['value'] }} ({{ $percent }}%)</span>
-                                                </div>
-                                                <div class="mt-1 h-2 rounded-full bg-slate-100 overflow-hidden">
-                                                    <div class="progress-fill h-full {{ $item['bar'] }}"
-                                                        style="width: {{ $percent }}%;"></div>
-                                                </div>
-                                            </div>
-                                        @endforeach
+                            @if ($showStats)
+                                <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                                    <div class="glass-panel rounded-2xl p-4">
+                                        <p class="text-xs uppercase tracking-[0.12em] text-slate-500">Active Booking
+                                        </p>
+                                        <p class="mt-2 text-2xl font-semibold text-slate-800">{{ $activeStatusTotal }}
+                                        </p>
+                                        <p class="mt-1 text-sm text-slate-500">Pending and booked counselling slots.
+                                        </p>
+                                    </div>
+                                    <div class="glass-panel rounded-2xl p-4">
+                                        <p class="text-xs uppercase tracking-[0.12em] text-slate-500">Completed Session
+                                        </p>
+                                        <p class="mt-2 text-2xl font-semibold text-emerald-700">
+                                            {{ $completedStatusTotal }}
+                                        </p>
+                                        <p class="mt-1 text-sm text-slate-500">Sessions completed successfully.</p>
+                                    </div>
+                                    <div class="glass-panel rounded-2xl p-4">
+                                        <p class="text-xs uppercase tracking-[0.12em] text-slate-500">Cancelled Request
+                                        </p>
+                                        <p class="mt-2 text-2xl font-semibold text-rose-700">
+                                            {{ $cancelledStatusTotal }}
+                                        </p>
+                                        <p class="mt-1 text-sm text-slate-500">Requests cancelled or rejected.</p>
+                                    </div>
+                                    <div class="glass-panel rounded-2xl p-4">
+                                        <p class="text-xs uppercase tracking-[0.12em] text-slate-500">Available
+                                            Counsellor
+                                        </p>
+                                        <p class="mt-2 text-2xl font-semibold text-sky-700">
+                                            {{ $availableCounsellorsCount }}
+                                        </p>
+                                        <p class="mt-1 text-sm text-slate-500">Counsellors ready for consultation.</p>
                                     </div>
                                 </div>
-                            </div>
-                        @endif
 
-                        {{-- <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                                <div class="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+                                    <div class="glass-panel rounded-2xl p-4">
+                                        <h3 class="text-sm font-semibold text-slate-800">Next Session Forecast</h3>
+                                        @if ($nextBooking)
+                                            @php
+                                                $nextBookingDate = \Carbon\Carbon::parse($nextBooking['booking_date']);
+                                                $nextBookingStatus = ucfirst(strtolower($nextBooking['status']));
+                                            @endphp
+                                            <p class="mt-2 text-lg font-semibold text-slate-800">
+                                                {{ $nextBookingDate->format('D, d M Y') }}</p>
+                                            <p class="text-sm text-slate-500">Status: {{ $nextBookingStatus }}</p>
+                                            @if (!empty($nextBooking['counsellor_name']))
+                                                <p class="mt-1 text-sm text-slate-500">Counsellor:
+                                                    {{ $nextBooking['counsellor_name'] }}</p>
+                                            @endif
+                                        @else
+                                            <p class="mt-2 text-sm text-slate-500">No upcoming sessions yet. Select a
+                                                slot
+                                                to
+                                                schedule your next appointment.</p>
+                                        @endif
+                                    </div>
+
+                                    <div class="glass-panel rounded-2xl p-4">
+                                        <h3 class="text-sm font-semibold text-slate-800">Booking Progress</h3>
+                                        <div class="mt-3 space-y-3">
+                                            @php
+                                                $progressCards = [
+                                                    [
+                                                        'label' => 'Pending',
+                                                        'value' => (int) $statusCounts->get('pending', 0),
+                                                        'bar' => 'bg-amber-400',
+                                                    ],
+                                                    [
+                                                        'label' => 'Booked',
+                                                        'value' => (int) $statusCounts->get('booked', 0),
+                                                        'bar' => 'bg-sky-500',
+                                                    ],
+                                                    [
+                                                        'label' => 'Completed',
+                                                        'value' => (int) $statusCounts->get('completed', 0),
+                                                        'bar' => 'bg-emerald-500',
+                                                    ],
+                                                ];
+
+                                                $progressTotal = collect($progressCards)->sum('value');
+                                            @endphp
+
+                                            @foreach ($progressCards as $item)
+                                                @php
+                                                    $percent =
+                                                        $progressTotal > 0
+                                                            ? round(($item['value'] / $progressTotal) * 100)
+                                                            : 0;
+                                                @endphp
+                                                <div>
+                                                    <div
+                                                        class="flex items-center justify-between text-xs text-slate-500">
+                                                        <span>{{ $item['label'] }}</span>
+                                                        <span>{{ $item['value'] }} ({{ $percent }}%)</span>
+                                                    </div>
+                                                    <div class="mt-1 h-2 rounded-full bg-slate-100 overflow-hidden">
+                                                        <div class="progress-fill h-full {{ $item['bar'] }}"
+                                                            style="width: {{ $percent }}%;"></div>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+
+                            {{-- <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                             <a href="{{ route('inbox') }}"
                                 class="menu-card glass-panel rounded-2xl p-4 hover:border-sky-200 transition">
                                 <p class="text-xs uppercase tracking-[0.12em] text-slate-500">Inbox</p>
@@ -764,68 +772,78 @@
                             </a>
                         </div> --}}
 
-                        <div id="counsellor-calendar-card" class="glass-panel rounded-2xl p-4 sm:p-5">
-                            <div class="flex items-center justify-between mb-4 gap-3">
-                                <div>
-                                    <h2 class="text-base sm:text-lg font-semibold text-slate-800">Jadual Kaunselor
-                                        (Calendar)</h2>
-                                    <p class="text-sm text-slate-500">Klik mana-mana tarikh untuk lihat jadual dalam
-                                        bentuk table.</p>
+                            <div id="counsellor-calendar-card" class="glass-panel rounded-2xl p-4 sm:p-5">
+                                <div class="flex items-center justify-between mb-4 gap-3">
+                                    <div>
+                                        <h2 class="text-base sm:text-lg font-semibold text-slate-800">Jadual Kaunselor
+                                            (Calendar)</h2>
+                                        <p class="text-sm text-slate-500">Klik mana-mana tarikh untuk lihat jadual
+                                            dalam
+                                            bentuk table.</p>
+                                    </div>
+
+                                    <button id="calendar-toggle-size" type="button" aria-expanded="false"
+                                        aria-controls="calendar-content"
+                                        class="calendar-toggle-btn inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-base font-semibold text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">+</button>
                                 </div>
 
-                                <button id="calendar-toggle-size" type="button" aria-expanded="false"
-                                    aria-controls="calendar-content"
-                                    class="calendar-toggle-btn inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-base font-semibold text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">+</button>
-                            </div>
-
-                            <div id="calendar-content"
-                                class="calendar-collapsible items-start xl:grid-cols-[minmax(0,1fr)_240px] gap-4">
-                                <div class="rounded-2xl border border-slate-200 overflow-hidden bg-white">
-                                    <div
-                                        class="px-4 py-3 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
-                                        <button id="calendar-prev"
-                                            class="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm hover:border-sky-200 hover:text-sky-700">←</button>
-                                        <h3 id="calendar-title" class="font-semibold text-slate-700">Month Year</h3>
-                                        <button id="calendar-next"
-                                            class="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm hover:border-sky-200 hover:text-sky-700">→</button>
-                                    </div>
-                                    <div class="overflow-x-auto">
-                                        <div class="min-w-[720px]">
-                                            <div class="text-xs uppercase tracking-wide bg-slate-100 text-slate-500"
-                                                style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));">
-                                                <div class="p-2.5 text-center font-semibold border-r border-slate-200">
-                                                    Sun</div>
-                                                <div class="p-2.5 text-center font-semibold border-r border-slate-200">
-                                                    Mon</div>
-                                                <div class="p-2.5 text-center font-semibold border-r border-slate-200">
-                                                    Tue</div>
-                                                <div class="p-2.5 text-center font-semibold border-r border-slate-200">
-                                                    Wed</div>
-                                                <div class="p-2.5 text-center font-semibold border-r border-slate-200">
-                                                    Thu</div>
-                                                <div class="p-2.5 text-center font-semibold border-r border-slate-200">
-                                                    Fri</div>
-                                                <div class="p-2.5 text-center font-semibold">Sat</div>
-                                            </div>
-                                            <div id="calendar-grid" class="gap-2 p-2 bg-slate-100"
-                                                style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));">
+                                <div id="calendar-content"
+                                    class="calendar-collapsible items-start xl:grid-cols-[minmax(0,1fr)_240px] gap-4">
+                                    <div class="rounded-2xl border border-slate-200 overflow-hidden bg-white">
+                                        <div
+                                            class="px-4 py-3 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+                                            <button id="calendar-prev"
+                                                class="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm hover:border-sky-200 hover:text-sky-700">←</button>
+                                            <h3 id="calendar-title" class="font-semibold text-slate-700">Month Year
+                                            </h3>
+                                            <button id="calendar-next"
+                                                class="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm hover:border-sky-200 hover:text-sky-700">→</button>
+                                        </div>
+                                        <div class="overflow-x-auto">
+                                            <div class="min-w-[720px]">
+                                                <div class="text-xs uppercase tracking-wide bg-slate-100 text-slate-500"
+                                                    style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));">
+                                                    <div
+                                                        class="p-2.5 text-center font-semibold border-r border-slate-200">
+                                                        Sun</div>
+                                                    <div
+                                                        class="p-2.5 text-center font-semibold border-r border-slate-200">
+                                                        Mon</div>
+                                                    <div
+                                                        class="p-2.5 text-center font-semibold border-r border-slate-200">
+                                                        Tue</div>
+                                                    <div
+                                                        class="p-2.5 text-center font-semibold border-r border-slate-200">
+                                                        Wed</div>
+                                                    <div
+                                                        class="p-2.5 text-center font-semibold border-r border-slate-200">
+                                                        Thu</div>
+                                                    <div
+                                                        class="p-2.5 text-center font-semibold border-r border-slate-200">
+                                                        Fri</div>
+                                                    <div class="p-2.5 text-center font-semibold">Sat</div>
+                                                </div>
+                                                <div id="calendar-grid" class="gap-2 p-2 bg-slate-100"
+                                                    style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));">
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <aside class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                                    <h3 class="font-semibold text-slate-700 mb-3">Ringkasan</h3>
-                                    <ul class="space-y-2 text-sm text-slate-600">
-                                        <li class="rounded-lg border border-slate-200 bg-white p-2">🟢 Slot kosong</li>
-                                        <li class="rounded-lg border border-slate-200 bg-white p-2">🟡 Menunggu
-                                        </li>
-                                        <li class="rounded-lg border border-slate-200 bg-white p-2">🔵 Ditempah</li>
-                                        <li class="rounded-lg border border-slate-200 bg-white p-2">🔴 Penuh</li>
-                                    </ul>
-                                </aside>
+                                    <aside class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                                        <h3 class="font-semibold text-slate-700 mb-3">Ringkasan</h3>
+                                        <ul class="space-y-2 text-sm text-slate-600">
+                                            <li class="rounded-lg border border-slate-200 bg-white p-2">🟢 Slot kosong
+                                            </li>
+                                            <li class="rounded-lg border border-slate-200 bg-white p-2">🟡 Menunggu
+                                            </li>
+                                            <li class="rounded-lg border border-slate-200 bg-white p-2">🔵 Ditempah
+                                            </li>
+                                            <li class="rounded-lg border border-slate-200 bg-white p-2">🔴 Penuh</li>
+                                        </ul>
+                                    </aside>
+                                </div>
                             </div>
-                        </div>
                     </section>
                 </div>
                 <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
