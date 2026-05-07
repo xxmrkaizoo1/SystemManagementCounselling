@@ -1240,9 +1240,10 @@ Route::middleware('auth')->group(function () {
             ])
             ->values()
             ->all();
+        $normalizeTopicName = static fn(?string $topic): string => preg_replace('/^\s*\[EMERGENCY\]\s*/i', '', trim((string) ($topic ?: 'General support'))) ?: 'General support';
 
         $topTopics = $bookings
-            ->groupBy(static fn(BookingRequest $booking): string => trim((string) ($booking->topic ?: 'General support')))
+            ->groupBy(static fn(BookingRequest $booking): string => $normalizeTopicName($booking->topic))
             ->map(static fn($items, string $topic): array => [
                 'topic' => $topic,
                 'total' => $items->count(),
