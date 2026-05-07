@@ -317,18 +317,34 @@
 
 
 
-                    <div class="mt-4 grid gap-3 sm:grid-cols-2">
-                        <article
-                            class="rounded-2xl border border-sky-100 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
-                            <h3 class="text-sm font-semibold text-slate-800">Messages</h3>
-                            <p class="mt-1 text-xs text-slate-500">Open your inbox to check and reply quickly.</p>
+                <div class="mt-4 grid gap-3 sm:grid-cols-2">
+                    <article
+                        class="group relative overflow-hidden rounded-2xl border border-sky-100/80 bg-gradient-to-br from-white via-sky-50/60 to-indigo-50/80 p-4 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-sky-200 hover:shadow-md">
+                        <div
+                            class="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full bg-sky-200/30 blur-2xl">
+                        </div>
+                        <div class="relative">
+                            <div
+                                class="inline-flex items-center gap-2 rounded-full bg-sky-100 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-sky-700">
+                                <span class="h-1.5 w-1.5 rounded-full bg-sky-500"></span>
+                                Inbox
+                            </div>
+                            <h3 class="mt-3 text-base font-semibold text-slate-800">Messages</h3>
+                            <p class="mt-1 text-xs leading-relaxed text-slate-500">Open your inbox to check unread
+                                chats and reply to students faster.</p>
                             <a href="{{ route('messages.index') }}"
-                                class="mt-3 inline-flex items-center gap-2 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-sm font-medium text-sky-700 transition hover:border-sky-300 hover:bg-sky-100">
+                                class="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-sky-600 px-3 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 sm:w-auto sm:px-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                </svg>
                                 Go to Messages Page
                             </a>
-                        </article>
-                    </div>
+                        </div>
+                    </article>
                 </div>
+            </div>
             </div>
         </section>
     </main>
