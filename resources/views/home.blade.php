@@ -421,7 +421,9 @@
                                 <p id="session-slide-subtitle" class="mt-2 text-sm text-sky-100/90"></p>
                             </div>
                         </div>
-
+                        @php
+                            $activeBooking = $activeBooking ?? null;
+                        @endphp
                         <div class="status-card rounded-2xl p-4 sm:p-5">
                             <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                                 <div>
