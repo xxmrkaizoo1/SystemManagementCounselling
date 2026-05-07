@@ -176,6 +176,7 @@
                 flex: 0 0 16rem;
                 position: sticky;
                 top: 1rem;
+                min-height: calc(150vh - 2rem);
                 transform: none;
                 border-radius: 1rem;
                 z-index: auto;
@@ -692,9 +693,9 @@
                                         bentuk table.</p>
                                 </div>
 
-                                <button id="calendar-toggle-size" type="button" aria-expanded="true"
+                                <button id="calendar-toggle-size" type="button" aria-expanded="false"
                                     aria-controls="calendar-content"
-                                    class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-base font-semibold text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">−</button>
+                                    class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-base font-semibold text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">+</button>
                             </div>
 
                             <div id="calendar-content" class="grid xl:grid-cols-[minmax(0,1fr)_240px] gap-4">
@@ -897,6 +898,7 @@
                 };
 
                 if (calendarContent && calendarSizeToggleBtn) {
+                    setCalendarContentState(false);
                     calendarSizeToggleBtn.addEventListener('click', () => {
                         const isExpanded = calendarSizeToggleBtn.getAttribute('aria-expanded') !== 'true';
                         setCalendarContentState(isExpanded);
