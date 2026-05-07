@@ -627,424 +627,425 @@
 
     <script>
         (function() {
-                const actionsToggle = document.getElementById('dashboard-actions-toggle');
-                const actionsMenu = document.getElementById('dashboard-actions-menu');
+            const actionsToggle = document.getElementById('dashboard-actions-toggle');
+            const actionsMenu = document.getElementById('dashboard-actions-menu');
 
-                const logoutForms = Array.from(document.querySelectorAll('.counsellor-logout-form'));
-                const logoutForm = document.getElementById('counsellor-logout-form') || logoutForms[0] || null;
-                const logoutTrigger = document.getElementById('counsellor-logout-trigger');
-                const logoutModal = document.getElementById('counsellor-logout-modal');
-                const logoutCancel = document.getElementById('counsellor-logout-cancel');
-                const logoutConfirm = document.getElementById('counsellor-logout-confirm');
+            const logoutForms = Array.from(document.querySelectorAll('.counsellor-logout-form'));
+            const logoutForm = document.getElementById('counsellor-logout-form') || logoutForms[0] || null;
+            const logoutTrigger = document.getElementById('counsellor-logout-trigger');
+            const logoutModal = document.getElementById('counsellor-logout-modal');
+            const logoutCancel = document.getElementById('counsellor-logout-cancel');
+            const logoutConfirm = document.getElementById('counsellor-logout-confirm');
 
-                let activeLogoutForm = null;
+            let activeLogoutForm = null;
 
-                const closeLogoutModal = () => {
-                    if (!logoutModal) return;
-                    logoutModal.classList.add('hidden');
-                    logoutModal.classList.remove('flex');
+            const closeLogoutModal = () => {
+                if (!logoutModal) return;
+                logoutModal.classList.add('hidden');
+                logoutModal.classList.remove('flex');
+            };
+
+            const openLogoutModal = () => {
+                if (!logoutModal) return;
+                logoutModal.classList.remove('hidden');
+                logoutModal.classList.add('flex');
+            };
+
+            if (actionsToggle && actionsMenu) {
+                const setActionsMenuOpen = (isOpen) => {
+                    actionsMenu.classList.toggle('hidden', !isOpen);
+                    actionsToggle.setAttribute('aria-expanded', String(isOpen));
                 };
 
-                const openLogoutModal = () => {
-                    if (!logoutModal) return;
-                    logoutModal.classList.remove('hidden');
-                    logoutModal.classList.add('flex');
-                };
+                actionsToggle.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    setActionsMenuOpen(actionsMenu.classList.contains('hidden'));
+                });
 
-                if (actionsToggle && actionsMenu) {
-                    const setActionsMenuOpen = (isOpen) => {
-                        actionsMenu.classList.toggle('hidden', !isOpen);
-                        actionsToggle.setAttribute('aria-expanded', String(isOpen));
-                    };
+                document.addEventListener('click', (event) => {
+                    if (!actionsMenu.contains(event.target) && !actionsToggle.contains(event.target)) {
+                        setActionsMenuOpen(false);
+                    }
+                });
+            }
 
-                    actionsToggle.addEventListener('click', (event) => {
-                        event.stopPropagation();
-                        setActionsMenuOpen(actionsMenu.classList.contains('hidden'));
+
+            const actionSidebar = document.getElementById('counsellor-action-sidebar');
+            const actionOverlay = document.getElementById('counsellor-action-overlay');
+            const actionToggle = document.getElementById('counsellor-action-toggle');
+            const actionClose = document.getElementById('counsellor-action-close');
+
+            const closeActionSidebar = () => {
+                if (!actionSidebar || !actionOverlay || !actionToggle) return;
+                actionSidebar.classList.add('translate-x-full');
+                actionOverlay.classList.add('hidden');
+                actionToggle.setAttribute('aria-expanded', 'false');
+                actionSidebar.setAttribute('aria-hidden', 'true');
+            };
+
+            const openActionSidebar = () => {
+                if (!actionSidebar || !actionOverlay || !actionToggle) return;
+                actionSidebar.classList.remove('translate-x-full');
+                actionOverlay.classList.remove('hidden');
+                actionToggle.setAttribute('aria-expanded', 'true');
+                actionSidebar.setAttribute('aria-hidden', 'false');
+            };
+
+            actionToggle?.addEventListener('click', openActionSidebar);
+            actionClose?.addEventListener('click', closeActionSidebar);
+            actionOverlay?.addEventListener('click', closeActionSidebar);
+            if (logoutForms.length && logoutModal) {
+                logoutForms.forEach((form) => {
+                    form.addEventListener('submit', (event) => {
+                        event.preventDefault();
+                        activeLogoutForm = form;
+                        openLogoutModal();
                     });
-
-                    document.addEventListener('click', (event) => {
-                        if (!actionsMenu.contains(event.target) && !actionsToggle.contains(event.target)) {
-                            setActionsMenuOpen(false);
+                });
+                if (logoutTrigger) {
+                    logoutTrigger.addEventListener('click', () => {
+                        activeLogoutForm = logoutForm;
+                        if (actionsMenu) {
+                            actionsMenu.classList.add('hidden');
+                            actionsToggle?.setAttribute('aria-expanded', 'false');
                         }
+                        openLogoutModal();
                     });
                 }
+                if (logoutForm && logoutModal) {
 
-
-                const actionSidebar = document.getElementById('counsellor-action-sidebar');
-                const actionOverlay = document.getElementById('counsellor-action-overlay');
-                const actionToggle = document.getElementById('counsellor-action-toggle');
-                const actionClose = document.getElementById('counsellor-action-close');
-
-                const closeActionSidebar = () => {
-                    if (!actionSidebar || !actionOverlay || !actionToggle) return;
-                    actionSidebar.classList.add('translate-x-full');
-                    actionOverlay.classList.add('hidden');
-                    actionToggle.setAttribute('aria-expanded', 'false');
-                    actionSidebar.setAttribute('aria-hidden', 'true');
-                };
-
-                const openActionSidebar = () => {
-                    if (!actionSidebar || !actionOverlay || !actionToggle) return;
-                    actionSidebar.classList.remove('translate-x-full');
-                    actionOverlay.classList.remove('hidden');
-                    actionToggle.setAttribute('aria-expanded', 'true');
-                    actionSidebar.setAttribute('aria-hidden', 'false');
-                };
-
-                actionToggle?.addEventListener('click', openActionSidebar);
-                actionClose?.addEventListener('click', closeActionSidebar);
-                actionOverlay?.addEventListener('click', closeActionSidebar);
-                if (logoutForms.length && logoutModal) {
-                    logoutForms.forEach((form) => {
-                        form.addEventListener('submit', (event) => {
-                            event.preventDefault();
-                            activeLogoutForm = form;
-                            openLogoutModal();
-                        });
-                    });
-                    if (logoutTrigger) {
-                        logoutTrigger.addEventListener('click', () => {
-                            activeLogoutForm = logoutForm;
-                            if (actionsMenu) {
-                                actionsMenu.classList.add('hidden');
-                                actionsToggle?.setAttribute('aria-expanded', 'false');
-                            }
-                            openLogoutModal();
-                        });
-                    }
-                    if (logoutForm && logoutModal) {
-
-                        if (logoutCancel) {
-                            logoutCancel.addEventListener('click', closeLogoutModal);
-                        }
-
-                        if (logoutConfirm) {
-                            logoutConfirm.addEventListener('click', () => {
-                                closeLogoutModal();
-                                activeLogoutForm?.submit();
-                            });
-                        }
-
-                        logoutModal.addEventListener('click', (event) => {
-                            if (event.target === logoutModal) closeLogoutModal();
-                        });
-
-                        document.addEventListener('keydown', (event) => {
-                            if (event.key === 'Escape') {
-                                closeLogoutModal();
-                                closeActionSidebar();
-                            }
-                        });
-
-
-                    }
-                    const slides = [{
-                            image: 'https://images.unsplash.com/photo-1714976694525-71eb29a7c500?auto=format&fit=crop&w=1400&q=80',
-                            tag: 'CollegeCare Focus',
-                            title: 'Guide every student with empathy and structure.',
-                            subtitle: 'Review requests, confirm sessions, and keep counselling support consistent every week.'
-                        },
-                        {
-                            image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?auto=format&fit=crop&w=1400&q=80',
-                            tag: 'Session Planning',
-                            title: 'Coordinate sessions without losing context.',
-                            subtitle: 'Track approved requests and align each booking with the right follow-up actions.'
-                        },
-                        {
-                            image: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1400&q=80',
-                            tag: 'Student Support',
-                            title: 'Build trust through timely communication.',
-                            subtitle: 'Respond to requests quickly and maintain meaningful support for every student.'
-                        }
-                    ];
-
-                    const imageEl = document.getElementById('counsellor-hero-image');
-                    const tagEl = document.getElementById('counsellor-hero-tag');
-                    const titleEl = document.getElementById('counsellor-hero-title');
-                    const subtitleEl = document.getElementById('counsellor-hero-subtitle');
-                    const prevBtn = document.getElementById('counsellor-hero-prev');
-                    const nextBtn = document.getElementById('counsellor-hero-next');
-                    const dotsWrap = document.getElementById('counsellor-hero-dots');
-
-                    if (!imageEl || !tagEl || !titleEl || !subtitleEl || !prevBtn || !nextBtn || !dotsWrap || !slides
-                        .length) {
-                        return;
+                    if (logoutCancel) {
+                        logoutCancel.addEventListener('click', closeLogoutModal);
                     }
 
-                    let current = 0;
-                    let intervalId;
-
-                    const renderDots = () => {
-                        dotsWrap.innerHTML = '';
-                        slides.forEach((_, index) => {
-                            const dot = document.createElement('button');
-                            dot.type = 'button';
-                            dot.className =
-                                `h-2.5 rounded-full transition ${index === current ? 'w-6 bg-white' : 'w-2.5 bg-white/40 hover:bg-white/70'}`;
-                            dot.setAttribute('aria-label', `Go to slide ${index + 1}`);
-                            dot.addEventListener('click', () => {
-                                current = index;
-                                applySlide();
-                                restartInterval();
-                            });
-                            dotsWrap.appendChild(dot);
+                    if (logoutConfirm) {
+                        logoutConfirm.addEventListener('click', () => {
+                            closeLogoutModal();
+                            activeLogoutForm?.submit();
                         });
-                    };
+                    }
 
-                    const applySlide = () => {
-                        const slide = slides[current];
-                        imageEl.classList.remove('hero-fade-enter');
-                        titleEl.classList.remove('hero-fade-enter');
-                        subtitleEl.classList.remove('hero-fade-enter');
+                    logoutModal.addEventListener('click', (event) => {
+                        if (event.target === logoutModal) closeLogoutModal();
+                    });
 
-                        imageEl.style.opacity = '0.3';
-
-                        window.requestAnimationFrame(() => {
-                            imageEl.src = slide.image;
-                            tagEl.textContent = slide.tag;
-                            titleEl.textContent = slide.title;
-                            subtitleEl.textContent = slide.subtitle;
-
-                            imageEl.classList.add('hero-fade-enter');
-                            titleEl.classList.add('hero-fade-enter');
-                            subtitleEl.classList.add('hero-fade-enter');
-                            imageEl.style.opacity = '0.7';
-                            renderDots();
-                        });
-                    };
-
-                    const nextSlide = () => {
-                        current = (current + 1) % slides.length;
-                        applySlide();
-                    };
-
-                    const prevSlide = () => {
-                        current = (current - 1 + slides.length) % slides.length;
-                        applySlide();
-                    };
-
-                    const restartInterval = () => {
-                        if (intervalId) {
-                            clearInterval(intervalId);
+                    document.addEventListener('keydown', (event) => {
+                        if (event.key === 'Escape') {
+                            closeLogoutModal();
+                            closeActionSidebar();
                         }
-                        intervalId = setInterval(nextSlide, 6500);
-                    };
-
-                    nextBtn.addEventListener('click', () => {
-                        nextSlide();
-                        restartInterval();
                     });
 
-                    prevBtn.addEventListener('click', () => {
-                        prevSlide();
-                        restartInterval();
-                    });
 
-                    applySlide();
-                    restartInterval();
-                })();
-
-            (function() {
-                const widget = document.getElementById('messages-widget');
-                const toggleBtn = document.getElementById('messages-toggle');
-                const body = document.getElementById('messages-body');
-                const list = document.getElementById('chat-list');
-                const searchInput = document.getElementById('chat-search');
-                const noResults = document.getElementById('chat-no-results');
-                const notificationFilter = document.getElementById('notification-filter');
-                const popupBackdrop = document.getElementById('chat-popup-backdrop');
-                const popup = document.getElementById('chat-popup');
-                const popupStudent = document.getElementById('chat-popup-student');
-                const popupTopic = document.getElementById('chat-popup-topic');
-                const popupSlot = document.getElementById('chat-popup-slot');
-                const popupDate = document.getElementById('chat-popup-date');
-                const popupRole = document.getElementById('chat-popup-role');
-                const popupEmail = document.getElementById('chat-popup-email');
-                const popupPhone = document.getElementById('chat-popup-phone');
-                const popupThread = document.getElementById('chat-popup-thread');
-                const popupMessageInput = document.getElementById('chat-popup-message-input');
-                const popupSendBtn = document.getElementById('chat-popup-send');
-                const popupSuggestBtn = document.getElementById('chat-popup-suggest');
-                const popupCloseBtn = document.getElementById('chat-popup-close');
-                const popupMinBtn = document.getElementById('chat-popup-minimize');
-                const reminderForm = document.getElementById('reminder-form');
-                const popupOpenFull = document.getElementById('chat-popup-open-full');
-
-                if (!widget || !toggleBtn || !body || !list || !popupBackdrop || !popup || !popupCloseBtn || !
-                    popupMinBtn) {
-                    return;
                 }
+            }
+            const slides = [{
+                    image: 'https://images.unsplash.com/photo-1714976694525-71eb29a7c500?auto=format&fit=crop&w=1400&q=80',
+                    tag: 'CollegeCare Focus',
+                    title: 'Guide every student with empathy and structure.',
+                    subtitle: 'Review requests, confirm sessions, and keep counselling support consistent every week.'
+                },
+                {
+                    image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?auto=format&fit=crop&w=1400&q=80',
+                    tag: 'Session Planning',
+                    title: 'Coordinate sessions without losing context.',
+                    subtitle: 'Track approved requests and align each booking with the right follow-up actions.'
+                },
+                {
+                    image: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1400&q=80',
+                    tag: 'Student Support',
+                    title: 'Build trust through timely communication.',
+                    subtitle: 'Respond to requests quickly and maintain meaningful support for every student.'
+                }
+            ];
 
-                let collapsed = false;
-                let dragOffsetX = 0;
-                let dragOffsetY = 0;
-                let isDragging = false;
+            const imageEl = document.getElementById('counsellor-hero-image');
+            const tagEl = document.getElementById('counsellor-hero-tag');
+            const titleEl = document.getElementById('counsellor-hero-title');
+            const subtitleEl = document.getElementById('counsellor-hero-subtitle');
+            const prevBtn = document.getElementById('counsellor-hero-prev');
+            const nextBtn = document.getElementById('counsellor-hero-next');
+            const dotsWrap = document.getElementById('counsellor-hero-dots');
 
-                const escapeHtml = (str) => String(str || '')
-                    .replaceAll('&', '&amp;')
-                    .replaceAll('<', '&lt;')
-                    .replaceAll('>', '&gt;')
-                    .replaceAll('"', '&quot;')
-                    .replaceAll("'", '&#039;');
+            if (!imageEl || !tagEl || !titleEl || !subtitleEl || !prevBtn || !nextBtn || !dotsWrap || !slides
+                .length) {
+                return;
+            }
 
-                const setCollapsed = (value) => {
-                    collapsed = value;
-                    body.classList.toggle('hidden', collapsed);
-                    toggleBtn.setAttribute('aria-expanded', String(!collapsed));
-                    toggleBtn.innerHTML = collapsed ?
-                        `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>` :
-                        `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`;
-                };
+            let current = 0;
+            let intervalId;
 
-                toggleBtn.addEventListener('click', () => setCollapsed(!collapsed));
+            const renderDots = () => {
+                dotsWrap.innerHTML = '';
+                slides.forEach((_, index) => {
+                    const dot = document.createElement('button');
+                    dot.type = 'button';
+                    dot.className =
+                        `h-2.5 rounded-full transition ${index === current ? 'w-6 bg-white' : 'w-2.5 bg-white/40 hover:bg-white/70'}`;
+                    dot.setAttribute('aria-label', `Go to slide ${index + 1}`);
+                    dot.addEventListener('click', () => {
+                        current = index;
+                        applySlide();
+                        restartInterval();
+                    });
+                    dotsWrap.appendChild(dot);
+                });
+            };
 
-                const setPopupPosition = (x, y) => {
-                    popup.style.left = `${x}px`;
-                    popup.style.top = `${y}px`;
-                    popup.style.transform = 'translate(0, 0)';
-                };
+            const applySlide = () => {
+                const slide = slides[current];
+                imageEl.classList.remove('hero-fade-enter');
+                titleEl.classList.remove('hero-fade-enter');
+                subtitleEl.classList.remove('hero-fade-enter');
 
-                const openPopup = (button) => {
-                    const student = button.dataset.studentName || 'Student';
-                    const topic = button.dataset.topic || 'General counseling support';
-                    const date = button.dataset.displayDate || '-';
-                    const role = button.dataset.requesterRole || 'Student';
-                    const email = button.dataset.email || '-';
-                    const phone = button.dataset.phone || '-';
-                    const reminderUrl = button.dataset.reminderUrl || '';
-                    const bookingRequestId = button.dataset.bookingRequestId || '';
-                    const studentId = button.dataset.studentId || '';
+                imageEl.style.opacity = '0.3';
 
-                    popupStudent.textContent = student;
-                    popupTopic.textContent = topic;
-                    popupSlot.textContent = button.dataset.requestTime || '-';
-                    popupDate.textContent = date;
-                    popupRole.textContent = role;
-                    popupEmail.textContent = email;
-                    popupPhone.textContent = phone;
+                window.requestAnimationFrame(() => {
+                    imageEl.src = slide.image;
+                    tagEl.textContent = slide.tag;
+                    titleEl.textContent = slide.title;
+                    subtitleEl.textContent = slide.subtitle;
 
-                    popupThread.innerHTML = `
+                    imageEl.classList.add('hero-fade-enter');
+                    titleEl.classList.add('hero-fade-enter');
+                    subtitleEl.classList.add('hero-fade-enter');
+                    imageEl.style.opacity = '0.7';
+                    renderDots();
+                });
+            };
+
+            const nextSlide = () => {
+                current = (current + 1) % slides.length;
+                applySlide();
+            };
+
+            const prevSlide = () => {
+                current = (current - 1 + slides.length) % slides.length;
+                applySlide();
+            };
+
+            const restartInterval = () => {
+                if (intervalId) {
+                    clearInterval(intervalId);
+                }
+                intervalId = setInterval(nextSlide, 6500);
+            };
+
+            nextBtn.addEventListener('click', () => {
+                nextSlide();
+                restartInterval();
+            });
+
+            prevBtn.addEventListener('click', () => {
+                prevSlide();
+                restartInterval();
+            });
+
+            applySlide();
+            restartInterval();
+        })();
+
+        (function() {
+            const widget = document.getElementById('messages-widget');
+            const toggleBtn = document.getElementById('messages-toggle');
+            const body = document.getElementById('messages-body');
+            const list = document.getElementById('chat-list');
+            const searchInput = document.getElementById('chat-search');
+            const noResults = document.getElementById('chat-no-results');
+            const notificationFilter = document.getElementById('notification-filter');
+            const popupBackdrop = document.getElementById('chat-popup-backdrop');
+            const popup = document.getElementById('chat-popup');
+            const popupStudent = document.getElementById('chat-popup-student');
+            const popupTopic = document.getElementById('chat-popup-topic');
+            const popupSlot = document.getElementById('chat-popup-slot');
+            const popupDate = document.getElementById('chat-popup-date');
+            const popupRole = document.getElementById('chat-popup-role');
+            const popupEmail = document.getElementById('chat-popup-email');
+            const popupPhone = document.getElementById('chat-popup-phone');
+            const popupThread = document.getElementById('chat-popup-thread');
+            const popupMessageInput = document.getElementById('chat-popup-message-input');
+            const popupSendBtn = document.getElementById('chat-popup-send');
+            const popupSuggestBtn = document.getElementById('chat-popup-suggest');
+            const popupCloseBtn = document.getElementById('chat-popup-close');
+            const popupMinBtn = document.getElementById('chat-popup-minimize');
+            const reminderForm = document.getElementById('reminder-form');
+            const popupOpenFull = document.getElementById('chat-popup-open-full');
+
+            if (!widget || !toggleBtn || !body || !list || !popupBackdrop || !popup || !popupCloseBtn || !
+                popupMinBtn) {
+                return;
+            }
+
+            let collapsed = false;
+            let dragOffsetX = 0;
+            let dragOffsetY = 0;
+            let isDragging = false;
+
+            const escapeHtml = (str) => String(str || '')
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;')
+                .replaceAll("'", '&#039;');
+
+            const setCollapsed = (value) => {
+                collapsed = value;
+                body.classList.toggle('hidden', collapsed);
+                toggleBtn.setAttribute('aria-expanded', String(!collapsed));
+                toggleBtn.innerHTML = collapsed ?
+                    `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>` :
+                    `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`;
+            };
+
+            toggleBtn.addEventListener('click', () => setCollapsed(!collapsed));
+
+            const setPopupPosition = (x, y) => {
+                popup.style.left = `${x}px`;
+                popup.style.top = `${y}px`;
+                popup.style.transform = 'translate(0, 0)';
+            };
+
+            const openPopup = (button) => {
+                const student = button.dataset.studentName || 'Student';
+                const topic = button.dataset.topic || 'General counseling support';
+                const date = button.dataset.displayDate || '-';
+                const role = button.dataset.requesterRole || 'Student';
+                const email = button.dataset.email || '-';
+                const phone = button.dataset.phone || '-';
+                const reminderUrl = button.dataset.reminderUrl || '';
+                const bookingRequestId = button.dataset.bookingRequestId || '';
+                const studentId = button.dataset.studentId || '';
+
+                popupStudent.textContent = student;
+                popupTopic.textContent = topic;
+                popupSlot.textContent = button.dataset.requestTime || '-';
+                popupDate.textContent = date;
+                popupRole.textContent = role;
+                popupEmail.textContent = email;
+                popupPhone.textContent = phone;
+
+                popupThread.innerHTML = `
                     <div class="rounded-lg bg-white px-3 py-2 text-sm text-slate-700 shadow-sm">Hi ${escapeHtml(student)}, this is your counsellor. I reviewed your request for <span class="font-medium">${escapeHtml(topic)}</span>.</div>
                     <div class="rounded-lg bg-sky-50 px-3 py-2 text-sm text-sky-900 shadow-sm">Please confirm if <span class="font-medium">${escapeHtml(date)}</span> still works for you.</div>
                 `;
 
-                    reminderForm.action = reminderUrl;
-                    reminderForm.dataset.bookingRequestId = bookingRequestId;
-                    reminderForm.dataset.studentId = studentId;
+                reminderForm.action = reminderUrl;
+                reminderForm.dataset.bookingRequestId = bookingRequestId;
+                reminderForm.dataset.studentId = studentId;
 
-                    popupOpenFull.href =
-                        `{{ route('chat.index') }}?student_id=${encodeURIComponent(studentId)}&booking_request_id=${encodeURIComponent(bookingRequestId)}`;
-                    popup.dataset.student = student;
-                    popup.dataset.topic = topic;
-                    popup.dataset.date = date;
-                    popup.dataset.slot = button.dataset.requestTime || '-';
-                    popupBackdrop.classList.remove('hidden');
-                    setPopupPosition(window.innerWidth / 2 - popup.offsetWidth / 2, 80);
+                popupOpenFull.href =
+                    `{{ route('chat.index') }}?student_id=${encodeURIComponent(studentId)}&booking_request_id=${encodeURIComponent(bookingRequestId)}`;
+                popup.dataset.student = student;
+                popup.dataset.topic = topic;
+                popup.dataset.date = date;
+                popup.dataset.slot = button.dataset.requestTime || '-';
+                popupBackdrop.classList.remove('hidden');
+                setPopupPosition(window.innerWidth / 2 - popup.offsetWidth / 2, 80);
+                popupMessageInput.focus();
+            };
+
+            const closePopup = () => {
+                popupBackdrop.classList.add('hidden');
+            };
+
+            list.querySelectorAll('[data-chat-item="true"]').forEach((button) => {
+                button.addEventListener('click', () => openPopup(button));
+            });
+
+            popupCloseBtn.addEventListener('click', closePopup);
+            popupMinBtn.addEventListener('click', closePopup);
+            popupBackdrop.addEventListener('click', (event) => {
+                if (event.target === popupBackdrop) closePopup();
+            });
+
+            popupSendBtn.addEventListener('click', () => {
+                const value = popupMessageInput.value.trim();
+                if (!value) return;
+                const bubble = document.createElement('div');
+                bubble.className = 'rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-900 shadow-sm';
+                bubble.textContent = value;
+                popupThread.appendChild(bubble);
+                popupThread.scrollTop = popupThread.scrollHeight;
+                popupMessageInput.value = '';
+                popupMessageInput.focus();
+            });
+
+            popupMessageInput.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    popupSendBtn.click();
+                }
+            });
+            if (popupSuggestBtn) {
+                popupSuggestBtn.addEventListener('click', () => {
+                    const student = popup.dataset.student || 'Student';
+                    const topic = popup.dataset.topic || 'your counselling request';
+                    const date = popup.dataset.date || 'your requested date';
+                    const slot = popup.dataset.slot || 'your requested time';
+                    popupMessageInput.value =
+                        `Hi ${student}, this is a reminder for your appointment about ${topic} on ${date} (${slot}). Please reply to confirm your availability.`;
                     popupMessageInput.focus();
-                };
+                });
+            }
+            const popupHeader = document.getElementById('chat-popup-header');
 
-                const closePopup = () => {
-                    popupBackdrop.classList.add('hidden');
-                };
-
-                list.querySelectorAll('[data-chat-item="true"]').forEach((button) => {
-                    button.addEventListener('click', () => openPopup(button));
+            if (popupHeader) {
+                popupHeader.addEventListener('mousedown', (event) => {
+                    isDragging = true;
+                    const rect = popup.getBoundingClientRect();
+                    dragOffsetX = event.clientX - rect.left;
+                    dragOffsetY = event.clientY - rect.top;
+                    popupHeader.classList.add('cursor-grabbing');
                 });
 
-                popupCloseBtn.addEventListener('click', closePopup);
-                popupMinBtn.addEventListener('click', closePopup);
-                popupBackdrop.addEventListener('click', (event) => {
-                    if (event.target === popupBackdrop) closePopup();
+                window.addEventListener('mousemove', (event) => {
+                    if (!isDragging) return;
+                    const x = Math.max(8, Math.min(window.innerWidth - popup.offsetWidth - 8, event
+                        .clientX -
+                        dragOffsetX));
+                    const y = Math.max(8, Math.min(window.innerHeight - popup.offsetHeight - 8, event
+                        .clientY -
+                        dragOffsetY));
+                    setPopupPosition(x, y);
                 });
 
-                popupSendBtn.addEventListener('click', () => {
-                    const value = popupMessageInput.value.trim();
-                    if (!value) return;
-                    const bubble = document.createElement('div');
-                    bubble.className = 'rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-900 shadow-sm';
-                    bubble.textContent = value;
-                    popupThread.appendChild(bubble);
-                    popupThread.scrollTop = popupThread.scrollHeight;
-                    popupMessageInput.value = '';
-                    popupMessageInput.focus();
+                window.addEventListener('mouseup', () => {
+                    isDragging = false;
+                    popupHeader.classList.remove('cursor-grabbing');
                 });
 
-                popupMessageInput.addEventListener('keydown', (event) => {
-                    if (event.key === 'Enter') {
-                        event.preventDefault();
-                        popupSendBtn.click();
-                    }
+            }
+            const applyNotificationFilters = () => {
+                const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
+                const filterValue = notificationFilter ? notificationFilter.value : 'all';
+                const today = new Date().toISOString().slice(0, 10);
+                let visibleCount = 0;
+
+                list.querySelectorAll('[data-chat-item="true"]').forEach((item) => {
+                    const name = item.dataset.name || '';
+                    const topic = item.dataset.topicSearch || '';
+                    const requestDate = item.dataset.requestDate || '';
+                    const matchesSearch = !query || name.includes(query) || topic.includes(query);
+                    const matchesDate = filterValue === 'all' ||
+                        (filterValue === 'today' && requestDate === today) ||
+                        (filterValue === 'upcoming' && requestDate > today);
+                    const show = matchesSearch && matchesDate;
+
+                    item.classList.toggle('hidden', !show);
+                    if (show) visibleCount++;
                 });
-                if (popupSuggestBtn) {
-                    popupSuggestBtn.addEventListener('click', () => {
-                        const student = popup.dataset.student || 'Student';
-                        const topic = popup.dataset.topic || 'your counselling request';
-                        const date = popup.dataset.date || 'your requested date';
-                        const slot = popup.dataset.slot || 'your requested time';
-                        popupMessageInput.value =
-                            `Hi ${student}, this is a reminder for your appointment about ${topic} on ${date} (${slot}). Please reply to confirm your availability.`;
-                        popupMessageInput.focus();
-                    });
-                }
-                const popupHeader = document.getElementById('chat-popup-header');
 
-                if (popupHeader) {
-                    popupHeader.addEventListener('mousedown', (event) => {
-                        isDragging = true;
-                        const rect = popup.getBoundingClientRect();
-                        dragOffsetX = event.clientX - rect.left;
-                        dragOffsetY = event.clientY - rect.top;
-                        popupHeader.classList.add('cursor-grabbing');
-                    });
+                noResults.classList.toggle('hidden', visibleCount !== 0);
+            };
 
-                    window.addEventListener('mousemove', (event) => {
-                        if (!isDragging) return;
-                        const x = Math.max(8, Math.min(window.innerWidth - popup.offsetWidth - 8, event
-                            .clientX -
-                            dragOffsetX));
-                        const y = Math.max(8, Math.min(window.innerHeight - popup.offsetHeight - 8, event
-                            .clientY -
-                            dragOffsetY));
-                        setPopupPosition(x, y);
-                    });
-
-                    window.addEventListener('mouseup', () => {
-                        isDragging = false;
-                        popupHeader.classList.remove('cursor-grabbing');
-                    });
-
-                }
-                const applyNotificationFilters = () => {
-                    const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
-                    const filterValue = notificationFilter ? notificationFilter.value : 'all';
-                    const today = new Date().toISOString().slice(0, 10);
-                    let visibleCount = 0;
-
-                    list.querySelectorAll('[data-chat-item="true"]').forEach((item) => {
-                        const name = item.dataset.name || '';
-                        const topic = item.dataset.topicSearch || '';
-                        const requestDate = item.dataset.requestDate || '';
-                        const matchesSearch = !query || name.includes(query) || topic.includes(query);
-                        const matchesDate = filterValue === 'all' ||
-                            (filterValue === 'today' && requestDate === today) ||
-                            (filterValue === 'upcoming' && requestDate > today);
-                        const show = matchesSearch && matchesDate;
-
-                        item.classList.toggle('hidden', !show);
-                        if (show) visibleCount++;
-                    });
-
-                    noResults.classList.toggle('hidden', visibleCount !== 0);
-                };
-
-                if (searchInput) {
-                    searchInput.addEventListener('input', applyNotificationFilters);
-                }
-                if (notificationFilter) {
-                    notificationFilter.addEventListener('change', applyNotificationFilters);
-                }
-                applyNotificationFilters();
-            })();
+            if (searchInput) {
+                searchInput.addEventListener('input', applyNotificationFilters);
+            }
+            if (notificationFilter) {
+                notificationFilter.addEventListener('change', applyNotificationFilters);
+            }
+            applyNotificationFilters();
+        })();
     </script>
 </body>
 
