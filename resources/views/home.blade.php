@@ -304,7 +304,7 @@
             @php
                 $dashboardRoleLabel = $role === 'teacher' ? 'Lecturer' : ucfirst($role);
                 $sidebarRoleLabel =
-                    $role === 'student' ? 'Pelajar' : ($role === 'teacher' ? 'Pensyarah'   : ucfirst($role));
+                    $role === 'student' ? 'Pelajar' : ($role === 'teacher' ? 'Pensyarah' : ucfirst($role));
             @endphp
             <section
                 class="max-w-[96rem] mx-auto rounded-[2rem] border border-slate-200 bg-white/90 backdrop-blur-md shadow-xl overflow-hidden">
@@ -521,8 +521,13 @@
                                             @endif
                                         </p>
                                     @else
-                                        <p class="text-sm text-slate-500 mt-1">No active bookings. Book your first
-                                            counselling session now.</p>
+                                        <p class="text-sm text-slate-500 mt-1">
+                                            No active bookings.
+                                            <a href="{{ route('booking.index') }}"
+                                                class="font-semibold text-sky-700 hover:text-sky-800 underline underline-offset-2">
+                                                Book your first counselling session now
+                                            </a>.
+                                        </p>
                                     @endif
                                 </div>
                                 <div class="text-sm text-slate-500">
@@ -597,19 +602,14 @@
                                 @endforeach
                             </div>
 
-                            <div class="mt-4 text-sm">
-                                @if ($activeBooking)
+                            @if ($activeBooking)
+                                <div class="mt-4 text-sm">
                                     <a href="{{ route('booking.history') }}"
                                         class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">
                                         View Booking History
                                     </a>
-                                @else
-                                    <a href="{{ route('booking.index') }}"
-                                        class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">
-                                        Book Session
-                                    </a>
-                                @endif
-                            </div>
+                                </div>
+                            @endif
 
                             @php
                                 $showStats = $role === 'student';
@@ -788,7 +788,7 @@
                                 </div>
 
                                 <div id="calendar-content"
-                                    class="calendar-collapsible items-start xl:grid-cols-[minmax(0,1fr)_240px] gap-4">
+                                    class="calendar-collapsible items-stretch xl:grid-cols-[minmax(0,1fr)_200px] gap-3">
                                     <div class="rounded-2xl border border-slate-200 overflow-hidden bg-white">
                                         <div
                                             class="px-4 py-3 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
@@ -800,7 +800,7 @@
                                                 class="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm hover:border-sky-200 hover:text-sky-700">→</button>
                                         </div>
                                         <div class="overflow-x-auto">
-                                            <div class="min-w-[720px]">
+                                            <div class="min-w-[640px]">
                                                 <div class="text-xs uppercase tracking-wide bg-slate-100 text-slate-500"
                                                     style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));">
                                                     <div
@@ -830,7 +830,7 @@
                                         </div>
                                     </div>
 
-                                    <aside class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                                    <aside class="h-full rounded-2xl border border-slate-200 bg-slate-50 p-4">
                                         <h3 class="font-semibold text-slate-700 mb-3">Ringkasan</h3>
                                         <ul class="space-y-2 text-sm text-slate-600">
                                             <li class="rounded-lg border border-slate-200 bg-white p-2">🟢 Slot kosong
@@ -1201,7 +1201,7 @@
 
                     for (let i = 0; i < startOffset; i++) {
                         const pad = document.createElement('div');
-                        pad.className = 'min-h-28 sm:min-h-32 bg-slate-50 rounded-xl border border-slate-200/70';
+                        pad.className = 'min-h-20 sm:min-h-24 bg-slate-50 rounded-xl border border-slate-200/70';
                         calendarGrid.appendChild(pad);
                     }
 
@@ -1216,12 +1216,12 @@
                         const button = document.createElement('button');
                         button.type = 'button';
                         button.className =
-                            `min-h-42 sm:min-h-46 p-3 text-left border border-slate-200 rounded-xl transition flex flex-col justify-between ${
+                            `min-h-28 sm:min-h-32 p-2.5 text-left border border-slate-200 rounded-xl transition flex flex-col justify-between ${
                                 isWeekend ? 'bg-slate-50 cursor-default' : 'bg-white hover:bg-sky-50'
                             }`;
                         button.innerHTML = `
-                            <p class="font-semibold text-base leading-none ${isToday ? 'text-sky-700' : 'text-slate-700'}">${day}</p>
-                            ${status ? `<span class="mt-2 inline-flex rounded-full border px-2 py-0.5 text-[11px] ${statusClass[status]}">${status}</span>` : '<span class="mt-2 text-[11px] text-slate-400">Weekend</span>'}
+                             <p class="font-semibold text-sm leading-none ${isToday ? 'text-sky-700' : 'text-slate-700'}">${day}</p>
+                            ${status ? `<span class="mt-1.5 inline-flex rounded-full border px-2 py-0.5 text-[10px] ${statusClass[status]}">${status}</span>` : '<span class="mt-1.5 text-[10px] text-slate-400">Weekend</span>'}
                         `;
                         if (isToday) {
                             button.classList.add('ring-2', 'ring-sky-200', 'ring-inset');
@@ -1236,7 +1236,7 @@
                     const trailingPads = (7 - (totalCells % 7)) % 7;
                     for (let i = 0; i < trailingPads; i++) {
                         const pad = document.createElement('div');
-                        pad.className = 'min-h-42 sm:min-h-46 bg-slate-50 rounded-xl border border-slate-200/70';
+                        pad.className = 'min-h-28 sm:min-h-32 bg-slate-50 rounded-xl border border-slate-200/70';
                         calendarGrid.appendChild(pad);
                     }
                 };
