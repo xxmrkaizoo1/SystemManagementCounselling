@@ -141,20 +141,17 @@
                                     <span>⟳</span>
                                     <span>Refresh</span>
                                 </a>
-                                <form id="counsellor-logout-form" method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button id="counsellor-logout-trigger" type="button"
-                                        class="mt-1 flex w-full items-center gap-2 rounded-xl bg-gradient-to-r from-sky-600 to-blue-600 px-3 py-2 text-sm font-semibold text-white transition hover:from-sky-700 hover:to-blue-700">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24"
-                                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round" aria-hidden="true">
-                                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                                            <polyline points="16 17 21 12 16 7" />
-                                            <line x1="21" y1="12" x2="9" y2="12" />
-                                        </svg>
-                                        <span>Logout</span>
-                                    </button>
-                                </form>
+                                <button id="counsellor-logout-trigger" type="button"
+                                    class="mt-1 flex w-full items-center gap-2 rounded-xl bg-gradient-to-r from-sky-600 to-blue-600 px-3 py-2 text-sm font-semibold text-white transition hover:from-sky-700 hover:to-blue-700">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" aria-hidden="true">
+                                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                                        <polyline points="16 17 21 12 16 7" />
+                                        <line x1="21" y1="12" x2="9" y2="12" />
+                                    </svg>
+                                    <span>Logout</span>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -624,12 +621,17 @@
         </div>
     </div>
 
+    <form id="counsellor-logout-form" method="POST" action="{{ route('logout') }}" class="hidden">
+        @csrf
+    </form>
+
     <script>
         (function() {
                 const actionsToggle = document.getElementById('dashboard-actions-toggle');
                 const actionsMenu = document.getElementById('dashboard-actions-menu');
 
                 const logoutForms = Array.from(document.querySelectorAll('.counsellor-logout-form'));
+                const logoutForm = document.getElementById('counsellor-logout-form') || logoutForms[0] || null;
                 const logoutTrigger = document.getElementById('counsellor-logout-trigger');
                 const logoutModal = document.getElementById('counsellor-logout-modal');
                 const logoutCancel = document.getElementById('counsellor-logout-cancel');
@@ -692,10 +694,17 @@
                 actionToggle?.addEventListener('click', openActionSidebar);
                 actionClose?.addEventListener('click', closeActionSidebar);
                 actionOverlay?.addEventListener('click', closeActionSidebar);
-
                 if (logoutForms.length && logoutModal) {
+                    logoutForms.forEach((form) => {
+                        form.addEventListener('submit', (event) => {
+                            event.preventDefault();
+                            activeLogoutForm = form;
+                            openLogoutModal();
+                        });
+                    });
                     if (logoutTrigger) {
                         logoutTrigger.addEventListener('click', () => {
+                            activeLogoutForm = logoutForm;
                             if (actionsMenu) {
                                 actionsMenu.classList.add('hidden');
                                 actionsToggle?.setAttribute('aria-expanded', 'false');
@@ -703,34 +712,32 @@
                             openLogoutModal();
                         });
                     }
+                    if (logoutForm && logoutModal) {
 
-                    if (logoutCancel) {
-                        logoutCancel.addEventListener('click', closeLogoutModal);
-                    }
-
-                    if (logoutConfirm) {
-                        logoutConfirm.addEventListener('click', () => {
-                            closeLogoutModal();
-                            activeLogoutForm?.submit();
-                        });
-                    }
-
-                    logoutModal.addEventListener('click', (event) => {
-                        if (event.target === logoutModal) closeLogoutModal();
-                    });
-
-                    document.addEventListener('keydown', (event) => {
-                        if (event.key === 'Escape') {
-                            closeLogoutModal();
-                            closeActionSidebar();
+                        if (logoutCancel) {
+                            logoutCancel.addEventListener('click', closeLogoutModal);
                         }
-                    });
 
-                } else if (logoutForm && logoutTrigger) {
-                    logoutTrigger.addEventListener('click', () => {
-                        logoutForm.submit();
-                    });
-                }
+                        if (logoutConfirm) {
+                            logoutConfirm.addEventListener('click', () => {
+                                closeLogoutModal();
+                                activeLogoutForm?.submit();
+                            });
+                        }
+
+                        logoutModal.addEventListener('click', (event) => {
+                            if (event.target === logoutModal) closeLogoutModal();
+                        });
+
+                        document.addEventListener('keydown', (event) => {
+                            if (event.key === 'Escape') {
+                                closeLogoutModal();
+                                closeActionSidebar();
+                            }
+                        });
+
+
+                    }
                     const slides = [{
                             image: 'https://images.unsplash.com/photo-1714976694525-71eb29a7c500?auto=format&fit=crop&w=1400&q=80',
                             tag: 'CollegeCare Focus',
