@@ -304,7 +304,7 @@
                                         class="absolute ml-8 -mt-5 h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-white"
                                         aria-hidden="true"></span>
                                 @endif
-                                 <span
+                                <span
                                     class="inline-flex h-12 w-12 items-center justify-center rounded-xl border border-slate-200 bg-slate-50">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24"
                                         fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
@@ -373,7 +373,6 @@
                             </a>
                         </nav>
                     </aside>
-
                     <section
                         class="home-main rounded-2xl border border-slate-200 bg-white/90 p-4 sm:p-6 shadow-sm space-y-5">
                         <div class="hero-gradient rounded-2xl p-5 sm:p-6 text-white shadow-lg">
@@ -398,70 +397,261 @@
                                     <div class="quick-stat rounded-xl px-4 py-3">
                                         <p class="text-xs uppercase tracking-wide text-sky-100/90">Current Time</p>
                                         <p id="current-time-display" class="text-base font-semibold">
-                                            {{ $currentTimeLabel ?? now()->format('g:i A') }}</p>
+                                            {{ now()->setTimezone('Asia/Kuala_Lumpur')->format('g:i A') }}</p>
                                     </div>
                                     <div class="quick-stat rounded-xl px-4 py-3">
-                                        <p class="text-xs uppercase tracking-wide text-sky-100/90">Support Status</p>
-                                        <p class="text-base font-semibold">Online Assistance</p>
+                                        <p class="text-xs uppercase tracking-wide text-sky-100/90">Counsellors Ready
+                                        </p>
+                                        <p class="text-base font-semibold">{{ count($counsellorNames ?? []) }}</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:p-6">
-                            <div class="flex items-center justify-between gap-3 mb-2">
-                                <h2 class="text-base sm:text-lg font-semibold text-slate-800">Announcements</h2>
-                                <span
-                                    class="text-xs px-2.5 py-1 rounded-full bg-sky-50 border border-sky-200 text-sky-700">Live</span>
-                            </div>
-                            <div id="session-slide" class="session-slide-shell shadow-sm">
-                                <img id="session-slide-image" class="session-slide-img"
-                                    src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1400&q=80"
-                                    alt="Counselling wellbeing banner">
-                                <div class="session-slide-overlay"></div>
-                                <div class="session-slide-content">
-                                    <p id="session-slide-tag"
-                                        class="text-[11px] uppercase tracking-[0.14em] text-sky-100/90 font-semibold">
-                                        CollegeCare
-                                        Updates</p>
-                                    <p id="session-slide-title" class="mt-2 text-base sm:text-lg font-semibold">
-                                        {{ $announcements[0] }}</p>
-                                    <p id="session-slide-subtitle" class="mt-1 text-sm text-sky-100/95">
-                                        Your wellbeing journey starts with one conversation.
-                                    </p>
-                                </div>
+                        <div class="session-slide-shell shadow-sm">
+                            <img id="session-slide-image" class="session-slide-img" src=""
+                                alt="Session announcement image">
+                            <div class="session-slide-overlay"></div>
+                            <div id="session-slide" class="session-slide-content">
+                                <span id="session-slide-tag"
+                                    class="inline-flex w-fit rounded-full border border-white/30 bg-white/20 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-sky-100">Update</span>
+                                <h3 id="session-slide-title"
+                                    class="mt-3 text-base sm:text-lg font-semibold leading-snug">
+                                </h3>
+                                <p id="session-slide-subtitle" class="mt-2 text-sm text-sky-100/90"></p>
                             </div>
                         </div>
 
                         <div class="status-card rounded-2xl p-4 sm:p-5">
-                            <div class="flex items-center justify-between mb-3">
-                                <h2 class="text-base sm:text-lg font-semibold text-slate-800">Live Counsellor Current
-                                    Status
-                                </h2>
-                                <span class="text-xs text-slate-500">Updated
-                                    <span
-                                        id="status-updated-time">{{ $currentTimeLabel ?? now()->format('g:i A') }}</span></span>
+                            <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                                <div>
+                                    <h3 class="text-base font-semibold text-slate-800">Current Booking Status</h3>
+                                    @if ($activeBooking)
+                                        <p class="text-sm text-slate-500 mt-1">Latest active request with
+                                            <span class="font-semibold text-slate-700">
+                                                {{ $activeBooking->counsellor_name ?: 'Counsellor' }}
+                                            </span>
+                                            @if ($activeBooking->booking_date)
+                                                •
+                                                {{ \Carbon\Carbon::parse($activeBooking->booking_date)->format('d M Y') }}
+                                            @endif
+                                        </p>
+                                    @else
+                                        <p class="text-sm text-slate-500 mt-1">No active bookings. Book your first
+                                            counselling session now.</p>
+                                    @endif
+                                </div>
+                                <div class="text-sm text-slate-500">
+                                    Updated:
+                                    <span id="status-updated-time" class="font-semibold text-slate-700">
+                                        {{ now()->setTimezone('Asia/Kuala_Lumpur')->format('g:i A') }}
+                                    </span>
+                                </div>
                             </div>
+                            <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                                @php
+                                    $statusCards = [
+                                        'pending' => [
+                                            'label' => 'Pending',
+                                            'class' => 'bg-amber-100 text-amber-700 ring-1 ring-inset ring-amber-200',
+                                            'icon' => '⌛',
+                                            'desc' => 'Waiting for counsellor confirmation.',
+                                        ],
+                                        'booked' => [
+                                            'label' => 'Booked',
+                                            'class' => 'bg-sky-100 text-sky-700 ring-1 ring-inset ring-sky-200',
+                                            'icon' => '📘',
+                                            'desc' => 'Session reserved and confirmed.',
+                                        ],
+                                        'completed' => [
+                                            'label' => 'Completed',
+                                            'class' =>
+                                                'bg-emerald-100 text-emerald-700 ring-1 ring-inset ring-emerald-200',
+                                            'icon' => '✅',
+                                            'desc' => 'Session finished successfully.',
+                                        ],
+                                        'cancelled' => [
+                                            'label' => 'Cancelled',
+                                            'class' => 'bg-rose-100 text-rose-700 ring-1 ring-inset ring-rose-200',
+                                            'icon' => '🛑',
+                                            'desc' => 'Booking cancelled or unavailable.',
+                                        ],
+                                    ];
 
-                            <div class="space-y-2">
-                                @foreach ($counsellors as $counsellor)
+                                    $currentStatus = strtolower((string) ($activeBooking->status ?? 'none'));
+                                @endphp
+
+                                @foreach ($statusCards as $key => $config)
+                                    @php
+                                        $isActive = $currentStatus === $key;
+                                        $isPast =
+                                            in_array($currentStatus, ['completed', 'cancelled']) &&
+                                            in_array($key, ['pending', 'booked']);
+                                    @endphp
                                     <div
-                                        class="flex items-center justify-between rounded-xl px-3 py-2.5 {{ $counsellor['available'] ? 'border border-emerald-200 bg-emerald-50' : 'border border-rose-200 bg-rose-50' }}">
-                                        <div class="flex items-center gap-2">
+                                        class="rounded-xl border {{ $isActive ? 'border-slate-300 bg-white shadow-sm' : 'border-slate-200 bg-white/80' }} p-3">
+                                        <div class="flex items-center justify-between">
                                             <span
-                                                class="w-2.5 h-2.5 rounded-full {{ $counsellor['available'] ? 'bg-emerald-500' : 'bg-rose-500' }}"></span>
-                                            <span>{{ $counsellor['name'] }}</span>
+                                                class="text-sm font-semibold text-slate-700">{{ $config['label'] }}</span>
+                                            <span
+                                                class="inline-flex h-7 min-w-7 items-center justify-center rounded-full text-sm {{ $config['class'] }}">{{ $config['icon'] }}</span>
                                         </div>
-                                        <span
-                                            class="text-sm font-medium {{ $counsellor['available'] ? 'text-emerald-700' : 'text-rose-700' }}">
-                                            {{ $counsellor['status_label'] ?? ($counsellor['available'] ? 'Available' : 'In Session') }}
-                                            • Next
-                                            {{ $counsellor['next_slot'] }}
-                                        </span>
+                                        <p class="mt-2 text-xs text-slate-500">{{ $config['desc'] }}</p>
+                                        <div class="mt-3">
+                                            @if ($isActive)
+                                                <span
+                                                    class="inline-flex rounded-full bg-slate-900 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-white">Current</span>
+                                            @elseif($isPast)
+                                                <span
+                                                    class="inline-flex rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500">Past</span>
+                                            @else
+                                                <span
+                                                    class="inline-flex rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500">Idle</span>
+                                            @endif
+                                        </div>
                                     </div>
                                 @endforeach
                             </div>
+
+                            <div class="mt-4 text-sm">
+                                @if ($activeBooking)
+                                    <a href="{{ route('booking.history') }}"
+                                        class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">
+                                        View Booking History
+                                    </a>
+                                @else
+                                    <a href="{{ route('booking.index') }}"
+                                        class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">
+                                        Book Session
+                                    </a>
+                                @endif
+                            </div>
                         </div>
+
+                        @php
+                            $showStats = $role === 'student';
+
+                            $statusCounts = collect($userActiveBookings ?? [])
+                                ->map(fn($booking) => strtolower($booking['status'] ?? ''))
+                                ->countBy();
+
+                            $activeStatusTotal =
+                                (int) $statusCounts->get('pending', 0) + (int) $statusCounts->get('booked', 0);
+                            $completedStatusTotal = (int) $statusCounts->get('completed', 0);
+                            $cancelledStatusTotal = (int) $statusCounts->get('cancelled', 0);
+
+                            $availableCounsellorsCount = collect($counsellorNames ?? [])
+                                ->filter(fn($name) => filled($name))
+                                ->count();
+
+                            $nextBooking = collect($userActiveBookings ?? [])->first(function ($booking) {
+                                if (empty($booking['booking_date']) || empty($booking['status'])) {
+                                    return false;
+                                }
+
+                                return in_array(strtolower($booking['status']), ['pending', 'booked'], true);
+                            });
+                        @endphp
+
+                        @if ($showStats)
+                            <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                                <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                                    <p class="text-xs uppercase tracking-[0.12em] text-slate-500">Active Booking</p>
+                                    <p class="mt-2 text-2xl font-semibold text-slate-800">{{ $activeStatusTotal }}</p>
+                                    <p class="mt-1 text-sm text-slate-500">Pending and booked counselling slots.</p>
+                                </div>
+                                <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                                    <p class="text-xs uppercase tracking-[0.12em] text-slate-500">Completed Session</p>
+                                    <p class="mt-2 text-2xl font-semibold text-emerald-700">
+                                        {{ $completedStatusTotal }}
+                                    </p>
+                                    <p class="mt-1 text-sm text-slate-500">Sessions completed successfully.</p>
+                                </div>
+                                <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                                    <p class="text-xs uppercase tracking-[0.12em] text-slate-500">Cancelled Request</p>
+                                    <p class="mt-2 text-2xl font-semibold text-rose-700">{{ $cancelledStatusTotal }}
+                                    </p>
+                                    <p class="mt-1 text-sm text-slate-500">Requests cancelled or rejected.</p>
+                                </div>
+                                <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                                    <p class="text-xs uppercase tracking-[0.12em] text-slate-500">Available Counsellor
+                                    </p>
+                                    <p class="mt-2 text-2xl font-semibold text-sky-700">
+                                        {{ $availableCounsellorsCount }}
+                                    </p>
+                                    <p class="mt-1 text-sm text-slate-500">Counsellors ready for consultation.</p>
+                                </div>
+                            </div>
+
+                            <div class="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+                                <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                                    <h3 class="text-sm font-semibold text-slate-800">Next Session Forecast</h3>
+                                    @if ($nextBooking)
+                                        @php
+                                            $nextBookingDate = \Carbon\Carbon::parse($nextBooking['booking_date']);
+                                            $nextBookingStatus = ucfirst(strtolower($nextBooking['status']));
+                                        @endphp
+                                        <p class="mt-2 text-lg font-semibold text-slate-800">
+                                            {{ $nextBookingDate->format('D, d M Y') }}</p>
+                                        <p class="text-sm text-slate-500">Status: {{ $nextBookingStatus }}</p>
+                                        @if (!empty($nextBooking['counsellor_name']))
+                                            <p class="mt-1 text-sm text-slate-500">Counsellor:
+                                                {{ $nextBooking['counsellor_name'] }}</p>
+                                        @endif
+                                    @else
+                                        <p class="mt-2 text-sm text-slate-500">No upcoming sessions yet. Select a slot
+                                            to
+                                            schedule your next appointment.</p>
+                                    @endif
+                                </div>
+
+                                <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                                    <h3 class="text-sm font-semibold text-slate-800">Booking Progress</h3>
+                                    <div class="mt-3 space-y-3">
+                                        @php
+                                            $progressCards = [
+                                                [
+                                                    'label' => 'Pending',
+                                                    'value' => (int) $statusCounts->get('pending', 0),
+                                                    'bar' => 'bg-amber-400',
+                                                ],
+                                                [
+                                                    'label' => 'Booked',
+                                                    'value' => (int) $statusCounts->get('booked', 0),
+                                                    'bar' => 'bg-sky-500',
+                                                ],
+                                                [
+                                                    'label' => 'Completed',
+                                                    'value' => (int) $statusCounts->get('completed', 0),
+                                                    'bar' => 'bg-emerald-500',
+                                                ],
+                                            ];
+
+                                            $progressTotal = collect($progressCards)->sum('value');
+                                        @endphp
+
+                                        @foreach ($progressCards as $item)
+                                            @php
+                                                $percent =
+                                                    $progressTotal > 0
+                                                        ? round(($item['value'] / $progressTotal) * 100)
+                                                        : 0;
+                                            @endphp
+                                            <div>
+                                                <div class="flex items-center justify-between text-xs text-slate-500">
+                                                    <span>{{ $item['label'] }}</span>
+                                                    <span>{{ $item['value'] }} ({{ $percent }}%)</span>
+                                                </div>
+                                                <div class="mt-1 h-2 rounded-full bg-slate-100 overflow-hidden">
+                                                    <div class="h-full {{ $item['bar'] }}"
+                                                        style="width: {{ $percent }}%;"></div>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
 
                         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                             <a href="{{ route('inbox') }}"
@@ -490,17 +680,21 @@
                             </a>
                         </div>
 
-                        <div class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
-                            <div class="flex items-center justify-between mb-4">
+                        <div id="counsellor-calendar-card"
+                            class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
+                            <div class="flex items-center justify-between mb-4 gap-3">
                                 <div>
                                     <h2 class="text-base sm:text-lg font-semibold text-slate-800">Jadual Kaunselor
                                         (Calendar)</h2>
                                     <p class="text-sm text-slate-500">Klik mana-mana tarikh untuk lihat jadual dalam
                                         bentuk table.</p>
                                 </div>
+                                <button id="calendar-toggle-size" type="button" aria-expanded="true"
+                                    aria-controls="calendar-content"
+                                    class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-base font-semibold text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">−</button>
                             </div>
 
-                            <div class="grid xl:grid-cols-[minmax(0,1fr)_240px] gap-4">
+                            <div id="calendar-content" class="grid xl:grid-cols-[minmax(0,1fr)_240px] gap-4">
                                 <div class="rounded-2xl border border-slate-200 overflow-hidden bg-white">
                                     <div
                                         class="px-4 py-3 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
@@ -560,133 +754,149 @@
 
         <script>
             document.addEventListener('DOMContentLoaded', () => {
-                const slide = document.getElementById('session-slide');
-                const slideImage = document.getElementById('session-slide-image');
-                const slideTitle = document.getElementById('session-slide-title');
-                const slideSubtitle = document.getElementById('session-slide-subtitle');
-                const slideTag = document.getElementById('session-slide-tag');
-                const items = @json($announcements ?? []);
-                const fallbackSlides = [{
-                        title: 'Counselling slots for this week are now open. Book early to secure your preferred time.',
-                        subtitle: 'Pick your preferred date and counsellor from the calendar.',
-                        tag: 'Weekly Updates',
-                        image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1400&q=80',
-                    },
-                    {
-                        title: 'Need to change time? Use Booking History to reschedule your active appointment.',
-                        subtitle: 'Keep your session on track with quick, guided rescheduling.',
-                        tag: 'Booking Tips',
-                        image: 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1400&q=80',
-                    },
-                    {
-                        title: 'Check your inbox regularly for OTP and reminder notifications before your session.',
-                        subtitle: 'Stay informed and never miss important counselling updates.',
-                        tag: 'Reminder',
-                        image: 'https://images.unsplash.com/photo-1517022812141-23620dba5c23?auto=format&fit=crop&w=1400&q=80',
-                    }
-                ];
-                const slides = Array.isArray(items) && items.length > 0 ?
-                    items.map((title, index) => ({
-                        title,
-                        subtitle: fallbackSlides[index % fallbackSlides.length].subtitle,
-                        tag: fallbackSlides[index % fallbackSlides.length].tag,
-                        image: fallbackSlides[index % fallbackSlides.length].image,
-                    })) :
-                    fallbackSlides;
+                        const slide = document.getElementById('session-slide');
+                        const slideImage = document.getElementById('session-slide-image');
+                        const slideTitle = document.getElementById('session-slide-title');
+                        const slideSubtitle = document.getElementById('session-slide-subtitle');
+                        const slideTag = document.getElementById('session-slide-tag');
+                        const items = @json($announcements ?? []);
+                        const fallbackSlides = [{
+                                title: 'Counselling slots for this week are now open. Book early to secure your preferred time.',
+                                subtitle: 'Pick your preferred date and counsellor from the calendar.',
+                                tag: 'Weekly Updates',
+                                image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1400&q=80',
+                            },
+                            {
+                                title: 'Need to change time? Use Booking History to reschedule your active appointment.',
+                                subtitle: 'Keep your session on track with quick, guided rescheduling.',
+                                tag: 'Booking Tips',
+                                image: 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1400&q=80',
+                            },
+                            {
+                                title: 'Check your inbox regularly for OTP and reminder notifications before your session.',
+                                subtitle: 'Stay informed and never miss important counselling updates.',
+                                tag: 'Reminder',
+                                image: 'https://images.unsplash.com/photo-1517022812141-23620dba5c23?auto=format&fit=crop&w=1400&q=80',
+                            }
+                        ];
+                        const slides = Array.isArray(items) && items.length > 0 ?
+                            items.map((title, index) => ({
+                                title,
+                                subtitle: fallbackSlides[index % fallbackSlides.length].subtitle,
+                                tag: fallbackSlides[index % fallbackSlides.length].tag,
+                                image: fallbackSlides[index % fallbackSlides.length].image,
+                            })) :
+                            fallbackSlides;
 
-                if (slide && slideImage && slideTitle && slideSubtitle && slideTag && slides.length > 0) {
-                    let idx = 0;
-                    const renderSlide = (item) => {
-                        slide.classList.remove('slide-fade');
-                        void slide.offsetWidth;
-                        slideImage.src = item.image;
-                        slideTitle.textContent = item.title;
-                        slideSubtitle.textContent = item.subtitle;
-                        slideTag.textContent = item.tag;
-                        slide.classList.add('slide-fade');
-                    };
+                        if (slide && slideImage && slideTitle && slideSubtitle && slideTag && slides.length > 0) {
+                            let idx = 0;
+                            const renderSlide = (item) => {
+                                slide.classList.remove('slide-fade');
+                                void slide.offsetWidth;
+                                slideImage.src = item.image;
+                                slideTitle.textContent = item.title;
+                                slideSubtitle.textContent = item.subtitle;
+                                slideTag.textContent = item.tag;
+                                slide.classList.add('slide-fade');
+                            };
 
-                    renderSlide(slides[idx]);
-                    window.setInterval(() => {
-                        idx = (idx + 1) % slides.length;
-                        renderSlide(slides[idx]);
-                    }, 6000);
-                }
+                            renderSlide(slides[idx]);
+                            window.setInterval(() => {
+                                idx = (idx + 1) % slides.length;
+                                renderSlide(slides[idx]);
+                            }, 6000);
+                        }
 
-                const malaysiaTimeFormatter = new Intl.DateTimeFormat('en-US', {
-                    timeZone: 'Asia/Kuala_Lumpur',
-                    hour: 'numeric',
-                    minute: '2-digit',
-                    hour12: true,
-                });
+                        const malaysiaTimeFormatter = new Intl.DateTimeFormat('en-US', {
+                            timeZone: 'Asia/Kuala_Lumpur',
+                            hour: 'numeric',
+                            minute: '2-digit',
+                            hour12: true,
+                        });
 
-                const currentTimeDisplay = document.getElementById('current-time-display');
-                const statusUpdatedTime = document.getElementById('status-updated-time');
+                        const currentTimeDisplay = document.getElementById('current-time-display');
+                        const statusUpdatedTime = document.getElementById('status-updated-time');
 
-                const syncMalaysiaTime = () => {
-                    const formattedTime = malaysiaTimeFormatter.format(new Date());
-                    if (currentTimeDisplay) currentTimeDisplay.textContent = formattedTime;
-                    if (statusUpdatedTime) statusUpdatedTime.textContent = formattedTime;
+                        const syncMalaysiaTime = () => {
+                            const formattedTime = malaysiaTimeFormatter.format(new Date());
+                            if (currentTimeDisplay) currentTimeDisplay.textContent = formattedTime;
+                            if (statusUpdatedTime) statusUpdatedTime.textContent = formattedTime;
+                        };
+
+                        syncMalaysiaTime();
+                        window.setInterval(syncMalaysiaTime, 1000);
+
+                        const calendarGrid = document.getElementById('calendar-grid');
+                        const calendarTitle = document.getElementById('calendar-title');
+                        const prevBtn = document.getElementById('calendar-prev');
+                        const nextBtn = document.getElementById('calendar-next');
+                        const calendarContent = document.getElementById('calendar-content');
+                        const calendarSizeToggleBtn = document.getElementById('calendar-toggle-size');
+                        const sidebar = document.getElementById('home-sidebar');
+                        const sidebarToggle = document.getElementById('sidebar-toggle');
+                        const sidebarClose = document.getElementById('sidebar-close');
+                        const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+
+                        const modal = document.getElementById('schedule-modal');
+                        const modalTitle = document.getElementById('schedule-modal-title');
+                        const modalBody = document.getElementById('schedule-modal-body');
+                        const modalClose = document.getElementById('schedule-modal-close');
+                        const logoutForm = document.getElementById('logout-form');
+                        const logoutModal = document.getElementById('logout-modal');
+                        const logoutCancel = document.getElementById('logout-cancel');
+                        const logoutConfirm = document.getElementById('logout-confirm');
+
+                        const closeLogoutModal = () => {
+                            if (!logoutModal) return;
+                            logoutModal.classList.add('hidden');
+                            logoutModal.classList.remove('flex');
+                        };
+
+                        const openLogoutModal = () => {
+                            if (!logoutModal) return;
+                            logoutModal.classList.remove('hidden');
+                            logoutModal.classList.add('flex');
+                        };
+
+                        if (logoutForm && logoutModal) {
+                            logoutForm.addEventListener('submit', (event) => {
+                                event.preventDefault();
+                                openLogoutModal();
+                            });
+
+                            if (logoutCancel) {
+                                logoutCancel.addEventListener('click', closeLogoutModal);
+                            }
+
+                            if (logoutConfirm) {
+                                logoutConfirm.addEventListener('click', () => logoutForm.submit());
+                            }
+
+                            logoutModal.addEventListener('click', (event) => {
+                                if (event.target === logoutModal) closeLogoutModal();
+                            });
+
+                            document.addEventListener('keydown', (event) => {
+                                if (event.key === 'Escape') closeLogoutModal();
+                            });
+                        }
+
+                        if (!calendarGrid || !calendarTitle || !prevBtn || !nextBtn) {
+                            return;
+                        }
+                                        const setCalendarContentState = (isExpanded) => {
+                    if (!calendarContent || !calendarSizeToggleBtn) return;
+                    calendarContent.classList.toggle('hidden', !isExpanded);
+                    calendarSizeToggleBtn.textContent = isExpanded ? '−' : '+';
+                    calendarSizeToggleBtn.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+                    calendarSizeToggleBtn.setAttribute('aria-label', isExpanded ? 'Minimize calendar content' : 'Maximize calendar content');
                 };
 
-                syncMalaysiaTime();
-                window.setInterval(syncMalaysiaTime, 1000);
-
-                const calendarGrid = document.getElementById('calendar-grid');
-                const calendarTitle = document.getElementById('calendar-title');
-                const prevBtn = document.getElementById('calendar-prev');
-                const nextBtn = document.getElementById('calendar-next');
-                const sidebar = document.getElementById('home-sidebar');
-                const sidebarToggle = document.getElementById('sidebar-toggle');
-                const sidebarClose = document.getElementById('sidebar-close');
-                const sidebarBackdrop = document.getElementById('sidebar-backdrop');
-
-                const modal = document.getElementById('schedule-modal');
-                const modalTitle = document.getElementById('schedule-modal-title');
-                const modalBody = document.getElementById('schedule-modal-body');
-                const modalClose = document.getElementById('schedule-modal-close');
-                const logoutForm = document.getElementById('logout-form');
-                const logoutModal = document.getElementById('logout-modal');
-                const logoutCancel = document.getElementById('logout-cancel');
-                const logoutConfirm = document.getElementById('logout-confirm');
-
-                const closeLogoutModal = () => {
-                    if (!logoutModal) return;
-                    logoutModal.classList.add('hidden');
-                    logoutModal.classList.remove('flex');
-                };
-
-                const openLogoutModal = () => {
-                    if (!logoutModal) return;
-                    logoutModal.classList.remove('hidden');
-                    logoutModal.classList.add('flex');
-                };
-
-                if (logoutForm && logoutModal) {
-                    logoutForm.addEventListener('submit', (event) => {
-                        event.preventDefault();
-                        openLogoutModal();
+                if (calendarContent && calendarSizeToggleBtn) {
+                    calendarSizeToggleBtn.addEventListener('click', () => {
+                        const isExpanded = calendarSizeToggleBtn.getAttribute('aria-expanded') !== 'true';
+                        setCalendarContentState(isExpanded);
                     });
-
-                    if (logoutCancel) {
-                        logoutCancel.addEventListener('click', closeLogoutModal);
-                    }
-
-                    if (logoutConfirm) {
-                        logoutConfirm.addEventListener('click', () => logoutForm.submit());
-                    }
-
-                    logoutModal.addEventListener('click', (event) => {
-                        if (event.target === logoutModal) closeLogoutModal();
-                    });
-
-                    document.addEventListener('keydown', (event) => {
-                        if (event.key === 'Escape') closeLogoutModal();
-                    });
-                }
-
-                if (!calendarGrid || !calendarTitle || !prevBtn || !nextBtn) {
-                    return;
                 }
 
                 const closeSidebar = () => {

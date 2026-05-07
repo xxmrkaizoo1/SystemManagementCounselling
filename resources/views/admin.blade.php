@@ -110,16 +110,16 @@
         </div>
     </div>
 
-    <main class="min-h-screen p-3 sm:p-6 lg:p-8">
+    <main class="min-h-screen p-2 sm:p-5 lg:p-8">
         <section
             class="max-w-[96rem] mx-auto rounded-[1.6rem] sm:rounded-[2rem] border border-slate-200/80 bg-white/80 backdrop-blur-xl shadow-2xl overflow-hidden animate-fade-up">
             <header
-                class="px-4 sm:px-7 py-4 border-b border-slate-200/80 bg-white/85 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                class="px-4 sm:px-6 lg:px-7 py-4 border-b border-slate-200/80 bg-white/85 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div class="min-w-0">
                     <p class="text-xs uppercase tracking-[0.14em] text-indigo-500 font-semibold">CollegeCare</p>
                     <h1 class="text-xl sm:text-2xl font-bold text-slate-900 leading-tight">Admin Dashboard</h1>
-                    <p class="text-sm text-indigo-500 mt-1 truncate">Welcome back, <a
-                            class="text-sm text-indigo-500 mt-1 truncate font-semibold">{{ $user->full_name ?: $user->name }}</a>
+                    <p class="text-sm text-indigo-500 mt-1 break-words">Welcome back, <a
+                            class="text-sm text-indigo-500 mt-1 font-semibold">{{ $user->full_name ?: $user->name }}</a>
                     </p>
                 </div>
 
@@ -141,7 +141,7 @@
                 </div>
             </header>
 
-            <div class="p-4 sm:p-6 lg:p-7 grid xl:grid-cols-[240px_1fr] gap-4 lg:gap-5">
+            <div class="p-4 sm:p-5 lg:p-7 grid xl:grid-cols-[260px_1fr] gap-4 lg:gap-5">
                 <div id="admin-sidebar-overlay" class="fixed inset-0 z-40 hidden bg-slate-900/45 xl:hidden"></div>
                 <aside id="admin-sidebar"
                     class="fixed xl:static inset-y-0 left-0 z-50 w-[85vw] max-w-[320px] xl:w-auto xl:max-w-none -translate-x-full xl:translate-x-0 transition-transform duration-300 rounded-none xl:rounded-2xl border-0 xl:border border-slate-200 bg-white/95 p-4 shadow-2xl xl:shadow-sm flex flex-col animate-fade-up animation-delay-1">
@@ -229,7 +229,7 @@
                     @endphp
 
                     <div id="overview"
-                        class="mx-auto grid w-full max-w-6xl grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                        class="mx-auto grid w-full max-w-6xl grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
                         <article data-stat-card
                             class="group rounded-2xl border border-slate-200/80 bg-gradient-to-br from-white to-slate-50 p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-sky-200 hover:shadow-lg animate-fade-up animation-delay-1">
                             <div class="flex items-start justify-between gap-3">
