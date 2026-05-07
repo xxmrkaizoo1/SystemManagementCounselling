@@ -120,17 +120,64 @@
                                                         {{ $item['student'] }}
                                                     </button>
                                                     <div
-                                                        class="student-popup hidden absolute left-full top-1/2 z-30 ml-3 w-72 -translate-y-1/2 rounded-xl border border-indigo-200 bg-white p-3 text-xs text-slate-700 shadow-xl">
-                                                        <p><span class="font-semibold text-indigo-700">Name:</span>
-                                                            {{ $item['user_info']['name'] ?? 'N/A' }}</p>
-                                                        <p><span class="font-semibold text-indigo-700">Email:</span>
-                                                            {{ $item['user_info']['email'] ?? 'N/A' }}</p>
-                                                        <p><span class="font-semibold text-indigo-700">Phone:</span>
-                                                            {{ $item['user_info']['phone'] ?? 'N/A' }}</p>
-                                                        <p><span class="font-semibold text-indigo-700">Year:</span>
-                                                            {{ $item['user_info']['years'] ?? 'N/A' }}</p>
-                                                        <p><span class="font-semibold text-indigo-700">Programme:</span>
-                                                            {{ $item['user_info']['programme'] ?? 'N/A' }}</p>
+                                                        class="student-popup hidden fixed inset-0 z-50 flex items-start justify-center pt-[77vh]">
+                                                        <div
+                                                            class="student-popup-overlay absolute inset-0 bg-slate-900/45">
+                                                        </div>
+                                                        <div
+                                                            class="relative w-[92%] max-w-xl rounded-[28px] bg-rose-50 shadow-2xl">
+                                                            <div
+                                                                class="h-24 rounded-t-[28px] bg-gradient-to-r from-sky-100 to-rose-100">
+                                                            </div>
+                                                            <button type="button"
+                                                                class="student-popup-close absolute right-5 top-5 inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white/70 text-rose-400 hover:bg-white"
+                                                                aria-label="Close student details">✕</button>
+                                                            <div
+                                                                class="-mt-12 mb-4 mx-auto h-24 w-24 overflow-hidden rounded-full border-4 border-white bg-sky-100 shadow">
+                                                                <img src="{{ $item['user_info']['profile_pic'] ?? '/images/default-profile.svg' }}"
+                                                                    alt="{{ $item['user_info']['name'] ?? 'Student' }} profile"
+                                                                    class="h-full w-full object-cover">
+                                                            </div>
+                                                            <div class="px-6 pb-6 text-center">
+                                                                <h4 class="font-bold text-slate-800">
+                                                                    {{ $item['user_info']['name'] ?? 'N/A' }}</h4>
+                                                                <p class="text-sm font-semibold text-indigo-500">
+                                                                    Lecturer</p>
+                                                            </div>
+                                                            <div class="grid gap-3 px-6 pb-6 sm:grid-cols-2">
+
+                                                                <div
+                                                                    class="rounded-2xl border border-sky-200 bg-sky-50 p-3 text-left">
+                                                                    <p class="text-sm text-sky-700">Phone</p>
+                                                                    <p class="font-semibold text-sky-900">
+                                                                        {{ $item['user_info']['phone'] ?? 'N/A' }}</p>
+                                                                </div>
+                                                                <div
+                                                                    class="rounded-2xl border border-slate-200 bg-slate-100 p-3 text-left">
+                                                                    <p class="text-sm text-slate-500">Email</p>
+                                                                    <p class="font-semibold text-slate-800 break-all">
+                                                                        {{ $item['user_info']['email'] ?? 'N/A' }}</p>
+                                                                </div>
+                                                                <div
+                                                                    class="rounded-2xl border border-slate-200 bg-slate-100 p-3 text-left">
+                                                                    <p class="text-sm text-slate-500">No Matriks</p>
+                                                                    <p class="font-semibold text-slate-800">N/A</p>
+                                                                </div>
+                                                                <div
+                                                                    class="rounded-2xl border border-slate-200 bg-slate-100 p-3 text-left">
+                                                                    <p class="text-sm text-slate-500">Programme</p>
+                                                                    <p class="font-semibold text-slate-800">
+                                                                        {{ $item['user_info']['programme'] ?? 'N/A' }}
+                                                                    </p>
+                                                                </div>
+                                                                <div
+                                                                    class="rounded-2xl border border-slate-200 bg-slate-100 p-3 text-left">
+                                                                    <p class="text-sm text-slate-500">Year</p>
+                                                                    <p class="font-semibold text-slate-800">
+                                                                        {{ $item['user_info']['years'] ?? 'N/A' }}</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </td>
@@ -371,30 +418,42 @@
         renderTopics();
         renderEmergency();
 
+        const hideAllStudentPopups = () => {
+            document.querySelectorAll('.student-popup').forEach((item) => item.classList.add('hidden'));
+            document.querySelectorAll('.student-popup-trigger').forEach((btn) => btn.setAttribute('aria-expanded',
+                'false'));
+            document.body.classList.remove('overflow-hidden');
+        };
+
         document.querySelectorAll('.student-popup-wrap').forEach((wrap) => {
             const trigger = wrap.querySelector('.student-popup-trigger');
             const popup = wrap.querySelector('.student-popup');
+            const overlay = wrap.querySelector('.student-popup-overlay');
+            const closeBtn = wrap.querySelector('.student-popup-close');
             if (!trigger || !popup) return;
 
             trigger.addEventListener('click', (event) => {
                 event.stopPropagation();
                 const isHidden = popup.classList.contains('hidden');
-
-                document.querySelectorAll('.student-popup').forEach((item) => item.classList.add('hidden'));
-                document.querySelectorAll('.student-popup-trigger').forEach((btn) => btn.setAttribute(
-                    'aria-expanded', 'false'));
+                hideAllStudentPopups();
 
                 if (isHidden) {
                     popup.classList.remove('hidden');
                     trigger.setAttribute('aria-expanded', 'true');
+                    document.body.classList.add('overflow-hidden');
                 }
             });
+
+            overlay?.addEventListener('click', hideAllStudentPopups);
+            closeBtn?.addEventListener('click', hideAllStudentPopups);
         });
 
         document.addEventListener('click', () => {
-            document.querySelectorAll('.student-popup').forEach((item) => item.classList.add('hidden'));
-            document.querySelectorAll('.student-popup-trigger').forEach((btn) => btn.setAttribute('aria-expanded',
-                'false'));
+            hideAllStudentPopups();
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') hideAllStudentPopups();
         });
     </script>
 </body>

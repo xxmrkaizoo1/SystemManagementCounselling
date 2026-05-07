@@ -1209,7 +1209,7 @@ Route::middleware('auth')->group(function () {
         )));
 
         $bookings = BookingRequest::query()
-            ->with(['user:id,name,full_name,email,phone,years,programme'])
+            ->with(['user:id,name,full_name,email,phone,years,programme,profile_pic'])
             ->whereIn(DB::raw("LOWER(REPLACE(TRIM(counsellor_name), ' ', ''))"), $normalizedCounsellorNames)
             ->get();
 
@@ -1224,6 +1224,7 @@ Route::middleware('auth')->group(function () {
                     'phone' => $items->first()?->user?->phone ?: 'N/A',
                     'years' => $items->first()?->user?->years ?: 'N/A',
                     'programme' => $items->first()?->user?->programme ?: 'N/A',
+                    'profile_pic' => $items->first()?->user?->profile_pic ?: '/images/default-profile.svg',
                 ],
             ])
             ->sortByDesc('total')

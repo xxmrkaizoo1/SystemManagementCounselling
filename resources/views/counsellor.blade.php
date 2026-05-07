@@ -75,15 +75,22 @@
                                 <h1 class="text-lg font-semibold text-slate-800 lg:text-xl">Counsellor Session Dashboard
                                 </h1>
                             </div>
+
+                            <button id="counsellor-action-toggle" type="button"
+                                class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-sky-300 hover:text-sky-700 lg:hidden"
+                                aria-controls="counsellor-action-sidebar" aria-expanded="false"
+                                aria-label="Open quick actions" title="Quick actions">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" aria-hidden="true">
+                                    <circle cx="12" cy="5" r="1.6" />
+                                    <circle cx="12" cy="12" r="1.6" />
+                                    <circle cx="12" cy="19" r="1.6" />
+                                </svg>
+                            </button>
                         </div>
 
-                        <button id="counsellor-action-toggle" type="button"
-                            class="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-sky-300 hover:text-sky-700 lg:hidden"
-                            aria-controls="counsellor-action-sidebar" aria-expanded="false">
-                            <span>Actions</span>
-                        </button>
-
-                        <div class="relative flex w-full items-center lg:w-auto lg:justify-end">
+                        <div class="relative hidden w-full items-center lg:flex lg:w-auto lg:justify-end">
                             <button id="dashboard-actions-toggle" type="button" aria-expanded="false"
                                 class="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-sky-300 hover:text-sky-700"
                                 aria-label="Open actions menu" title="Actions">
@@ -149,7 +156,7 @@
                             </div>
                         </div>
                         <div
-                           class="metric-card group rounded-2xl border border-violet-200/80 bg-gradient-to-br from-violet-100 via-violet-50 to-white px-4 py-3 text-sm shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+                            class="metric-card group rounded-2xl border border-violet-200/80 bg-gradient-to-br from-violet-100 via-violet-50 to-white px-4 py-3 text-sm shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
                             <p class="font-semibold text-violet-700">Completed</p>
                             <div class="mt-1 flex items-end justify-between">
                                 <p class="text-2xl font-bold text-violet-800">{{ $completedCount }}</p>
