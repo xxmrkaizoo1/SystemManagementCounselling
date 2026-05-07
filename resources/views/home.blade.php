@@ -689,6 +689,7 @@
                                     <p class="text-sm text-slate-500">Klik mana-mana tarikh untuk lihat jadual dalam
                                         bentuk table.</p>
                                 </div>
+
                                 <button id="calendar-toggle-size" type="button" aria-expanded="true"
                                     aria-controls="calendar-content"
                                     class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-base font-semibold text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">−</button>
@@ -754,142 +755,143 @@
 
         <script>
             document.addEventListener('DOMContentLoaded', () => {
-                        const slide = document.getElementById('session-slide');
-                        const slideImage = document.getElementById('session-slide-image');
-                        const slideTitle = document.getElementById('session-slide-title');
-                        const slideSubtitle = document.getElementById('session-slide-subtitle');
-                        const slideTag = document.getElementById('session-slide-tag');
-                        const items = @json($announcements ?? []);
-                        const fallbackSlides = [{
-                                title: 'Counselling slots for this week are now open. Book early to secure your preferred time.',
-                                subtitle: 'Pick your preferred date and counsellor from the calendar.',
-                                tag: 'Weekly Updates',
-                                image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1400&q=80',
-                            },
-                            {
-                                title: 'Need to change time? Use Booking History to reschedule your active appointment.',
-                                subtitle: 'Keep your session on track with quick, guided rescheduling.',
-                                tag: 'Booking Tips',
-                                image: 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1400&q=80',
-                            },
-                            {
-                                title: 'Check your inbox regularly for OTP and reminder notifications before your session.',
-                                subtitle: 'Stay informed and never miss important counselling updates.',
-                                tag: 'Reminder',
-                                image: 'https://images.unsplash.com/photo-1517022812141-23620dba5c23?auto=format&fit=crop&w=1400&q=80',
-                            }
-                        ];
-                        const slides = Array.isArray(items) && items.length > 0 ?
-                            items.map((title, index) => ({
-                                title,
-                                subtitle: fallbackSlides[index % fallbackSlides.length].subtitle,
-                                tag: fallbackSlides[index % fallbackSlides.length].tag,
-                                image: fallbackSlides[index % fallbackSlides.length].image,
-                            })) :
-                            fallbackSlides;
+                const slide = document.getElementById('session-slide');
+                const slideImage = document.getElementById('session-slide-image');
+                const slideTitle = document.getElementById('session-slide-title');
+                const slideSubtitle = document.getElementById('session-slide-subtitle');
+                const slideTag = document.getElementById('session-slide-tag');
+                const items = @json($announcements ?? []);
+                const fallbackSlides = [{
+                        title: 'Counselling slots for this week are now open. Book early to secure your preferred time.',
+                        subtitle: 'Pick your preferred date and counsellor from the calendar.',
+                        tag: 'Weekly Updates',
+                        image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1400&q=80',
+                    },
+                    {
+                        title: 'Need to change time? Use Booking History to reschedule your active appointment.',
+                        subtitle: 'Keep your session on track with quick, guided rescheduling.',
+                        tag: 'Booking Tips',
+                        image: 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1400&q=80',
+                    },
+                    {
+                        title: 'Check your inbox regularly for OTP and reminder notifications before your session.',
+                        subtitle: 'Stay informed and never miss important counselling updates.',
+                        tag: 'Reminder',
+                        image: 'https://images.unsplash.com/photo-1517022812141-23620dba5c23?auto=format&fit=crop&w=1400&q=80',
+                    }
+                ];
+                const slides = Array.isArray(items) && items.length > 0 ?
+                    items.map((title, index) => ({
+                        title,
+                        subtitle: fallbackSlides[index % fallbackSlides.length].subtitle,
+                        tag: fallbackSlides[index % fallbackSlides.length].tag,
+                        image: fallbackSlides[index % fallbackSlides.length].image,
+                    })) :
+                    fallbackSlides;
 
-                        if (slide && slideImage && slideTitle && slideSubtitle && slideTag && slides.length > 0) {
-                            let idx = 0;
-                            const renderSlide = (item) => {
-                                slide.classList.remove('slide-fade');
-                                void slide.offsetWidth;
-                                slideImage.src = item.image;
-                                slideTitle.textContent = item.title;
-                                slideSubtitle.textContent = item.subtitle;
-                                slideTag.textContent = item.tag;
-                                slide.classList.add('slide-fade');
-                            };
+                if (slide && slideImage && slideTitle && slideSubtitle && slideTag && slides.length > 0) {
+                    let idx = 0;
+                    const renderSlide = (item) => {
+                        slide.classList.remove('slide-fade');
+                        void slide.offsetWidth;
+                        slideImage.src = item.image;
+                        slideTitle.textContent = item.title;
+                        slideSubtitle.textContent = item.subtitle;
+                        slideTag.textContent = item.tag;
+                        slide.classList.add('slide-fade');
+                    };
 
-                            renderSlide(slides[idx]);
-                            window.setInterval(() => {
-                                idx = (idx + 1) % slides.length;
-                                renderSlide(slides[idx]);
-                            }, 6000);
-                        }
+                    renderSlide(slides[idx]);
+                    window.setInterval(() => {
+                        idx = (idx + 1) % slides.length;
+                        renderSlide(slides[idx]);
+                    }, 6000);
+                }
 
-                        const malaysiaTimeFormatter = new Intl.DateTimeFormat('en-US', {
-                            timeZone: 'Asia/Kuala_Lumpur',
-                            hour: 'numeric',
-                            minute: '2-digit',
-                            hour12: true,
-                        });
+                const malaysiaTimeFormatter = new Intl.DateTimeFormat('en-US', {
+                    timeZone: 'Asia/Kuala_Lumpur',
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    hour12: true,
+                });
 
-                        const currentTimeDisplay = document.getElementById('current-time-display');
-                        const statusUpdatedTime = document.getElementById('status-updated-time');
+                const currentTimeDisplay = document.getElementById('current-time-display');
+                const statusUpdatedTime = document.getElementById('status-updated-time');
 
-                        const syncMalaysiaTime = () => {
-                            const formattedTime = malaysiaTimeFormatter.format(new Date());
-                            if (currentTimeDisplay) currentTimeDisplay.textContent = formattedTime;
-                            if (statusUpdatedTime) statusUpdatedTime.textContent = formattedTime;
-                        };
+                const syncMalaysiaTime = () => {
+                    const formattedTime = malaysiaTimeFormatter.format(new Date());
+                    if (currentTimeDisplay) currentTimeDisplay.textContent = formattedTime;
+                    if (statusUpdatedTime) statusUpdatedTime.textContent = formattedTime;
+                };
 
-                        syncMalaysiaTime();
-                        window.setInterval(syncMalaysiaTime, 1000);
+                syncMalaysiaTime();
+                window.setInterval(syncMalaysiaTime, 1000);
 
-                        const calendarGrid = document.getElementById('calendar-grid');
-                        const calendarTitle = document.getElementById('calendar-title');
-                        const prevBtn = document.getElementById('calendar-prev');
-                        const nextBtn = document.getElementById('calendar-next');
-                        const calendarContent = document.getElementById('calendar-content');
-                        const calendarSizeToggleBtn = document.getElementById('calendar-toggle-size');
-                        const sidebar = document.getElementById('home-sidebar');
-                        const sidebarToggle = document.getElementById('sidebar-toggle');
-                        const sidebarClose = document.getElementById('sidebar-close');
-                        const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+                const calendarGrid = document.getElementById('calendar-grid');
+                const calendarTitle = document.getElementById('calendar-title');
+                const prevBtn = document.getElementById('calendar-prev');
+                const nextBtn = document.getElementById('calendar-next');
+                const calendarContent = document.getElementById('calendar-content');
+                const calendarSizeToggleBtn = document.getElementById('calendar-toggle-size');
+                const sidebar = document.getElementById('home-sidebar');
+                const sidebarToggle = document.getElementById('sidebar-toggle');
+                const sidebarClose = document.getElementById('sidebar-close');
+                const sidebarBackdrop = document.getElementById('sidebar-backdrop');
 
-                        const modal = document.getElementById('schedule-modal');
-                        const modalTitle = document.getElementById('schedule-modal-title');
-                        const modalBody = document.getElementById('schedule-modal-body');
-                        const modalClose = document.getElementById('schedule-modal-close');
-                        const logoutForm = document.getElementById('logout-form');
-                        const logoutModal = document.getElementById('logout-modal');
-                        const logoutCancel = document.getElementById('logout-cancel');
-                        const logoutConfirm = document.getElementById('logout-confirm');
+                const modal = document.getElementById('schedule-modal');
+                const modalTitle = document.getElementById('schedule-modal-title');
+                const modalBody = document.getElementById('schedule-modal-body');
+                const modalClose = document.getElementById('schedule-modal-close');
+                const logoutForm = document.getElementById('logout-form');
+                const logoutModal = document.getElementById('logout-modal');
+                const logoutCancel = document.getElementById('logout-cancel');
+                const logoutConfirm = document.getElementById('logout-confirm');
 
-                        const closeLogoutModal = () => {
-                            if (!logoutModal) return;
-                            logoutModal.classList.add('hidden');
-                            logoutModal.classList.remove('flex');
-                        };
+                const closeLogoutModal = () => {
+                    if (!logoutModal) return;
+                    logoutModal.classList.add('hidden');
+                    logoutModal.classList.remove('flex');
+                };
 
-                        const openLogoutModal = () => {
-                            if (!logoutModal) return;
-                            logoutModal.classList.remove('hidden');
-                            logoutModal.classList.add('flex');
-                        };
+                const openLogoutModal = () => {
+                    if (!logoutModal) return;
+                    logoutModal.classList.remove('hidden');
+                    logoutModal.classList.add('flex');
+                };
 
-                        if (logoutForm && logoutModal) {
-                            logoutForm.addEventListener('submit', (event) => {
-                                event.preventDefault();
-                                openLogoutModal();
-                            });
+                if (logoutForm && logoutModal) {
+                    logoutForm.addEventListener('submit', (event) => {
+                        event.preventDefault();
+                        openLogoutModal();
+                    });
 
-                            if (logoutCancel) {
-                                logoutCancel.addEventListener('click', closeLogoutModal);
-                            }
+                    if (logoutCancel) {
+                        logoutCancel.addEventListener('click', closeLogoutModal);
+                    }
 
-                            if (logoutConfirm) {
-                                logoutConfirm.addEventListener('click', () => logoutForm.submit());
-                            }
+                    if (logoutConfirm) {
+                        logoutConfirm.addEventListener('click', () => logoutForm.submit());
+                    }
 
-                            logoutModal.addEventListener('click', (event) => {
-                                if (event.target === logoutModal) closeLogoutModal();
-                            });
+                    logoutModal.addEventListener('click', (event) => {
+                        if (event.target === logoutModal) closeLogoutModal();
+                    });
 
-                            document.addEventListener('keydown', (event) => {
-                                if (event.key === 'Escape') closeLogoutModal();
-                            });
-                        }
+                    document.addEventListener('keydown', (event) => {
+                        if (event.key === 'Escape') closeLogoutModal();
+                    });
+                }
 
-                        if (!calendarGrid || !calendarTitle || !prevBtn || !nextBtn) {
-                            return;
-                        }
-                                        const setCalendarContentState = (isExpanded) => {
+                if (!calendarGrid || !calendarTitle || !prevBtn || !nextBtn) {
+                    return;
+                }
+                const setCalendarContentState = (isExpanded) => {
                     if (!calendarContent || !calendarSizeToggleBtn) return;
                     calendarContent.classList.toggle('hidden', !isExpanded);
                     calendarSizeToggleBtn.textContent = isExpanded ? '−' : '+';
                     calendarSizeToggleBtn.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
-                    calendarSizeToggleBtn.setAttribute('aria-label', isExpanded ? 'Minimize calendar content' : 'Maximize calendar content');
+                    calendarSizeToggleBtn.setAttribute('aria-label', isExpanded ? 'Minimize calendar content' :
+                        'Maximize calendar content');
                 };
 
                 if (calendarContent && calendarSizeToggleBtn) {
@@ -898,6 +900,7 @@
                         setCalendarContentState(isExpanded);
                     });
                 }
+
 
                 const closeSidebar = () => {
                     if (!sidebar || !sidebarBackdrop) return;
