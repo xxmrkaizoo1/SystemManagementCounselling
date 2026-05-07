@@ -188,34 +188,62 @@ $autoRejectExpiredBookings = static function (): void {
                 'status' => 'rejected',
             ]);
 
-            $recipient = $booking->user;
-            if (! $recipient) {
-                return;
+            $student = $booking->user;
+            $counsellorName = trim((string) $booking->counsellor_name);
+            $counsellor = $counsellorName === ''
+                ? null
+                : User::query()
+                ->whereHas('roles', static fn($query) => $query->where('name', 'counsellor'))
+                ->where(static function ($query) use ($counsellorName): void {
+                    $query->where('full_name', $counsellorName)
+                        ->orWhere('name', $counsellorName);
+                })
+                ->first(['id', 'name', 'full_name', 'email']);
+
+            $bookingDescriptor = $booking->booking_date . ' (' . $booking->booking_time . ')';
+
+            if ($student) {
+                $studentMessage = 'Your booking on ' . $bookingDescriptor . ' with ' . $booking->counsellor_name
+                    . ' was auto-cancelled because the session time passed without counsellor approval.';
+
+                $student->inboxNotifications()->create([
+                    'title' => 'Booking auto-cancelled',
+                    'message' => $studentMessage,
+                ]);
+
+                if (! empty($student->email)) {
+                    Mail::raw($studentMessage, static function ($message) use ($student): void {
+                        $message->to($student->email)
+                            ->subject('CollegeCare Booking Auto-Cancelled');
+                    });
+                }
             }
 
-            $notifyMessage = 'Your booking on ' . $booking->booking_date . ' (' . $booking->booking_time . ') with '
-                . $booking->counsellor_name . ' was auto-rejected because the session time has passed without approval.';
+            if ($counsellor) {
+                $studentName = trim((string) ($student?->full_name ?: $student?->name ?: 'a student'));
+                $counsellorMessage = 'Booking request from ' . $studentName . ' for ' . $bookingDescriptor
+                    . ' was auto-cancelled because no approval was recorded before the session time.';
 
-            $recipient->inboxNotifications()->create([
-                'title' => 'Booking auto-rejected',
-                'message' => $notifyMessage,
-            ]);
+                $counsellor->inboxNotifications()->create([
+                    'title' => 'Booking request auto-cancelled',
+                    'message' => $counsellorMessage,
+                ]);
 
-            if (! empty($recipient->email)) {
-                Mail::raw($notifyMessage, static function ($message) use ($recipient): void {
-                    $message->to($recipient->email)
-                        ->subject('CollegeCare Booking Auto-Rejected');
-                });
+                if (! empty($counsellor->email)) {
+                    Mail::raw($counsellorMessage, static function ($message) use ($counsellor): void {
+                        $message->to($counsellor->email)
+                            ->subject('CollegeCare Booking Request Auto-Cancelled');
+                    });
+                }
             }
         });
 };
 
 Route::matched(static function () use ($autoRejectExpiredBookings): void {
     if (auth()->check()) {
-        // $autoRejectExpiredBookings();
+        $autoRejectExpiredBookings();
     }
 });
-// $autoRejectExpiredBookings();
 
 Route::middleware('auth')->group(function () {
     Route::get('/admin', function () {

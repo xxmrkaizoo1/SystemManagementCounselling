@@ -779,7 +779,7 @@
                             </div>
 
                             <div id="calendar-content"
-                                class="calendar-collapsible xl:grid-cols-[minmax(0,1fr)_240px] gap-4">
+                                class="calendar-collapsible items-start xl:grid-cols-[minmax(0,1fr)_240px] gap-4">
                                 <div class="rounded-2xl border border-slate-200 overflow-hidden bg-white">
                                     <div
                                         class="px-4 py-3 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
@@ -1183,7 +1183,7 @@
 
                     for (let i = 0; i < startOffset; i++) {
                         const pad = document.createElement('div');
-                        pad.className = 'min-h-42 sm:min-h-46 bg-slate-50 rounded-xl border border-slate-200/70';
+                        pad.className = 'min-h-28 sm:min-h-32 bg-slate-50 rounded-xl border border-slate-200/70';
                         calendarGrid.appendChild(pad);
                     }
 
