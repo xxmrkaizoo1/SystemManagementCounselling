@@ -160,9 +160,90 @@
             opacity: 1;
         }
 
+        .glass-panel {
+            border: 1px solid rgb(203 213 225 / 0.75);
+            background: linear-gradient(145deg, rgb(255 255 255 / 0.92), rgb(248 250 252 / 0.88));
+            box-shadow: 0 12px 32px rgb(15 23 42 / 0.08);
+            backdrop-filter: blur(6px);
+            transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+        }
+
+        .glass-panel:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 34px rgb(14 116 144 / 0.16);
+            border-color: rgb(125 211 252 / 0.9);
+        }
+
+        .status-step {
+            position: relative;
+            overflow: hidden;
+            transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+        }
+
+        .status-step::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(120deg, rgb(14 165 233 / 0.10), transparent 60%);
+            opacity: 0;
+            transition: opacity 220ms ease;
+            pointer-events: none;
+        }
+
+        .status-step:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px rgb(14 116 144 / 0.14);
+        }
+
+        .status-step:hover::after {
+            opacity: 1;
+        }
+
         .status-card {
             border: 1px solid rgb(226 232 240);
-            background: linear-gradient(180deg, rgb(248 250 252) 0%, rgb(255 255 255) 100%);
+            background: linear-gradient(180deg, rgb(248 250 252 / 0.95) 0%, rgb(255 255 255 / 0.98) 100%);
+            box-shadow: 0 14px 36px rgb(15 23 42 / 0.08);
+        }
+
+        .calendar-collapsible {
+            display: grid;
+            overflow: hidden;
+            max-height: 1200px;
+            opacity: 1;
+            transform: translateY(0);
+            transition: max-height 320ms ease, opacity 240ms ease, transform 240ms ease;
+        }
+
+        .calendar-collapsible.is-collapsed {
+            max-height: 0;
+            opacity: 0;
+            transform: translateY(-8px);
+            pointer-events: none;
+        }
+
+        .calendar-toggle-btn {
+            transition: transform 220ms ease, background-color 220ms ease, color 220ms ease;
+        }
+
+        .calendar-toggle-btn[aria-expanded="true"] {
+            transform: rotate(180deg);
+        }
+
+        .progress-fill {
+            animation: progress-grow 850ms ease both;
+            transform-origin: left;
+        }
+
+        @keyframes progress-grow {
+            from {
+                transform: scaleX(0.2);
+                opacity: 0.5;
+            }
+
+            to {
+                transform: scaleX(1);
+                opacity: 1;
+            }
         }
 
         @media (min-width: 1280px) {
@@ -492,7 +573,7 @@
                                             in_array($key, ['pending', 'booked']);
                                     @endphp
                                     <div
-                                        class="rounded-xl border {{ $isActive ? 'border-slate-300 bg-white shadow-sm' : 'border-slate-200 bg-white/80' }} p-3">
+                                        class="status-step rounded-xl border {{ $isActive ? 'border-sky-300 bg-white shadow-sm ring-1 ring-sky-100' : 'border-slate-200 bg-white/90' }} p-3">
                                         <div class="flex items-center justify-between">
                                             <span
                                                 class="text-sm font-semibold text-slate-700">{{ $config['label'] }}</span>
@@ -558,25 +639,25 @@
 
                         @if ($showStats)
                             <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                                <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                                <div class="glass-panel rounded-2xl p-4">
                                     <p class="text-xs uppercase tracking-[0.12em] text-slate-500">Active Booking</p>
                                     <p class="mt-2 text-2xl font-semibold text-slate-800">{{ $activeStatusTotal }}</p>
                                     <p class="mt-1 text-sm text-slate-500">Pending and booked counselling slots.</p>
                                 </div>
-                                <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                                <div class="glass-panel rounded-2xl p-4">
                                     <p class="text-xs uppercase tracking-[0.12em] text-slate-500">Completed Session</p>
                                     <p class="mt-2 text-2xl font-semibold text-emerald-700">
                                         {{ $completedStatusTotal }}
                                     </p>
                                     <p class="mt-1 text-sm text-slate-500">Sessions completed successfully.</p>
                                 </div>
-                                <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                                <div class="glass-panel rounded-2xl p-4">
                                     <p class="text-xs uppercase tracking-[0.12em] text-slate-500">Cancelled Request</p>
                                     <p class="mt-2 text-2xl font-semibold text-rose-700">{{ $cancelledStatusTotal }}
                                     </p>
                                     <p class="mt-1 text-sm text-slate-500">Requests cancelled or rejected.</p>
                                 </div>
-                                <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                                <div class="glass-panel rounded-2xl p-4">
                                     <p class="text-xs uppercase tracking-[0.12em] text-slate-500">Available Counsellor
                                     </p>
                                     <p class="mt-2 text-2xl font-semibold text-sky-700">
@@ -587,7 +668,7 @@
                             </div>
 
                             <div class="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-                                <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                                <div class="glass-panel rounded-2xl p-4">
                                     <h3 class="text-sm font-semibold text-slate-800">Next Session Forecast</h3>
                                     @if ($nextBooking)
                                         @php
@@ -608,7 +689,7 @@
                                     @endif
                                 </div>
 
-                                <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                                <div class="glass-panel rounded-2xl p-4">
                                     <h3 class="text-sm font-semibold text-slate-800">Booking Progress</h3>
                                     <div class="mt-3 space-y-3">
                                         @php
@@ -646,7 +727,7 @@
                                                     <span>{{ $item['value'] }} ({{ $percent }}%)</span>
                                                 </div>
                                                 <div class="mt-1 h-2 rounded-full bg-slate-100 overflow-hidden">
-                                                    <div class="h-full {{ $item['bar'] }}"
+                                                    <div class="progress-fill h-full {{ $item['bar'] }}"
                                                         style="width: {{ $percent }}%;"></div>
                                                 </div>
                                             </div>
@@ -656,35 +737,34 @@
                             </div>
                         @endif
 
-                        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                        {{-- <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                             <a href="{{ route('inbox') }}"
-                                class="menu-card rounded-2xl border border-slate-200 bg-white p-4 hover:border-sky-200 transition">
+                                class="menu-card glass-panel rounded-2xl p-4 hover:border-sky-200 transition">
                                 <p class="text-xs uppercase tracking-[0.12em] text-slate-500">Inbox</p>
                                 <p class="mt-1 text-base font-semibold text-slate-800">View Notifications</p>
                                 <p class="mt-2 text-sm text-slate-500">Check OTP and counselling reminders quickly.</p>
                             </a>
                             <a href="{{ route('chat.index') }}"
-                                class="menu-card rounded-2xl border border-slate-200 bg-white p-4 hover:border-sky-200 transition">
+                                class="menu-card glass-panel rounded-2xl p-4 hover:border-sky-200 transition">
                                 <p class="text-xs uppercase tracking-[0.12em] text-slate-500">Chat</p>
                                 <p class="mt-1 text-base font-semibold text-slate-800">Open Chat Box</p>
                                 <p class="mt-2 text-sm text-slate-500">Continue your conversation with counsellors.</p>
                             </a>
                             <a href="{{ route('booking.history') }}"
-                                class="menu-card rounded-2xl border border-slate-200 bg-white p-4 hover:border-sky-200 transition">
+                                class="menu-card glass-panel rounded-2xl p-4 hover:border-sky-200 transition">
                                 <p class="text-xs uppercase tracking-[0.12em] text-slate-500">History</p>
                                 <p class="mt-1 text-base font-semibold text-slate-800">Booking History</p>
                                 <p class="mt-2 text-sm text-slate-500">Review past or upcoming appointments.</p>
                             </a>
                             <a href="{{ route('profile.edit') }}"
-                                class="menu-card rounded-2xl border border-slate-200 bg-white p-4 hover:border-sky-200 transition">
+                                class="menu-card glass-panel rounded-2xl p-4 hover:border-sky-200 transition">
                                 <p class="text-xs uppercase tracking-[0.12em] text-slate-500">Profile</p>
                                 <p class="mt-1 text-base font-semibold text-slate-800">Update Profile</p>
                                 <p class="mt-2 text-sm text-slate-500">Keep your details up to date.</p>
                             </a>
-                        </div>
+                        </div> --}}
 
-                        <div id="counsellor-calendar-card"
-                            class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
+                        <div id="counsellor-calendar-card" class="glass-panel rounded-2xl p-4 sm:p-5">
                             <div class="flex items-center justify-between mb-4 gap-3">
                                 <div>
                                     <h2 class="text-base sm:text-lg font-semibold text-slate-800">Jadual Kaunselor
@@ -695,10 +775,11 @@
 
                                 <button id="calendar-toggle-size" type="button" aria-expanded="false"
                                     aria-controls="calendar-content"
-                                    class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-base font-semibold text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">+</button>
+                                    class="calendar-toggle-btn inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-base font-semibold text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">+</button>
                             </div>
 
-                            <div id="calendar-content" class="grid xl:grid-cols-[minmax(0,1fr)_240px] gap-4">
+                            <div id="calendar-content"
+                                class="calendar-collapsible xl:grid-cols-[minmax(0,1fr)_240px] gap-4">
                                 <div class="rounded-2xl border border-slate-200 overflow-hidden bg-white">
                                     <div
                                         class="px-4 py-3 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
@@ -890,7 +971,7 @@
                 }
                 const setCalendarContentState = (isExpanded) => {
                     if (!calendarContent || !calendarSizeToggleBtn) return;
-                    calendarContent.classList.toggle('hidden', !isExpanded);
+                    calendarContent.classList.toggle('is-collapsed', !isExpanded);
                     calendarSizeToggleBtn.textContent = isExpanded ? '−' : '+';
                     calendarSizeToggleBtn.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
                     calendarSizeToggleBtn.setAttribute('aria-label', isExpanded ? 'Minimize calendar content' :
