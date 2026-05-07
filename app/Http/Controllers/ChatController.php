@@ -94,7 +94,7 @@ class ChatController extends Controller
         $user = $request->user();
         $role = $user->roles()->value('name');
 
-        abort_unless(in_array($role, ['student', 'teacher'], true), 403);
+        abort_unless(in_array($role, ['student', 'teacher', 'lecturer', 'counsellor'], true), 403);
 
         $search = trim((string) $request->query('search', ''));
         $selectedUserId = $request->integer('user_id');
@@ -182,7 +182,7 @@ class ChatController extends Controller
         $user = $request->user();
         $role = $user->roles()->value('name');
 
-        abort_unless(in_array($role, ['student', 'teacher'], true), 403);
+        abort_unless(in_array($role, ['student', 'teacher', 'lecturer', 'counsellor'], true), 403);
 
         $validated = $request->validate([
             'receiver_id' => ['required', 'integer', 'exists:users,id', 'not_in:' . $user->id],

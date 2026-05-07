@@ -48,7 +48,7 @@
                 <section class="rounded-3xl border border-white/80 bg-white/90 shadow-xl backdrop-blur">
                     <header class="flex items-center justify-between rounded-t-3xl bg-slate-950 px-6 py-5 text-white">
                         <div class="flex items-center gap-3">
-                            <a href="{{ url()->previous() }}"
+                            <a id="messages-back" href="{{ route('home') }}"
                                 class="inline-flex items-center rounded-lg border border-slate-700 px-3 py-2 text-xs font-semibold text-slate-200 transition hover:bg-slate-800">←
                                 Back</a>
                             <div>
@@ -149,6 +149,16 @@
                     applyFilter();
                 });
             });
+
+            const backLink = document.getElementById('messages-back');
+            backLink?.addEventListener('click', (event) => {
+                if (window.history.length > 1 && document.referrer !== '' && !document.referrer.endsWith(
+                        '/messages')) {
+                    event.preventDefault();
+                    window.history.back();
+                }
+            });
+
 
             searchInput?.addEventListener('input', applyFilter);
             applyFilter();
