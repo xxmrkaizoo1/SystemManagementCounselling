@@ -42,6 +42,32 @@
             background: linear-gradient(140deg, rgba(255, 255, 255, 0.9), rgba(241, 245, 249, 0.78));
             backdrop-filter: blur(10px);
         }
+
+        .account-card {
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(186, 230, 253, 0.75);
+            background: linear-gradient(135deg, rgba(2, 132, 199, 0.96) 0%, rgba(14, 116, 144, 0.94) 52%, rgba(76, 29, 149, 0.94) 100%);
+            box-shadow: 0 16px 36px rgba(14, 116, 144, 0.28);
+        }
+
+        .account-card::after {
+            content: "";
+            position: absolute;
+            width: 17rem;
+            height: 17rem;
+            top: -7rem;
+            right: -6rem;
+            border-radius: 999px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.35), transparent 68%);
+            pointer-events: none;
+        }
+
+        .account-item {
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.14);
+            backdrop-filter: blur(3px);
+        }
     </style>
 </head>
 
@@ -74,8 +100,8 @@
             <header class="border-b border-slate-200/90 bg-white/85 px-4 py-4 sm:px-6 sm:py-5 lg:px-8 lg:py-6">
                 <div
                     class="rounded-3xl border border-white/70 bg-gradient-to-br from-white via-slate-50 to-sky-50/40 p-4 shadow-[0_18px_40px_-28px_rgba(15,23,42,0.65)] sm:p-6">
-                    <div class="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-                        <div class="flex items-center gap-3 sm:gap-4">
+                    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-4">
+                        <div class="flex min-w-0 flex-1 items-center gap-3 sm:gap-4">
                             <a href="{{ route('profile.edit') }}"
                                 class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-[18px] border border-sky-200 bg-slate-100 text-base font-bold text-slate-700 shadow-[0_3px_10px_rgba(15,23,42,0.08)] transition hover:-translate-y-0.5 hover:border-sky-300 hover:text-sky-700"
                                 title="Profile">
@@ -83,7 +109,8 @@
                                     alt="Counsellor profile" class="h-full w-full object-cover" />
                             </a>
 
-                            <div class="rounded-2xl border border-slate-200 bg-white/95 px-5 py-3.5 shadow-sm">
+                            <div
+                                class="min-w-0 flex-1 rounded-2xl border border-slate-200 bg-white/95 px-5 py-3.5 shadow-sm">
                                 <p class="text-[11px] font-semibold uppercase tracking-[0.24em] text-sky-500/80">
                                     CollegeCare</p>
                                 <h1 class="text-lg font-semibold text-slate-800 lg:text-xl">Counsellor Session Dashboard
@@ -91,33 +118,44 @@
                             </div>
                         </div>
 
-                        <div class="flex w-full flex-wrap items-center gap-2.5 lg:w-auto lg:justify-end">
-                            <a href="{{ route('counsellor.dashboard') }}"
-                                class="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 shadow-sm transition hover:-translate-y-0.5 hover:border-sky-300 hover:text-sky-700">
+                        <button id="counsellor-action-toggle" type="button"
+                            class="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-sky-300 hover:text-sky-700 lg:hidden"
+                            aria-controls="counsellor-action-sidebar" aria-expanded="false">
+                            <span>Actions</span>
+                        </button>
+
+                        <div class="relative flex w-full items-center lg:w-auto lg:justify-end">
+                            <button id="dashboard-actions-toggle" type="button" aria-expanded="false"
+                                class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-sky-300 hover:text-sky-700">
+                                <span>Actions</span>
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                     stroke-linejoin="round" aria-hidden="true">
-                                    <path d="M21 2v6h-6"></path>
-                                    <path d="M3 12a9 9 0 0 1 15.55-6.36L21 8"></path>
-                                    <path d="M3 22v-6h6"></path>
-                                    <path d="M21 12a9 9 0 0 1-15.55 6.36L3 16"></path>
+                                    <path d="m6 9 6 6 6-6" />
                                 </svg>
-                                <span>Refresh</span>
-                            </a>
-                            <form id="counsellor-logout-form" method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <button type="submit"
-                                    class="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-sky-600 to-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:from-sky-700 hover:to-blue-700">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" aria-hidden="true">
-                                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                                        <polyline points="16 17 21 12 16 7"></polyline>
-                                        <line x1="21" y1="12" x2="9" y2="12"></line>
-                                    </svg>
-                                    <span>Logout</span>
-                                </button>
-                            </form>
+                            </button>
+                            <div id="dashboard-actions-menu"
+                                class="absolute right-0 top-full z-30 mt-2 hidden min-w-[11rem] rounded-2xl border border-slate-200 bg-white p-2 shadow-xl">
+                                <a href="{{ route('counsellor.dashboard') }}"
+                                    class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-sky-700">
+                                    <span>⟳</span>
+                                    <span>Refresh</span>
+                                </a>
+                                <form id="counsellor-logout-form" method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button id="counsellor-logout-trigger" type="button"
+                                        class="mt-1 flex w-full items-center gap-2 rounded-xl bg-gradient-to-r from-sky-600 to-blue-600 px-3 py-2 text-sm font-semibold text-white transition hover:from-sky-700 hover:to-blue-700">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round" aria-hidden="true">
+                                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                                            <polyline points="16 17 21 12 16 7" />
+                                            <line x1="21" y1="12" x2="9" y2="12" />
+                                        </svg>
+                                        <span>Logout</span>
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
 
@@ -177,7 +215,8 @@
                                 class="mt-2 max-w-3xl text-2xl font-bold text-white sm:text-3xl">
                                 Guide every student with empathy and structure.
                             </h2>
-                            <p id="counsellor-hero-subtitle" class="mt-2 max-w-2xl text-sm text-slate-100 sm:text-base">
+                            <p id="counsellor-hero-subtitle"
+                                class="mt-2 max-w-2xl text-sm text-slate-100 sm:text-base">
                                 Review requests, confirm sessions, and keep counselling support consistent every week.
                             </p>
 
@@ -189,6 +228,36 @@
                                     class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/35 bg-white/10 text-white transition hover:bg-white/20"
                                     aria-label="Next slide">→</button>
                                 <div id="counsellor-hero-dots" class="ml-1 flex items-center gap-1.5"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section class="account-card mb-6 rounded-3xl p-5 text-white sm:p-6">
+                    <div class="relative z-10">
+                        <div class="flex flex-wrap items-center justify-between gap-3">
+                            <div>
+                                <p class="text-xs font-semibold uppercase tracking-[0.16em] text-sky-100/90">
+                                    Counsellor Profile
+                                </p>
+                                <h3 class="mt-1 text-xl font-semibold">Account Information</h3>
+                            </div>
+                            <a href="{{ route('profile.edit') }}"
+                                class="inline-flex items-center rounded-xl border border-white/35 bg-white/15 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-white/25">
+                                Edit Profile
+                            </a>
+                        </div>
+                        <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                            <div class="account-item rounded-xl px-4 py-3">
+                                <p class="text-xs uppercase tracking-wide text-sky-100/90">Name</p>
+                                <p class="mt-1 text-sm font-semibold">{{ $user->full_name ?: $user->name }}</p>
+                            </div>
+                            <div class="account-item rounded-xl px-4 py-3">
+                                <p class="text-xs uppercase tracking-wide text-sky-100/90">Email</p>
+                                <p class="mt-1 text-sm font-semibold break-all">{{ $user->email }}</p>
+                            </div>
+                            <div class="account-item rounded-xl px-4 py-3">
+                                <p class="text-xs uppercase tracking-wide text-sky-100/90">Phone</p>
+                                <p class="mt-1 text-sm font-semibold">{{ $user->phone ?: 'Not added yet' }}</p>
                             </div>
                         </div>
                     </div>
@@ -237,7 +306,7 @@
 
                         <div class="mt-8 flex justify-center">
                             <a href="{{ route('counsellor.pending-requests') }}"
-                                class="inline-flex min-w-[260px] justify-center rounded-full bg-sky-600 px-6 py-3 text-base font-semibold text-white shadow-sm transition hover:bg-sky-700">
+                                class="inline-flex w-full justify-center rounded-full bg-sky-600 px-6 py-3 text-base font-semibold text-white shadow-sm transition hover:bg-sky-700 sm:w-auto">
                                 View Pending Requests
                             </a>
                         </div>
@@ -277,7 +346,7 @@
 
                         <div class="mt-8 flex justify-center">
                             <a href="{{ route('counsellor.session-status-list') }}"
-                                class="inline-flex min-w-[260px] justify-center rounded-full bg-violet-600 px-6 py-3 text-base font-semibold text-white shadow-sm transition hover:bg-violet-700">
+                                class="inline-flex w-full justify-center rounded-full bg-violet-600 px-6 py-3 text-base font-semibold text-white shadow-sm transition hover:bg-violet-700 sm:w-auto">
                                 View Approved • Booked • Completed
                             </a>
                         </div>
@@ -317,11 +386,11 @@
 
 
 
-                <div class="mt-4 grid gap-3 sm:grid-cols-2">
+                <div class="mt-8 grid gap-5">
                     <article
-                        class="group relative overflow-hidden rounded-2xl border border-sky-100/80 bg-gradient-to-br from-white via-sky-50/60 to-indigo-50/80 p-4 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-sky-200 hover:shadow-md">
+                        class="group relative w-full overflow-hidden rounded-3xl border border-sky-100/80 bg-gradient-to-br from-white via-sky-50/60 to-indigo-50/80 p-7 shadow-md transition duration-200 hover:-translate-y-0.5 hover:border-sky-200 hover:shadow-lg sm:p-8 lg:p-10">
                         <div
-                            class="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full bg-sky-200/30 blur-2xl">
+                            class="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-sky-200/35 blur-3xl">
                         </div>
                         <div class="relative">
                             <div
@@ -329,11 +398,11 @@
                                 <span class="h-1.5 w-1.5 rounded-full bg-sky-500"></span>
                                 Inbox
                             </div>
-                            <h3 class="mt-3 text-base font-semibold text-slate-800">Messages</h3>
-                            <p class="mt-1 text-xs leading-relaxed text-slate-500">Open your inbox to check unread
+                            <h3 class="mt-4 text-2xl font-semibold text-slate-800">Messages</h3>
+                            <p class="mt-2 text-base leading-relaxed text-slate-500">Open your inbox to check unread
                                 chats and reply to students faster.</p>
                             <a href="{{ route('messages.index') }}"
-                                class="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-sky-600 px-3 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 sm:w-auto sm:px-4">
+                                class="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-sky-600 px-6 py-3.5 text-base font-semibold text-white shadow-sm transition hover:bg-sky-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 sm:w-auto">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                     stroke-linejoin="round" aria-hidden="true">
@@ -344,6 +413,7 @@
                         </div>
                     </article>
                 </div>
+            </div>
             </div>
             </div>
         </section>
@@ -516,6 +586,29 @@
         </div>
     </div>
 
+
+    <div id="counsellor-action-overlay" class="fixed inset-0 z-[80] hidden bg-slate-900/40 lg:hidden"></div>
+    <aside id="counsellor-action-sidebar"
+        class="fixed right-0 top-0 z-[85] flex h-full w-72 max-w-[85vw] translate-x-full flex-col gap-3 border-l border-slate-200 bg-white p-5 shadow-2xl transition-transform duration-200 lg:hidden"
+        aria-hidden="true">
+        <div class="mb-1 flex items-center justify-between">
+            <p class="text-sm font-semibold text-slate-700">Quick Actions</p>
+            <button id="counsellor-action-close" type="button"
+                class="rounded-lg border border-slate-200 px-2 py-1 text-xs text-slate-600">Close</button>
+        </div>
+        <a href="{{ route('counsellor.dashboard') }}"
+            class="inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 shadow-sm transition hover:border-sky-300 hover:text-sky-700">
+            <span>Refresh</span>
+        </a>
+        <form method="POST" action="{{ route('logout') }}" class="counsellor-logout-form w-full">
+            @csrf
+            <button type="submit"
+                class="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-sky-600 to-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:from-sky-700 hover:to-blue-700">
+                <span>Logout</span>
+            </button>
+        </form>
+    </aside>
+
     <div id="counsellor-logout-modal"
         class="fixed inset-0 z-[90] hidden items-center justify-center bg-slate-900/50 p-4">
         <div class="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl">
@@ -533,355 +626,418 @@
 
     <script>
         (function() {
+                const actionsToggle = document.getElementById('dashboard-actions-toggle');
+                const actionsMenu = document.getElementById('dashboard-actions-menu');
 
-            const logoutForm = document.getElementById('counsellor-logout-form');
-            const logoutModal = document.getElementById('counsellor-logout-modal');
-            const logoutCancel = document.getElementById('counsellor-logout-cancel');
-            const logoutConfirm = document.getElementById('counsellor-logout-confirm');
+                const logoutForms = Array.from(document.querySelectorAll('.counsellor-logout-form'));
+                const logoutTrigger = document.getElementById('counsellor-logout-trigger');
+                const logoutModal = document.getElementById('counsellor-logout-modal');
+                const logoutCancel = document.getElementById('counsellor-logout-cancel');
+                const logoutConfirm = document.getElementById('counsellor-logout-confirm');
 
+                let activeLogoutForm = null;
 
-            const closeLogoutModal = () => {
-                if (!logoutModal) return;
-                logoutModal.classList.add('hidden');
-                logoutModal.classList.remove('flex');
-            };
+                const closeLogoutModal = () => {
+                    if (!logoutModal) return;
+                    logoutModal.classList.add('hidden');
+                    logoutModal.classList.remove('flex');
+                };
 
-            const openLogoutModal = () => {
-                if (!logoutModal) return;
-                logoutModal.classList.remove('hidden');
-                logoutModal.classList.add('flex');
-            };
+                const openLogoutModal = () => {
+                    if (!logoutModal) return;
+                    logoutModal.classList.remove('hidden');
+                    logoutModal.classList.add('flex');
+                };
 
-            if (logoutForm && logoutModal) {
-                logoutForm.addEventListener('submit', (event) => {
+                if (actionsToggle && actionsMenu) {
+                    const setActionsMenuOpen = (isOpen) => {
+                        actionsMenu.classList.toggle('hidden', !isOpen);
+                        actionsToggle.setAttribute('aria-expanded', String(isOpen));
+                    };
 
+                    actionsToggle.addEventListener('click', (event) => {
+                        event.stopPropagation();
+                        setActionsMenuOpen(actionsMenu.classList.contains('hidden'));
+                    });
 
-                    event.preventDefault();
-                    openLogoutModal();
-                });
-
-                if (logoutCancel) {
-                    logoutCancel.addEventListener('click', closeLogoutModal);
+                    document.addEventListener('click', (event) => {
+                        if (!actionsMenu.contains(event.target) && !actionsToggle.contains(event.target)) {
+                            setActionsMenuOpen(false);
+                        }
+                    });
                 }
 
-                if (logoutConfirm) {
-                    logoutConfirm.addEventListener('click', () => {
-                        closeLogoutModal();
+
+                const actionSidebar = document.getElementById('counsellor-action-sidebar');
+                const actionOverlay = document.getElementById('counsellor-action-overlay');
+                const actionToggle = document.getElementById('counsellor-action-toggle');
+                const actionClose = document.getElementById('counsellor-action-close');
+
+                const closeActionSidebar = () => {
+                    if (!actionSidebar || !actionOverlay || !actionToggle) return;
+                    actionSidebar.classList.add('translate-x-full');
+                    actionOverlay.classList.add('hidden');
+                    actionToggle.setAttribute('aria-expanded', 'false');
+                    actionSidebar.setAttribute('aria-hidden', 'true');
+                };
+
+                const openActionSidebar = () => {
+                    if (!actionSidebar || !actionOverlay || !actionToggle) return;
+                    actionSidebar.classList.remove('translate-x-full');
+                    actionOverlay.classList.remove('hidden');
+                    actionToggle.setAttribute('aria-expanded', 'true');
+                    actionSidebar.setAttribute('aria-hidden', 'false');
+                };
+
+                actionToggle?.addEventListener('click', openActionSidebar);
+                actionClose?.addEventListener('click', closeActionSidebar);
+                actionOverlay?.addEventListener('click', closeActionSidebar);
+
+                if (logoutForms.length && logoutModal) {
+                    if (logoutTrigger) {
+                        logoutTrigger.addEventListener('click', () => {
+                            if (actionsMenu) {
+                                actionsMenu.classList.add('hidden');
+                                actionsToggle?.setAttribute('aria-expanded', 'false');
+                            }
+                            openLogoutModal();
+                        });
+                    }
+
+                    if (logoutCancel) {
+                        logoutCancel.addEventListener('click', closeLogoutModal);
+                    }
+
+                    if (logoutConfirm) {
+                        logoutConfirm.addEventListener('click', () => {
+                            closeLogoutModal();
+                            activeLogoutForm?.submit();
+                        });
+                    }
+
+                    logoutModal.addEventListener('click', (event) => {
+                        if (event.target === logoutModal) closeLogoutModal();
+                    });
+
+                    document.addEventListener('keydown', (event) => {
+                        if (event.key === 'Escape') {
+                            closeLogoutModal();
+                            closeActionSidebar();
+                        }
+                    });
+
+                } else if (logoutForm && logoutTrigger) {
+                    logoutTrigger.addEventListener('click', () => {
                         logoutForm.submit();
                     });
                 }
+                    const slides = [{
+                            image: 'https://images.unsplash.com/photo-1714976694525-71eb29a7c500?auto=format&fit=crop&w=1400&q=80',
+                            tag: 'CollegeCare Focus',
+                            title: 'Guide every student with empathy and structure.',
+                            subtitle: 'Review requests, confirm sessions, and keep counselling support consistent every week.'
+                        },
+                        {
+                            image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?auto=format&fit=crop&w=1400&q=80',
+                            tag: 'Session Planning',
+                            title: 'Coordinate sessions without losing context.',
+                            subtitle: 'Track approved requests and align each booking with the right follow-up actions.'
+                        },
+                        {
+                            image: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1400&q=80',
+                            tag: 'Student Support',
+                            title: 'Build trust through timely communication.',
+                            subtitle: 'Respond to requests quickly and maintain meaningful support for every student.'
+                        }
+                    ];
 
-                logoutModal.addEventListener('click', (event) => {
-                    if (event.target === logoutModal) closeLogoutModal();
-                });
+                    const imageEl = document.getElementById('counsellor-hero-image');
+                    const tagEl = document.getElementById('counsellor-hero-tag');
+                    const titleEl = document.getElementById('counsellor-hero-title');
+                    const subtitleEl = document.getElementById('counsellor-hero-subtitle');
+                    const prevBtn = document.getElementById('counsellor-hero-prev');
+                    const nextBtn = document.getElementById('counsellor-hero-next');
+                    const dotsWrap = document.getElementById('counsellor-hero-dots');
 
-                document.addEventListener('keydown', (event) => {
-                    if (event.key === 'Escape') closeLogoutModal();
-                });
-            }
-            const slides = [{
-                    image: 'https://images.unsplash.com/photo-1714976694525-71eb29a7c500?auto=format&fit=crop&w=1400&q=80',
-                    tag: 'CollegeCare Focus',
-                    title: 'Guide every student with empathy and structure.',
-                    subtitle: 'Review requests, confirm sessions, and keep counselling support consistent every week.'
-                },
-                {
-                    image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?auto=format&fit=crop&w=1400&q=80',
-                    tag: 'Session Planning',
-                    title: 'Coordinate sessions without losing context.',
-                    subtitle: 'Track approved requests and align each booking with the right follow-up actions.'
-                },
-                {
-                    image: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1400&q=80',
-                    tag: 'Student Support',
-                    title: 'Build trust through timely communication.',
-                    subtitle: 'Respond to requests quickly and maintain meaningful support for every student.'
-                }
-            ];
+                    if (!imageEl || !tagEl || !titleEl || !subtitleEl || !prevBtn || !nextBtn || !dotsWrap || !slides
+                        .length) {
+                        return;
+                    }
 
-            const imageEl = document.getElementById('counsellor-hero-image');
-            const tagEl = document.getElementById('counsellor-hero-tag');
-            const titleEl = document.getElementById('counsellor-hero-title');
-            const subtitleEl = document.getElementById('counsellor-hero-subtitle');
-            const prevBtn = document.getElementById('counsellor-hero-prev');
-            const nextBtn = document.getElementById('counsellor-hero-next');
-            const dotsWrap = document.getElementById('counsellor-hero-dots');
+                    let current = 0;
+                    let intervalId;
 
-            if (!imageEl || !tagEl || !titleEl || !subtitleEl || !prevBtn || !nextBtn || !dotsWrap || !slides.length) {
-                return;
-            }
+                    const renderDots = () => {
+                        dotsWrap.innerHTML = '';
+                        slides.forEach((_, index) => {
+                            const dot = document.createElement('button');
+                            dot.type = 'button';
+                            dot.className =
+                                `h-2.5 rounded-full transition ${index === current ? 'w-6 bg-white' : 'w-2.5 bg-white/40 hover:bg-white/70'}`;
+                            dot.setAttribute('aria-label', `Go to slide ${index + 1}`);
+                            dot.addEventListener('click', () => {
+                                current = index;
+                                applySlide();
+                                restartInterval();
+                            });
+                            dotsWrap.appendChild(dot);
+                        });
+                    };
 
-            let current = 0;
-            let intervalId;
+                    const applySlide = () => {
+                        const slide = slides[current];
+                        imageEl.classList.remove('hero-fade-enter');
+                        titleEl.classList.remove('hero-fade-enter');
+                        subtitleEl.classList.remove('hero-fade-enter');
 
-            const renderDots = () => {
-                dotsWrap.innerHTML = '';
-                slides.forEach((_, index) => {
-                    const dot = document.createElement('button');
-                    dot.type = 'button';
-                    dot.className =
-                        `h-2.5 rounded-full transition ${index === current ? 'w-6 bg-white' : 'w-2.5 bg-white/40 hover:bg-white/70'}`;
-                    dot.setAttribute('aria-label', `Go to slide ${index + 1}`);
-                    dot.addEventListener('click', () => {
-                        current = index;
+                        imageEl.style.opacity = '0.3';
+
+                        window.requestAnimationFrame(() => {
+                            imageEl.src = slide.image;
+                            tagEl.textContent = slide.tag;
+                            titleEl.textContent = slide.title;
+                            subtitleEl.textContent = slide.subtitle;
+
+                            imageEl.classList.add('hero-fade-enter');
+                            titleEl.classList.add('hero-fade-enter');
+                            subtitleEl.classList.add('hero-fade-enter');
+                            imageEl.style.opacity = '0.7';
+                            renderDots();
+                        });
+                    };
+
+                    const nextSlide = () => {
+                        current = (current + 1) % slides.length;
                         applySlide();
+                    };
+
+                    const prevSlide = () => {
+                        current = (current - 1 + slides.length) % slides.length;
+                        applySlide();
+                    };
+
+                    const restartInterval = () => {
+                        if (intervalId) {
+                            clearInterval(intervalId);
+                        }
+                        intervalId = setInterval(nextSlide, 6500);
+                    };
+
+                    nextBtn.addEventListener('click', () => {
+                        nextSlide();
                         restartInterval();
                     });
-                    dotsWrap.appendChild(dot);
-                });
-            };
 
-            const applySlide = () => {
-                const slide = slides[current];
-                imageEl.classList.remove('hero-fade-enter');
-                titleEl.classList.remove('hero-fade-enter');
-                subtitleEl.classList.remove('hero-fade-enter');
+                    prevBtn.addEventListener('click', () => {
+                        prevSlide();
+                        restartInterval();
+                    });
 
-                imageEl.style.opacity = '0.3';
+                    applySlide();
+                    restartInterval();
+                })();
 
-                window.requestAnimationFrame(() => {
-                    imageEl.src = slide.image;
-                    tagEl.textContent = slide.tag;
-                    titleEl.textContent = slide.title;
-                    subtitleEl.textContent = slide.subtitle;
+            (function() {
+                const widget = document.getElementById('messages-widget');
+                const toggleBtn = document.getElementById('messages-toggle');
+                const body = document.getElementById('messages-body');
+                const list = document.getElementById('chat-list');
+                const searchInput = document.getElementById('chat-search');
+                const noResults = document.getElementById('chat-no-results');
+                const notificationFilter = document.getElementById('notification-filter');
+                const popupBackdrop = document.getElementById('chat-popup-backdrop');
+                const popup = document.getElementById('chat-popup');
+                const popupStudent = document.getElementById('chat-popup-student');
+                const popupTopic = document.getElementById('chat-popup-topic');
+                const popupSlot = document.getElementById('chat-popup-slot');
+                const popupDate = document.getElementById('chat-popup-date');
+                const popupRole = document.getElementById('chat-popup-role');
+                const popupEmail = document.getElementById('chat-popup-email');
+                const popupPhone = document.getElementById('chat-popup-phone');
+                const popupThread = document.getElementById('chat-popup-thread');
+                const popupMessageInput = document.getElementById('chat-popup-message-input');
+                const popupSendBtn = document.getElementById('chat-popup-send');
+                const popupSuggestBtn = document.getElementById('chat-popup-suggest');
+                const popupCloseBtn = document.getElementById('chat-popup-close');
+                const popupMinBtn = document.getElementById('chat-popup-minimize');
+                const reminderForm = document.getElementById('reminder-form');
+                const popupOpenFull = document.getElementById('chat-popup-open-full');
 
-                    imageEl.classList.add('hero-fade-enter');
-                    titleEl.classList.add('hero-fade-enter');
-                    subtitleEl.classList.add('hero-fade-enter');
-                    imageEl.style.opacity = '0.7';
-                    renderDots();
-                });
-            };
-
-            const nextSlide = () => {
-                current = (current + 1) % slides.length;
-                applySlide();
-            };
-
-            const prevSlide = () => {
-                current = (current - 1 + slides.length) % slides.length;
-                applySlide();
-            };
-
-            const restartInterval = () => {
-                if (intervalId) {
-                    clearInterval(intervalId);
+                if (!widget || !toggleBtn || !body || !list || !popupBackdrop || !popup || !popupCloseBtn || !
+                    popupMinBtn) {
+                    return;
                 }
-                intervalId = setInterval(nextSlide, 6500);
-            };
 
-            nextBtn.addEventListener('click', () => {
-                nextSlide();
-                restartInterval();
-            });
+                let collapsed = false;
+                let dragOffsetX = 0;
+                let dragOffsetY = 0;
+                let isDragging = false;
 
-            prevBtn.addEventListener('click', () => {
-                prevSlide();
-                restartInterval();
-            });
+                const escapeHtml = (str) => String(str || '')
+                    .replaceAll('&', '&amp;')
+                    .replaceAll('<', '&lt;')
+                    .replaceAll('>', '&gt;')
+                    .replaceAll('"', '&quot;')
+                    .replaceAll("'", '&#039;');
 
-            applySlide();
-            restartInterval();
-        })();
+                const setCollapsed = (value) => {
+                    collapsed = value;
+                    body.classList.toggle('hidden', collapsed);
+                    toggleBtn.setAttribute('aria-expanded', String(!collapsed));
+                    toggleBtn.innerHTML = collapsed ?
+                        `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>` :
+                        `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`;
+                };
 
-        (function() {
-            const widget = document.getElementById('messages-widget');
-            const toggleBtn = document.getElementById('messages-toggle');
-            const body = document.getElementById('messages-body');
-            const list = document.getElementById('chat-list');
-            const searchInput = document.getElementById('chat-search');
-            const noResults = document.getElementById('chat-no-results');
-            const notificationFilter = document.getElementById('notification-filter');
-            const popupBackdrop = document.getElementById('chat-popup-backdrop');
-            const popup = document.getElementById('chat-popup');
-            const popupStudent = document.getElementById('chat-popup-student');
-            const popupTopic = document.getElementById('chat-popup-topic');
-            const popupSlot = document.getElementById('chat-popup-slot');
-            const popupDate = document.getElementById('chat-popup-date');
-            const popupRole = document.getElementById('chat-popup-role');
-            const popupEmail = document.getElementById('chat-popup-email');
-            const popupPhone = document.getElementById('chat-popup-phone');
-            const popupThread = document.getElementById('chat-popup-thread');
-            const popupMessageInput = document.getElementById('chat-popup-message-input');
-            const popupSendBtn = document.getElementById('chat-popup-send');
-            const popupSuggestBtn = document.getElementById('chat-popup-suggest');
-            const popupCloseBtn = document.getElementById('chat-popup-close');
-            const popupMinBtn = document.getElementById('chat-popup-minimize');
-            const reminderForm = document.getElementById('reminder-form');
-            const popupOpenFull = document.getElementById('chat-popup-open-full');
+                toggleBtn.addEventListener('click', () => setCollapsed(!collapsed));
 
-            if (!widget || !toggleBtn || !body || !list || !popupBackdrop || !popup || !popupCloseBtn || !popupMinBtn) {
-                return;
-            }
+                const setPopupPosition = (x, y) => {
+                    popup.style.left = `${x}px`;
+                    popup.style.top = `${y}px`;
+                    popup.style.transform = 'translate(0, 0)';
+                };
 
-            let collapsed = false;
-            let dragOffsetX = 0;
-            let dragOffsetY = 0;
-            let isDragging = false;
+                const openPopup = (button) => {
+                    const student = button.dataset.studentName || 'Student';
+                    const topic = button.dataset.topic || 'General counseling support';
+                    const date = button.dataset.displayDate || '-';
+                    const role = button.dataset.requesterRole || 'Student';
+                    const email = button.dataset.email || '-';
+                    const phone = button.dataset.phone || '-';
+                    const reminderUrl = button.dataset.reminderUrl || '';
+                    const bookingRequestId = button.dataset.bookingRequestId || '';
+                    const studentId = button.dataset.studentId || '';
 
-            const escapeHtml = (str) => String(str || '')
-                .replaceAll('&', '&amp;')
-                .replaceAll('<', '&lt;')
-                .replaceAll('>', '&gt;')
-                .replaceAll('"', '&quot;')
-                .replaceAll("'", '&#039;');
+                    popupStudent.textContent = student;
+                    popupTopic.textContent = topic;
+                    popupSlot.textContent = button.dataset.requestTime || '-';
+                    popupDate.textContent = date;
+                    popupRole.textContent = role;
+                    popupEmail.textContent = email;
+                    popupPhone.textContent = phone;
 
-            const setCollapsed = (value) => {
-                collapsed = value;
-                body.classList.toggle('hidden', collapsed);
-                toggleBtn.setAttribute('aria-expanded', String(!collapsed));
-                toggleBtn.innerHTML = collapsed ?
-                    `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>` :
-                    `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`;
-            };
-
-            toggleBtn.addEventListener('click', () => setCollapsed(!collapsed));
-
-            const setPopupPosition = (x, y) => {
-                popup.style.left = `${x}px`;
-                popup.style.top = `${y}px`;
-                popup.style.transform = 'translate(0, 0)';
-            };
-
-            const openPopup = (button) => {
-                const student = button.dataset.studentName || 'Student';
-                const topic = button.dataset.topic || 'General counseling support';
-                const date = button.dataset.displayDate || '-';
-                const role = button.dataset.requesterRole || 'Student';
-                const email = button.dataset.email || '-';
-                const phone = button.dataset.phone || '-';
-                const reminderUrl = button.dataset.reminderUrl || '';
-                const bookingRequestId = button.dataset.bookingRequestId || '';
-                const studentId = button.dataset.studentId || '';
-
-                popupStudent.textContent = student;
-                popupTopic.textContent = topic;
-                popupSlot.textContent = button.dataset.requestTime || '-';
-                popupDate.textContent = date;
-                popupRole.textContent = role;
-                popupEmail.textContent = email;
-                popupPhone.textContent = phone;
-
-                popupThread.innerHTML = `
+                    popupThread.innerHTML = `
                     <div class="rounded-lg bg-white px-3 py-2 text-sm text-slate-700 shadow-sm">Hi ${escapeHtml(student)}, this is your counsellor. I reviewed your request for <span class="font-medium">${escapeHtml(topic)}</span>.</div>
                     <div class="rounded-lg bg-sky-50 px-3 py-2 text-sm text-sky-900 shadow-sm">Please confirm if <span class="font-medium">${escapeHtml(date)}</span> still works for you.</div>
                 `;
 
-                reminderForm.action = reminderUrl;
-                reminderForm.dataset.bookingRequestId = bookingRequestId;
-                reminderForm.dataset.studentId = studentId;
+                    reminderForm.action = reminderUrl;
+                    reminderForm.dataset.bookingRequestId = bookingRequestId;
+                    reminderForm.dataset.studentId = studentId;
 
-                popupOpenFull.href =
-                    `{{ route('chat.index') }}?student_id=${encodeURIComponent(studentId)}&booking_request_id=${encodeURIComponent(bookingRequestId)}`;
-                popup.dataset.student = student;
-                popup.dataset.topic = topic;
-                popup.dataset.date = date;
-                popup.dataset.slot = button.dataset.requestTime || '-';
-                popupBackdrop.classList.remove('hidden');
-                setPopupPosition(window.innerWidth / 2 - popup.offsetWidth / 2, 80);
-                popupMessageInput.focus();
-            };
+                    popupOpenFull.href =
+                        `{{ route('chat.index') }}?student_id=${encodeURIComponent(studentId)}&booking_request_id=${encodeURIComponent(bookingRequestId)}`;
+                    popup.dataset.student = student;
+                    popup.dataset.topic = topic;
+                    popup.dataset.date = date;
+                    popup.dataset.slot = button.dataset.requestTime || '-';
+                    popupBackdrop.classList.remove('hidden');
+                    setPopupPosition(window.innerWidth / 2 - popup.offsetWidth / 2, 80);
+                    popupMessageInput.focus();
+                };
 
-            const closePopup = () => {
-                popupBackdrop.classList.add('hidden');
-            };
+                const closePopup = () => {
+                    popupBackdrop.classList.add('hidden');
+                };
 
-            list.querySelectorAll('[data-chat-item="true"]').forEach((button) => {
-                button.addEventListener('click', () => openPopup(button));
-            });
+                list.querySelectorAll('[data-chat-item="true"]').forEach((button) => {
+                    button.addEventListener('click', () => openPopup(button));
+                });
 
-            popupCloseBtn.addEventListener('click', closePopup);
-            popupMinBtn.addEventListener('click', closePopup);
-            popupBackdrop.addEventListener('click', (event) => {
-                if (event.target === popupBackdrop) closePopup();
-            });
+                popupCloseBtn.addEventListener('click', closePopup);
+                popupMinBtn.addEventListener('click', closePopup);
+                popupBackdrop.addEventListener('click', (event) => {
+                    if (event.target === popupBackdrop) closePopup();
+                });
 
-            popupSendBtn.addEventListener('click', () => {
-                const value = popupMessageInput.value.trim();
-                if (!value) return;
-                const bubble = document.createElement('div');
-                bubble.className = 'rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-900 shadow-sm';
-                bubble.textContent = value;
-                popupThread.appendChild(bubble);
-                popupThread.scrollTop = popupThread.scrollHeight;
-                popupMessageInput.value = '';
-                popupMessageInput.focus();
-            });
-
-            popupMessageInput.addEventListener('keydown', (event) => {
-                if (event.key === 'Enter') {
-                    event.preventDefault();
-                    popupSendBtn.click();
-                }
-            });
-            if (popupSuggestBtn) {
-                popupSuggestBtn.addEventListener('click', () => {
-                    const student = popup.dataset.student || 'Student';
-                    const topic = popup.dataset.topic || 'your counselling request';
-                    const date = popup.dataset.date || 'your requested date';
-                    const slot = popup.dataset.slot || 'your requested time';
-                    popupMessageInput.value =
-                        `Hi ${student}, this is a reminder for your appointment about ${topic} on ${date} (${slot}). Please reply to confirm your availability.`;
+                popupSendBtn.addEventListener('click', () => {
+                    const value = popupMessageInput.value.trim();
+                    if (!value) return;
+                    const bubble = document.createElement('div');
+                    bubble.className = 'rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-900 shadow-sm';
+                    bubble.textContent = value;
+                    popupThread.appendChild(bubble);
+                    popupThread.scrollTop = popupThread.scrollHeight;
+                    popupMessageInput.value = '';
                     popupMessageInput.focus();
                 });
-            }
-            const popupHeader = document.getElementById('chat-popup-header');
 
-            if (popupHeader) {
-                popupHeader.addEventListener('mousedown', (event) => {
-                    isDragging = true;
-                    const rect = popup.getBoundingClientRect();
-                    dragOffsetX = event.clientX - rect.left;
-                    dragOffsetY = event.clientY - rect.top;
-                    popupHeader.classList.add('cursor-grabbing');
+                popupMessageInput.addEventListener('keydown', (event) => {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        popupSendBtn.click();
+                    }
                 });
+                if (popupSuggestBtn) {
+                    popupSuggestBtn.addEventListener('click', () => {
+                        const student = popup.dataset.student || 'Student';
+                        const topic = popup.dataset.topic || 'your counselling request';
+                        const date = popup.dataset.date || 'your requested date';
+                        const slot = popup.dataset.slot || 'your requested time';
+                        popupMessageInput.value =
+                            `Hi ${student}, this is a reminder for your appointment about ${topic} on ${date} (${slot}). Please reply to confirm your availability.`;
+                        popupMessageInput.focus();
+                    });
+                }
+                const popupHeader = document.getElementById('chat-popup-header');
 
-                window.addEventListener('mousemove', (event) => {
-                    if (!isDragging) return;
-                    const x = Math.max(8, Math.min(window.innerWidth - popup.offsetWidth - 8, event.clientX -
-                        dragOffsetX));
-                    const y = Math.max(8, Math.min(window.innerHeight - popup.offsetHeight - 8, event.clientY -
-                        dragOffsetY));
-                    setPopupPosition(x, y);
-                });
+                if (popupHeader) {
+                    popupHeader.addEventListener('mousedown', (event) => {
+                        isDragging = true;
+                        const rect = popup.getBoundingClientRect();
+                        dragOffsetX = event.clientX - rect.left;
+                        dragOffsetY = event.clientY - rect.top;
+                        popupHeader.classList.add('cursor-grabbing');
+                    });
 
-                window.addEventListener('mouseup', () => {
-                    isDragging = false;
-                    popupHeader.classList.remove('cursor-grabbing');
-                });
+                    window.addEventListener('mousemove', (event) => {
+                        if (!isDragging) return;
+                        const x = Math.max(8, Math.min(window.innerWidth - popup.offsetWidth - 8, event
+                            .clientX -
+                            dragOffsetX));
+                        const y = Math.max(8, Math.min(window.innerHeight - popup.offsetHeight - 8, event
+                            .clientY -
+                            dragOffsetY));
+                        setPopupPosition(x, y);
+                    });
 
-            }
-            const applyNotificationFilters = () => {
-                const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
-                const filterValue = notificationFilter ? notificationFilter.value : 'all';
-                const today = new Date().toISOString().slice(0, 10);
-                let visibleCount = 0;
+                    window.addEventListener('mouseup', () => {
+                        isDragging = false;
+                        popupHeader.classList.remove('cursor-grabbing');
+                    });
 
-                list.querySelectorAll('[data-chat-item="true"]').forEach((item) => {
-                    const name = item.dataset.name || '';
-                    const topic = item.dataset.topicSearch || '';
-                    const requestDate = item.dataset.requestDate || '';
-                    const matchesSearch = !query || name.includes(query) || topic.includes(query);
-                    const matchesDate = filterValue === 'all' ||
-                        (filterValue === 'today' && requestDate === today) ||
-                        (filterValue === 'upcoming' && requestDate > today);
-                    const show = matchesSearch && matchesDate;
+                }
+                const applyNotificationFilters = () => {
+                    const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
+                    const filterValue = notificationFilter ? notificationFilter.value : 'all';
+                    const today = new Date().toISOString().slice(0, 10);
+                    let visibleCount = 0;
 
-                    item.classList.toggle('hidden', !show);
-                    if (show) visibleCount++;
-                });
+                    list.querySelectorAll('[data-chat-item="true"]').forEach((item) => {
+                        const name = item.dataset.name || '';
+                        const topic = item.dataset.topicSearch || '';
+                        const requestDate = item.dataset.requestDate || '';
+                        const matchesSearch = !query || name.includes(query) || topic.includes(query);
+                        const matchesDate = filterValue === 'all' ||
+                            (filterValue === 'today' && requestDate === today) ||
+                            (filterValue === 'upcoming' && requestDate > today);
+                        const show = matchesSearch && matchesDate;
 
-                noResults.classList.toggle('hidden', visibleCount !== 0);
-            };
+                        item.classList.toggle('hidden', !show);
+                        if (show) visibleCount++;
+                    });
 
-            if (searchInput) {
-                searchInput.addEventListener('input', applyNotificationFilters);
-            }
-            if (notificationFilter) {
-                notificationFilter.addEventListener('change', applyNotificationFilters);
-            }
-            applyNotificationFilters();
-        })();
+                    noResults.classList.toggle('hidden', visibleCount !== 0);
+                };
+
+                if (searchInput) {
+                    searchInput.addEventListener('input', applyNotificationFilters);
+                }
+                if (notificationFilter) {
+                    notificationFilter.addEventListener('change', applyNotificationFilters);
+                }
+                applyNotificationFilters();
+            })();
     </script>
 </body>
 

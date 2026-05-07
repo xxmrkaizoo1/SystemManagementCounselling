@@ -82,11 +82,11 @@
                     @endphp
 
                     <div class="mt-6 grid sm:grid-cols-3 gap-3">
-                        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                        <div class="rounded-2xl border border-rose-200 bg-rose-50/70 p-4 shadow-sm">
                             <p class="text-xs text-slate-500">Active Queue</p>
                             <p class="text-lg font-bold text-slate-800">{{ $activeQueue ?? 0 }}</p>
                         </div>
-                        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                        <div class="rounded-2xl border border-rose-200 bg-rose-50/70 p-4 shadow-sm">
                             <p class="text-xs text-slate-500">Available Slots</p>
                             <p class="text-lg font-bold text-slate-800">{{ $availableSlots ?? 0 }}</p>
                         </div>
@@ -134,7 +134,7 @@
 
                                         <!-- Eye -->
                                         <div
-                                            class="eye relative w-4 h-4 bg-white rounded-full flex items-center justify-center animate-blink delay-200">
+                                            class="eye relative w-4 h-4 bg-white rounded-full flex items-center justify-center animate-blink">
                                             <div class="pupil w-2 h-2 bg-slate-900 rounded-full animate-look"></div>
                                         </div>
 

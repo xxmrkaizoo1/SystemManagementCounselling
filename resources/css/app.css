@@ -862,13 +862,14 @@
 @keyframes blink {
 
     0%,
-    92%,
+    90%,
     100% {
-        height: 16px;
+        transform: scaleY(1);
     }
 
-    95% {
-        height: 2px;
+    93%,
+    97% {
+        transform: scaleY(0.1);
     }
 }
 
@@ -893,8 +894,8 @@
 }
 
 .animate-blink {
-    animation: blink 4s infinite;
-    overflow: hidden;
+    transform-origin: center;
+    animation: blink 4s ease-in-out infinite;
 }
 
 .animate-look {

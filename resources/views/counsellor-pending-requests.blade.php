@@ -6,6 +6,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pending Requests • CollegeCare</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        @media (prefers-reduced-motion: no-preference) {
+            .fade-up {
+                animation: fadeUp 0.55s ease-out both;
+            }
+
+            .fade-up-delay-1 {
+                animation-delay: 0.08s;
+            }
+
+            .fade-up-delay-2 {
+                animation-delay: 0.16s;
+            }
+
+            .soft-pulse {
+                animation: softPulse 2.2s ease-in-out infinite;
+            }
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes softPulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.04);
+            }
+        }
+    </style>
 </head>
 
 <body class="min-h-screen overflow-x-hidden bg-slate-50 text-slate-700 antialiased">
@@ -21,18 +64,18 @@
         <div class="absolute top-10 -right-24 h-[26rem] w-[26rem] rounded-full bg-violet-300/20 blur-3xl"></div>
     </div>
 
-    <main class="mx-auto max-w-6xl p-4 sm:p-8 lg:p-10">
+    <main class="mx-auto w-full max-w-7xl px-3 py-4 sm:px-6 sm:py-6 lg:px-10 lg:py-10">
         <section
-            class="overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white/85 shadow-2xl ring-1 ring-white/70 backdrop-blur-xl">
-            <header class="border-b border-slate-200/90 bg-white/90 px-5 py-5 sm:px-7 sm:py-6">
-                <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            class="fade-up overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white/90 shadow-[0_24px_60px_-30px_rgba(15,23,42,0.35)] ring-1 ring-white/70 backdrop-blur-xl">
+            <header class="border-b border-slate-200/90 bg-white/90 px-4 py-5 sm:px-7 sm:py-6">
+                <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                     <div>
                         <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">CollegeCare</p>
                         <h1 class="mt-1 text-2xl font-bold text-slate-800 sm:text-3xl">Pending Requests</h1>
                         <p class="mt-1 text-sm text-slate-500">Counsellor: {{ $user->full_name ?: $user->name }}</p>
                     </div>
                     <a href="{{ route('counsellor.dashboard') }}"
-                        class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-sky-300 hover:bg-sky-50 hover:text-sky-700">
+                        class="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-sky-300 hover:bg-sky-50 hover:text-sky-700 md:w-auto">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                             aria-hidden="true">
@@ -40,20 +83,22 @@
                             <path d="M5 10v10h14V10"></path>
                             <path d="M9 20v-6h6v6"></path>
                         </svg>
-
                     </a>
                 </div>
 
-                <div class="mt-5 grid gap-3 sm:grid-cols-3">
-                    <div class="rounded-xl border border-amber-200 bg-amber-50/80 px-4 py-3">
+                <div class="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                    <div
+                        class="fade-up fade-up-delay-1 rounded-2xl border border-amber-200/80 bg-gradient-to-br from-amber-50 to-orange-50 px-4 py-4 transition duration-300 hover:-translate-y-0.5 hover:shadow-md">
                         <p class="text-xs font-semibold uppercase tracking-wide text-amber-700">Current Pending</p>
                         <p class="mt-1 text-2xl font-bold text-amber-800">{{ $pendingTotal }}</p>
                     </div>
-                    <div class="rounded-xl border border-sky-200 bg-sky-50/80 px-4 py-3">
+                    <div
+                        class="fade-up fade-up-delay-1 rounded-2xl border border-sky-200/80 bg-gradient-to-br from-sky-50 to-cyan-50 px-4 py-4 transition duration-300 hover:-translate-y-0.5 hover:shadow-md">
                         <p class="text-xs font-semibold uppercase tracking-wide text-sky-700">Review Mode</p>
                         <p class="mt-1 text-sm font-semibold text-sky-800">Approve / Reject quickly</p>
                     </div>
-                    <div class="rounded-xl border border-violet-200 bg-violet-50/80 px-4 py-3">
+                    <div
+                        class="fade-up fade-up-delay-1 rounded-2xl border border-violet-200/80 bg-gradient-to-br from-violet-50 to-indigo-50 px-4 py-4 transition duration-300 hover:-translate-y-0.5 hover:shadow-md">
                         <p class="text-xs font-semibold uppercase tracking-wide text-violet-700">Tip</p>
                         <p class="mt-1 text-sm font-semibold text-violet-800">Prioritize urgent student cases first</p>
                     </div>
@@ -61,7 +106,7 @@
 
             </header>
 
-            <div class="p-5 sm:p-7">
+            <div class="p-4 sm:p-6 lg:p-7">
                 @if (session('status'))
                     <div
                         class="mb-5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
@@ -69,9 +114,10 @@
                     </div>
                 @endif
                 <div
-                    class="overflow-auto rounded-2xl border border-slate-200/90 bg-white shadow-inner shadow-slate-100/60">
-                    <table class="w-full min-w-[760px] text-sm">
-                        <thead class="bg-slate-100/90 text-left text-xs uppercase tracking-wider text-slate-500">
+                    class="fade-up fade-up-delay-2 overflow-x-auto rounded-2xl border border-slate-200/90 bg-white shadow-inner shadow-slate-100/60">
+
+                    <table class="w-full min-w-[680px] text-sm">
+                        <thead class="bg-slate-100/90 text-left text-xs uppercase tracking-[0.08em] text-slate-500">
                             <tr>
                                 <th class="px-4 py-3 font-semibold">Student</th>
                                 <th class="px-4 py-3 font-semibold">Date</th>
@@ -135,10 +181,10 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="px-4 py-10 text-center text-slate-500">
+                                    <td colspan="7" class="px-4 py-12 text-center text-slate-500">
                                         <div class="mx-auto flex max-w-sm flex-col items-center gap-2">
                                             <span
-                                                class="inline-flex h-14 w-14 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-2xl">✅</span>
+                                                class="soft-pulse inline-flex h-14 w-14 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-2xl">✅</span>
                                             <p class="text-base font-semibold text-slate-700">No pending requests
                                                 available</p>
                                             <p class="text-sm text-slate-500">You're all caught up for now.</p>

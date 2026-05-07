@@ -103,23 +103,23 @@
     <div id="content" class="opacity-0 translate-y-2 min-h-screen flex flex-col">
         <!-- HEADER -->
         <header class="site-header shrink-0 sticky top-0 z-40 bg-white/70 backdrop-blur-xl border-b border-slate-200">
-            <div class="nav-shell max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-                <div class="flex items-center gap-3">
+            <div class="nav-shell max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-3">
+                <div class="flex items-center gap-2 sm:gap-3">
                     <img src="{{ asset('images/collegecare-logo.png') }}" alt="CollegeCare logo"
                         class="nav-brand-logo w-10 h-10 rounded-2xl object-cover shadow-sm" />
                     <div>
                         <p class="font-bold leading-tight">CollegeCare</p>
-                        <p class="text-xs text-slate-500 -mt-0.5">Counselling Booking System</p>
+                        <p class="hidden sm:block text-xs text-slate-500 -mt-0.5">Counselling Booking System</p>
                     </div>
                 </div>
 
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2 sm:gap-3">
                     <a href="#roles" id="getStartedLink"
-                        class="nav-cta-link hidden sm:inline text-sm font-medium text-slate-600 hover:text-sky-600 transition">
+                        class="nav-cta-link inline text-xs sm:text-sm font-medium text-slate-600 hover:text-sky-600 transition whitespace-nowrap">
                         Get Started
                     </a>
                     <a href="{{ route('login') }}"
-                        class="nav-login-btn px-4 py-2 rounded-xl bg-sky-600 text-white text-sm font-semibold shadow-sm hover:bg-sky-700 transition">
+                        class="nav-login-btn px-3 sm:px-4 py-2 rounded-xl bg-sky-600 text-white text-xs sm:text-sm font-semibold shadow-sm hover:bg-sky-700 transition whitespace-nowrap">
                         Login
                     </a>
                 </div>
@@ -128,7 +128,7 @@
 
         <!-- MAIN -->
         <main class="flex-1 flex items-center justify-center py-14">
-            <div class="w-full max-w-7xl mx-auto px-6">
+            <div class="w-full max-w-7xl mx-auto px-4 sm:px-6">
                 <section class="grid lg:grid-cols-2 gap-10 items-center">
                     <!-- LEFT -->
                     <div class="text-center lg:text-left animate-fade-in-up">
@@ -167,7 +167,7 @@
                                     : 'border-rose-200 bg-rose-50/80';
                         @endphp
 
-                        <div class="mt-8 grid grid-cols-3 gap-3 max-w-md mx-auto lg:mx-0">
+                        <div class="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-md mx-auto lg:mx-0">
                             <div class="rounded-2xl border p-4 shadow-sm {{ $todayStatusClass }}">
                                 <p class="text-xs text-slate-500">Today</p>
                                 <p class="text-lg font-bold text-slate-800">{{ $liveCalendarStatus ?? 'Open' }}</p>
@@ -217,7 +217,7 @@
                     <!-- RIGHT -->
                     <div
                         class="mx-auto w-full max-w-xl rounded-3xl bg-white/70 border border-slate-200 shadow-sm p-6 sm:p-8 backdrop-blur-xl animate-fade-in-up animation-delay-2">
-                        <div class="flex items-center justify-between">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                             <p class="font-bold text-slate-800">Campus Wellness Highlights</p>
                             <span class="text-xs px-3 py-1 rounded-full bg-sky-50 text-sky-700 border border-sky-200">
                                 Slideshow
@@ -293,7 +293,7 @@
                 <section class="mt-20 animate-fade-in-up animation-delay-4">
                     <div class="grid lg:grid-cols-2 gap-8">
                         <div
-                            class="bg-white/70 backdrop-blur-xl border border-slate-200 rounded-3xl p-8 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+                            class="bg-white/70 backdrop-blur-xl border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
                             <h2 class="text-xl font-semibold text-slate-800 mb-4">Announcements</h2>
                             <div class="space-y-4 text-sm text-slate-600">
                                 <p>📌 Counselling sessions available Monday – Friday.</p>
@@ -303,7 +303,7 @@
                         </div>
 
                         <div
-                            class="bg-white/70 backdrop-blur-xl border border-slate-200 rounded-3xl p-8 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+                            class="bg-white/70 backdrop-blur-xl border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
                             <h2 class="text-xl font-semibold text-slate-800 mb-4">Available Counsellors</h2>
 
                             <div class="space-y-4 text-sm">
@@ -313,13 +313,13 @@
                                     @endphp
                                     <div
                                         class="flex items-center justify-between bg-slate-50 p-4 rounded-2xl border border-slate-200">
-                                        <div class="flex items-center gap-3">
+                                        <div class="flex items-center gap-2 sm:gap-3">
                                             <img src="{{ $counsellor['profile_pic'] ?? '/images/default-profile.svg' }}"
                                                 alt="{{ ($counsellor['name'] ?? 'Counsellor') . ' profile picture' }}"
                                                 class="h-10 w-10 rounded-full border border-slate-200 object-cover">
                                             <span
                                                 class="text-slate-700 font-medium">{{ $counsellor['name'] ?? '-' }}</span>
-                                        </div>s
+                                        </div>
                                         <span
                                             class="text-xs px-3 py-1 rounded-full {{ $isAvailable ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700' }}">
                                             {{ $isAvailable ? 'Available' : 'Busy' }}
@@ -328,7 +328,7 @@
                                 @empty
                                     <div
                                         class="flex items-center justify-between bg-slate-50 p-4 rounded-2xl border border-slate-200">
-                                        <div class="flex items-center gap-3">
+                                        <div class="flex items-center gap-2 sm:gap-3">
                                             <div
                                                 class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-200 text-sm font-semibold text-slate-600">
                                                 ?
@@ -347,7 +347,7 @@
                 <section id="roles" class="mt-8 animate-fade-in-up animation-delay-4">
                     <div
                         class="mx-auto w-full max-w-4xl rounded-3xl bg-white/70 border border-slate-200 shadow-sm p-6 sm:p-8 backdrop-blur-xl">
-                        <div class="flex items-center justify-between">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                             <p class="font-bold text-slate-800">Quick Access</p>
                             <span
                                 class="text-xs px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
@@ -360,8 +360,8 @@
                         <div class="mt-6 rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
                             <div id="roleSlides" class="relative min-h-[11.5rem] sm:min-h-[10rem]">
                                 <article class="role-slide is-active absolute inset-0 p-5">
-                                    <div class="flex items-center justify-between">
-                                        <div class="flex items-center gap-3">
+                                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                                        <div class="flex items-center gap-2 sm:gap-3">
                                             <div
                                                 class="w-10 h-10 rounded-2xl bg-sky-100 text-sky-700 flex items-center justify-center font-bold">
                                                 S</div>
@@ -379,8 +379,8 @@
                                 </article>
 
                                 <article class="role-slide absolute inset-0 p-5">
-                                    <div class="flex items-center justify-between">
-                                        <div class="flex items-center gap-3">
+                                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                                        <div class="flex items-center gap-2 sm:gap-3">
                                             <div
                                                 class="w-10 h-10 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold">
                                                 C</div>
@@ -398,8 +398,8 @@
                                 </article>
 
                                 <article class="role-slide absolute inset-0 p-5">
-                                    <div class="flex items-center justify-between">
-                                        <div class="flex items-center gap-3">
+                                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                                        <div class="flex items-center gap-2 sm:gap-3">
                                             <div
                                                 class="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
                                                 A</div>
@@ -432,7 +432,7 @@
                             </div>
                         </div>
 
-                        <div class="mt-6 flex gap-3">
+                        <div class="mt-6 flex flex-col sm:flex-row gap-3">
                             <a href="{{ route('signup') }}"
                                 class="flex-1 text-center px-4 py-2 rounded-xl bg-sky-600 text-white font-semibold shadow-sm hover:bg-sky-700 transition">
                                 Sign Up
