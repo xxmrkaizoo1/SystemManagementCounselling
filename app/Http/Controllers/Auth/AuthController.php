@@ -83,10 +83,16 @@ class AuthController extends Controller
             'no_matriks' => ['required', 'string', 'max:50'],
         ]);
 
-        $noMatriks = strtoupper(trim((string) $validated['no_matriks']));
+        $normalizeNoMatriks = static fn(string $value): string => strtoupper(str_replace(
+            [' ', '-', "\t", "\r", "\n"],
+            '',
+            trim($value)
+        ));
+
+        $noMatriks = $normalizeNoMatriks((string) $validated['no_matriks']);
 
         $entry = NoMatriksEntry::query()
-            ->whereRaw('UPPER(no_matriks) = ?', [$noMatriks])
+            ->whereRaw("UPPER(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(no_matriks, ' ', ''), '-', ''), CHAR(9), ''), CHAR(10), ''), CHAR(13), '')) = ?", [$noMatriks])
             ->first();
 
         if (! $entry || blank($entry->label_name)) {
