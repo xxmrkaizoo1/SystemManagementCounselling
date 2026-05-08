@@ -58,11 +58,11 @@
                 </a>
             </div>
 
-            <div class="p-5 sm:p-7" x-data="signupForm('{{ old('role') === 'teacher' ? 'teacher' : 'student' }}', '{{ old('full_name') }}')">
+            <div class="p-5 sm:p-7" x-data="signupForm(@js(old('role') === 'teacher' ? 'teacher' : 'student'), @js(old('full_name')))">
                 <div
                     class="mx-auto w-full max-w-3xl rounded-2xl border border-slate-200/90 bg-white/95 p-5 sm:p-6 shadow-[0_16px_40px_-28px_rgba(15,23,42,0.45)]">
                     <form class="mt-1.5 grid gap-3.5" action="{{ route('signup.store') }}" method="POST"
-                        enctype="multipart/form-data"> @csrf
+                        enctype="multipart/form-data" autocomplete="on"> @csrf
                         <div class="flex flex-col items-center gap-2.5">
                             <input id="profile_pic" name="profile_pic" type="file" accept=".jpg,.jpeg,.png,.webp"
                                 class="hidden" x-ref="profilePicInput"
@@ -99,7 +99,7 @@
                                 <label for="full_name" class="block text-sm font-medium text-slate-700 mb-1.5">Full
                                     Name</label>
                                 <input id="full_name" name="full_name" type="text" value="{{ old('full_name') }}"
-                                    x-model="fullName" placeholder="Enter your full name"
+                                    autocomplete="name" x-model="fullName" placeholder="Enter your full name"
                                     class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition"
                                     x-bind:readonly="role === 'student'" />
                                 @error('full_name')
@@ -110,7 +110,7 @@
                                 <label for="phone" class="block text-sm font-medium text-slate-700 mb-1.5">No.
                                     Phone</label>
                                 <input id="phone" name="phone" type="text" value="{{ old('phone') }}"
-                                    placeholder="01X-XXXXXXX"
+                                    autocomplete="tel" placeholder="01X-XXXXXXX"
                                     class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition" />
                                 @error('phone')
                                     <p class="mt-1 text-xs text-rose-600">{{ $message }}</p>
@@ -123,7 +123,7 @@
                                 <label for="email"
                                     class="block text-sm font-medium text-slate-700 mb-1.5">Email</label>
                                 <input id="email" name="email" type="email" value="{{ old('email') }}"
-                                    placeholder="name@college.edu"
+                                    autocomplete="email" placeholder="name@college.edu"
                                     class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition" />
                                 @error('email')
                                     <p class="mt-1 text-xs text-rose-600">{{ $message }}</p>
@@ -198,7 +198,7 @@
                                 <label for="password"
                                     class="block text-sm font-medium text-slate-700 mb-1.5">Password</label>
                                 <div class="relative">
-                                    <input id="password" name="password"
+                                    <input id="password" name="password" autocomplete="new-password"
                                         x-bind:type="showPassword ? 'text' : 'password'" placeholder="••••••••"
                                         class="w-full rounded-xl border border-slate-300 px-3 py-2 pr-12 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition" />
                                     <button type="button" x-on:click="showPassword = !showPassword"
@@ -214,7 +214,8 @@
                                     class="block text-sm font-medium text-slate-700 mb-1.5">Re-Enter Password</label>
                                 <div class="relative">
                                     <input id="password_confirmation" name="password_confirmation"
-                                        x-bind:type="showConfirm ? 'text' : 'password'" placeholder="••••••••"
+                                        autocomplete="new-password" x-bind:type="showConfirm ? 'text' : 'password'"
+                                        placeholder="••••••••"
                                         class="w-full rounded-xl border border-slate-300 px-3 py-2 pr-12 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition" />
                                     <button type="button" x-on:click="showConfirm = !showConfirm"
                                         class="absolute inset-y-0 right-2 my-auto h-8 px-2 rounded-lg text-xs font-medium text-slate-500 hover:text-sky-700 hover:bg-sky-50 transition"
@@ -228,6 +229,7 @@
                                 class="block text-sm font-medium text-slate-700 mb-1.5 text-center">No matriks</label>
 
                             <input id="no_matriks" name="no_matriks" type="text" value="{{ old('no_matriks') }}"
+                                autocomplete="off"
                                 x-on:input.debounce.450ms="lookupNoMatriksName($event.target.value)"
                                 x-on:blur="lookupNoMatriksName($event.target.value)" x-ref="noMatriksInput"
                                 x-bind:disabled="role !== 'student'" placeholder="Enter no matriks"
