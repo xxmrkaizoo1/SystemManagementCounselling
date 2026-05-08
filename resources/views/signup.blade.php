@@ -45,7 +45,7 @@
     <main id="loginContent"
         class="min-h-screen flex items-center justify-center p-4 sm:p-8 opacity-0 translate-y-2 transition-all duration-700">
         <section
-            class="signup-shell w-full max-w-[96rem] rounded-[2rem] border border-slate-200/80 bg-white/75 backdrop-blur-xl shadow-2xl overflow-hidden">
+            class="signup-shell w-full max-w-[84rem] rounded-[1.75rem] border border-slate-200/80 bg-white/75 backdrop-blur-xl shadow-2xl overflow-hidden">
             <div class="p-5 sm:p-8 border-b border-slate-200/80 flex items-center justify-between gap-3 bg-white/85">
                 <div>
                     <p class="text-xs uppercase tracking-[0.14em] text-slate-500">CollegeCare</p>
@@ -58,10 +58,10 @@
                 </a>
             </div>
 
-            <div class="p-6 sm:p-8" x-data="signupForm('{{ old('role') === 'teacher' ? 'teacher' : 'student' }}', '{{ old('full_name') }}')">
+            <div class="p-5 sm:p-7" x-data="signupForm('{{ old('role') === 'teacher' ? 'teacher' : 'student' }}', '{{ old('full_name') }}')">
                 <div
-                    class="mx-auto w-full max-w-4xl rounded-3xl border border-slate-200 bg-white/90 p-6 sm:p-8 shadow-sm">
-                    <form class="mt-1 grid gap-4" action="{{ route('signup.store') }}" method="POST"
+                    class="mx-auto w-full max-w-3xl rounded-2xl border border-slate-200/90 bg-white/95 p-5 sm:p-6 shadow-[0_16px_40px_-28px_rgba(15,23,42,0.45)]">
+                    <form class="mt-1.5 grid gap-3.5" action="{{ route('signup.store') }}" method="POST"
                         enctype="multipart/form-data"> @csrf
                         <div class="flex flex-col items-center gap-2.5">
                             <input id="profile_pic" name="profile_pic" type="file" accept=".jpg,.jpeg,.png,.webp"
@@ -69,7 +69,7 @@
                                 x-on:change="const file = $event.target.files?.[0]; profileFileName = file ? file.name : ''; if (!file) { profilePreview = null; return; } const reader = new FileReader(); reader.onload = e => profilePreview = e.target?.result; reader.readAsDataURL(file);" />
 
                             <button type="button"
-                                class="group relative mx-auto w-24 h-24 rounded-full border-2 border-sky-200 bg-sky-50 grid place-items-center text-sky-700 font-bold text-2xl overflow-hidden transition hover:border-sky-300 hover:bg-sky-100"
+                                class="group relative mx-auto w-20 h-20 rounded-full border-2 border-sky-200 bg-sky-50 grid place-items-center text-sky-700 font-semibold text-xl overflow-hidden transition hover:border-sky-300 hover:bg-sky-100"
                                 x-on:click="$refs.profilePicInput.click()" aria-label="Upload profile photo">
                                 <img x-show="profilePreview" x-bind:src="profilePreview" alt="Profile picture preview"
                                     class="absolute inset-0 w-full h-full object-cover" />
@@ -79,9 +79,9 @@
                             <p class="text-center text-xs text-slate-500">Profile photo (optional)</p>
 
                             <div class="text-center">
-                                <p class="text-sm font-medium text-slate-700 mb-1.5">Add Profile Picture</p>
+                                <p class="text-sm font-semibold text-slate-700 mb-1">Add Profile Picture</p>
                                 <button type="button"
-                                    class="inline-flex items-center rounded-xl bg-sky-100 px-4 py-2 text-sm font-medium text-sky-700 hover:bg-sky-200 transition"
+                                    class="inline-flex items-center rounded-lg border border-sky-200 bg-sky-50 px-3.5 py-1.5 text-sm font-medium text-sky-700 hover:bg-sky-100 transition"
                                     x-on:click="$refs.profilePicInput.click()">
                                     Choose File
                                 </button>
@@ -94,13 +94,13 @@
                             @enderror
                         </div>
 
-                        <div class="grid sm:grid-cols-2 gap-4">
+                        <div class="grid sm:grid-cols-2 gap-3">
                             <div>
                                 <label for="full_name" class="block text-sm font-medium text-slate-700 mb-1.5">Full
                                     Name</label>
                                 <input id="full_name" name="full_name" type="text" value="{{ old('full_name') }}"
                                     x-model="fullName" placeholder="Enter your full name"
-                                    class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition"
+                                    class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition"
                                     x-bind:readonly="role === 'student'" />
                                 @error('full_name')
                                     <p class="mt-1 text-xs text-rose-600">{{ $message }}</p>
@@ -111,20 +111,20 @@
                                     Phone</label>
                                 <input id="phone" name="phone" type="text" value="{{ old('phone') }}"
                                     placeholder="01X-XXXXXXX"
-                                    class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition" />
+                                    class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition" />
                                 @error('phone')
                                     <p class="mt-1 text-xs text-rose-600">{{ $message }}</p>
                                 @enderror
                             </div>
                         </div>
 
-                        <div class="grid sm:grid-cols-2 gap-4">
+                        <div class="grid sm:grid-cols-2 gap-3">
                             <div>
                                 <label for="email"
                                     class="block text-sm font-medium text-slate-700 mb-1.5">Email</label>
                                 <input id="email" name="email" type="email" value="{{ old('email') }}"
                                     placeholder="name@college.edu"
-                                    class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition" />
+                                    class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition" />
                                 @error('email')
                                     <p class="mt-1 text-xs text-rose-600">{{ $message }}</p>
                                 @enderror
@@ -133,7 +133,7 @@
                                 <label for="role"
                                     class="block text-sm font-medium text-slate-700 mb-1.5">Status</label>
                                 <select id="role" name="role" x-model="role"
-                                    class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition bg-white">
+                                    class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition bg-white">
                                     <option value="student">Student</option>
                                     <option value="teacher">Lecturer</option>
                                 </select>
@@ -149,17 +149,17 @@
                             <input id="lecturer_access_code" name="lecturer_access_code" type="password"
                                 x-bind:disabled="role !== 'teacher'" value="{{ old('lecturer_access_code') }}"
                                 placeholder="Enter lecturer access code"
-                                class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition disabled:bg-slate-100 disabled:text-slate-400" />
+                                class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition disabled:bg-slate-100 disabled:text-slate-400" />
                             @error('lecturer_access_code')
                                 <p class="mt-1 text-xs text-rose-600">{{ $message }}</p>
                             @enderror
                         </div>
-                        <div class="grid sm:grid-cols-2 gap-4" x-show="role === 'student'" x-transition>
+                        <div class="grid sm:grid-cols-2 gap-3" x-show="role === 'student'" x-transition>
                             <div>
                                 <label for="years"
                                     class="block text-sm font-medium text-slate-700 mb-1.5">Years</label>
                                 <select id="years" name="years" x-bind:disabled="role !== 'student'"
-                                    class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition bg-white disabled:bg-slate-100 disabled:text-slate-400">
+                                    class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition bg-white disabled:bg-slate-100 disabled:text-slate-400">
                                     <option value="">Select years</option>
                                     <option value="1SVM SEM1" @selected(old('years') === '1SVM SEM1')>1SVM SEM1</option>
                                     <option value="1SVM SEM2" @selected(old('years') === '1SVM SEM2')>1SVM SEM2</option>
@@ -178,7 +178,7 @@
                                 <label for="programme"
                                     class="block text-sm font-medium text-slate-700 mb-1.5">Programme</label>
                                 <select id="programme" name="programme" x-bind:disabled="role !== 'student'"
-                                    class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition bg-white disabled:bg-slate-100 disabled:text-slate-400">
+                                    class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition bg-white disabled:bg-slate-100 disabled:text-slate-400">
                                     <option value="">Select programme</option>
                                     <option value="IPD" @selected(old('programme') === 'IPD')>IPD</option>
                                     <option value="ISK" @selected(old('programme') === 'ISK')>ISK</option>
@@ -193,14 +193,14 @@
                             </div>
                         </div>
 
-                        <div class="grid sm:grid-cols-2 gap-4">
+                        <div class="grid sm:grid-cols-2 gap-3">
                             <div>
                                 <label for="password"
                                     class="block text-sm font-medium text-slate-700 mb-1.5">Password</label>
                                 <div class="relative">
                                     <input id="password" name="password"
                                         x-bind:type="showPassword ? 'text' : 'password'" placeholder="••••••••"
-                                        class="w-full rounded-xl border border-slate-300 px-3 py-2.5 pr-12 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition" />
+                                        class="w-full rounded-xl border border-slate-300 px-3 py-2 pr-12 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition" />
                                     <button type="button" x-on:click="showPassword = !showPassword"
                                         class="absolute inset-y-0 right-2 my-auto h-8 px-2 rounded-lg text-xs font-medium text-slate-500 hover:text-sky-700 hover:bg-sky-50 transition"
                                         x-text="showPassword ? 'Hide' : 'Show'"></button>
@@ -215,7 +215,7 @@
                                 <div class="relative">
                                     <input id="password_confirmation" name="password_confirmation"
                                         x-bind:type="showConfirm ? 'text' : 'password'" placeholder="••••••••"
-                                        class="w-full rounded-xl border border-slate-300 px-3 py-2.5 pr-12 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition" />
+                                        class="w-full rounded-xl border border-slate-300 px-3 py-2 pr-12 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition" />
                                     <button type="button" x-on:click="showConfirm = !showConfirm"
                                         class="absolute inset-y-0 right-2 my-auto h-8 px-2 rounded-lg text-xs font-medium text-slate-500 hover:text-sky-700 hover:bg-sky-50 transition"
                                         x-text="showConfirm ? 'Hide' : 'Show'"></button>
@@ -229,8 +229,9 @@
 
                             <input id="no_matriks" name="no_matriks" type="text" value="{{ old('no_matriks') }}"
                                 x-on:input.debounce.450ms="lookupNoMatriksName($event.target.value)"
+                                x-on:blur="lookupNoMatriksName($event.target.value)" x-ref="noMatriksInput"
                                 x-bind:disabled="role !== 'student'" placeholder="Enter no matriks"
-                                class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm text-center outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition disabled:bg-slate-100 disabled:text-slate-400" />
+                                class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-center outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition disabled:bg-slate-100 disabled:text-slate-400" />
                             <p class="mt-1 text-xs text-slate-500 text-center" x-show="matriksLookupStatus"
                                 x-text="matriksLookupStatus"></p>
                             @error('no_matriks')
@@ -239,12 +240,12 @@
                         </div>
 
                         <button type="submit"
-                            class="mt-2 w-full rounded-xl bg-sky-600 text-white font-semibold py-2.5 hover:bg-sky-700 transition shadow-sm">
+                            class="mt-2 w-full rounded-xl bg-gradient-to-r from-sky-600 to-cyan-600 text-white font-semibold py-2 hover:from-sky-700 hover:to-cyan-700 transition shadow-[0_12px_26px_-14px_rgba(2,132,199,0.85)]">
                             Sign Up
                         </button>
                     </form>
 
-                    <p class="mt-4 text-sm text-center text-slate-500">Already have an account?
+                    <p class="mt-3 text-sm text-center text-slate-500">Already have an account?
                         <a href="{{ route('login') }}" class="text-sky-700 hover:text-sky-800 font-medium">Login</a>
                     </p>
                 </div>
@@ -272,6 +273,9 @@
                         this.fullName = '';
                         this.matriksLookupStatus = '';
                     });
+                    if (this.role === 'student') {
+                        this.lookupNoMatriksName(this.$refs.noMatriksInput?.value || '');
+                    }
                 },
                 async lookupNoMatriksName(rawValue) {
                     if (this.role !== 'student') {

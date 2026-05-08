@@ -228,6 +228,12 @@
 
                         <div
                             class="mt-6 relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                            <button type="button" id="heroPrevBtn"
+                                class="absolute left-3 top-1/2 z-10 -translate-y-1/2 h-9 w-9 rounded-full border border-white/80 bg-white/85 text-slate-600 shadow-sm hover:bg-white hover:text-sky-700 transition"
+                                aria-label="Previous highlight">‹</button>
+                            <button type="button" id="heroNextBtn"
+                                class="absolute right-3 top-1/2 z-10 -translate-y-1/2 h-9 w-9 rounded-full border border-white/80 bg-white/85 text-slate-600 shadow-sm hover:bg-white hover:text-sky-700 transition"
+                                aria-label="Next highlight">›</button>
                             <div id="heroSlides" class="relative min-h-[25rem]">
                                 <article class="hero-slide is-active absolute inset-0 p-6 sm:p-7">
                                     <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80"
@@ -284,7 +290,8 @@
                                         class="hero-slide-dot w-2.5 h-2.5 rounded-full bg-slate-300"
                                         aria-label="Show slide 3"></button>
                                 </div>
-                                <span class="text-xs text-slate-500">Auto-rotates every 4s</span>
+                                <span id="heroSlideMeta" class="text-xs text-slate-500" aria-live="polite">Slide 1 of
+                                    3 • Auto-rotates every 4s</span>
                             </div>
                         </div>
                     </div>
@@ -488,13 +495,56 @@
                     });
                 };
 
+                const heroSlidesContainer = document.getElementById('heroSlides');
+                const heroPrevBtn = document.getElementById('heroPrevBtn');
+                const heroNextBtn = document.getElementById('heroNextBtn');
+                const heroSlideMeta = document.getElementById('heroSlideMeta');
+                let heroIntervalId = null;
+
+                const updateHeroMeta = () => {
+                    if (!heroSlideMeta) return;
+                    heroSlideMeta.textContent =
+                        `Slide ${currentHeroSlide + 1} of ${heroSlides.length} • Auto-rotates every 4s`;
+                };
+
+                const startHeroAutoplay = () => {
+                    if (heroIntervalId !== null) return;
+                    heroIntervalId = window.setInterval(() => {
+                        showHeroSlide(currentHeroSlide + 1);
+                        updateHeroMeta();
+                    }, 4000);
+                };
+
+                const stopHeroAutoplay = () => {
+                    if (heroIntervalId === null) return;
+                    window.clearInterval(heroIntervalId);
+                    heroIntervalId = null;
+                };
+
+
                 heroDots.forEach((dot, index) => {
-                    dot.addEventListener('click', () => showHeroSlide(index));
+                    dot.addEventListener('click', () => {
+                        showHeroSlide(index);
+                        updateHeroMeta();
+                    });
                 });
 
-                setInterval(() => {
+                heroPrevBtn?.addEventListener('click', () => {
+                    showHeroSlide(currentHeroSlide - 1);
+                    updateHeroMeta();
+                });
+
+                heroNextBtn?.addEventListener('click', () => {
                     showHeroSlide(currentHeroSlide + 1);
-                }, 4000);
+                    updateHeroMeta();
+                });
+
+                heroSlidesContainer?.addEventListener('mouseenter', stopHeroAutoplay);
+                heroSlidesContainer?.addEventListener('mouseleave', startHeroAutoplay);
+
+                showHeroSlide(0);
+                updateHeroMeta();
+                startHeroAutoplay();
             }
 
             const roleSlides = Array.from(document.querySelectorAll('.role-slide'));
