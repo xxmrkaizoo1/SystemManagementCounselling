@@ -128,6 +128,8 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
+Route::get('/signup/no-matriks', [AuthController::class, 'lookupNoMatriks'])->name('signup.no-matriks.lookup');
+
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.attempt');
@@ -144,7 +146,6 @@ Route::middleware('guest')->group(function () {
 
     Route::get('/signup', [AuthController::class, 'showSignup'])->name('signup');
     Route::post('/signup', [AuthController::class, 'register'])->name('signup.store');
-    Route::get('/signup/no-matriks', [AuthController::class, 'lookupNoMatriks'])->name('signup.no-matriks.lookup');
 
     Route::get('/signup/otp', [AuthController::class, 'showOtpForm'])->name('signup.otp.form');
     Route::post('/signup/otp/verify', [AuthController::class, 'verifySignupOtp'])->name('signup.otp.verify');
