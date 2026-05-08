@@ -56,9 +56,7 @@
                                 <p class="text-sm text-slate-300">Search, review, and reply quickly.</p>
                             </div>
                         </div>
-                        <button
-                            class="rounded-xl border border-amber-300/40 bg-amber-300/10 px-3 py-2 text-amber-200">🔔 3
-                            New</button>
+
                     </header>
 
                     <div class="space-y-5 p-6">
@@ -87,9 +85,10 @@
                                     <p class="mt-3 text-sm text-slate-600">{{ $card['preview'] }}</p>
                                     <div class="mt-4 flex items-center justify-between text-xs text-slate-500">
                                         <span>{{ $card['time_ago'] }}</span>
-                                        <a href="{{ route('chat.index', ['user_id' => $card['user_id']]) }}"
+                                        <button type="button"
+                                            data-open-chat="{{ route('chat.index', ['user_id' => $card['user_id']]) }}"
                                             class="rounded-lg bg-sky-600 px-3 py-1.5 font-semibold text-white">Open
-                                            Chat</a>
+                                            Chat</button>
                                     </div>
 
 
@@ -110,6 +109,19 @@
                 </section>
             </section>
         </main>
+
+        <div id="chat-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/50 p-4">
+            <div
+                class="relative h-[90vh] w-full max-w-5xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
+                <div class="flex items-center justify-between border-b border-slate-200 px-4 py-3">
+                    <h3 class="text-sm font-semibold text-slate-700">Chat</h3>
+                    <button id="chat-modal-close" type="button"
+                        class="rounded-md border border-slate-300 px-2 py-1 text-xs font-semibold text-slate-600 hover:bg-slate-100">Close</button>
+                </div>
+                <iframe id="chat-modal-frame" src="about:blank" class="h-[calc(90vh-3.25rem)] w-full"
+                    loading="lazy"></iframe>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -156,6 +168,39 @@
                         '/messages')) {
                     event.preventDefault();
                     window.history.back();
+                }
+            });
+
+            const chatModal = document.getElementById('chat-modal');
+            const chatModalClose = document.getElementById('chat-modal-close');
+            const chatModalFrame = document.getElementById('chat-modal-frame');
+            const openChatButtons = Array.from(document.querySelectorAll('[data-open-chat]'));
+
+            const closeChatModal = () => {
+                chatModal?.classList.add('hidden');
+                chatModal?.classList.remove('flex');
+                if (chatModalFrame) chatModalFrame.src = 'about:blank';
+                document.body.classList.remove('overflow-hidden');
+            };
+
+            openChatButtons.forEach((button) => {
+                button.addEventListener('click', () => {
+                    const chatUrl = button.dataset.openChat;
+                    if (!chatUrl || !chatModal || !chatModalFrame) return;
+                    chatModalFrame.src = chatUrl;
+                    chatModal.classList.remove('hidden');
+                    chatModal.classList.add('flex');
+                    document.body.classList.add('overflow-hidden');
+                });
+            });
+
+            chatModalClose?.addEventListener('click', closeChatModal);
+            chatModal?.addEventListener('click', (event) => {
+                if (event.target === chatModal) closeChatModal();
+            });
+            window.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape' && chatModal && !chatModal.classList.contains('hidden')) {
+                    closeChatModal();
                 }
             });
 

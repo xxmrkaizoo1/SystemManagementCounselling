@@ -126,6 +126,7 @@
 <body class="min-h-screen bg-slate-100 text-slate-700 overflow-x-hidden">
     @php
         $sidebarRoleLabel = $role === 'teacher' ? 'PENSYARAH' : 'PELAJAR';
+        $isCounsellor = $role === 'counsellor';
     @endphp
 
     <div class="fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
@@ -155,28 +156,30 @@
                     </p>
                 </div>
                 <div class="flex items-center gap-2">
-                    <button type="button" id="sidebar-toggle"
-                        class="sidebar-toggle sidebar-toggle  rounded-xl border border-slate-200 bg-white p-3 text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">
+                    @unless ($isCounsellor)
+                        <button type="button" id="sidebar-toggle"
+                            class="sidebar-toggle sidebar-toggle  rounded-xl border border-slate-200 bg-white p-3 text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">
 
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
-
-                    </button>
-                    <div class="flex items-center gap-2">
-                        <a href="{{ route('home.session') }}"
-                            class="rounded-xl border border-slate-200 bg-white p-3 text-slate-600 hover:text-sky-700 hover:border-sky-200 hover:bg-sky-50 transition">
-
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24"
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                                 stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M3 9.75L12 4l9 5.75M4.5 10.5V19.5A1.5 1.5 0 006 21h3.75v-4.5h4.5V21H18a1.5 1.5 0 001.5-1.5v-9" />
+                                    d="M4 6h16M4 12h16M4 18h16" />
                             </svg>
 
-                        </a>
-                    </div>
+                        </button>
+                        <div class="flex items-center gap-2">
+                            <a href="{{ route('home.session') }}"
+                                class="rounded-xl border border-slate-200 bg-white p-3 text-slate-600 hover:text-sky-700 hover:border-sky-200 hover:bg-sky-50 transition">
+
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M3 9.75L12 4l9 5.75M4.5 10.5V19.5A1.5 1.5 0 006 21h3.75v-4.5h4.5V21H18a1.5 1.5 0 001.5-1.5v-9" />
+                                </svg>
+
+                            </a>
+                        </div>
+                    @endunless
 
                 </div>
 
@@ -185,8 +188,9 @@
             </header>
 
             <div class="p-5 sm:p-7 home-shell">
-                <aside id="home-sidebar"
-                    class="home-sidebar rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm flex flex-col gap-4">
+                @unless ($isCounsellor)
+                    <aside id="home-sidebar"
+                        class="home-sidebar rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm flex flex-col gap-4">
                     <div class="flex justify-end xl:hidden mb-2">
                         <button type="button" id="sidebar-close"
                             class="sidebar-close-btn rounded-lg border border-slate-200 px-2.5 py-1 text-sm text-slate-600 hover:text-sky-700 hover:border-sky-200">
@@ -288,7 +292,8 @@
                         </nav>
                     </div>
 
-                </aside>
+                    </aside>
+                @endunless
 
                 <section
                     class="home-main rounded-2xl border border-slate-200 bg-white/90 p-4 sm:p-6 shadow-sm min-h-[34rem] flex flex-col gap-4">
@@ -472,7 +477,9 @@
             @endif
 
 
-            <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
+            @unless ($isCounsellor)
+                <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
+            @endunless
 
             <footer
                 class="px-6 sm:px-8 py-4 border-t border-slate-200/80 text-center text-sm text-slate-500 bg-white/80">
