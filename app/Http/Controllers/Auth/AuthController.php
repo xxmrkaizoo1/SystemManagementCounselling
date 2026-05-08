@@ -92,8 +92,9 @@ class AuthController extends Controller
         $noMatriks = $normalizeNoMatriks((string) $validated['no_matriks']);
 
         $entry = NoMatriksEntry::query()
-            ->whereRaw("UPPER(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(no_matriks, ' ', ''), '-', ''), CHAR(9), ''), CHAR(10), ''), CHAR(13), '')) = ?", [$noMatriks])
-            ->first();
+            ->select(['id', 'no_matriks', 'label_name'])
+            ->get()
+            ->first(static fn(NoMatriksEntry $entry): bool => $normalizeNoMatriks((string) $entry->no_matriks) === $noMatriks);
 
         if (! $entry || blank($entry->label_name)) {
             return response()->json([
