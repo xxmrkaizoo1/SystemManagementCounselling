@@ -98,8 +98,9 @@
                             <div>
                                 <label for="full_name" class="block text-sm font-medium text-slate-700 mb-1.5">Full
                                     Name</label>
-                                <input id="full_name" name="full_name" type="text" value="{{ old('full_name') }}" autocomplete="name"
-                                    x-model="fullName" x-ref="fullNameInput" placeholder="Enter your full name"
+                                <input id="full_name" name="full_name" type="text" value="{{ old('full_name') }}"
+                                    autocomplete="name" x-model="fullName" x-ref="fullNameInput"
+                                    placeholder="Enter your full name"
                                     class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition"
                                     x-bind:readonly="role === 'student'" />
                                 @error('full_name')
@@ -109,8 +110,8 @@
                             <div>
                                 <label for="phone" class="block text-sm font-medium text-slate-700 mb-1.5">No.
                                     Phone</label>
-                                <input id="phone" name="phone" type="text" value="{{ old('phone') }}" autocomplete="tel"
-                                    placeholder="01X-XXXXXXX"
+                                <input id="phone" name="phone" type="text" value="{{ old('phone') }}"
+                                    autocomplete="tel" placeholder="01X-XXXXXXX"
                                     class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition" />
                                 @error('phone')
                                     <p class="mt-1 text-xs text-rose-600">{{ $message }}</p>
@@ -122,8 +123,8 @@
                             <div>
                                 <label for="email"
                                     class="block text-sm font-medium text-slate-700 mb-1.5">Email</label>
-                                <input id="email" name="email" type="email" value="{{ old('email') }}" autocomplete="email"
-                                    placeholder="name@college.edu"
+                                <input id="email" name="email" type="email" value="{{ old('email') }}"
+                                    autocomplete="email" placeholder="name@college.edu"
                                     class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition" />
                                 @error('email')
                                     <p class="mt-1 text-xs text-rose-600">{{ $message }}</p>
@@ -213,8 +214,9 @@
                                 <label for="password_confirmation"
                                     class="block text-sm font-medium text-slate-700 mb-1.5">Re-Enter Password</label>
                                 <div class="relative">
-                                    <input id="password_confirmation" name="password_confirmation" autocomplete="new-password"
-                                        x-bind:type="showConfirm ? 'text' : 'password'" placeholder="••••••••"
+                                    <input id="password_confirmation" name="password_confirmation"
+                                        autocomplete="new-password" x-bind:type="showConfirm ? 'text' : 'password'"
+                                        placeholder="••••••••"
                                         class="w-full rounded-xl border border-slate-300 px-3 py-2 pr-12 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition" />
                                     <button type="button" x-on:click="showConfirm = !showConfirm"
                                         class="absolute inset-y-0 right-2 my-auto h-8 px-2 rounded-lg text-xs font-medium text-slate-500 hover:text-sky-700 hover:bg-sky-50 transition"
@@ -227,7 +229,8 @@
                             <label for="no_matriks"
                                 class="block text-sm font-medium text-slate-700 mb-1.5 text-center">No matriks</label>
 
-                            <input id="no_matriks" name="no_matriks" type="text" value="{{ old('no_matriks') }}" autocomplete="off"
+                            <input id="no_matriks" name="no_matriks" type="text" value="{{ old('no_matriks') }}"
+                                autocomplete="off"
                                 x-on:input.debounce.450ms="lookupNoMatriksName($event.target.value)"
                                 x-on:blur="lookupNoMatriksName($event.target.value)" x-ref="noMatriksInput"
                                 x-bind:disabled="role !== 'student'" placeholder="Enter no matriks"
@@ -294,7 +297,7 @@
 
                     try {
                         const response = await fetch(
-                            `{{ route('signup.no-matriks.lookup') }}?no_matriks=${encodeURIComponent(noMatriks)}`, {
+                            `{{ route('signup.no-matriks.lookup', [], false) }}?no_matriks=${encodeURIComponent(noMatriks)}`, {
                                 headers: {
                                     'Accept': 'application/json',
                                 },
