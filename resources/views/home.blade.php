@@ -503,7 +503,16 @@
                             </div>
                         </div>
                         @php
-                            $activeBooking = $activeBooking ?? null;
+                            $activeBooking = collect($userActiveBookings ?? [])
+                                ->filter(
+                                    fn($booking) => in_array(
+                                        strtolower($booking['status'] ?? ''),
+                                        ['pending', 'approved', 'booked'],
+                                        true,
+                                    ),
+                                )
+                                ->sortByDesc(fn($booking) => $booking['booking_date'] ?? ($booking['date'] ?? null))
+                                ->first();
                         @endphp
                         <div class="status-card rounded-2xl p-4 sm:p-5">
                             <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -512,11 +521,11 @@
                                     @if ($activeBooking)
                                         <p class="text-sm text-slate-500 mt-1">Latest active request with
                                             <span class="font-semibold text-slate-700">
-                                                {{ $activeBooking->counsellor_name ?: 'Counsellor' }}
+                                                {{ $activeBooking['counsellor_name'] ?? ($activeBooking['counsellor'] ?? 'Counsellor') }}
                                             </span>
-                                            @if ($activeBooking->booking_date)
+                                            @if (!empty($activeBooking['booking_date'] ?? ($activeBooking['date'] ?? null)))
                                                 •
-                                                {{ \Carbon\Carbon::parse($activeBooking->booking_date)->format('d M Y') }}
+                                                {{ \Carbon\Carbon::parse($activeBooking['booking_date'] ?? $activeBooking['date'])->format('d M Y') }}
                                             @endif
                                         </p>
                                     @else
@@ -628,17 +637,33 @@
                                     ->filter(fn($name) => filled($name))
                                     ->count();
 
-                                $nextBooking = collect($userActiveBookings ?? [])->first(function ($booking) {
-                                    if (empty($booking['booking_date']) || empty($booking['status'])) {
-                                        return false;
-                                    }
+                                $nextBooking = collect($userActiveBookings ?? [])
+                                    ->filter(function ($booking) {
+                                        $bookingDate = $booking['booking_date'] ?? ($booking['date'] ?? null);
+                                        if (empty($bookingDate) || empty($booking['status'])) {
+                                            return false;
+                                        }
 
-                                    return in_array(
-                                        strtolower($booking['status']),
-                                        ['pending', 'booked', 'approved'],
-                                        true,
-                                    );
-                                });
+                                        if (
+                                            !in_array(
+                                                strtolower($booking['status']),
+                                                ['pending', 'booked', 'approved'],
+                                                true,
+                                            )
+                                        ) {
+                                            return false;
+                                        }
+
+                                        try {
+                                            return \Carbon\Carbon::parse($bookingDate)
+                                                ->startOfDay()
+                                                ->gte(now()->startOfDay());
+                                        } catch (\Throwable $exception) {
+                                            return false;
+                                        }
+                                    })
+                                    ->sortBy(fn($booking) => $booking['booking_date'] ?? ($booking['date'] ?? null))
+                                    ->first();
                             @endphp
 
                             @if ($showStats)
@@ -681,18 +706,30 @@
 
                                 <div class="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
                                     <div class="glass-panel rounded-2xl p-4">
-                                        <h3 class="text-sm font-semibold text-slate-800">Next Session Forecast</h3>
+                                        <h3 class="text-sm font-semibold text-slate-800">Next Session Forecast
+                                            (Upcoming Appointment)</h3>
                                         @if ($nextBooking)
                                             @php
-                                                $nextBookingDate = \Carbon\Carbon::parse($nextBooking['booking_date']);
+                                                $nextBookingDate = \Carbon\Carbon::parse(
+                                                    $nextBooking['booking_date'] ?? $nextBooking['date'],
+                                                );
                                                 $nextBookingStatus = ucfirst(strtolower($nextBooking['status']));
                                             @endphp
                                             <p class="mt-2 text-lg font-semibold text-slate-800">
                                                 {{ $nextBookingDate->format('D, d M Y') }}</p>
                                             <p class="text-sm text-slate-500">Status: {{ $nextBookingStatus }}</p>
-                                            @if (!empty($nextBooking['counsellor_name']))
+                                            @php
+                                                $nextBookingTime =
+                                                    $nextBooking['booking_time'] ?? ($nextBooking['time'] ?? null);
+                                            @endphp
+                                            @if (!empty($nextBookingTime))
+                                                <p class="mt-1 text-sm text-slate-500">Time: {{ $nextBookingTime }}
+                                                </p>
+                                            @endif
+                                            @if (!empty($nextBooking['counsellor_name'] ?? ($nextBooking['counsellor'] ?? null)))
                                                 <p class="mt-1 text-sm text-slate-500">Counsellor:
-                                                    {{ $nextBooking['counsellor_name'] }}</p>
+                                                    {{ $nextBooking['counsellor_name'] ?? $nextBooking['counsellor'] }}
+                                                </p>
                                             @endif
                                         @else
                                             <p class="mt-2 text-sm text-slate-500">No upcoming sessions yet. Select a
