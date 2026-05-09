@@ -23,8 +23,18 @@ class BookingRequest extends Model
         'topic',
         'note',
         'status',
+        'review_rating',
+        'review_comment',
+        'reviewed_at',
     ];
-
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'reviewed_at' => 'datetime',
+    ];
     /**
      * Get the user that owns the booking request.
      */

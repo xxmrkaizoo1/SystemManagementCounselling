@@ -1554,6 +1554,9 @@ Route::middleware('auth')->group(function () {
                     'status' => $booking->status,
                     'status_label' => $statusLabel($booking->status),
                     'status_badge_class' => $statusBadgeClass($booking->status),
+                    'review_rating' => $booking->review_rating,
+                    'review_comment' => $booking->review_comment,
+                    'reviewed_at' => optional($booking->reviewed_at)?->toDateTimeString(),
                 ];
             })
             ->all();
@@ -1756,6 +1759,35 @@ Route::middleware('auth')->group(function () {
             'message' => 'Booking cancelled successfully.',
         ]);
     })->name('booking.cancel');
+
+    Route::post('/booking/{bookingRequest}/review', function (Request $request, BookingRequest $bookingRequest) {
+        $user = $request->user();
+        $role = $user?->roles()->value('name');
+
+        abort_unless(in_array($role, ['student', 'teacher', 'lecturer'], true), 403);
+        abort_unless((int) $bookingRequest->user_id === (int) $user?->id, 403);
+
+        if ($bookingRequest->status !== 'completed') {
+            return back()->with('status', 'Only completed sessions can be reviewed.');
+        }
+
+        if (! is_null($bookingRequest->review_rating)) {
+            return back()->with('status', 'You have already reviewed this session.');
+        }
+
+        $validated = $request->validate([
+            'review_rating' => ['required', 'integer', 'min:1', 'max:5'],
+            'review_comment' => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        $bookingRequest->update([
+            'review_rating' => (int) $validated['review_rating'],
+            'review_comment' => trim((string) ($validated['review_comment'] ?? '')) ?: null,
+            'reviewed_at' => now(),
+        ]);
+
+        return back()->with('status', 'Thank you. Your session review has been submitted.');
+    })->name('booking.review');
 
     Route::get('/inbox', function (Request $request) {
         $user = $request->user();

@@ -236,6 +236,12 @@
                 </aside>
 
                 <section class="rounded-2xl border border-slate-200 bg-white/90 p-4 sm:p-6 shadow-sm space-y-5">
+                    @if (session('status'))
+                        <div
+                            class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+                            {{ session('status') }}
+                        </div>
+                    @endif
                     <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 text-sm">
                         <div class="rounded-xl border border-slate-200 bg-slate-50 p-3">
                             <p class="text-xs uppercase tracking-wide text-slate-500">Total</p>
@@ -290,6 +296,7 @@
                                             <th class="px-4 py-3 text-left">Counsellor</th>
                                             <th class="px-4 py-3 text-left">Topic / Note</th>
                                             <th class="px-4 py-3 text-left">Status</th>
+                                            <th class="px-4 py-3 text-left">Review</th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-slate-200 bg-white">
@@ -304,10 +311,42 @@
                                                     <span
                                                         class="inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold {{ $booking['status_badge_class'] }}">{{ $booking['status_label'] }}</span>
                                                 </td>
+                                                <td class="px-4 py-3">
+                                                    @if ($booking['status'] === 'completed' && empty($booking['review_rating']))
+                                                        <form method="POST"
+                                                            action="{{ route('booking.review', $booking['id']) }}"
+                                                            class="space-y-2">
+                                                            @csrf
+                                                            <select name="review_rating" required
+                                                                class="w-full rounded-lg border-slate-300 text-xs focus:border-sky-400 focus:ring-sky-200">
+                                                                <option value="">Rate session</option>
+                                                                <option value="5">⭐⭐⭐⭐⭐ Very satisfied</option>
+                                                                <option value="4">⭐⭐⭐⭐ Satisfied</option>
+                                                                <option value="3">⭐⭐⭐ Neutral</option>
+                                                                <option value="2">⭐⭐ Not satisfied</option>
+                                                                <option value="1">⭐ Very dissatisfied</option>
+                                                            </select>
+                                                            <textarea name="review_comment" rows="2" maxlength="1000" placeholder="Optional feedback"
+                                                                class="w-full rounded-lg border-slate-300 text-xs focus:border-sky-400 focus:ring-sky-200"></textarea>
+                                                            <button type="submit"
+                                                                class="rounded-lg border border-sky-200 bg-sky-50 px-2.5 py-1.5 text-xs font-semibold text-sky-700 hover:bg-sky-100 transition">Submit
+                                                                Review</button>
+                                                        </form>
+                                                    @elseif (!empty($booking['review_rating']))
+                                                        <p class="text-xs font-semibold text-emerald-700">Rated:
+                                                            {{ str_repeat('⭐', (int) $booking['review_rating']) }}</p>
+                                                        <p class="mt-1 text-xs text-slate-600">
+                                                            {{ $booking['review_comment'] ?: 'No comment provided.' }}
+                                                        </p>
+                                                    @else
+                                                        <p class="text-xs text-slate-500">Available after completed
+                                                            session.</p>
+                                                    @endif
+                                                </td>
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="5" class="px-4 py-8 text-center text-slate-500">
+                                                <td colspan="6" class="px-4 py-8 text-center text-slate-500">
                                                     No booking history found for the selected filter.
                                                 </td>
                                             </tr>
