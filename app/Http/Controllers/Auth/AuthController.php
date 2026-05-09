@@ -294,7 +294,7 @@ class AuthController extends Controller
     {
         $validated = $request->validate([
             'full_name' => ['required', 'string', 'max:255'],
-            'phone' => ['required', 'string', 'max:30'],
+            'phone' => ['required', 'digits:12'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'role' => ['required', Rule::in(['student', 'teacher'])],
             'no_matriks' => ['nullable', 'string', 'max:50'],
@@ -303,6 +303,8 @@ class AuthController extends Controller
             'profile_pic' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'lecturer_access_code' => ['nullable', 'string', 'max:100'],
             'password' => ['required', 'confirmed', 'min:8'],
+        ], [
+            'phone.digits' => 'Phone number must be exactly 12 digits.',
         ]);
 
         if ($validated['role'] === 'student') {

@@ -17,7 +17,7 @@
         class="fixed inset-0 z-50 flex items-center justify-center bg-sky-500/95 transition-opacity duration-700">
         <div class="flex flex-col items-center gap-3">
             <div class="w-16 h-16 rounded-full border-10 border-white/35 border-t-white animate-spin"></div>
-            <p class="text-white font-semibold tracking-wide">Loading secure portal...</p>
+            <p class="text-white font-semibold tracking-wide">Loading reset portal.....</p>
         </div>
     </div>
 
@@ -29,7 +29,8 @@
         <div class="absolute -bottom-36 left-1/4 w-[32rem] h-[32rem] bg-emerald-300/30 rounded-full blur-3xl"></div>
     </div>
 
-    <main class="min-h-screen flex items-center justify-center p-4 sm:p-8">
+    <main id="loginContent"
+        class="min-h-screen flex items-center justify-center p-4 sm:p-8 opacity-0 translate-y-2 transition-all duration-700">
         <section
             class="w-full max-w-5xl rounded-[2rem] border border-slate-200/80 bg-white/75 backdrop-blur-xl shadow-2xl overflow-hidden">
             <div class="grid lg:grid-cols-[1.2fr_1fr] gap-0">

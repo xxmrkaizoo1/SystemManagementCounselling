@@ -96,13 +96,28 @@
 
                         <div class="grid sm:grid-cols-2 gap-3">
                             <div>
-                                <label for="full_name" class="block text-sm font-medium text-slate-700 mb-1.5">Full
-                                    Name</label>
-                                <input id="full_name" name="full_name" type="text" value="{{ old('full_name') }}"
-                                    autocomplete="name" x-model="fullName" x-ref="fullNameInput"
-                                    placeholder="Enter your full name"
-                                    class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition"
-                                    x-bind:readonly="role === 'student'" />
+                                <template x-if="role === 'teacher'">
+                                    <div>
+                                        <label for="full_name"
+                                            class="block text-sm font-medium text-slate-700 mb-1.5">Full
+                                            Name</label>
+                                        <input id="full_name" name="full_name" type="text"
+                                            value="{{ old('full_name') }}" autocomplete="name" x-model="fullName"
+                                            x-ref="fullNameInput" placeholder="Enter your full name"
+                                            class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition" />
+                                    </div>
+                                </template>
+                                <template x-if="role === 'student'">
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-700 mb-1.5">Student name
+                                            (from no matriks)</label>
+                                        <div class="rounded-xl border border-dashed border-sky-300 bg-sky-50 px-3 py-2.5 text-sm text-slate-700 min-h-[42px] flex items-center"
+                                            x-text="fullName || 'Enter your no matriks below to auto-fill your name.'">
+                                        </div>
+                                        <input type="hidden" id="full_name" name="full_name" x-model="fullName"
+                                            x-ref="fullNameInput" />
+                                    </div>
+                                </template>
                                 @error('full_name')
                                     <p class="mt-1 text-xs text-rose-600">{{ $message }}</p>
                                 @enderror
@@ -111,7 +126,8 @@
                                 <label for="phone" class="block text-sm font-medium text-slate-700 mb-1.5">No.
                                     Phone</label>
                                 <input id="phone" name="phone" type="text" value="{{ old('phone') }}"
-                                    autocomplete="tel" placeholder="01X-XXXXXXX"
+                                    autocomplete="tel" placeholder="6012XXXXXXXX" inputmode="numeric"
+                                    pattern="[0-9]{12}" minlength="12" maxlength="12"
                                     class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition" />
                                 @error('phone')
                                     <p class="mt-1 text-xs text-rose-600">{{ $message }}</p>
@@ -124,7 +140,7 @@
                                 <label for="email"
                                     class="block text-sm font-medium text-slate-700 mb-1.5">Email</label>
                                 <input id="email" name="email" type="email" value="{{ old('email') }}"
-                                    autocomplete="email" placeholder="name@college.edu"
+                                    autocomplete="email" placeholder="name@gmail.com"
                                     class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition" />
                                 @error('email')
                                     <p class="mt-1 text-xs text-rose-600">{{ $message }}</p>
