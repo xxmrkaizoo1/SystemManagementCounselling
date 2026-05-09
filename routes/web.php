@@ -30,6 +30,38 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
+
+Route::prefix('_local/testing-time')
+    ->middleware('web')
+    ->group(function (): void {
+        Route::post('/set', function (Request $request) {
+            abort_unless(app()->isLocal(), 404);
+
+            $validated = $request->validate([
+                'datetime' => ['required', 'date'],
+            ]);
+
+            $frozenTime = Carbon::parse($validated['datetime'])->toDateTimeString();
+            $request->session()->put('local_test_now', $frozenTime);
+
+            return response()->json([
+                'message' => 'Local test time updated.',
+                'test_now' => $frozenTime,
+            ]);
+        });
+
+        Route::post('/clear', function (Request $request) {
+            abort_unless(app()->isLocal(), 404);
+
+            $request->session()->forget('local_test_now');
+
+            return response()->json([
+                'message' => 'Local test time cleared.',
+            ]);
+        });
+    });
+
+
 Route::get('/', function () {
     $user = request()->user();
 
