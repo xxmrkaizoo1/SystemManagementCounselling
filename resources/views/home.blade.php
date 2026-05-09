@@ -537,69 +537,69 @@
                                 </div>
                             </div>
                             {{-- past, current, future --}}
-                            <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                                @php
-                                    $statusCards = [
-                                        'pending' => [
-                                            'label' => 'Pending',
-                                            'class' => 'bg-amber-100 text-amber-700 ring-1 ring-inset ring-amber-200',
-                                            'icon' => '⌛',
-                                            'desc' => 'Waiting for counsellor confirmation.',
-                                        ],
-                                        'booked' => [
-                                            'label' => 'Booked',
-                                            'class' => 'bg-sky-100 text-sky-700 ring-1 ring-inset ring-sky-200',
-                                            'icon' => '📘',
-                                            'desc' => 'Session reserved and confirmed.',
-                                        ],
-                                        'completed' => [
-                                            'label' => 'Completed',
-                                            'class' =>
-                                                'bg-emerald-100 text-emerald-700 ring-1 ring-inset ring-emerald-200',
-                                            'icon' => '✅',
-                                            'desc' => 'Session finished successfully.',
-                                        ],
-                                        'cancelled' => [
-                                            'label' => 'Cancelled',
-                                            'class' => 'bg-rose-100 text-rose-700 ring-1 ring-inset ring-rose-200',
-                                            'icon' => '🛑',
-                                            'desc' => 'Booking cancelled or unavailable.',
-                                        ],
-                                    ];
-
-                                    $currentStatus = strtolower((string) ($activeBooking->status ?? 'none'));
-                                @endphp
-
-                                @foreach ($statusCards as $key => $config)
+                            @if ($activeBooking)
+                                <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                                     @php
-                                        $isActive = $currentStatus === $key;
-                                        $isPast =
-                                            in_array($currentStatus, ['completed', 'cancelled']) &&
-                                            in_array($key, ['pending', 'booked']);
+                                        $statusCards = [
+                                            'pending' => [
+                                                'label' => 'Pending',
+                                                'class' =>
+                                                    'bg-amber-100 text-amber-700 ring-1 ring-inset ring-amber-200',
+                                                'icon' => '⌛',
+                                                'desc' => 'Waiting for counsellor confirmation.',
+                                            ],
+                                            'booked' => [
+                                                'label' => 'Booked',
+                                                'class' => 'bg-sky-100 text-sky-700 ring-1 ring-inset ring-sky-200',
+                                                'icon' => '📘',
+                                                'desc' => 'Session reserved and confirmed.',
+                                            ],
+                                            'completed' => [
+                                                'label' => 'Completed',
+                                                'class' =>
+                                                    'bg-emerald-100 text-emerald-700 ring-1 ring-inset ring-emerald-200',
+                                                'icon' => '✅',
+                                                'desc' => 'Session finished successfully.',
+                                            ],
+                                            'cancelled' => [
+                                                'label' => 'Cancelled',
+                                                'class' => 'bg-rose-100 text-rose-700 ring-1 ring-inset ring-rose-200',
+                                                'icon' => '🛑',
+                                                'desc' => 'Booking cancelled or unavailable.',
+                                            ],
+                                        ];
+
+                                        $currentStatus = strtolower((string) ($activeBooking->status ?? 'none'));
                                     @endphp
-                                    <div class="status-step rounded-xl border border-slate-200 bg-white/95 p-3.5">
-                                        <div class="flex items-center justify-between">
-                                            <span
-                                                class="text-sm font-semibold text-slate-700">{{ $config['label'] }}</span>
-                                            <span
-                                                class="inline-flex h-7 min-w-7 items-center justify-center rounded-full text-sm {{ $config['class'] }}">{{ $config['icon'] }}</span>
+                                    @foreach ($statusCards as $key => $config)
+                                        @php
+                                            $isActive = $currentStatus === $key;
+                                            $isPast =
+                                                in_array($currentStatus, ['completed', 'cancelled']) &&
+                                                in_array($key, ['pending', 'booked']);
+                                        @endphp
+                                        <div class="status-step rounded-xl border border-slate-200 bg-white/95 p-3.5">
+                                            <div class="flex items-center justify-between">
+                                                <span
+                                                    class="text-sm font-semibold text-slate-700">{{ $config['label'] }}</span>
+                                                <span
+                                                    class="inline-flex h-7 min-w-7 items-center justify-center rounded-full text-sm {{ $config['class'] }}">{{ $config['icon'] }}</span>
+                                            </div>
+                                            <p class="mt-3 text-[14px] text-slate-500">{{ $config['desc'] }}</p>
+                                            <div class="mt-4">
+                                                @if ($isActive)
+                                                    <span
+                                                        class="inline-flex rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-wide {{ $key === 'pending' ? 'bg-amber-100 text-amber-700' : ($key === 'booked' ? 'bg-sky-100 text-sky-700' : ($key === 'completed' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700')) }}">{{ $config['label'] }}</span>
+                                                @elseif($isPast)
+                                                    <span
+                                                        class="inline-flex rounded-full bg-slate-200 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500">Past</span>
+                                                @endif
+                                            </div>
                                         </div>
-                                        <p class="mt-3 text-[14px] text-slate-500">{{ $config['desc'] }}</p>
-                                        <div class="mt-4">
-                                            @if ($isActive)
-                                                <span
-                                                    class="inline-flex rounded-full bg-sky-100 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-sky-700">Active</span>
-                                            @elseif($isPast)
-                                                <span
-                                                    class="inline-flex rounded-full bg-slate-200 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500">Past</span>
-                                            @else
-                                                <span
-                                                    class="inline-flex rounded-full bg-slate-100 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500">Idle</span>
-                                            @endif
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
+                                    @endforeach
+                                </div>
+                            @endif
+
 
                             @if ($activeBooking)
                                 <div class="mt-4 text-sm">
@@ -618,7 +618,9 @@
                                     ->countBy();
 
                                 $activeStatusTotal =
-                                    (int) $statusCounts->get('pending', 0) + (int) $statusCounts->get('booked', 0);
+                                    (int) $statusCounts->get('pending', 0) +
+                                    (int) $statusCounts->get('booked', 0) +
+                                    (int) $statusCounts->get('approved', 0);
                                 $completedStatusTotal = (int) $statusCounts->get('completed', 0);
                                 $cancelledStatusTotal = (int) $statusCounts->get('cancelled', 0);
 
@@ -631,7 +633,11 @@
                                         return false;
                                     }
 
-                                    return in_array(strtolower($booking['status']), ['pending', 'booked'], true);
+                                    return in_array(
+                                        strtolower($booking['status']),
+                                        ['pending', 'booked', 'approved'],
+                                        true,
+                                    );
                                 });
                             @endphp
 
@@ -642,7 +648,8 @@
                                         </p>
                                         <p class="mt-2 text-2xl font-semibold text-slate-800">{{ $activeStatusTotal }}
                                         </p>
-                                        <p class="mt-1 text-sm text-slate-500">Pending and booked counselling slots.
+                                        <p class="mt-1 text-sm text-slate-500">Pending, approved and booked counselling
+                                            slots.
                                         </p>
                                     </div>
                                     <div class="glass-panel rounded-2xl p-4">
