@@ -369,7 +369,6 @@
                     <section
                         class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm animate-fade-up animation-delay-2">
                         <div class="flex items-center justify-between gap-3">
-                            <h2 class="text-lg font-semibold text-slate-900">Card information &amp; slides</h2>
                             <span
                                 class="text-xs font-medium uppercase tracking-[0.12em] text-slate-500">Highlights</span>
                         </div>
@@ -407,50 +406,73 @@
                         </div>
 
                         <div class="mt-4">
-                            <h3 class="text-sm font-semibold text-slate-800">Slides</h3>
-                            <div data-slideshow class="mt-2 rounded-xl border border-slate-200 bg-slate-50/40 p-3">
-                                <div class="relative min-h-[132px] overflow-hidden rounded-lg">
+                            <div data-slideshow
+                                class="mt-2 rounded-2xl border border-slate-200/80 bg-slate-950 p-3 shadow-xl shadow-slate-900/15">
+                                <div class="relative min-h-[220px] overflow-hidden rounded-xl">
                                     <article data-slide-item
-                                        class="absolute inset-0 rounded-xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-4 opacity-100 transition-opacity duration-500">
-                                        <p class="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
-                                            Slide 1
-                                        </p>
-                                        <p class="mt-2 text-sm font-semibold text-slate-900">Daily admin checklist</p>
-                                        <p class="mt-1 text-xs text-slate-600">Verify logins, unread messages, and
-                                            queue
-                                            status.</p>
+                                        class="absolute inset-0 overflow-hidden rounded-xl opacity-100 transition-opacity duration-700">
+                                        <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1400&q=80"
+                                            alt="Team members discussing a daily admin checklist"
+                                            class="h-full w-full object-cover">
+                                        <div
+                                            class="absolute inset-0 bg-gradient-to-r from-slate-950/85 via-slate-900/65 to-slate-800/30">
+                                        </div>
+                                        <div class="absolute inset-x-0 bottom-0 p-5 text-white">
+                                            <p class="mt-2 text-lg font-semibold">Daily admin checklist</p>
+                                            <p class="mt-1 text-sm text-slate-200">Verify logins, unread messages,
+                                                queue status, and pending approvals before noon.</p>
+                                        </div>
                                     </article>
                                     <article data-slide-item
-                                        class="absolute inset-0 rounded-xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-4 opacity-0 pointer-events-none transition-opacity duration-500">
-                                        <p class="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
-                                            Slide 2
-                                        </p>
-                                        <p class="mt-2 text-sm font-semibold text-slate-900">Counsellor performance</p>
-                                        <p class="mt-1 text-xs text-slate-600">Track session volume and response
-                                            consistency.</p>
+                                        class="absolute inset-0 overflow-hidden rounded-xl opacity-0 pointer-events-none transition-opacity duration-700">
+                                        <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1400&q=80"
+                                            alt="Counsellor performance analytics dashboard on a laptop"
+                                            class="h-full w-full object-cover">
+                                        <div
+                                            class="absolute inset-0 bg-gradient-to-r from-indigo-950/90 via-slate-900/70 to-indigo-800/35">
+                                        </div>
+                                        <div class="absolute inset-x-0 bottom-0 p-5 text-white">
+                                            <p class="mt-2 text-lg font-semibold">Counsellor performance</p>
+                                            <p class="mt-1 text-sm text-slate-200">Track session volume, response
+                                                consistency, and client follow-up completion.</p>
+                                        </div>
                                     </article>
                                     <article data-slide-item
-                                        class="absolute inset-0 rounded-xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-4 opacity-0 pointer-events-none transition-opacity duration-500">
-                                        <p class="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
-                                            Slide 3
-                                        </p>
-                                        <p class="mt-2 text-sm font-semibold text-slate-900">System health snapshot</p>
-                                        <p class="mt-1 text-xs text-slate-600">Confirm notification jobs and booking
-                                            flows
-                                            are stable.</p>
+                                        class="absolute inset-0 overflow-hidden rounded-xl opacity-0 pointer-events-none transition-opacity duration-700">
+                                        <img src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=1400&q=80"
+                                            alt="System health and notifications monitoring screen"
+                                            class="h-full w-full object-cover">
+                                        <div
+                                            class="absolute inset-0 bg-gradient-to-r from-emerald-950/90 via-slate-900/70 to-emerald-800/35">
+                                        </div>
+                                        <div class="absolute inset-x-0 bottom-0 p-5 text-white">
+                                            <p class="mt-2 text-lg font-semibold">System health snapshot</p>
+                                            <p class="mt-1 text-sm text-slate-200">Confirm notifications, booking
+                                                workflows, and background jobs are stable.</p>
+                                        </div>
                                     </article>
+
+
                                 </div>
-                                <div class="mt-3 flex items-center justify-between">
+                                <div class="mt-3 flex items-center justify-between gap-2">
                                     <div class="flex items-center gap-2">
                                         <button type="button" data-slide-prev
-                                            class="rounded-md border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100">Prev</button>
+                                            class="rounded-lg border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur hover:bg-white/20">Prev</button>
                                         <button type="button" data-slide-next
-                                            class="rounded-md border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100">Next</button>
+                                            class="rounded-lg border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur hover:bg-white/20">Next</button>
                                     </div>
+
+
                                     <div class="flex items-center gap-1.5">
-                                        <span data-slide-dot class="h-2 w-2 rounded-full bg-slate-900"></span>
-                                        <span data-slide-dot class="h-2 w-2 rounded-full bg-slate-300"></span>
-                                        <span data-slide-dot class="h-2 w-2 rounded-full bg-slate-300"></span>
+                                        <button type="button" data-slide-dot
+                                            class="h-2.5 w-2.5 rounded-full bg-white"
+                                            aria-label="Go to slide 1"></button>
+                                        <button type="button" data-slide-dot
+                                            class="h-2.5 w-2.5 rounded-full bg-white/40"
+                                            aria-label="Go to slide 2"></button>
+                                        <button type="button" data-slide-dot
+                                            class="h-2.5 w-2.5 rounded-full bg-white/40"
+                                            aria-label="Go to slide 3"></button>
                                     </div>
                                 </div>
                             </div>
@@ -648,8 +670,8 @@
                     slide.classList.toggle('pointer-events-none', !isActive);
                 });
                 dots.forEach((dot, dotIndex) => {
-                    dot.classList.toggle('bg-slate-900', dotIndex === index);
-                    dot.classList.toggle('bg-slate-300', dotIndex !== index);
+                    dot.classList.toggle('bg-white', dotIndex === index);
+                    dot.classList.toggle('bg-white/40', dotIndex !== index);
                 });
                 currentSlideIndex = index;
             };
