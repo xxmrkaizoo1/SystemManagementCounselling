@@ -80,8 +80,6 @@
                                             <p class="text-sm text-slate-500">{{ $card['topic'] }}</p>
                                         </div>
                                     </div>
-
-                                    {{-- //dada --}}
                                     <p class="mt-3 text-sm text-slate-600">{{ $card['preview'] }}</p>
                                     <div class="mt-4 flex items-center justify-between text-xs text-slate-500">
                                         <span>{{ $card['time_ago'] }}</span>

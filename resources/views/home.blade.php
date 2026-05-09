@@ -37,8 +37,7 @@
             z-index: 70;
             overflow-y: auto;
             border-radius: 0;
-            background: linear-gradient(180deg, rgb(14 116 144 / 0.22) 0%, rgb(14 165 233 / 0.12) 55%, rgb(240 249 255 / 0.95) 100%);
-            backdrop-filter: blur(10px);
+            background: #d8ecf7;
         }
 
         .home-sidebar.is-open {
@@ -360,7 +359,7 @@
 
                 <div class="p-5 sm:p-7 home-shell">
                     <aside id="home-sidebar"
-                        class="home-sidebar rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm">
+                        class="home-sidebar rounded-2xl border border-[#b9dbef] bg-[#d8ecf7] p-4 shadow-sm">
                         <div class="flex justify-end xl:hidden mb-2">
                             <button type="button" id="sidebar-close"
                                 class="sidebar-close-btn rounded-lg border border-slate-200 px-2.5 py-1 text-sm text-slate-600 hover:text-sky-700 hover:border-sky-200">
@@ -538,7 +537,7 @@
                                 </div>
                             </div>
                             {{-- past, current, future --}}
-                            <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                            <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                                 @php
                                     $statusCards = [
                                         'pending' => [

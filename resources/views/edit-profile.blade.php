@@ -14,6 +14,81 @@
         .profile-shell--counsellor {
             background: linear-gradient(145deg, rgba(238, 242, 255, 0.94), rgba(243, 244, 246, 0.96));
         }
+
+        .page-shell {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .profile-sidebar {
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: min(18rem, 88vw);
+            transform: translateX(-105%);
+            transition: transform 0.25s ease;
+            z-index: 70;
+            overflow-y: auto;
+            border-radius: 0;
+        }
+
+        .profile-sidebar.is-open {
+            transform: translateX(0);
+        }
+
+        .sidebar-toggle {
+            display: inline-flex;
+        }
+
+        .sidebar-toggle[aria-expanded='true'] {
+            border-color: rgb(14 165 233 / 0.6);
+            color: rgb(3 105 161);
+            background: rgb(240 249 255);
+        }
+
+        .sidebar-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgb(15 23 42 / 0.45);
+            z-index: 60;
+            display: none;
+        }
+
+        .sidebar-backdrop.is-open {
+            display: block;
+        }
+
+        @media (min-width: 1280px) {
+            .page-shell-shared {
+                display: grid;
+                grid-template-columns: 250px 280px 1fr;
+                gap: 1.25rem;
+            }
+
+            .page-shell-basic {
+                display: grid;
+                grid-template-columns: 280px 1fr;
+                gap: 1.25rem;
+            }
+
+            .profile-sidebar {
+                width: auto;
+                position: static;
+                transform: none;
+                border-radius: 1rem;
+                z-index: auto;
+                overflow: visible;
+            }
+
+            .sidebar-toggle,
+            .sidebar-close-btn,
+            .sidebar-backdrop {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 
@@ -85,6 +160,16 @@
                     <p class="text-sm text-slate-500 mt-1">{{ ucfirst($role) }} account</p>
                 </div>
                 <div class="flex items-center gap-2">
+                    @if ($showSharedMenu)
+                        <button type="button" id="sidebar-toggle" aria-controls="profile-sidebar" aria-expanded="false"
+                            class="sidebar-toggle rounded-xl border border-slate-200 bg-white p-3 text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                        </button>
+                    @endif
                     <a href="{{ route($dashboardRoute) }}"
                         class="rounded-xl border border-slate-200 bg-white p-3 text-slate-600 hover:text-sky-700 hover:border-sky-200 hover:bg-sky-50 transition">
 
@@ -113,14 +198,14 @@
                     </div>
                 @endif
 
-
-
-
-
-                <div
-                    class="grid gap-5 {{ $showSharedMenu ? 'xl:grid-cols-[250px_280px_1fr]' : 'xl:grid-cols-[280px_1fr]' }}">
+                <div class="page-shell {{ $showSharedMenu ? 'page-shell-shared' : 'page-shell-basic' }}">
                     @if ($showSharedMenu)
-                        <aside class="rounded-2xl border border-[#b9dbef] bg-[#d8ecf7] p-4 shadow-sm">
+                        <aside id="profile-sidebar"
+                            class="profile-sidebar rounded-2xl border border-[#b9dbef] bg-[#d8ecf7] p-4 shadow-sm">
+                            <div class="flex justify-end xl:hidden mb-2">
+                                <button type="button" id="sidebar-close"
+                                    class="sidebar-close-btn rounded-lg border border-slate-200 px-2.5 py-1 text-sm text-slate-600 hover:text-sky-700 hover:border-sky-200">✕</button>
+                            </div>
                             <div class="flex items-center gap-3 mb-4 pb-3 border-b border-sky-200/80">
                                 <img src="{{ $user->profile_pic ?: '/images/default-profile.svg' }}" alt="Profile"
                                     class="w-11 h-11 rounded-full border border-slate-200 object-cover bg-sky-50" />
@@ -140,7 +225,7 @@
                                             class="absolute ml-8 -mt-4 h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-white"
                                             aria-hidden="true"></span>
                                     @endif
-                                     <span
+                                    <span
                                         class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-slate-500">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24"
                                             fill="none" stroke="currentColor" stroke-width="1.8"
@@ -342,13 +427,41 @@
                 </div>
 
             </div>
-
+            @if ($showSharedMenu)
+                <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
+            @endif
             <footer
                 class="px-6 sm:px-8 py-4 border-t border-slate-200/80 text-center text-sm text-slate-500 bg-white/70">
                 © {{ date('Y') }} CollegeCare • Counselling Booking System
             </footer>
         </section>
     </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sidebar = document.getElementById('profile-sidebar');
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            const sidebarClose = document.getElementById('sidebar-close');
+            const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+            if (!sidebar || !sidebarToggle || !sidebarBackdrop) return;
+            const isDesktopViewport = () => window.matchMedia('(min-width: 1280px)').matches;
+            const setSidebarExpanded = (isOpen) => {
+                sidebar.classList.toggle('is-open', isOpen);
+                sidebarBackdrop.classList.toggle('is-open', isOpen);
+                sidebarToggle.setAttribute('aria-expanded', String(isOpen));
+                document.body.classList.toggle('overflow-hidden', isOpen && !isDesktopViewport());
+            };
+            sidebarToggle.addEventListener('click', () => setSidebarExpanded(!sidebar.classList.contains(
+                'is-open')));
+            sidebarClose?.addEventListener('click', () => setSidebarExpanded(false));
+            sidebarBackdrop.addEventListener('click', () => setSidebarExpanded(false));
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape') setSidebarExpanded(false);
+            });
+            window.addEventListener('resize', () => {
+                if (isDesktopViewport()) setSidebarExpanded(false);
+            });
+        });
+    </script>
 </body>
 
 </html>

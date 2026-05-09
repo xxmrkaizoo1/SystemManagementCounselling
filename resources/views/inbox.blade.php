@@ -26,6 +26,13 @@
             display: inline-flex;
         }
 
+        .sidebar-toggle[aria-expanded='true'] {
+            border-color: rgb(14 165 233 / 0.6);
+            color: rgb(3 105 161);
+            background: rgb(240 249 255);
+        }
+
+
         .home-sidebar {
             position: fixed;
             top: 0;
@@ -37,8 +44,7 @@
             z-index: 70;
             overflow-y: auto;
             border-radius: 0;
-            background: linear-gradient(180deg, rgb(14 116 144 / 0.22) 0%, rgb(14 165 233 / 0.12) 55%, rgb(240 249 255 / 0.95) 100%);
-            backdrop-filter: blur(10px);
+             background: #d8ecf7;
         }
 
         .home-sidebar.is-open {
@@ -81,6 +87,11 @@
 
 
         @media (min-width: 1280px) {
+
+            .sidebar-toggle {
+                display: none;
+            }
+
             .home-shell {
                 flex-direction: row;
                 align-items: flex-start;
@@ -135,8 +146,8 @@
                 <div class="flex items-center gap-2">
 
                     {{-- Sidebar toggle --}}
-                    <button type="button" id="sidebar-toggle"
-                        class="sidebar-toggle sidebar-toggle  rounded-xl border border-slate-200 bg-white p-3 text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">
+                    <button type="button" id="sidebar-toggle" aria-controls="home-sidebar" aria-expanded="false"
+                        class="sidebar-toggle rounded-xl border border-slate-200 bg-white p-3 text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">
 
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
@@ -404,7 +415,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const inboxLoader = document.getElementById('inbox-loader');
+            const inboxLoader = document.getElementById('loginLoader');
             const sidebar = document.getElementById('home-sidebar');
             const sidebarToggle = document.getElementById('sidebar-toggle');
             const sidebarClose = document.getElementById('sidebar-close');
@@ -425,20 +436,28 @@
                 once: true
             });
             window.setTimeout(hideInboxLoader, 5000);
-            const closeSidebar = () => {
+            const isDesktopViewport = () => window.matchMedia('(min-width: 1280px)').matches;
+
+            const setSidebarExpanded = (isOpen) => {
                 if (!sidebar || !sidebarBackdrop) return;
-                sidebar.classList.remove('is-open');
-                sidebarBackdrop.classList.remove('is-open');
+                sidebar.classList.toggle('is-open', isOpen);
+                sidebarBackdrop.classList.toggle('is-open', isOpen);
+                sidebarToggle?.setAttribute('aria-expanded', String(isOpen));
+                document.body.classList.toggle('overflow-hidden', isOpen && !isDesktopViewport());
             };
 
+            const closeSidebar = () => setSidebarExpanded(false);
+
             const openSidebar = () => {
-                if (!sidebar || !sidebarBackdrop) return;
-                sidebar.classList.add('is-open');
-                sidebarBackdrop.classList.add('is-open');
+                if (isDesktopViewport()) return;
+                setSidebarExpanded(true);
             };
 
             if (sidebarToggle) {
-                sidebarToggle.addEventListener('click', openSidebar);
+                sidebarToggle.addEventListener('click', () => {
+                    const isOpen = sidebar?.classList.contains('is-open');
+                    setSidebarExpanded(!isOpen);
+                });
             }
             if (sidebarClose) {
                 sidebarClose.addEventListener('click', closeSidebar);
@@ -446,6 +465,14 @@
             if (sidebarBackdrop) {
                 sidebarBackdrop.addEventListener('click', closeSidebar);
             }
+
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape') closeSidebar();
+            });
+
+            window.addEventListener('resize', () => {
+                if (isDesktopViewport()) closeSidebar();
+            });
 
             const notificationsList = document.getElementById('notifications-list');
             const notificationCheckboxes = Array.from(document.querySelectorAll('.notification-checkbox'));
