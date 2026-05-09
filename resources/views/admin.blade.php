@@ -167,65 +167,78 @@
                     </div>
 
                     <div class="flex-1">
-                        <p class="hidden xl:block text-xs uppercase tracking-[0.2em] text-slate-500 mb-3 font-semibold">Admin menu
+                        <p class="hidden xl:block text-xs uppercase tracking-[0.2em] text-slate-500 mb-3 font-semibold">
+                            Admin menu
                         </p> <a href="{{ route('admin.accounts.manage') }}"
                             class="group flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-gradient-to-r from-white to-slate-50 px-3.5 py-3 text-sm font-medium text-slate-700 shadow-sm hover:border-sky-200 hover:from-sky-50 hover:to-indigo-50 hover:text-sky-800 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
-                            <span class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition group-hover:bg-sky-100 group-hover:text-sky-700">
-                            <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"
-                                aria-hidden="true">
-                                <path d="M10 9a3 3 0 100-6 3 3 0 000 6z" />
-                                <path fill-rule="evenodd" d="M3 16a7 7 0 1114 0H3z" clip-rule="evenodd" />
-                            </svg>
+                            <span
+                                class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition group-hover:bg-sky-100 group-hover:text-sky-700">
+                                <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path d="M10 9a3 3 0 100-6 3 3 0 000 6z" />
+                                    <path fill-rule="evenodd" d="M3 16a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                                </svg>
                             </span>
                             <span>Manage user accounts</span>
-                            <svg class="ml-auto h-4 w-4 text-slate-300 transition group-hover:text-sky-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 111.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                            <svg class="ml-auto h-4 w-4 text-slate-300 transition group-hover:text-sky-500"
+                                viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd"
+                                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 111.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                    clip-rule="evenodd" />
                             </svg>
                         </a>
                         <a href="{{ url('/admin/no-matriks-users') }}"
                             class="group mt-2.5 flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-gradient-to-r from-white to-slate-50 px-3.5 py-3 text-sm font-medium text-slate-700 shadow-sm hover:border-sky-200 hover:from-sky-50 hover:to-indigo-50 hover:text-sky-800 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
-                            <span class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition group-hover:bg-sky-100 group-hover:text-sky-700">
-                            <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"
-                                aria-hidden="true">
-                                <path fill-rule="evenodd"
-                                    d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V7.414A2 2 0 0017.414 6L14 2.586A2 2 0 0012.586 2H4zm3 6a1 1 0 000 2h6a1 1 0 100-2H7zm0 4a1 1 0 000 2h6a1 1 0 100-2H7z"
-                                    clip-rule="evenodd" />
-                            </svg>
+                            <span
+                                class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition group-hover:bg-sky-100 group-hover:text-sky-700">
+                                <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd"
+                                        d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V7.414A2 2 0 0017.414 6L14 2.586A2 2 0 0012.586 2H4zm3 6a1 1 0 000 2h6a1 1 0 100-2H7zm0 4a1 1 0 000 2h6a1 1 0 100-2H7z"
+                                        clip-rule="evenodd" />
+                                </svg>
                             </span>
                             <span>View no_matriks list</span>
-                            <svg class="ml-auto h-4 w-4 text-slate-300 transition group-hover:text-sky-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 111.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                            <svg class="ml-auto h-4 w-4 text-slate-300 transition group-hover:text-sky-500"
+                                viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd"
+                                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 111.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                    clip-rule="evenodd" />
                             </svg>
                         </a>
 
 
                         <a href="{{ route('admin.student-statistics') }}"
                             class="group mt-2.5 flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-gradient-to-r from-white to-slate-50 px-3.5 py-3 text-sm font-medium text-slate-700 shadow-sm hover:border-sky-200 hover:from-sky-50 hover:to-indigo-50 hover:text-sky-800 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
-                            <span class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition group-hover:bg-sky-100 group-hover:text-sky-700">
-                            <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"
-                                aria-hidden="true">
-                                <path
-                                    d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5H2v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9H8V7zM14 3a1 1 0 011-1h2a1 1 0 011 1v13h-4V3z" />
-                            </svg>
+                            <span
+                                class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition group-hover:bg-sky-100 group-hover:text-sky-700">
+                                <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path
+                                        d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5H2v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9H8V7zM14 3a1 1 0 011-1h2a1 1 0 011 1v13h-4V3z" />
+                                </svg>
                             </span>
                             <span>Student booking statistics</span>
-                            <svg class="ml-auto h-4 w-4 text-slate-300 transition group-hover:text-sky-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 111.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                            <svg class="ml-auto h-4 w-4 text-slate-300 transition group-hover:text-sky-500"
+                                viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd"
+                                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 111.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                    clip-rule="evenodd" />
                             </svg>
                         </a>
                         <a href="{{ route('admin.counsellor.signup') }}"
                             class="group mt-2.5 flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-gradient-to-r from-white to-slate-50 px-3.5 py-3 text-sm font-medium text-slate-700 shadow-sm hover:border-sky-200 hover:from-sky-50 hover:to-indigo-50 hover:text-sky-800 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
-                            <span class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition group-hover:bg-sky-100 group-hover:text-sky-700">
-                            <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"
-                                aria-hidden="true">
-                                <path fill-rule="evenodd"
-                                    d="M10 2a4 4 0 00-4 4v1H5a2 2 0 00-2 2v7a2 2 0 002 2h10a2 2 0 002-2V9a2 2 0 00-2-2h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4z"
-                                    clip-rule="evenodd" />
-                            </svg>
+                            <span
+                                class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition group-hover:bg-sky-100 group-hover:text-sky-700">
+                                <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd"
+                                        d="M10 2a4 4 0 00-4 4v1H5a2 2 0 00-2 2v7a2 2 0 002 2h10a2 2 0 002-2V9a2 2 0 00-2-2h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4z"
+                                        clip-rule="evenodd" />
+                                </svg>
                             </span>
                             <span>Sign up counsellor</span>
-                            <svg class="ml-auto h-4 w-4 text-slate-300 transition group-hover:text-sky-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 111.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                            <svg class="ml-auto h-4 w-4 text-slate-300 transition group-hover:text-sky-500"
+                                viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd"
+                                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 111.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                    clip-rule="evenodd" />
                             </svg>
                         </a>
                     </div>
@@ -351,6 +364,99 @@
                             <p class="mt-2 text-xs font-medium text-amber-700">{{ $pendingRatio }}% of bookings</p>
                         </article>
                     </div>
+
+
+                    <section
+                        class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm animate-fade-up animation-delay-2">
+                        <div class="flex items-center justify-between gap-3">
+                            <h2 class="text-lg font-semibold text-slate-900">Card information &amp; slides</h2>
+                            <span
+                                class="text-xs font-medium uppercase tracking-[0.12em] text-slate-500">Highlights</span>
+                        </div>
+                        <p class="mt-1 text-sm text-slate-600">Quick cards and horizontally scrollable slides for
+                            important updates.</p>
+
+                        <div class="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                            <article class="rounded-xl border border-sky-100 bg-sky-50 p-3">
+                                <p class="text-xs font-semibold uppercase tracking-[0.12em] text-sky-700">Top priority
+                                </p>
+                                <p class="mt-1 text-sm font-semibold text-slate-900">Review pending bookings</p>
+                                <p class="mt-1 text-xs text-slate-600">Keep wait times low by confirming requests
+                                    daily.</p>
+                            </article>
+                            <article class="rounded-xl border border-emerald-100 bg-emerald-50 p-3">
+                                <p class="text-xs font-semibold uppercase tracking-[0.12em] text-emerald-700">
+                                    Engagement</p>
+                                <p class="mt-1 text-sm font-semibold text-slate-900">Follow up with new users</p>
+                                <p class="mt-1 text-xs text-slate-600">Send welcome guidance within 24 hours of signup.
+                                </p>
+                            </article>
+                            <article class="rounded-xl border border-indigo-100 bg-indigo-50 p-3">
+                                <p class="text-xs font-semibold uppercase tracking-[0.12em] text-indigo-700">Operations
+                                </p>
+                                <p class="mt-1 text-sm font-semibold text-slate-900">Check counsellor availability</p>
+                                <p class="mt-1 text-xs text-slate-600">Ensure schedules are up-to-date each week.</p>
+                            </article>
+                            <article class="rounded-xl border border-amber-100 bg-amber-50 p-3">
+                                <p class="text-xs font-semibold uppercase tracking-[0.12em] text-amber-700">Reminder
+                                </p>
+                                <p class="mt-1 text-sm font-semibold text-slate-900">Update announcements</p>
+                                <p class="mt-1 text-xs text-slate-600">Share policy changes with staff and counsellors.
+                                </p>
+                            </article>
+                        </div>
+
+                        <div class="mt-4">
+                            <h3 class="text-sm font-semibold text-slate-800">Slides</h3>
+                            <div data-slideshow class="mt-2 rounded-xl border border-slate-200 bg-slate-50/40 p-3">
+                                <div class="relative min-h-[132px] overflow-hidden rounded-lg">
+                                    <article data-slide-item
+                                        class="absolute inset-0 rounded-xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-4 opacity-100 transition-opacity duration-500">
+                                        <p class="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
+                                            Slide 1
+                                        </p>
+                                        <p class="mt-2 text-sm font-semibold text-slate-900">Daily admin checklist</p>
+                                        <p class="mt-1 text-xs text-slate-600">Verify logins, unread messages, and
+                                            queue
+                                            status.</p>
+                                    </article>
+                                    <article data-slide-item
+                                        class="absolute inset-0 rounded-xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-4 opacity-0 pointer-events-none transition-opacity duration-500">
+                                        <p class="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
+                                            Slide 2
+                                        </p>
+                                        <p class="mt-2 text-sm font-semibold text-slate-900">Counsellor performance</p>
+                                        <p class="mt-1 text-xs text-slate-600">Track session volume and response
+                                            consistency.</p>
+                                    </article>
+                                    <article data-slide-item
+                                        class="absolute inset-0 rounded-xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-4 opacity-0 pointer-events-none transition-opacity duration-500">
+                                        <p class="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
+                                            Slide 3
+                                        </p>
+                                        <p class="mt-2 text-sm font-semibold text-slate-900">System health snapshot</p>
+                                        <p class="mt-1 text-xs text-slate-600">Confirm notification jobs and booking
+                                            flows
+                                            are stable.</p>
+                                    </article>
+                                </div>
+                                <div class="mt-3 flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <button type="button" data-slide-prev
+                                            class="rounded-md border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100">Prev</button>
+                                        <button type="button" data-slide-next
+                                            class="rounded-md border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100">Next</button>
+                                    </div>
+                                    <div class="flex items-center gap-1.5">
+                                        <span data-slide-dot class="h-2 w-2 rounded-full bg-slate-900"></span>
+                                        <span data-slide-dot class="h-2 w-2 rounded-full bg-slate-300"></span>
+                                        <span data-slide-dot class="h-2 w-2 rounded-full bg-slate-300"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
 
                     <div class="grid lg:grid-cols-2 gap-4">
                         <article id="roles"
@@ -526,6 +632,64 @@
             });
             desktopMediaQuery.addEventListener('change', handleViewportChange);
             handleViewportChange();
+            const slideshow = document.querySelector('[data-slideshow]');
+            const slideItems = slideshow ? Array.from(slideshow.querySelectorAll('[data-slide-item]')) : [];
+            const dots = slideshow ? Array.from(slideshow.querySelectorAll('[data-slide-dot]')) : [];
+            const prevButton = slideshow?.querySelector('[data-slide-prev]');
+            const nextButton = slideshow?.querySelector('[data-slide-next]');
+            let currentSlideIndex = 0;
+            let slideInterval;
+
+            const showSlide = (index) => {
+                slideItems.forEach((slide, slideIndex) => {
+                    const isActive = slideIndex === index;
+                    slide.classList.toggle('opacity-100', isActive);
+                    slide.classList.toggle('opacity-0', !isActive);
+                    slide.classList.toggle('pointer-events-none', !isActive);
+                });
+                dots.forEach((dot, dotIndex) => {
+                    dot.classList.toggle('bg-slate-900', dotIndex === index);
+                    dot.classList.toggle('bg-slate-300', dotIndex !== index);
+                });
+                currentSlideIndex = index;
+            };
+
+            const moveSlide = (step) => {
+                if (!slideItems.length) return;
+                const nextIndex = (currentSlideIndex + step + slideItems.length) % slideItems.length;
+                showSlide(nextIndex);
+            };
+
+            const startAutoSlide = () => {
+                if (!slideItems.length) return;
+                slideInterval = window.setInterval(() => moveSlide(1), 3500);
+            };
+
+            const resetAutoSlide = () => {
+                window.clearInterval(slideInterval);
+                startAutoSlide();
+            };
+
+            if (slideshow && slideItems.length > 1) {
+                prevButton?.addEventListener('click', () => {
+                    moveSlide(-1);
+                    resetAutoSlide();
+                });
+                nextButton?.addEventListener('click', () => {
+                    moveSlide(1);
+                    resetAutoSlide();
+                });
+                dots.forEach((dot, dotIndex) => {
+                    dot.addEventListener('click', () => {
+                        showSlide(dotIndex);
+                        resetAutoSlide();
+                    });
+                });
+                slideshow.addEventListener('mouseenter', () => window.clearInterval(slideInterval));
+                slideshow.addEventListener('mouseleave', startAutoSlide);
+                showSlide(0);
+                startAutoSlide();
+            }
         });
     </script>
 </body>

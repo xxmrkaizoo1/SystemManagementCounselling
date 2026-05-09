@@ -101,6 +101,24 @@ Route::get('/', function () {
         ->values()
         ->all();
 
+    $buildDailySlots = static function (Carbon $date): array {
+        $weekdayIso = (int) $date->dayOfWeekIso;
+
+        if ($weekdayIso >= 6) {
+            return [];
+        }
+
+        $startHour = 8;
+        $endHour = $weekdayIso === 5 ? 12 : 17;
+        $slots = [];
+
+        for ($hour = $startHour; $hour < $endHour; $hour++) {
+            $slots[] = sprintf('%02d:00 - %02d:00', $hour, $hour + 1);
+        }
+
+        return $slots;
+    };
+
     $currentMinutes = ($today->hour * 60) + $today->minute;
 
     $todayActiveBookings = BookingRequest::query()
@@ -108,36 +126,92 @@ Route::get('/', function () {
         ->whereIn('status', ['pending', 'approved'])
         ->get(['booking_time', 'counsellor_name']);
 
-    $occupiedNowCounsellors = $todayActiveBookings
-        // Collection pipeline only (query methods must stay above on BookingRequest::query()).
-        ->filter(static function (BookingRequest $booking) use ($currentMinutes): bool {
-            if (!preg_match('/^(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})$/', (string) $booking->booking_time, $matches)) {
-                return false;
-            }
+    $occupiedNowCounsellors = [];
 
-            [$startHour, $startMinute] = array_map('intval', explode(':', $matches[1]));
-            [$endHour, $endMinute] = array_map('intval', explode(':', $matches[2]));
+    foreach ($todayActiveBookings as $booking) {
+        $rawTimeRange = trim((string) $booking->booking_time);
 
-            $startMinutes = ($startHour * 60) + $startMinute;
-            $endMinutes = ($endHour * 60) + $endMinute;
+        if (!preg_match('/^(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})$/', $rawTimeRange, $matches)) {
+            continue;
+        }
 
-            return $currentMinutes >= $startMinutes && $currentMinutes < $endMinutes;
-        })->whereDate('booking_date', $today->toDateString())
+        [$startHour, $startMinute] = array_map('intval', explode(':', $matches[1]));
+        [$endHour, $endMinute] = array_map('intval', explode(':', $matches[2]));
+
+        $startMinutes = ($startHour * 60) + $startMinute;
+        $endMinutes = ($endHour * 60) + $endMinute;
+
+        if ($currentMinutes < $startMinutes || $currentMinutes >= $endMinutes) {
+            continue;
+        }
+
+        $name = trim((string) $booking->counsellor_name);
+        if ($name !== '') {
+            $occupiedNowCounsellors[] = $name;
+        }
+    }
+
+    $occupiedNowCounsellors = array_values(array_unique($occupiedNowCounsellors));
+
+
+    $futureOccupiedSlots = BookingRequest::query()
         ->whereIn('status', ['pending', 'approved'])
-        ->pluck('counsellor_name')
-        ->map(static fn(?string $name): string => trim((string) $name))
-        ->filter()
-        ->unique()
-        ->values()
-        ->all();
+        ->whereDate('booking_date', '>=', $today->toDateString())
+        ->get(['booking_date', 'booking_time', 'counsellor_name']);
+
+    $occupiedSlotLookup = [];
+    foreach ($futureOccupiedSlots as $slot) {
+        $slotDate = trim((string) $slot->booking_date);
+        $slotTime = trim((string) $slot->booking_time);
+        $slotCounsellor = trim((string) $slot->counsellor_name);
+
+        if ($slotDate === '' || $slotTime === '' || $slotCounsellor === '') {
+            continue;
+        }
+
+        $occupiedSlotLookup[$slotCounsellor][$slotDate][$slotTime] = true;
+    }
+
+    $findNextAvailableSlot = static function (string $counsellorName) use ($today, $buildDailySlots, $occupiedSlotLookup): ?string {
+        $cursor = $today->copy()->startOfDay();
+
+        for ($offset = 0; $offset <= 60; $offset++) {
+            $date = $cursor->copy()->addDays($offset);
+            $slots = $buildDailySlots($date);
+
+            foreach ($slots as $slot) {
+                [$startTime] = array_map('trim', explode('-', $slot));
+                $slotStart = Carbon::createFromFormat('Y-m-d H:i', $date->toDateString() . ' ' . $startTime);
+
+                if ($slotStart->lessThanOrEqualTo($today)) {
+                    continue;
+                }
+
+                if (isset($occupiedSlotLookup[$counsellorName][$date->toDateString()][$slot])) {
+                    continue;
+                }
+
+                return $slotStart->isSameDay($today)
+                    ? 'Next ' . $slotStart->format('g:i A')
+                    : 'Next ' . $slotStart->format('D, M j g:i A');
+            }
+        }
+
+        return null;
+    };
 
     $occupiedCounsellorLookup = array_flip($occupiedNowCounsellors);
     $landingCounsellors = collect($counsellors)
-        ->map(static fn(array $counsellor): array => [
-            'name' => $counsellor['name'],
-            'profile_pic' => $counsellor['profile_pic'],
-            'status' => array_key_exists($counsellor['name'], $occupiedCounsellorLookup) ? 'Busy' : 'Available',
-        ])
+        ->map(static function (array $counsellor) use ($occupiedCounsellorLookup, $findNextAvailableSlot): array {
+            $isBusyNow = array_key_exists($counsellor['name'], $occupiedCounsellorLookup);
+
+            return [
+                'name' => $counsellor['name'],
+                'profile_pic' => $counsellor['profile_pic'],
+                'status' => $isBusyNow ? 'Busy' : 'Available',
+                'status_label' => $isBusyNow ? ($findNextAvailableSlot($counsellor['name']) ?? 'Busy') : 'Available',
+            ];
+        })
         ->values()
         ->all();
     return view('index', [

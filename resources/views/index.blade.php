@@ -316,7 +316,7 @@
                                         </div>
                                         <span
                                             class="text-xs px-3 py-1 rounded-full {{ $isAvailable ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700' }}">
-                                            {{ $isAvailable ? 'Available' : 'Busy' }}
+                                            {{ $counsellor['status_label'] ?? ($isAvailable ? 'Available' : 'Busy') }}
                                         </span>
                                     </div>
                                 @empty
