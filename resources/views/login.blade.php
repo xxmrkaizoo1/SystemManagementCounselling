@@ -99,9 +99,9 @@
 
                     <div
                         class="mt-6 rounded-3xl border border-slate-200 bg-gradient-to-br from-white via-sky-50 to-indigo-50 p-6 min-h-[15rem]">
-                        <div class="grid sm:grid-cols-[220px_1fr] items-center gap-6 h-full">
+                        <div class="grid gap-5 lg:grid-cols-[220px_1fr] lg:items-center h-full">
                             <div
-                                class="presenter-figure mx-auto rounded-3xl border border-sky-100 bg-white/90 w-[140px] h-[170px] relative shadow-sm scale-[1.2] origin-top">
+                                class="presenter-figure hidden lg:block mx-auto rounded-3xl border border-sky-100 bg-white/90 w-[140px] h-[170px] relative shadow-sm scale-[1.2] origin-top">
                                 <div
                                     class="presenter-head absolute top-4 left-[2.25rem] w-12 h-12 rounded-full bg-orange-100 border border-orange-200">
                                 </div>

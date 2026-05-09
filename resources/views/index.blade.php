@@ -84,21 +84,7 @@
         <div class="aurora-band aurora-band--two"></div>
     </div>
 
-    <!-- decorative moving characters -->
-    <div class="fixed inset-0 -z-10 pointer-events-none overflow-hidden hidden md:block" aria-hidden="true">
-        <div class="dummy-walker dummy-walker--one">
-            <span class="dummy-head"></span>
-            <span class="dummy-body"></span>
-        </div>
-        <div class="dummy-walker dummy-walker--two">
-            <span class="dummy-head"></span>
-            <span class="dummy-body"></span>
-        </div>
-        <div class="dummy-walker dummy-walker--three">
-            <span class="dummy-head"></span>
-            <span class="dummy-body"></span>
-        </div>
-    </div>
+
 
     <div id="content" class="opacity-0 translate-y-2 min-h-screen flex flex-col">
         <!-- HEADER -->

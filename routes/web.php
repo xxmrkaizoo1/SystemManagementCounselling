@@ -101,8 +101,27 @@ Route::get('/', function () {
         ->values()
         ->all();
 
-    $occupiedCounsellors = BookingRequest::query()
+    $currentMinutes = ($today->hour * 60) + $today->minute;
+
+    $todayActiveBookings = BookingRequest::query()
         ->whereDate('booking_date', $today->toDateString())
+        ->whereIn('status', ['pending', 'approved'])
+        ->get(['booking_time', 'counsellor_name']);
+
+    $occupiedNowCounsellors = $todayActiveBookings
+        ->filter(static function (BookingRequest $booking) use ($currentMinutes): bool {
+            if (!preg_match('/^(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})$/', (string) $booking->booking_time, $matches)) {
+                return false;
+            }
+
+            [$startHour, $startMinute] = array_map('intval', explode(':', $matches[1]));
+            [$endHour, $endMinute] = array_map('intval', explode(':', $matches[2]));
+
+            $startMinutes = ($startHour * 60) + $startMinute;
+            $endMinutes = ($endHour * 60) + $endMinute;
+
+            return $currentMinutes >= $startMinutes && $currentMinutes < $endMinutes;
+        })->whereDate('booking_date', $today->toDateString())
         ->whereIn('status', ['pending', 'approved'])
         ->pluck('counsellor_name')
         ->map(static fn(?string $name): string => trim((string) $name))
@@ -111,7 +130,7 @@ Route::get('/', function () {
         ->values()
         ->all();
 
-    $occupiedCounsellorLookup = array_flip($occupiedCounsellors);
+    $occupiedCounsellorLookup = array_flip($occupiedNowCounsellors);
     $landingCounsellors = collect($counsellors)
         ->map(static fn(array $counsellor): array => [
             'name' => $counsellor['name'],
