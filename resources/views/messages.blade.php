@@ -85,10 +85,17 @@
                                     <p class="mt-3 text-sm text-slate-600">{{ $card['preview'] }}</p>
                                     <div class="mt-4 flex items-center justify-between text-xs text-slate-500">
                                         <span>{{ $card['time_ago'] }}</span>
-                                        <button type="button"
-                                            data-open-chat="{{ route('chat.index', ['user_id' => $card['user_id']]) }}"
-                                            class="rounded-lg bg-sky-600 px-3 py-1.5 font-semibold text-white">Open
-                                            Chat</button>
+                                        @if (!empty($card['action_url']))
+                                            <a href="{{ $card['action_url'] }}"
+                                                class="rounded-lg bg-amber-500 px-3 py-1.5 font-semibold text-white hover:bg-amber-600">
+                                                {{ $card['action_label'] ?? 'View Request' }}
+                                            </a>
+                                        @else
+                                            <button type="button"
+                                                data-open-chat="{{ route('chat.index', ['user_id' => $card['user_id']]) }}"
+                                                class="rounded-lg bg-sky-600 px-3 py-1.5 font-semibold text-white">Open
+                                                Chat</button>
+                                        @endif
                                     </div>
 
 

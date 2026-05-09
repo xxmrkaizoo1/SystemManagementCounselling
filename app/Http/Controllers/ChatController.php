@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BookingRequest;
 use App\Models\ChatMessage;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
@@ -69,7 +70,42 @@ class ChatController extends Controller
             ];
         })->filter(fn(array $card): bool => ! empty($card['user_id']))->values();
 
-        $requestCards = collect();
+        $role = strtolower(trim((string) $user->roles()->value('name')));
+        $userDisplayName = trim((string) ($user->full_name ?: $user->name));
+
+        $requestCards = BookingRequest::query()
+            ->with('user:id,name,full_name')
+            ->when($role === 'counsellor', function ($query) use ($userDisplayName) {
+                $query->where('status', 'pending')
+                    ->where('counsellor_name', $userDisplayName);
+            }, function ($query) use ($user) {
+                $query->where('status', 'pending')
+                    ->where('user_id', $user->id);
+            })
+            ->latest('created_at')
+            ->limit(40)
+            ->get()
+            ->map(function (BookingRequest $request): array {
+                $studentName = trim((string) ($request->user?->full_name ?: $request->user?->name ?: 'Student'));
+                $topic = trim((string) ($request->topic ?: 'General support'));
+
+                return [
+                    'user_id' => $request->user_id,
+                    'name' => $studentName,
+                    'initial' => strtoupper(substr($studentName, 0, 1)),
+                    'topic' => 'Session request: ' . $topic,
+                    'preview' => $request->note
+                        ? str($request->note)->limit(90, '…')->toString()
+                        : 'New booking request for ' . ($request->booking_date ?: 'upcoming date') . ' at ' . ($request->booking_time ?: 'scheduled time') . '.',
+                    'time_ago' => $request->created_at?->diffForHumans() ?? 'Recently',
+                    'category' => 'request',
+                    'search' => strtolower($studentName . ' ' . $topic . ' ' . ($request->note ?? '')),
+                    'action_label' => 'Review Request',
+                    'action_url' => route('counsellor.pending-requests'),
+                ];
+            });
+
+        $combinedCards = $messageCards->concat($requestCards)->values();
 
         $counts = [
             'active' => $messageCards->where('category', 'active')->count(),
@@ -83,7 +119,7 @@ class ChatController extends Controller
             ->count();
 
         return view('messages', [
-            'messageCards' => $messageCards,
+            'messageCards' => $combinedCards,
             'counts' => $counts,
             'newNotifications' => $newNotifications,
         ]);
