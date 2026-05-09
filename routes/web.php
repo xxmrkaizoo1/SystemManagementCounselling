@@ -579,7 +579,19 @@ Route::middleware('auth')->group(function () {
             ->leftJoin('users', 'users.id', '=', 'booking_requests.user_id')
             ->leftJoin('user_role', 'user_role.user_id', '=', 'users.id')
             ->leftJoin('roles', 'roles.id', '=', 'user_role.role_id')
-            ->groupBy('booking_requests.id')
+            ->groupBy(
+                'booking_requests.id',
+                'booking_requests.status',
+                'booking_requests.created_at',
+                'users.name',
+                'users.full_name',
+                'users.email',
+                'users.phone',
+                'users.no_matriks',
+                'users.years',
+                'users.programme',
+                'users.profile_pic'
+            )
             ->select(
                 'booking_requests.id',
                 'booking_requests.status',
