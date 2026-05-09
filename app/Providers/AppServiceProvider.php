@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -26,6 +27,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Carbon::setTestNow();
+
+        if ($this->app->bound('request')) {
+            $request = request();
+            $frozenTime = $request->hasSession() ? $request->session()->get('local_test_now') : null;
+
+            if (is_string($frozenTime) && $frozenTime !== '') {
+                Carbon::setTestNow(Carbon::parse($frozenTime));
+            }
+        }
 
         if ($this->app->environment('production')) {
             URL::forceScheme('https');

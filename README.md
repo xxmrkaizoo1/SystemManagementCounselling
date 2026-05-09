@@ -103,6 +103,26 @@ Use your local seeded password configuration and rotate credentials before any s
 php artisan test
 ```
 
+### Local time/date override for manual testing
+
+In the `local` environment, you can freeze the application's current time (the value used by `now()` and Carbon) per browser session:
+
+```bash
+# Freeze app time
+curl -X POST http://127.0.0.1:8000/_local/testing-time/set \
+  -H "Content-Type: application/json" \
+  -d '{"datetime":"2026-05-15 09:30:00"}' \
+  -c cookies.txt -b cookies.txt
+
+# Clear override (return to real current time)
+curl -X POST http://127.0.0.1:8000/_local/testing-time/clear \
+  -c cookies.txt -b cookies.txt
+```
+
+Notes:
+- Available only when `APP_ENV=local`.
+- The override is session-based, so keep sending the same cookies (`-c/-b`) while testing.
+
 ## Useful Commands
 
 ```bash
