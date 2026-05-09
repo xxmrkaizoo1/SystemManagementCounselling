@@ -750,8 +750,10 @@
                                                         'bar' => 'bg-amber-400',
                                                     ],
                                                     [
-                                                        'label' => 'Booked',
-                                                        'value' => (int) $statusCounts->get('booked', 0),
+                                                        'label' => 'Booked / Approved',
+                                                        'value' =>
+                                                            (int) $statusCounts->get('booked', 0) +
+                                                            (int) $statusCounts->get('approved', 0),
                                                         'bar' => 'bg-sky-500',
                                                     ],
                                                     [

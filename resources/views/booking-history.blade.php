@@ -342,7 +342,7 @@
 
             <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
 
-            <footer class="px-5 sm:px-7 py-4 border-t border-slate-200 text-xs text-slate-500 bg-white/80">
+            <footer class="px-5 sm:px-7 py-4 border-t border-slate-200 text-center text-xs text-slate-500 bg-white/80">
                 © {{ date('Y') }} CollegeCare • Counselling Booking System
             </footer>
         </div>
