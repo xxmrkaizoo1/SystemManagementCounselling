@@ -365,29 +365,27 @@
                         </article>
                     </div>
 
-
+                    {{-- add more  --}}
                     <section
                         class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm animate-fade-up animation-delay-2">
                         <div class="flex items-center justify-between gap-3">
-                            <div class="flex items-center gap-2">
-                                <span
-                                    class="text-xs font-medium uppercase tracking-[0.12em] text-slate-500">Highlights</span>
-                                <button type="button" data-highlights-toggle
-                                    class="inline-flex items-center rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 shadow-sm md:hidden"
-                                    aria-expanded="false">
-                                    View
-                                </button>
-                            </div>
+                            <h2 class="text-lg font-semibold text-slate-900">Card information &amp; slides</h2>
+                            <span
+                                class="hidden lg:inline text-xs font-medium uppercase tracking-[0.12em] text-slate-500">Highlights</span>
                         </div>
-                        <p class="mt-1 text-sm text-slate-600">Quick cards and horizontally scrollable slides for
-                            important updates.</p>
+                        <p class="mt-1 text-sm text-slate-600 break-words">Quick cards and horizontally scrollable
+                            slides for important updates.</p>
+                        <button type="button" data-highlights-toggle
+                            class="mt-3 inline-flex w-full items-center justify-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm lg:hidden"
+                            aria-expanded="false">
+                            View highlights &amp; slides
+                        </button>
 
-                        <div id="highlights-content" class="mt-4 hidden md:block">
-                            <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">s
+                        <div id="highlights-content" class="mt-4 hidden lg:block space-y-4">
+                            <div class="grid gap-3 grid-cols-1 sm:grid-cols-2 2xl:grid-cols-4">
                                 <article class="rounded-xl border border-sky-100 bg-sky-50 p-3">
                                     <p class="text-xs font-semibold uppercase tracking-[0.12em] text-sky-700">Top
-                                        priority
-                                    </p>
+                                        priority</p>
                                     <p class="mt-1 text-sm font-semibold text-slate-900">Review pending bookings</p>
                                     <p class="mt-1 text-xs text-slate-600">Keep wait times low by confirming requests
                                         daily.</p>
@@ -397,13 +395,11 @@
                                         Engagement</p>
                                     <p class="mt-1 text-sm font-semibold text-slate-900">Follow up with new users</p>
                                     <p class="mt-1 text-xs text-slate-600">Send welcome guidance within 24 hours of
-                                        signup.
-                                    </p>
+                                        signup.</p>
                                 </article>
                                 <article class="rounded-xl border border-indigo-100 bg-indigo-50 p-3">
                                     <p class="text-xs font-semibold uppercase tracking-[0.12em] text-indigo-700">
-                                        Operations
-                                    </p>
+                                        Operations</p>
                                     <p class="mt-1 text-sm font-semibold text-slate-900">Check counsellor availability
                                     </p>
                                     <p class="mt-1 text-xs text-slate-600">Ensure schedules are up-to-date each week.
@@ -411,19 +407,19 @@
                                 </article>
                                 <article class="rounded-xl border border-amber-100 bg-amber-50 p-3">
                                     <p class="text-xs font-semibold uppercase tracking-[0.12em] text-amber-700">
-                                        Reminder
-                                    </p>
+                                        Reminder</p>
                                     <p class="mt-1 text-sm font-semibold text-slate-900">Update announcements</p>
                                     <p class="mt-1 text-xs text-slate-600">Share policy changes with staff and
-                                        counsellors.
-                                    </p>
+                                        counsellors.</p>
                                 </article>
                             </div>
 
                             <div class="mt-4">
+                                <h3 class="text-sm font-semibold text-slate-800">Slides</h3>
                                 <div data-slideshow
-                                    class="mt-2 rounded-2xl border border-slate-200/80 bg-slate-950 p-3 shadow-xl shadow-slate-900/15">
-                                    <div class="relative min-h-[220px] overflow-hidden rounded-xl">
+                                    class="mt-2 w-full rounded-2xl border border-slate-200/80 bg-slate-950 p-2 sm:p-3 shadow-xl shadow-slate-900/15">
+                                    <div
+                                        class="relative h-[180px] sm:h-[230px] md:h-[260px] lg:h-[290px] overflow-hidden rounded-xl">
                                         <article data-slide-item
                                             class="absolute inset-0 overflow-hidden rounded-xl opacity-100 transition-opacity duration-700">
                                             <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1400&q=80"
@@ -432,10 +428,15 @@
                                             <div
                                                 class="absolute inset-0 bg-gradient-to-r from-slate-950/85 via-slate-900/65 to-slate-800/30">
                                             </div>
-                                            <div class="absolute inset-x-0 bottom-0 p-5 text-white">
-                                                <p class="mt-2 text-lg font-semibold">Daily admin checklist</p>
-                                                <p class="mt-1 text-sm text-slate-200">Verify logins, unread messages,
-                                                    queue status, and pending approvals before noon.</p>
+                                            <div class="absolute inset-x-0 bottom-0 p-3 sm:p-5 text-white">
+                                                <p
+                                                    class="text-[10px] sm:text-xs font-semibold uppercase tracking-[0.14em] text-sky-200">
+                                                    Slide 1</p>
+                                                <p class="mt-1 sm:mt-2 text-sm sm:text-lg font-semibold leading-tight">
+                                                    Daily admin checklist</p>
+                                                <p
+                                                    class="mt-1 text-[11px] sm:text-sm leading-snug text-slate-200 max-w-[96%] sm:max-w-[80%]">
+                                                    Verify logins, unread messages, and queue status before noon.</p>
                                             </div>
                                         </article>
                                         <article data-slide-item
@@ -446,10 +447,15 @@
                                             <div
                                                 class="absolute inset-0 bg-gradient-to-r from-indigo-950/90 via-slate-900/70 to-indigo-800/35">
                                             </div>
-                                            <div class="absolute inset-x-0 bottom-0 p-5 text-white">
-                                                <p class="mt-2 text-lg font-semibold">Counsellor performance</p>
-                                                <p class="mt-1 text-sm text-slate-200">Track session volume, response
-                                                    consistency, and client follow-up completion.</p>
+                                            <div class="absolute inset-x-0 bottom-0 p-3 sm:p-5 text-white">
+                                                <p
+                                                    class="text-[10px] sm:text-xs font-semibold uppercase tracking-[0.14em] text-indigo-200">
+                                                    Slide 2</p>
+                                                <p class="mt-1 sm:mt-2 text-sm sm:text-lg font-semibold leading-tight">
+                                                    Counsellor performance</p>
+                                                <p
+                                                    class="mt-1 text-[11px] sm:text-sm leading-snug text-slate-200 max-w-[96%] sm:max-w-[80%]">
+                                                    Track sessions, response consistency, and follow-up completion.</p>
                                             </div>
                                         </article>
                                         <article data-slide-item
@@ -460,25 +466,27 @@
                                             <div
                                                 class="absolute inset-0 bg-gradient-to-r from-emerald-950/90 via-slate-900/70 to-emerald-800/35">
                                             </div>
-                                            <div class="absolute inset-x-0 bottom-0 p-5 text-white">
-                                                <p class="mt-2 text-lg font-semibold">System health snapshot</p>
-                                                <p class="mt-1 text-sm text-slate-200">Confirm notifications, booking
-                                                    workflows, and background jobs are stable.</p>
+                                            <div class="absolute inset-x-0 bottom-0 p-3 sm:p-5 text-white">
+                                                <p
+                                                    class="text-[10px] sm:text-xs font-semibold uppercase tracking-[0.14em] text-emerald-200">
+                                                    Slide 3</p>
+                                                <p class="mt-1 sm:mt-2 text-sm sm:text-lg font-semibold leading-tight">
+                                                    System health snapshot</p>
+                                                <p
+                                                    class="mt-1 text-[11px] sm:text-sm leading-snug text-slate-200 max-w-[96%] sm:max-w-[80%]">
+                                                    Confirm notifications, booking flow, and background jobs are stable.
+                                                </p>
                                             </div>
                                         </article>
-
-
                                     </div>
-                                    <div class="mt-3 flex items-center justify-between gap-2">
-                                        <div class="flex items-center gap-2">
+                                    <div class="mt-2 sm:mt-3 flex flex-wrap items-center justify-between gap-2">
+                                        <div class="order-2 sm:order-1 flex items-center gap-2">
                                             <button type="button" data-slide-prev
                                                 class="rounded-lg border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur hover:bg-white/20">Prev</button>
                                             <button type="button" data-slide-next
                                                 class="rounded-lg border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur hover:bg-white/20">Next</button>
                                         </div>
-
-
-                                        <div class="flex items-center gap-1.5">
+                                        <div class="order-1 sm:order-2 ml-auto flex items-center gap-1.5">
                                             <button type="button" data-slide-dot
                                                 class="h-2.5 w-2.5 rounded-full bg-white"
                                                 aria-label="Go to slide 1"></button>
@@ -567,6 +575,9 @@
 
 
                 </section>
+
+
+
             </div>
         </section>
     </main>
@@ -731,7 +742,7 @@
 
             const highlightsToggle = document.querySelector('[data-highlights-toggle]');
             const highlightsContent = document.getElementById('highlights-content');
-            const tabletMediaQuery = window.matchMedia('(min-width: 768px)');
+            const tabletMediaQuery = window.matchMedia('(min-width: 1024px)');
 
             const syncHighlightsView = () => {
                 if (!highlightsContent) return;
@@ -739,11 +750,13 @@
                     highlightsContent.classList.remove('hidden');
                     highlightsToggle?.setAttribute('aria-expanded', 'true');
                     if (highlightsToggle) highlightsToggle.textContent = 'View';
+                    if (highlightsToggle) highlightsToggle.textContent = 'View highlights & slides';
                     return;
                 }
                 const isExpanded = highlightsToggle?.getAttribute('aria-expanded') === 'true';
                 highlightsContent.classList.toggle('hidden', !isExpanded);
-                if (highlightsToggle) highlightsToggle.textContent = isExpanded ? 'Hide' : 'View';
+                if (highlightsToggle) highlightsToggle.textContent = isExpanded ? 'Hide highlights & slides' :
+                    'View highlights & slides';
             };
 
             highlightsToggle?.addEventListener('click', () => {
