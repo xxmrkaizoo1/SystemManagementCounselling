@@ -167,46 +167,66 @@
                     </div>
 
                     <div class="flex-1">
-                        <p class="hidden xl:block text-xs uppercase tracking-[0.12em] text-slate-500 mb-2">Admin menu
+                        <p class="hidden xl:block text-xs uppercase tracking-[0.2em] text-slate-500 mb-3 font-semibold">Admin menu
                         </p> <a href="{{ route('admin.accounts.manage') }}"
-                            class="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:border-sky-200 hover:text-sky-700 transition hover:-translate-y-0.5">
-                            <svg class="h-4 w-4 text-slate-500" viewBox="0 0 20 20" fill="currentColor"
+                            class="group flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-gradient-to-r from-white to-slate-50 px-3.5 py-3 text-sm font-medium text-slate-700 shadow-sm hover:border-sky-200 hover:from-sky-50 hover:to-indigo-50 hover:text-sky-800 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+                            <span class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition group-hover:bg-sky-100 group-hover:text-sky-700">
+                            <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"
                                 aria-hidden="true">
                                 <path d="M10 9a3 3 0 100-6 3 3 0 000 6z" />
                                 <path fill-rule="evenodd" d="M3 16a7 7 0 1114 0H3z" clip-rule="evenodd" />
                             </svg>
+                            </span>
                             <span>Manage user accounts</span>
+                            <svg class="ml-auto h-4 w-4 text-slate-300 transition group-hover:text-sky-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 111.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                            </svg>
                         </a>
                         <a href="{{ url('/admin/no-matriks-users') }}"
-                            class="mt-2 flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:border-sky-200 hover:text-sky-700 transition hover:-translate-y-0.5">
-                            <svg class="h-4 w-4 text-slate-500" viewBox="0 0 20 20" fill="currentColor"
+                            class="group mt-2.5 flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-gradient-to-r from-white to-slate-50 px-3.5 py-3 text-sm font-medium text-slate-700 shadow-sm hover:border-sky-200 hover:from-sky-50 hover:to-indigo-50 hover:text-sky-800 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+                            <span class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition group-hover:bg-sky-100 group-hover:text-sky-700">
+                            <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"
                                 aria-hidden="true">
                                 <path fill-rule="evenodd"
                                     d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V7.414A2 2 0 0017.414 6L14 2.586A2 2 0 0012.586 2H4zm3 6a1 1 0 000 2h6a1 1 0 100-2H7zm0 4a1 1 0 000 2h6a1 1 0 100-2H7z"
                                     clip-rule="evenodd" />
                             </svg>
+                            </span>
                             <span>View no_matriks list</span>
+                            <svg class="ml-auto h-4 w-4 text-slate-300 transition group-hover:text-sky-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 111.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                            </svg>
                         </a>
 
 
                         <a href="{{ route('admin.student-statistics') }}"
-                            class="mt-2 flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:border-sky-200 hover:text-sky-700 transition hover:-translate-y-0.5">
-                            <svg class="h-4 w-4 text-slate-500" viewBox="0 0 20 20" fill="currentColor"
+                            class="group mt-2.5 flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-gradient-to-r from-white to-slate-50 px-3.5 py-3 text-sm font-medium text-slate-700 shadow-sm hover:border-sky-200 hover:from-sky-50 hover:to-indigo-50 hover:text-sky-800 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+                            <span class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition group-hover:bg-sky-100 group-hover:text-sky-700">
+                            <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"
                                 aria-hidden="true">
                                 <path
                                     d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5H2v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9H8V7zM14 3a1 1 0 011-1h2a1 1 0 011 1v13h-4V3z" />
                             </svg>
+                            </span>
                             <span>Student booking statistics</span>
+                            <svg class="ml-auto h-4 w-4 text-slate-300 transition group-hover:text-sky-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 111.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                            </svg>
                         </a>
                         <a href="{{ route('admin.counsellor.signup') }}"
-                            class="mt-2 flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:border-sky-200 hover:text-sky-700 transition hover:-translate-y-0.5">
-                            <svg class="h-4 w-4 text-slate-500" viewBox="0 0 20 20" fill="currentColor"
+                            class="group mt-2.5 flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-gradient-to-r from-white to-slate-50 px-3.5 py-3 text-sm font-medium text-slate-700 shadow-sm hover:border-sky-200 hover:from-sky-50 hover:to-indigo-50 hover:text-sky-800 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+                            <span class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition group-hover:bg-sky-100 group-hover:text-sky-700">
+                            <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"
                                 aria-hidden="true">
                                 <path fill-rule="evenodd"
                                     d="M10 2a4 4 0 00-4 4v1H5a2 2 0 00-2 2v7a2 2 0 002 2h10a2 2 0 002-2V9a2 2 0 00-2-2h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4z"
                                     clip-rule="evenodd" />
                             </svg>
+                            </span>
                             <span>Sign up counsellor</span>
+                            <svg class="ml-auto h-4 w-4 text-slate-300 transition group-hover:text-sky-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 111.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                            </svg>
                         </a>
                     </div>
 

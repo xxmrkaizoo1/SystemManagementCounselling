@@ -103,23 +103,24 @@
     <div id="content" class="opacity-0 translate-y-2 min-h-screen flex flex-col">
         <!-- HEADER -->
         <header class="site-header shrink-0 sticky top-0 z-40 bg-white/70 backdrop-blur-xl border-b border-slate-200">
-            <div class="nav-shell max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-3">
-                <div class="flex items-center gap-2 sm:gap-3">
+            <div
+                class="nav-shell max-w-7xl mx-auto px-3 sm:px-6 py-2.5 sm:py-4 flex items-center justify-between gap-2 sm:gap-3">
+                <div class="flex min-w-0 items-center gap-2 sm:gap-3">
                     <img src="{{ asset('images/collegecare-logo.png') }}" alt="CollegeCare logo"
-                        class="nav-brand-logo w-10 h-10 rounded-2xl object-cover shadow-sm" />
-                    <div>
-                        <p class="font-bold leading-tight">CollegeCare</p>
+                        class="nav-brand-logo w-9 h-9 sm:w-10 sm:h-10 rounded-2xl object-cover shadow-sm shrink-0" />
+                    <div class="min-w-0">
+                        <p class="font-bold leading-tight truncate">CollegeCare</p>
                         <p class="hidden sm:block text-xs text-slate-500 -mt-0.5">Counselling Booking System</p>
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2 sm:gap-3">
+                <div class="flex shrink-0 items-center gap-1.5 sm:gap-3">
                     <a href="#roles" id="getStartedLink"
-                        class="nav-cta-link inline text-xs sm:text-sm font-medium text-slate-600 hover:text-sky-600 transition whitespace-nowrap">
+                        class="nav-cta-link hidden min-[360px]:inline text-xs sm:text-sm font-medium text-slate-600 hover:text-sky-600 transition whitespace-nowrap">
                         Get Started
                     </a>
                     <a href="{{ route('login') }}"
-                        class="nav-login-btn px-3 sm:px-4 py-2 rounded-xl bg-sky-600 text-white text-xs sm:text-sm font-semibold shadow-sm hover:bg-sky-700 transition whitespace-nowrap">
+                        class="nav-login-btn px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-sky-600 text-white text-xs sm:text-sm font-semibold shadow-sm hover:bg-sky-700 transition whitespace-nowrap">
                         Login
                     </a>
                 </div>
@@ -127,9 +128,9 @@
         </header>
 
         <!-- MAIN -->
-        <main class="flex-1 flex items-center justify-center py-14">
+        <main class="flex-1 flex items-center justify-center py-8 sm:py-14">
             <div class="w-full max-w-7xl mx-auto px-4 sm:px-6">
-                <section class="grid lg:grid-cols-2 gap-10 items-center">
+                <section class="grid lg:grid-cols-2 gap-6 sm:gap-10 items-center">
                     <!-- LEFT -->
                     <div class="text-center lg:text-left animate-fade-in-up">
                         <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-800">
@@ -216,7 +217,7 @@
 
                     <!-- RIGHT -->
                     <div
-                        class="mx-auto w-full max-w-xl rounded-3xl bg-white/70 border border-slate-200 shadow-sm p-6 sm:p-8 backdrop-blur-xl animate-fade-in-up animation-delay-2">
+                        class="mx-auto w-full max-w-xl rounded-3xl bg-white/70 border border-slate-200 shadow-sm p-4 sm:p-8 backdrop-blur-xl animate-fade-in-up animation-delay-2">
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                             <p class="font-bold text-slate-800">Campus Wellness Highlights</p>
                             <span class="text-xs px-3 py-1 rounded-full bg-sky-50 text-sky-700 border border-sky-200">
@@ -234,8 +235,8 @@
                             <button type="button" id="heroNextBtn"
                                 class="absolute right-3 top-1/2 z-10 -translate-y-1/2 h-9 w-9 rounded-full border border-white/80 bg-white/85 text-slate-600 shadow-sm hover:bg-white hover:text-sky-700 transition"
                                 aria-label="Next highlight">›</button>
-                            <div id="heroSlides" class="relative min-h-[25rem]">
-                                <article class="hero-slide is-active absolute inset-0 p-6 sm:p-7">
+                            <div id="heroSlides" class="relative min-h-[21.5rem] sm:min-h-[25rem]">
+                                <article class="hero-slide is-active absolute inset-0 p-4 sm:p-7">
                                     <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80"
                                         alt="University students discussing class tasks together"
                                         class="hero-slide-image h-40 w-full rounded-xl object-cover mb-5" />
@@ -250,7 +251,7 @@
                                     </p>
                                 </article>
 
-                                <article class="hero-slide absolute inset-0 p-6 sm:p-7">
+                                <article class="hero-slide absolute inset-0 p-4 sm:p-7">
                                     <img src="https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1200&q=80"
                                         alt="Counsellor speaking with a student in a support session"
                                         class="hero-slide-image h-40 w-full rounded-xl object-cover mb-5" />
@@ -264,7 +265,7 @@
                                     </p>
                                 </article>
 
-                                <article class="hero-slide absolute inset-0 p-6 sm:p-7">
+                                <article class="hero-slide absolute inset-0 p-4 sm:p-7">
                                     <img src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1200&q=80"
                                         alt="Peaceful bedtime setup with water and lamp for healthy sleep habits"
                                         class="hero-slide-image h-40 w-full rounded-xl object-cover mb-5" />
@@ -353,7 +354,7 @@
 
                 <section id="roles" class="mt-8 animate-fade-in-up animation-delay-4">
                     <div
-                        class="mx-auto w-full max-w-4xl rounded-3xl bg-white/70 border border-slate-200 shadow-sm p-6 sm:p-8 backdrop-blur-xl">
+                        class="mx-auto w-full max-w-4xl rounded-3xl bg-white/70 border border-slate-200 shadow-sm p-4 sm:p-8 backdrop-blur-xl">
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                             <p class="font-bold text-slate-800">Quick Access</p>
                             <span
