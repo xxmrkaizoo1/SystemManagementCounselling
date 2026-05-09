@@ -109,6 +109,7 @@ Route::get('/', function () {
         ->get(['booking_time', 'counsellor_name']);
 
     $occupiedNowCounsellors = $todayActiveBookings
+        // Collection pipeline only (query methods must stay above on BookingRequest::query()).
         ->filter(static function (BookingRequest $booking) use ($currentMinutes): bool {
             if (!preg_match('/^(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})$/', (string) $booking->booking_time, $matches)) {
                 return false;
