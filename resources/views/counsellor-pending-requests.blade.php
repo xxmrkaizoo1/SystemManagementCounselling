@@ -54,6 +54,14 @@
 <body class="min-h-screen overflow-x-hidden bg-slate-50 text-slate-700 antialiased">
     @php
         $pendingTotal = count($pendingRequests);
+        $emergencyPendingRequests = collect($pendingRequests)
+            ->filter(
+                static fn(array $request): bool => str_contains(
+                    mb_strtolower((string) ($request['topic'] ?? '')),
+                    'emergency',
+                ),
+            )
+            ->values();
     @endphp
 
     <div class="fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
@@ -206,6 +214,49 @@
                             @endforelse
                         </tbody>
                     </table>
+                </div>
+                <div class="mt-6 rounded-2xl border border-rose-200/90 bg-rose-50/40">
+                    <div class="border-b border-rose-200/80 px-4 py-3">
+                        <h2 class="text-sm font-semibold uppercase tracking-[0.08em] text-rose-700">Emergency List
+                            (Pending Requests)</h2>
+                        <p class="mt-1 text-xs text-rose-600">Urgent pending requests flagged as emergency.</p>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full min-w-[680px] text-sm">
+                            <thead class="bg-rose-100/70 text-left text-xs uppercase tracking-[0.08em] text-rose-700">
+                                <tr>
+                                    <th class="px-4 py-3 font-semibold">Student/Lecturer</th>
+                                    <th class="px-4 py-3 font-semibold">Date</th>
+                                    <th class="px-4 py-3 font-semibold">Time</th>
+                                    <th class="px-4 py-3 font-semibold">Status</th>
+                                    <th class="px-4 py-3 font-semibold">Topic</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-rose-100 bg-white">
+                                @forelse ($emergencyPendingRequests as $request)
+                                    <tr class="transition hover:bg-rose-50/50">
+                                        <td class="px-4 py-3 font-semibold text-slate-800">{{ $request['student'] }}
+                                        </td>
+                                        <td class="px-4 py-3 text-slate-600">{{ $request['date'] }}</td>
+                                        <td class="px-4 py-3 text-slate-600">{{ $request['time'] }}</td>
+                                        <td class="px-4 py-3">
+                                            <span
+                                                class="rounded-full border border-rose-200 bg-rose-100 px-2.5 py-1 text-xs font-semibold text-rose-700">
+                                                {{ ucfirst($request['status']) }}
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-3 text-slate-600">
+                                            {{ $request['topic'] ?: 'General support' }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="px-4 py-6 text-center text-sm text-slate-500">No
+                                            emergency pending requests.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </section>
