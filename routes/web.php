@@ -603,23 +603,22 @@ Route::middleware('auth')->group(function () {
             'announcement_images.*' => ['nullable', 'url', 'max:2048'],
         ]);
 
-        $rows = collect($validated['announcements'] ?? [])
-            ->values()
-            ->map(static fn($message): string => trim((string) $message));
-        $images = collect($validated['announcement_images'] ?? [])->values()->map(static fn($image): string => trim((string) $image));
+        $rows = collect($validated['announcements'] ?? [])->values();
+        $images = collect($validated['announcement_images'] ?? [])->values();
 
         $messages = $rows
-            ->map(static function (string $message, int $index) use ($images): array {
+            ->map(static function ($message, int $index) use ($images): array {
                 return [
-                    'message' => $message,
-                    'image' => $images->get($index, ''),
+                    'message' => trim((string) $message),
+                    'image' => trim((string) $images->get($index, '')),
                 ];
             })
-                })->filter(static fn(array $row): bool => $row['message'] !== '')->values();
+            ->filter(static fn(array $row): bool => $row['message'] !== '')
+            ->values();
 
         Announcement::query()->delete();
 
-             foreach ($messages as $index => $row) {
+        foreach ($messages as $index => $row) {
             Announcement::query()->create([
                 'message' => $row['message'],
                 'image_url' => $row['image'] !== '' ? $row['image'] : null,

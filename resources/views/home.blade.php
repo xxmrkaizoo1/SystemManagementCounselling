@@ -119,7 +119,46 @@
             }
         }
 
+        .upcoming-slide {
+            border-radius: 0.85rem;
+            padding: 0.9rem;
+            border: 1px solid rgb(186 230 253);
+            transition: all 350ms ease;
+        }
 
+        .upcoming-slide.is-animating {
+            animation: upcoming-fade 420ms ease;
+        }
+
+
+        .upcoming-theme-a {
+            background: linear-gradient(135deg, rgb(239 246 255), rgb(224 242 254));
+        }
+
+        .upcoming-theme-b {
+            background: linear-gradient(135deg, rgb(240 253 250), rgb(224 242 254));
+        }
+
+        .upcoming-theme-c {
+            background: linear-gradient(135deg, rgb(245 243 255), rgb(224 231 255));
+        }
+
+        .upcoming-theme-emergency {
+            background: linear-gradient(135deg, rgb(254 226 226), rgb(254 202 202));
+            border-color: rgb(248 113 113);
+        }
+
+        @keyframes upcoming-fade {
+            from {
+                opacity: 0.25;
+                transform: translateY(8px) scale(0.99);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
 
         .hero-gradient {
             background: linear-gradient(120deg, rgb(14 116 144) 0%, rgb(2 132 199) 45%, rgb(99 102 241) 100%);
@@ -309,7 +348,7 @@
             }
         }
 
-        
+
         .dashboard-shell {
             border-radius: 1.35rem;
         }
@@ -431,9 +470,9 @@
                     $role === 'student' ? 'Pelajar' : ($role === 'teacher' ? 'Pensyarah' : ucfirst($role));
             @endphp
             <section
-                    class="max-w-[96rem] mx-auto dashboard-shell border border-slate-200 bg-white/90 backdrop-blur-md shadow-xl overflow-hidden">
+                class="max-w-[96rem] mx-auto dashboard-shell border border-slate-200 bg-white/90 backdrop-blur-md shadow-xl overflow-hidden">
                 <header
-                             class="px-5 sm:px-7 py-4 border-b border-slate-200/80 bg-white/80 top-header flex justify-between gap-4">
+                    class="px-5 sm:px-7 py-4 border-b border-slate-200/80 bg-white/80 top-header flex justify-between gap-4">
                     <div>
                         <p class="text-xs uppercase tracking-[0.14em] text-slate-500">CollegeCare</p>
                         <h1 class="text-xl sm:text-2xl font-bold text-slate-800">Session Dashboard
@@ -441,7 +480,7 @@
                         </h1>
                         <p class="text-sm text-slate-500 mt-1">Welcome, {{ $user->full_name ?: $user->name }}</p>
                     </div>
-                                      <div class="top-actions flex items-center gap-2">
+                    <div class="top-actions flex items-center gap-2">
 
 
                         <button type="button" id="sidebar-toggle"
@@ -583,7 +622,7 @@
                         class="home-main rounded-2xl border border-slate-200 bg-white/90 p-4 sm:p-6 shadow-sm space-y-5">
                         <div class="hero-gradient rounded-2xl p-5 sm:p-6 text-white shadow-lg">
                             <div class="relative z-10 flex flex-col gap-5">
-                                                              <div class="hero-header flex items-start justify-between gap-4">
+                                <div class="hero-header flex items-start justify-between gap-4">
                                     <div>
                                         <p class="text-xs uppercase tracking-[0.14em] text-sky-100">Wellbeing Hub</p>
                                         <h2 class="text-xl sm:text-2xl font-bold mt-1">Hi
@@ -592,10 +631,10 @@
                                             your booking, and stay updated in one place.</p>
                                     </div>
                                     <a href="{{ route('booking.index') }}"
-                                                                    class="hero-cta shrink-0 inline-flex items-center rounded-xl bg-white px-4 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-50 transition">Book
+                                        class="hero-cta shrink-0 inline-flex items-center rounded-xl bg-white px-4 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-50 transition">Book
                                         Session</a>
                                 </div>
-                                                             <div class="quick-stats-grid grid gap-3">
+                                <div class="quick-stats-grid grid gap-3">
                                     <div class="quick-stat rounded-xl px-4 py-3">
                                         <p class="text-xs uppercase tracking-wide text-sky-100/90">Role</p>
                                         <p class="text-base font-semibold">{{ $dashboardRoleLabel }}</p>
@@ -793,34 +832,104 @@
                                         class="glass-panel rounded-2xl p-4 border-sky-100/90 bg-gradient-to-br from-sky-50 via-white to-blue-50">
                                         <h3 class="text-sm font-semibold text-slate-800">Next Session Forecast
                                             (Upcoming Appointment)</h3>
-                                        @if ($nextBooking)
-                                            @php
-                                                $nextBookingDate = \Carbon\Carbon::parse(
-                                                    $nextBooking['booking_date'] ?? $nextBooking['date'],
-                                                );
-                                                $nextBookingStatus = ucfirst(strtolower($nextBooking['status']));
-                                            @endphp
-                                            <p class="mt-2 text-lg font-semibold text-slate-800">
-                                                {{ $nextBookingDate->format('D, d M Y') }}</p>
-                                            <p class="text-sm text-slate-500">Status: {{ $nextBookingStatus }}</p>
-                                            @php
-                                                $nextBookingTime =
-                                                    $nextBooking['booking_time'] ?? ($nextBooking['time'] ?? null);
-                                            @endphp
-                                            @if (!empty($nextBookingTime))
-                                                <p class="mt-1 text-sm text-slate-500">Time: {{ $nextBookingTime }}
-                                                </p>
-                                            @endif
-                                            @if (!empty($nextBooking['counsellor_name'] ?? ($nextBooking['counsellor'] ?? null)))
-                                                <p class="mt-1 text-sm text-slate-500">Counsellor:
-                                                    {{ $nextBooking['counsellor_name'] ?? $nextBooking['counsellor'] }}
-                                                </p>
+                                        @php
+                                            $upcomingBookings = collect($userActiveBookings ?? [])
+                                                ->filter(
+                                                    fn($booking) => in_array(
+                                                        strtolower((string) ($booking['status'] ?? '')),
+                                                        ['pending', 'approved', 'booked'],
+                                                        true,
+                                                    ),
+                                                )
+                                                ->sortBy(
+                                                    fn($booking) => $booking['booking_date'] ??
+                                                        ($booking['date'] ?? null),
+                                                )
+                                                ->values();
+                                        @endphp
+                                        @if ($upcomingBookings->isNotEmpty())
+                                            @if ($upcomingBookings->count() > 1)
+                                                @php
+                                                    $upcomingSliderEntries = $upcomingBookings
+                                                        ->map(function ($booking): array {
+                                                            $dateValue =
+                                                                $booking['booking_date'] ?? ($booking['date'] ?? null);
+                                                            $dateLabel = $dateValue
+                                                                ? \Carbon\Carbon::parse($dateValue)->format('D, d M Y')
+                                                                : 'Date pending';
+
+                                                            return [
+                                                                'date' => $dateLabel,
+                                                                'status' => ucfirst(
+                                                                    strtolower(
+                                                                        (string) ($booking['status'] ?? 'pending'),
+                                                                    ),
+                                                                ),
+                                                                'time' =>
+                                                                    $booking['booking_time'] ??
+                                                                    ($booking['time'] ?? ''),
+                                                                'counsellor' =>
+                                                                    $booking['counsellor_name'] ??
+                                                                    ($booking['counsellor'] ?? ''),
+                                                                'is_emergency' => str_contains(
+                                                                    strtoupper((string) ($booking['topic'] ?? '')),
+                                                                    'EMERGENCY',
+                                                                ),
+                                                            ];
+                                                        })
+                                                        ->values();
+                                                @endphp
+                                                <div id="upcoming-session-slider"
+                                                    class="upcoming-slide upcoming-theme-a mt-2 space-y-1"
+                                                    data-entries='@json($upcomingSliderEntries)'>
+
+
+                                                    <p id="upcoming-session-date"
+                                                        class="text-lg font-semibold text-slate-800"></p>
+                                                    <p id="upcoming-session-status" class="text-sm text-slate-500">
+                                                    </p>
+                                                    <p id="upcoming-session-time"
+                                                        class="mt-1 text-sm text-slate-500 hidden"></p>
+                                                    <p id="upcoming-session-counsellor"
+                                                        class="mt-1 text-sm text-slate-500 hidden"></p>
+                                                </div>
+                                            @else
+                                                @php
+                                                    $nextBooking = $upcomingBookings->first();
+                                                    $nextBookingDate = \Carbon\Carbon::parse(
+                                                        $nextBooking['booking_date'] ?? $nextBooking['date'],
+                                                    );
+                                                    $nextBookingStatus = ucfirst(
+                                                        strtolower((string) ($nextBooking['status'] ?? 'pending')),
+                                                    );
+                                                    $nextBookingTime =
+                                                        $nextBooking['booking_time'] ?? ($nextBooking['time'] ?? null);
+                                                    $nextBookingIsEmergency = str_contains(
+                                                        strtoupper((string) ($nextBooking['topic'] ?? '')),
+                                                        'EMERGENCY',
+                                                    );
+                                                @endphp
+                                                <div
+                                                    class="{{ $nextBookingIsEmergency ? 'rounded-xl border border-rose-300 bg-rose-50 p-3' : '' }}">
+                                                    <p class="mt-2 text-lg font-semibold text-slate-800">
+                                                        {{ $nextBookingDate->format('D, d M Y') }}</p>
+                                                    <p class="text-sm text-slate-500">Status: {{ $nextBookingStatus }}
+                                                    </p>
+                                                    @if (!empty($nextBookingTime))
+                                                        <p class="mt-1 text-sm text-slate-500">Time:
+                                                            {{ $nextBookingTime }}</p>
+                                                    @endif
+                                                    @if (!empty($nextBooking['counsellor_name'] ?? ($nextBooking['counsellor'] ?? null)))
+                                                        <p class="mt-1 text-sm text-slate-500">Counsellor:
+                                                            {{ $nextBooking['counsellor_name'] ?? $nextBooking['counsellor'] }}
+                                                        </p>
+                                                    @endif
+                                                </div>
                                             @endif
                                         @else
                                             <p class="mt-2 text-sm text-slate-500">No upcoming sessions yet. Select a
                                                 slot
-                                                to
-                                                schedule your next appointment.</p>
+                                                to schedule your next appointment.</p>
                                         @endif
                                     </div>
 
@@ -1041,6 +1150,59 @@
                         renderSlide(slides[idx]);
                     }, 6000);
                 }
+                const upcomingSessionSlider = document.getElementById('upcoming-session-slider');
+                if (upcomingSessionSlider) {
+                    const dateNode = document.getElementById('upcoming-session-date');
+                    const statusNode = document.getElementById('upcoming-session-status');
+                    const timeNode = document.getElementById('upcoming-session-time');
+                    const counsellorNode = document.getElementById('upcoming-session-counsellor');
+                    let entries = [];
+
+                    try {
+                        entries = JSON.parse(upcomingSessionSlider.dataset.entries || '[]');
+                    } catch (_error) {
+                        entries = [];
+                    }
+
+                    if (Array.isArray(entries) && entries.length > 1 && dateNode && statusNode && timeNode &&
+                        counsellorNode) {
+                        let upcomingIdx = 0;
+                        const themes = ['upcoming-theme-a', 'upcoming-theme-b', 'upcoming-theme-c'];
+                        const renderUpcoming = (entry, idx = 0) => {
+                            upcomingSessionSlider.classList.remove(...themes, 'upcoming-theme-emergency');
+                            const themeClass = entry.is_emergency ? 'upcoming-theme-emergency' : themes[idx % themes
+                                .length];
+                            upcomingSessionSlider.classList.add(themeClass);
+                            upcomingSessionSlider.classList.remove('is-animating');
+                            void upcomingSessionSlider.offsetWidth;
+                            upcomingSessionSlider.classList.add('is-animating');
+
+                            dateNode.textContent = entry.date || 'Date pending';
+                            statusNode.textContent = `Status: ${entry.status || 'Pending'}`;
+
+                            if (entry.time) {
+                                timeNode.textContent = `Time: ${entry.time}`;
+                                timeNode.classList.remove('hidden');
+                            } else {
+                                timeNode.classList.add('hidden');
+                            }
+
+                            if (entry.counsellor) {
+                                counsellorNode.textContent = `Counsellor: ${entry.counsellor}`;
+                                counsellorNode.classList.remove('hidden');
+                            } else {
+                                counsellorNode.classList.add('hidden');
+                            }
+                        };
+
+                        renderUpcoming(entries[upcomingIdx], upcomingIdx);
+                        window.setInterval(() => {
+                            upcomingIdx = (upcomingIdx + 1) % entries.length;
+                            renderUpcoming(entries[upcomingIdx], upcomingIdx);
+                        }, 4500);
+                    }
+                }
+
 
                 const malaysiaTimeFormatter = new Intl.DateTimeFormat('en-US', {
                     timeZone: 'Asia/Kuala_Lumpur',
