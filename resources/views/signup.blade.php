@@ -127,7 +127,7 @@
                                     Phone</label>
                                 <input id="phone" name="phone" type="text" value="{{ old('phone') }}"
                                     autocomplete="tel" placeholder="6012XXXXXXXX" inputmode="numeric"
-                                    pattern="[0-9]{12}" minlength="12" maxlength="12"
+                                    pattern="[0-9]{11,12}" minlength="11" maxlength="12"
                                     class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition" />
                                 @error('phone')
                                     <p class="mt-1 text-xs text-rose-600">{{ $message }}</p>

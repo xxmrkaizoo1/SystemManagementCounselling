@@ -575,14 +575,27 @@ Route::middleware('auth')->group(function () {
 
         abort_unless($role === 'admin', 403);
 
-        $userCountsByRole = User::query()
+        $rawUserCountsByRole = User::query()
             ->leftJoin('user_role', 'users.id', '=', 'user_role.user_id')
             ->leftJoin('roles', 'roles.id', '=', 'user_role.role_id')
             ->selectRaw("COALESCE(roles.name, 'unassigned') as role_name")
             ->selectRaw('COUNT(DISTINCT users.id) as total')
             ->groupBy('role_name')
-            ->orderByDesc('total')
             ->pluck('total', 'role_name');
+
+        $userCountsByRole = collect($rawUserCountsByRole)
+            ->reject(static fn($total, $roleName): bool => $roleName === 'admin')
+            ->mapWithKeys(static function ($total, $roleName): array {
+                $normalizedRoleName = $roleName === 'teacher' ? 'lecturer' : $roleName;
+
+                return [$normalizedRoleName => (int) $total];
+            })
+            ->reduce(static function ($carry, $total, $roleName) {
+                $carry[$roleName] = ($carry[$roleName] ?? 0) + (int) $total;
+
+                return $carry;
+            }, [])
+            ->sortDesc();
 
         $stats = [
             'total_users' => User::count(),
