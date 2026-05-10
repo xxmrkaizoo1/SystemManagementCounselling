@@ -246,9 +246,11 @@
                                     <th class="px-4 py-3 font-semibold">Topic</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-rose-100 bg-white">
+                            <tbody id="emergency-table-body" class="divide-y divide-rose-100 bg-white">
                                 @forelse ($emergencySessions as $session)
-                                    <tr class="transition hover:bg-rose-50/50">
+                                    <tr data-session-date="{{ $session['date'] }}"
+                                        data-session-status="{{ $session['status_value'] }}"
+                                        data-session-emergency="emergency" class="transition hover:bg-rose-50/50">
                                         <td class="px-4 py-3 font-semibold text-slate-800">{{ $session['student'] }}
                                         </td>
                                         <td class="px-4 py-3 text-slate-600">{{ $session['date'] }}</td>
@@ -268,6 +270,10 @@
                                             sessions available.</td>
                                     </tr>
                                 @endforelse
+                                <tr id="emergency-no-results-row" class="hidden">
+                                    <td colspan="5" class="px-4 py-6 text-center text-slate-500">No emergency
+                                        sessions match the selected filters.</td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -299,7 +305,9 @@
                 return;
             }
 
-            const rows = Array.from(tableBody.querySelectorAll('tr[data-session-date]'));
+            const rows = Array.from(tableBody.querySelectorAll('tr[data-session-date]')): [];
+            const emergencyRows = emergencyTableBody ? Array.from(emergencyTableBody.querySelectorAll(
+                'tr[data-session-date]')) : [];
             const monthLabel = new Intl.DateTimeFormat('en-US', {
                 month: 'long',
                 year: 'numeric',
@@ -396,6 +404,23 @@
                     }
                 });
 
+                let visibleEmergency = 0;
+                emergencyRows.forEach((row) => {
+                    const rowDate = row.dataset.sessionDate || '';
+                    const rowStatus = row.dataset.sessionStatus || '';
+                    const rowEmergency = row.dataset.sessionEmergency || 'normal';
+                    const matchDate = !selectedDate || rowDate === selectedDate;
+                    const matchStatus = !selectedStatus || rowStatus === selectedStatus;
+                    const matchEmergency = !selectedEmergency || rowEmergency === selectedEmergency;
+                    const shouldShow = matchDate && matchStatus && matchEmergency;
+
+                    row.classList.toggle('hidden', !shouldShow);
+
+                    if (shouldShow) {
+                        visibleEmergency += 1;
+                    }
+                });
+
                 if (emptyRow) {
                     emptyRow.classList.toggle('hidden', visible > 0);
                 }
@@ -403,7 +428,10 @@
                     const shouldShowNoResults = rows.length > 0 && visible === 0;
                     noResultsRow.classList.toggle('hidden', !shouldShowNoResults);
                 }
-
+                if (emergencyNoResultsRow) {
+                    const shouldShowEmergencyNoResults = emergencyRows.length > 0 && visibleEmergency === 0;
+                    emergencyNoResultsRow.classList.toggle('hidden', !shouldShowEmergencyNoResults);
+                }
                 if (visibleCount) {
                     visibleCount.textContent = String(visible);
                     visibleCount.classList.remove('status-pulse');
