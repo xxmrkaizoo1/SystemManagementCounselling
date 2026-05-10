@@ -186,6 +186,7 @@
                                     clip-rule="evenodd" />
                             </svg>
                         </a>
+
                         <a href="{{ url('/admin/no-matriks-users') }}"
                             class="group mt-2.5 flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-gradient-to-r from-white to-slate-50 px-3.5 py-3 text-sm font-medium text-slate-700 shadow-sm hover:border-sky-200 hover:from-sky-50 hover:to-indigo-50 hover:text-sky-800 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
                             <span
@@ -223,6 +224,25 @@
                                     clip-rule="evenodd" />
                             </svg>
                         </a>
+
+                        <a href="{{ route('admin.announcements.edit') }}"
+                            class="group mt-2.5 flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-gradient-to-r from-white to-slate-50 px-3.5 py-3 text-sm font-medium text-slate-700 shadow-sm hover:border-sky-200 hover:from-sky-50 hover:to-indigo-50 hover:text-sky-800 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+                            <span
+                                class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition group-hover:bg-sky-100 group-hover:text-sky-700">
+                                <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path
+                                        d="M13.586 2.586a2 2 0 112.828 2.828l-1.172 1.172 1.758 4.104a1 1 0 01-1.305 1.306l-4.104-1.759-3.879 3.879.707 2.121a1 1 0 01-1.265 1.265l-1.414-.472a1 1 0 01-.632-.632l-.472-1.414a1 1 0 011.265-1.265l2.121.707 3.879-3.879-1.759-4.104a1 1 0 011.306-1.305l4.104 1.758 1.172-1.172z" />
+                                </svg>
+                            </span> <span>Edit announcements</span>
+                            <svg class="ml-auto h-4 w-4 text-slate-300 transition group-hover:text-sky-500"
+                                viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd"
+                                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 111.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </a>
+
+
                         <a href="{{ route('admin.counsellor.signup') }}"
                             class="group mt-2.5 flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-gradient-to-r from-white to-slate-50 px-3.5 py-3 text-sm font-medium text-slate-700 shadow-sm hover:border-sky-200 hover:from-sky-50 hover:to-indigo-50 hover:text-sky-800 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
                             <span
@@ -405,13 +425,14 @@
                                     <p class="mt-1 text-xs text-slate-600">Ensure schedules are up-to-date each week.
                                     </p>
                                 </article>
-                                <article class="rounded-xl border border-amber-100 bg-amber-50 p-3">
+                                <a href="{{ route('admin.announcements.edit') }}"
+                                    class="block rounded-xl border border-amber-100 bg-amber-50 p-3 transition hover:-translate-y-0.5 hover:shadow-sm">
                                     <p class="text-xs font-semibold uppercase tracking-[0.12em] text-amber-700">
                                         Reminder</p>
                                     <p class="mt-1 text-sm font-semibold text-slate-900">Update announcements</p>
                                     <p class="mt-1 text-xs text-slate-600">Share policy changes with staff and
                                         counsellors.</p>
-                                </article>
+                                </a>
                             </div>
 
                             <div class="mt-4">

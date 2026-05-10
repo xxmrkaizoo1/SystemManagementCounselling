@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\CounsellorController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\ProfileController;
 use App\Models\BookingRequest;
+use App\Models\Announcement;
 use App\Models\ChatMessage;
 use App\Models\InboxNotification;
 use App\Models\Role;
@@ -390,11 +391,24 @@ Route::middleware('auth')->group(function () {
         $role = $user?->roles()->value('name');
 
         abort_unless(in_array($role, ['student', 'teacher', 'lecturer'], true), 403);
-        $announcements = [
-            'Counselling slots for this week are now open. Book early to secure your preferred time.',
-            'Need to change time? Use Booking History to reschedule your active appointment.',
-            'Check your inbox regularly for OTP and reminder notifications before your session.',
-        ];
+        $announcements = Announcement::query()
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get(['message', 'image_url'])
+            ->map(static fn(Announcement $announcement): array => [
+                'message' => $announcement->message,
+                'image' => $announcement->image_url,
+            ])
+            ->all();
+
+        if (empty($announcements)) {
+            $announcements = [
+                ['message' => 'Counselling slots for this week are now open. Book early to secure your preferred time.', 'image' => null],
+                ['message' => 'Need to change time? Use Booking History to reschedule your active appointment.', 'image' => null],
+                ['message' => 'Check your inbox regularly for OTP and reminder notifications before your session.', 'image' => null],
+            ];
+        }
 
         $counsellorNames = User::query()
             ->whereHas('roles', static fn($query) => $query->where('name', 'counsellor'))
@@ -563,6 +577,54 @@ Route::middleware('auth')->group(function () {
             'userActiveBookings' => $userActiveBookings,
         ]);
     })->name('home.session');
+
+    Route::get('/admin/announcements', function () {
+        $user = request()->user();
+        $role = $user?->roles()->value('name');
+
+        abort_unless($role === 'admin', 403);
+
+        return view('admin.announcements', [
+            'announcements' => Announcement::query()->orderBy('sort_order')->orderBy('id')->get(),
+        ]);
+    })->name('admin.announcements.edit');
+
+    Route::post('/admin/announcements', function () {
+        $user = request()->user();
+        $role = $user?->roles()->value('name');
+
+        abort_unless($role === 'admin', 403);
+
+        $validated = request()->validate([
+            'announcements' => ['nullable', 'array', 'max:10'],
+            'announcements.*' => ['nullable', 'string', 'max:400'],
+            'announcement_images' => ['nullable', 'array', 'max:10'],
+            'announcement_images.*' => ['nullable', 'url', 'max:2048'],
+        ]);
+
+       $rows = collect($validated['announcements'] ?? [])->values()->map(static fn($message): string => trim((string) $message));
+        $images = collect($validated['announcement_images'] ?? [])->values()->map(static fn($image): string => trim((string) $image));
+
+        $messages = $rows->map(static function (string $message, int $index) use ($images): array {
+            return [
+                'message' => $message,
+                'image' => $images->get($index, ''),
+            ];
+        })->filter(static fn(array $row): bool => $row['message'] !== '')->values()
+
+        Announcement::query()->delete();
+
+           foreach ($messages as $index => $row) {
+            Announcement::query()->create([
+             'message' => $row['message'],
+                'image_url' => $row['image'] !== '' ? $row['image'] : null,
+                'sort_order' => $index,
+                'is_active' => true,
+            ]);
+        }
+
+        return redirect()->route('admin.announcements.edit')->with('status', 'Announcements updated successfully.');
+    })->name('admin.announcements.update');
 
     Route::get('/messages', [ChatController::class, 'messagesHub'])->name('messages.index');
 

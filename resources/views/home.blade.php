@@ -887,11 +887,12 @@
                     }
                 ];
                 const slides = Array.isArray(items) && items.length > 0 ?
-                    items.map((title, index) => ({
-                        title,
+                    items.map((item, index) => ({
+                        title: typeof item === 'string' ? item : (item.message || ''),
                         subtitle: fallbackSlides[index % fallbackSlides.length].subtitle,
                         tag: fallbackSlides[index % fallbackSlides.length].tag,
-                        image: fallbackSlides[index % fallbackSlides.length].image,
+                        image: (typeof item === 'object' && item && item.image) ? item.image : fallbackSlides[
+                            index % fallbackSlides.length].image,
                     })) :
                     fallbackSlides;
 
