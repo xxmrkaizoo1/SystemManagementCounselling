@@ -270,7 +270,7 @@
     </div>
 
     <script>
-        (() => {
+        document.addEventListener('DOMContentLoaded', () => {
             const calendarTitle = document.getElementById('status-calendar-title');
             const calendarGrid = document.getElementById('status-calendar-grid');
             const calendarPrev = document.getElementById('status-calendar-prev');
@@ -290,13 +290,11 @@
             const noteStudent = document.getElementById('session-note-student');
             const noteTopic = document.getElementById('session-note-topic');
             const noteContent = document.getElementById('session-note-content');
-
-            if (!tableBody || !dateFilter || !statusFilter || !calendarTitle || !calendarGrid || !calendarPrev || !
-                calendarNext) {
+            if (!calendarTitle || !calendarGrid || !calendarPrev || !calendarNext) {
                 return;
             }
 
-            const rows = Array.from(tableBody.querySelectorAll('tr[data-session-date]'));
+            const rows = tableBody ? Array.from(tableBody.querySelectorAll('tr[data-session-date]')) : [];
             const monthLabel = new Intl.DateTimeFormat('en-US', {
                 month: 'long',
                 year: 'numeric',
@@ -366,6 +364,7 @@
             };
 
             const updateRows = () => {
+                if (!statusFilter || !dateFilter) return;
                 const selectedStatus = statusFilter.value;
                 const selectedEmergency = emergencyFilter?.value || '';
                 let visible = 0;
@@ -425,27 +424,30 @@
                 }
             };
 
-            statusFilter.addEventListener('change', updateRows);
+            statusFilter?.addEventListener('change', updateRows);
             emergencyFilter?.addEventListener('change', updateRows);
             calendarPrev.addEventListener('click', () => {
-                currentMonthDate = new Date(currentMonthDate.getFullYear(), currentMonthDate.getMonth() - 1, 1);
+                currentMonthDate = new Date(currentMonthDate.getFullYear(), currentMonthDate.getMonth() - 1,
+                    1);
                 renderCalendar();
             });
             calendarNext.addEventListener('click', () => {
-                currentMonthDate = new Date(currentMonthDate.getFullYear(), currentMonthDate.getMonth() + 1, 1);
+                currentMonthDate = new Date(currentMonthDate.getFullYear(), currentMonthDate.getMonth() + 1,
+                    1);
                 renderCalendar();
             });
-            if (clearDateButton) {
+            if (clearDateButton && dateFilter) {
                 clearDateButton.addEventListener('click', () => {
                     selectedDate = '';
                     dateFilter.value = '';
-                                    if (emergencyFilter) emergencyFilter.value = '';
+                    if (emergencyFilter) emergencyFilter.value = '';
+                    if (statusFilter) statusFilter.value = '';
                     updateRows();
                     renderCalendar();
                 });
             }
 
-            dateFilter.value = '';
+            if (dateFilter) dateFilter.value = '';
             updateRows();
             renderCalendar();
 
@@ -468,8 +470,8 @@
             notePopup?.addEventListener('click', (event) => {
                 if (event.target === notePopup) closeNotePopup();
             });
-        })();
-    </script>
+        });
+        </script>
 </body>
 
 </html>
