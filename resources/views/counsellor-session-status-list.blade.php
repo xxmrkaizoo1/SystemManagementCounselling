@@ -305,7 +305,7 @@
                 return;
             }
 
-            const rows = Array.from(tableBody.querySelectorAll('tr[data-session-date]')): [];
+            const rows = Array.from(tableBody.querySelectorAll('tr[data-session-date]'));
             const emergencyRows = emergencyTableBody ? Array.from(emergencyTableBody.querySelectorAll(
                 'tr[data-session-date]')) : [];
             const monthLabel = new Intl.DateTimeFormat('en-US', {
@@ -408,11 +408,9 @@
                 emergencyRows.forEach((row) => {
                     const rowDate = row.dataset.sessionDate || '';
                     const rowStatus = row.dataset.sessionStatus || '';
-                    const rowEmergency = row.dataset.sessionEmergency || 'normal';
                     const matchDate = !selectedDate || rowDate === selectedDate;
                     const matchStatus = !selectedStatus || rowStatus === selectedStatus;
-                    const matchEmergency = !selectedEmergency || rowEmergency === selectedEmergency;
-                    const shouldShow = matchDate && matchStatus && matchEmergency;
+                    const shouldShow = matchDate && matchStatus;
 
                     row.classList.toggle('hidden', !shouldShow);
 
