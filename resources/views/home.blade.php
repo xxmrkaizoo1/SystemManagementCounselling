@@ -126,6 +126,25 @@
             transition: all 350ms ease;
         }
 
+        .upcoming-slide-progress-track {
+            height: 0.30rem;
+            border-radius: 999px;
+            background: rgb(148 163 184 / 0.24);
+            overflow: hidden;
+        }
+
+        .upcoming-slide-progress-bar {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, rgb(14 116 144), rgb(56 189 248));
+            transform-origin: left;
+            transform: scaleX(0);
+        }
+
+        .upcoming-slide-progress-bar.is-running {
+            animation: upcoming-progress 4500ms linear forwards;
+        }
+
         .upcoming-slide.is-animating {
             animation: upcoming-fade 420ms ease;
         }
@@ -159,6 +178,18 @@
                 transform: translateY(0) scale(1);
             }
         }
+
+
+        @keyframes upcoming-progress {
+            from {
+                transform: scaleX(0);
+            }
+
+            to {
+                transform: scaleX(1);
+            }
+        }
+
 
         .hero-gradient {
             background: linear-gradient(120deg, rgb(14 116 144) 0%, rgb(2 132 199) 45%, rgb(99 102 241) 100%);
@@ -892,6 +923,11 @@
                                                         class="mt-1 text-sm text-slate-500 hidden"></p>
                                                     <p id="upcoming-session-counsellor"
                                                         class="mt-1 text-sm text-slate-500 hidden"></p>
+                                                    <div class="upcoming-slide-progress-track mt-2"
+                                                        aria-hidden="true">
+                                                        <div id="upcoming-slide-progress-bar"
+                                                            class="upcoming-slide-progress-bar"></div>
+                                                    </div>
                                                 </div>
                                             @else
                                                 @php
@@ -1156,6 +1192,7 @@
                     const statusNode = document.getElementById('upcoming-session-status');
                     const timeNode = document.getElementById('upcoming-session-time');
                     const counsellorNode = document.getElementById('upcoming-session-counsellor');
+                    const progressBar = document.getElementById('upcoming-slide-progress-bar');
                     let entries = [];
 
                     try {
@@ -1176,6 +1213,11 @@
                             upcomingSessionSlider.classList.remove('is-animating');
                             void upcomingSessionSlider.offsetWidth;
                             upcomingSessionSlider.classList.add('is-animating');
+                            if (progressBar) {
+                                progressBar.classList.remove('is-running');
+                                void progressBar.offsetWidth;
+                                progressBar.classList.add('is-running');
+                            }
 
                             dateNode.textContent = entry.date || 'Date pending';
                             statusNode.textContent = `Status: ${entry.status || 'Pending'}`;
