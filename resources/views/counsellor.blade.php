@@ -31,7 +31,8 @@
     </style>
 </head>
 
-<body class="min-h-screen overflow-x-hidden bg-slate-50 text-slate-700 antialiased">
+<body
+    class="min-h-screen overflow-x-hidden bg-gradient-to-br from-sky-100 via-slate-100 to-indigo-100 text-slate-700 antialiased">
     @php
         $pendingCount = collect($applications)->where('status', 'Menunggu')->count();
         $approvedCount = collect($applications)->where('status', 'Diluluskan')->count();
@@ -72,7 +73,7 @@
                                 class="min-w-0 flex-1 rounded-2xl border border-slate-200 bg-white/95 px-5 py-3.5 shadow-sm">
                                 <p class="text-[11px] font-semibold uppercase tracking-[0.24em] text-sky-500/80">
                                     CollegeCare</p>
-                                <h1 class="text-lg font-semibold text-slate-800 lg:text-xl">Counsellor  Dashboard
+                                <h1 class="text-lg font-semibold text-slate-800 lg:text-xl">Counsellor Dashboard
                                 </h1>
                             </div>
 

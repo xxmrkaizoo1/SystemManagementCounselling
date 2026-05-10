@@ -38,6 +38,38 @@
         .status-pulse {
             animation: softPulse 0.35s ease-out;
         }
+
+        @keyframes modalPopIn {
+            from {
+                opacity: 0;
+                transform: translateY(14px) scale(0.96);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes shimmerGlow {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            100% {
+                background-position: 100% 50%;
+            }
+        }
+
+        .notes-modal-card {
+            animation: modalPopIn 0.3s ease-out both;
+        }
+
+        .notes-gradient-bar {
+            background: linear-gradient(90deg, #38bdf8, #818cf8, #f472b6, #38bdf8);
+            background-size: 200% 200%;
+            animation: shimmerGlow 4s linear infinite;
+        }
     </style>
 </head>
 
@@ -155,8 +187,9 @@
                 </div>
                 <div
                     class="overflow-auto rounded-2xl border border-slate-200/90 bg-white shadow-inner shadow-slate-100/60">
-                    <table class="w-full min-w-[760px] text-sm">
-                        <thead class="bg-slate-100/90 text-left text-xs uppercase tracking-wider text-slate-500">
+                    <table class="w-full min-w-[640px] sm:min-w-[760px] text-xs sm:text-sm">
+                        <thead
+                            class="bg-slate-100/90 text-left text-[11px] uppercase tracking-wider text-slate-500 sm:text-xs">
                             <tr>
                                 <th class="px-4 py-3 font-semibold">Student</th>
                                 <th class="px-4 py-3 font-semibold">Date</th>
@@ -173,24 +206,29 @@
                                     data-session-status="{{ $session['status_value'] }}"
                                     data-session-emergency="{{ str_contains(strtolower((string) ($session['topic'] ?? '')), 'emergency') ? '1' : '0' }}"
                                     class="transition hover:bg-sky-50/70">
-                                    <td class="px-4 py-3 font-semibold text-slate-800">{{ $session['student'] }}</td>
-                                    <td class="px-4 py-3 text-slate-600">{{ $session['date'] }}</td>
-                                    <td class="px-4 py-3 text-slate-600">{{ $session['time'] }}</td>
+                                    <td
+                                        class="px-3 py-3 font-semibold text-slate-800 sm:px-4 whitespace-normal break-words">
+                                        {{ $session['student'] }}</td>
+                                    <td class="px-3 py-3 text-slate-600 sm:px-4 whitespace-nowrap">
+                                        {{ $session['date'] }}</td>
+                                    <td class="px-3 py-3 text-slate-600 sm:px-4 whitespace-nowrap">
+                                        {{ $session['time'] }}</td>
                                     <td class="px-4 py-3">
                                         <span
                                             class="rounded-full border px-2.5 py-1 text-xs font-semibold {{ $session['status'] === 'Completed' ? 'border-violet-200 bg-violet-100 text-violet-700' : ($session['status'] === 'Approved' ? 'border-emerald-200 bg-emerald-100 text-emerald-700' : 'border-sky-200 bg-sky-100 text-sky-700') }}">
                                             {{ $session['status'] }}
                                         </span>
                                     </td>
-                                    <td class="px-4 py-3 text-slate-600">{{ $session['topic'] ?: 'General support' }}
+                                    <td class="px-3 py-3 text-slate-600 sm:px-4 whitespace-normal break-words">
+                                        {{ $session['topic'] ?: 'General support' }}
                                     </td>
-                                    <td class="px-4 py-3 text-center">
+                                    <td class="px-3 py-3 text-center sm:px-4">
                                         <button type="button" data-note="{{ $session['notes'] }}"
-                                            class="view-note-button rounded-lg border border-sky-200 bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-sky-100">
+                                            class="view-note-button w-full sm:w-auto rounded-lg border border-sky-200 bg-sky-50 px-2.5 py-1.5 text-xs font-semibold text-sky-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-sky-100">
                                             View Notes
                                         </button>
                                     </td>
-                                    <td class="px-4 py-3 text-center">
+                                    <td class="px-3 py-3 text-center sm:px-4">
                                         @if ($session['status_value'] === 'approved')
                                             <form method="POST"
                                                 action="{{ route('counsellor.booking-request.status', $session['id']) }}">
@@ -198,7 +236,7 @@
                                                 @method('PATCH')
                                                 <input type="hidden" name="status" value="completed">
                                                 <button type="submit"
-                                                    class="rounded-lg border border-violet-200 bg-violet-50 px-3 py-1.5 text-xs font-semibold text-violet-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-violet-100">
+                                                    class="w-full sm:w-auto rounded-lg border border-violet-200 bg-violet-50 px-2.5 py-1.5 text-xs font-semibold text-violet-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-violet-100">
                                                     Mark Completed
                                                 </button>
                                             </form>
@@ -244,8 +282,9 @@
                         <div class="border-b border-rose-100 bg-rose-50/60 px-4 py-3">
                             <h3 class="text-sm font-semibold uppercase tracking-wide text-rose-700">Emergency List</h3>
                         </div>
-                        <table class="w-full min-w-[760px] text-sm">
-                            <thead class="bg-rose-50/70 text-left text-xs uppercase tracking-wider text-rose-600">
+                        <table class="w-full min-w-[640px] sm:min-w-[760px] text-xs sm:text-sm">
+                            <thead
+                                class="bg-rose-50/70 text-left text-[11px] uppercase tracking-wider text-rose-600 sm:text-xs">
                                 <tr>
                                     <th class="px-4 py-3 font-semibold">Student</th>
                                     <th class="px-4 py-3 font-semibold">Date</th>
@@ -261,25 +300,29 @@
                                     <tr data-session-date="{{ $session['date'] }}"
                                         data-session-status="{{ $session['status_value'] }}"
                                         data-session-emergency="emergency" class="transition hover:bg-rose-50/50">
-                                        <td class="px-4 py-3 font-semibold text-slate-800">{{ $session['student'] }}
+                                        <td
+                                            class="px-3 py-3 font-semibold text-slate-800 sm:px-4 whitespace-normal break-words">
+                                            {{ $session['student'] }}
                                         </td>
-                                        <td class="px-4 py-3 text-slate-600">{{ $session['date'] }}</td>
-                                        <td class="px-4 py-3 text-slate-600">{{ $session['time'] }}</td>
+                                        <td class="px-3 py-3 text-slate-600 sm:px-4 whitespace-nowrap">
+                                            {{ $session['date'] }}</td>
+                                        <td class="px-3 py-3 text-slate-600 sm:px-4 whitespace-nowrap">
+                                            {{ $session['time'] }}</td>
                                         <td class="px-4 py-3">
                                             <span
                                                 class="rounded-full border px-2.5 py-1 text-xs font-semibold {{ $session['status'] === 'Completed' ? 'border-violet-200 bg-violet-100 text-violet-700' : ($session['status'] === 'Approved' ? 'border-emerald-200 bg-emerald-100 text-emerald-700' : 'border-sky-200 bg-sky-100 text-sky-700') }}">
                                                 {{ $session['status'] }}
                                             </span>
                                         </td>
-                                        <td class="px-4 py-3 text-slate-600">
+                                        <td class="px-3 py-3 text-slate-600 sm:px-4 whitespace-normal break-words">
                                             {{ $session['topic'] ?: 'General support' }}</td>
-                                        <td class="px-4 py-3 text-center">
+                                        <td class="px-3 py-3 text-center sm:px-4">
                                             <button type="button" data-note="{{ $session['notes'] }}"
-                                                class="view-note-button rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-rose-100">
+                                                class="view-note-button w-full sm:w-auto rounded-lg border border-rose-200 bg-rose-50 px-2.5 py-1.5 text-xs font-semibold text-rose-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-rose-100">
                                                 View Notes
                                             </button>
                                         </td>
-                                        <td class="px-4 py-3 text-center">
+                                        <td class="px-3 py-3 text-center sm:px-4">
                                             @if ($session['status_value'] === 'approved')
                                                 <form method="POST"
                                                     action="{{ route('counsellor.booking-request.status', $session['id']) }}">
@@ -287,7 +330,7 @@
                                                     @method('PATCH')
                                                     <input type="hidden" name="status" value="completed">
                                                     <button type="submit"
-                                                        class="rounded-lg border border-violet-200 bg-violet-50 px-3 py-1.5 text-xs font-semibold text-violet-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-violet-100">
+                                                        class="w-full sm:w-auto rounded-lg border border-violet-200 bg-violet-50 px-2.5 py-1.5 text-xs font-semibold text-violet-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-violet-100">
                                                         Mark Completed
                                                     </button>
                                                 </form>
@@ -314,14 +357,25 @@
         </section>
     </main>
 
-    <div id="notes-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 p-4">
-        <div class="w-full max-w-lg rounded-2xl bg-white p-5 shadow-2xl">
-            <div class="mb-3 flex items-center justify-between">
-                <h3 class="text-base font-semibold text-slate-800">Booking Notes</h3>
+    <div id="notes-modal"
+        class="fixed inset-0 z-50 hidden items-center justify-center bg-gradient-to-br from-slate-900/70 via-indigo-900/50 to-sky-900/60 p-4 backdrop-blur-[2px]">
+        <div
+            class="notes-modal-card w-full max-w-lg overflow-hidden rounded-2xl border border-sky-100/80 bg-white shadow-[0_20px_60px_-20px_rgba(14,116,144,0.55)]">
+            <div class="notes-gradient-bar h-1.5 w-full"></div>
+            <div class="p-5">
+                <div class="mb-3 flex items-center justify-between">
+                    <h3 class="text-base font-semibold text-slate-800">Booking Notes</h3>
+                    <span
+                        class="rounded-full bg-sky-100 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-sky-700">Details</span>
+                </div>
+                <div
+                    class="mb-4 rounded-xl border border-sky-100 bg-gradient-to-br from-sky-50 via-white to-indigo-50 px-4 py-3">
+                    <p id="notes-modal-content" class="whitespace-pre-wrap text-sm leading-6 text-slate-700">No note
+                        provided.</p>
+                </div>
                 <button id="notes-modal-close" type="button"
-                    class="rounded-lg border border-slate-200 px-2 py-1 text-xs font-semibold text-slate-600 hover:bg-slate-100">Close</button>
+                    class="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-sky-50 hover:text-sky-700">Close</button>
             </div>
-            <p id="notes-modal-content" class="whitespace-pre-wrap text-sm text-slate-700">No note provided.</p>
         </div>
     </div>
 
