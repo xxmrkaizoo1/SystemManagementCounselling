@@ -594,8 +594,9 @@ Route::middleware('auth')->group(function () {
                 $carry[$roleName] = ($carry[$roleName] ?? 0) + (int) $total;
 
                 return $carry;
-            }, [])
-            ->sortDesc();
+            }, []);
+
+        $userCountsByRole = collect($userCountsByRole)->sortDesc();
 
         $stats = [
             'total_users' => User::count(),
