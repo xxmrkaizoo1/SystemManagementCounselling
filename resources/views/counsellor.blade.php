@@ -560,7 +560,7 @@
                         <button type="submit"
                             class="rounded-xl bg-sky-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-sky-700">Send
                             Reminder</button>
-                        <a id="chat-popup-open-full" href="{{ route('chat.index') }}"
+                        <a id="chat-popup-open-full" href="{{ route('messages.index') }}"
                             class="rounded-xl border border-slate-300 px-3 py-2 text-center text-sm font-semibold text-slate-700 transition hover:bg-slate-100">Open
                             full chat</a>
                     </div>
@@ -953,7 +953,7 @@
                 reminderForm.dataset.studentId = studentId;
 
                 popupOpenFull.href =
-                    `{{ route('chat.index') }}?student_id=${encodeURIComponent(studentId)}&booking_request_id=${encodeURIComponent(bookingRequestId)}`;
+                    `{{ route('messages.index') }}?user_id=${encodeURIComponent(studentId)}&booking_request_id=${encodeURIComponent(bookingRequestId)}`;
                 popup.dataset.student = student;
                 popup.dataset.topic = topic;
                 popup.dataset.date = date;
