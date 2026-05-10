@@ -903,7 +903,13 @@
                                                                     $booking['counsellor_name'] ??
                                                                     ($booking['counsellor'] ?? ''),
                                                                 'is_emergency' => str_contains(
-                                                                    strtoupper((string) ($booking['topic'] ?? '')),
+                                                                    strtoupper(
+                                                                        trim(
+                                                                            (string) (($booking['topic'] ?? '') .
+                                                                                ' ' .
+                                                                                ($booking['note'] ?? '')),
+                                                                        ),
+                                                                    ),
                                                                     'EMERGENCY',
                                                                 ),
                                                             ];
@@ -940,8 +946,8 @@
                                                     );
                                                     $nextBookingTime =
                                                         $nextBooking['booking_time'] ?? ($nextBooking['time'] ?? null);
-                                                    $nextBookingIsEmergency = str_contains(
-                                                        strtoupper((string) ($nextBooking['topic'] ?? '')),
+                                                     $nextBookingIsEmergency = str_contains(
+                                                        strtoupper(trim((string) (($nextBooking['topic'] ?? '') . ' ' . ($nextBooking['note'] ?? '')))),
                                                         'EMERGENCY',
                                                     );
                                                 @endphp
