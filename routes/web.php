@@ -28,6 +28,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
@@ -602,21 +603,25 @@ Route::middleware('auth')->group(function () {
             'announcement_images.*' => ['nullable', 'url', 'max:2048'],
         ]);
 
-       $rows = collect($validated['announcements'] ?? [])->values()->map(static fn($message): string => trim((string) $message));
+        $rows = collect($validated['announcements'] ?? [])
+            ->values()
+            ->map(static fn($message): string => trim((string) $message));
         $images = collect($validated['announcement_images'] ?? [])->values()->map(static fn($image): string => trim((string) $image));
 
-        $messages = $rows->map(static function (string $message, int $index) use ($images): array {
-            return [
-                'message' => $message,
-                'image' => $images->get($index, ''),
-            ];
-        })->filter(static fn(array $row): bool => $row['message'] !== '')->values()
+        $messages = $rows
+            ->map(static function (string $message, int $index) use ($images): array {
+                return [
+                    'message' => $message,
+                    'image' => $images->get($index, ''),
+                ];
+            })
+                })->filter(static fn(array $row): bool => $row['message'] !== '')->values();
 
         Announcement::query()->delete();
 
-           foreach ($messages as $index => $row) {
+             foreach ($messages as $index => $row) {
             Announcement::query()->create([
-             'message' => $row['message'],
+                'message' => $row['message'],
                 'image_url' => $row['image'] !== '' ? $row['image'] : null,
                 'sort_order' => $index,
                 'is_active' => true,
@@ -702,6 +707,34 @@ Route::middleware('auth')->group(function () {
             'managedUsers' => $managedUsers,
         ]);
     })->name('admin.accounts.manage');
+
+
+    Route::get('/admin/generate-report', function (Request $request) {
+        $user = request()->user();
+        $role = $user?->roles()->value('name');
+
+        abort_unless($role === 'admin', 403);
+
+        $startDate = (string) $request->query('start_date', now()->subDays(30)->toDateString());
+        $endDate = (string) $request->query('end_date', now()->toDateString());
+
+        $reportQuery = BookingRequest::query()
+            ->whereDate('created_at', '>=', $startDate)
+            ->whereDate('created_at', '<=', $endDate);
+
+        $reportStats = [
+            'total_bookings' => (clone $reportQuery)->count(),
+            'completed_bookings' => (clone $reportQuery)->where('status', 'completed')->count(),
+            'active_users' => User::query()->whereDate('updated_at', '>=', $startDate)->count(),
+        ];
+
+        return view('admin.generate-report', [
+            'user' => $user,
+            'reportStats' => $reportStats,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+        ]);
+    })->name('admin.reports.generate');
 
 
     Route::get('/admin/student-statistics', function (Request $request) {
@@ -1928,6 +1961,7 @@ Route::middleware('auth')->group(function () {
 
         if ($latestNotificationId > 0) {
             $request->session()->put('inbox_last_seen_notification_id', $latestNotificationId);
+            Cache::forever('inbox_last_seen_notification_id_user_' . $user->id, $latestNotificationId);
         }
 
         if (!empty($filters['date_from'])) {

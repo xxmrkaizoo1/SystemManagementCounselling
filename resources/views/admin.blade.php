@@ -224,6 +224,23 @@
                                     clip-rule="evenodd" />
                             </svg>
                         </a>
+                        <a href="{{ route('admin.reports.generate') }}"
+                            class="group mt-2.5 flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-gradient-to-r from-white to-slate-50 px-3.5 py-3 text-sm font-medium text-slate-700 shadow-sm hover:border-sky-200 hover:from-sky-50 hover:to-indigo-50 hover:text-sky-800 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+                            <span
+                                class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition group-hover:bg-sky-100 group-hover:text-sky-700">
+                                <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path d="M3 3a1 1 0 011-1h12a1 1 0 011 1v14l-3-2-3 2-3-2-3 2V3z" />
+                                </svg>
+                            </span>
+                            <span>Generate report</span>
+                            <svg class="ml-auto h-4 w-4 text-slate-300 transition group-hover:text-sky-500"
+                                viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd"
+                                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 111.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </a>
+
 
                         <a href="{{ route('admin.announcements.edit') }}"
                             class="group mt-2.5 flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-gradient-to-r from-white to-slate-50 px-3.5 py-3 text-sm font-medium text-slate-700 shadow-sm hover:border-sky-200 hover:from-sky-50 hover:to-indigo-50 hover:text-sky-800 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">

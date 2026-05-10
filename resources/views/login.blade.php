@@ -39,7 +39,7 @@
     </div>
 
     <main id="loginContent"
-        class="min-h-screen flex items-center justify-center p-4 sm:p-8 opacity-0 translate-y-2 transition-all duration-700">
+        class="min-h-screen flex items-start justify-center p-3 pt-5 sm:p-6 lg:items-center lg:p-8 opacity-0 translate-y-2 transition-all duration-700">
         @if (session('status'))
             <div
                 class="fixed top-4 left-1/2 -translate-x-1/2 z-50 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-700 shadow-sm">
@@ -47,27 +47,41 @@
             </div>
         @endif
         <section
-            class="w-full max-w-6xl rounded-[2rem] border border-slate-200/80 bg-white/75 backdrop-blur-xl shadow-2xl overflow-hidden">
-            <div class="grid lg:grid-cols-[1.35fr_1fr] gap-0">
-                <div class="p-6 sm:p-8 lg:p-10 border-b lg:border-b-0 lg:border-r border-slate-200/80">
-                    <div class="flex items-center justify-between gap-3">
+            class="w-full max-w-md lg:max-w-6xl rounded-[1.8rem] lg:rounded-[2rem] border border-slate-200/80 bg-white/80 backdrop-blur-xl shadow-xl lg:shadow-2xl overflow-hidden">
+            <div class="grid gap-0 lg:grid-cols-[1.35fr_1fr]">
+                <div class="p-4 sm:p-6 lg:p-10 border-b lg:border-b-0 lg:border-r border-slate-200/80">
+                    <div class="flex items-center justify-between gap-2 sm:gap-3">
                         <a href="{{ route('home') }}"
                             class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">
                             <span>←</span>
                             <span>Back</span>
                         </a>
-                        <span class="text-xs px-3 py-1 rounded-full bg-sky-100 text-sky-700 font-medium">Secure
+                        <span
+                            class="text-[11px] sm:text-xs px-2.5 sm:px-3 py-1 rounded-full bg-sky-100 text-sky-700 font-medium">Secure
                             Access</span>
                     </div>
 
                     <div class="mt-6 rounded-2xl border border-slate-200 bg-white/80 p-5">
                         <p class="text-xs uppercase tracking-[0.14em] text-slate-500">CollegeCare</p>
-                        <h1 class="mt-2 text-2xl sm:text-3xl font-extrabold text-slate-800">Welcome back</h1>
+                        <h1 class="mt-2 text-[2rem] leading-tight sm:text-3xl font-extrabold text-slate-800">Welcome
+                            back</h1>
                         <p class="mt-2 text-sm text-slate-600">Sign in to manage counselling sessions, monitor live
                             slots, and view updates.</p>
                     </div>
 
                     @php
+                        $activeQueueValue = (int) ($activeQueue ?? 0);
+                        $availableSlotsValue = (int) ($availableSlots ?? 0);
+
+                        $activeQueueCardClass =
+                            $activeQueueValue === 0
+                                ? 'border-rose-200 bg-rose-50/70'
+                                : 'border-emerald-200 bg-emerald-50/70';
+                        $availableSlotsCardClass =
+                            $availableSlotsValue === 0
+                                ? 'border-rose-200 bg-rose-50/70'
+                                : 'border-emerald-200 bg-emerald-50/70';
+
                         $supportStatusValue = $supportStatus ?? 'Offline';
                         $statusCardClass = match ($supportStatusValue) {
                             'Online' => 'border-emerald-200 bg-emerald-50/80 shadow-emerald-100',
@@ -81,14 +95,14 @@
                         };
                     @endphp
 
-                    <div class="mt-6 grid sm:grid-cols-3 gap-3">
-                        <div class="rounded-2xl border border-rose-200 bg-rose-50/70 p-4 shadow-sm">
+                    <div class="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                        <div class="rounded-2xl border p-4 shadow-sm {{ $activeQueueCardClass }}">
                             <p class="text-xs text-slate-500">Active Queue</p>
-                            <p class="text-lg font-bold text-slate-800">{{ $activeQueue ?? 0 }}</p>
+                            <p class="text-lg font-bold text-slate-800">{{ $activeQueueValue }}</p>
                         </div>
-                        <div class="rounded-2xl border border-rose-200 bg-rose-50/70 p-4 shadow-sm">
+                        <div class="rounded-2xl border p-4 shadow-sm {{ $availableSlotsCardClass }}">
                             <p class="text-xs text-slate-500">Available Slots</p>
-                            <p class="text-lg font-bold text-slate-800">{{ $availableSlots ?? 0 }}</p>
+                            <p class="text-lg font-bold text-slate-800">{{ $availableSlotsValue }}</p>
                         </div>
                         <div
                             class="rounded-2xl border p-4 shadow-sm transition-all duration-300 {{ $statusCardClass }}">
@@ -98,8 +112,8 @@
                     </div>
 
                     <div
-                        class="mt-6 rounded-3xl border border-slate-200 bg-gradient-to-br from-white via-sky-50 to-indigo-50 p-6 min-h-[15rem]">
-                        <div class="grid gap-5 lg:grid-cols-[220px_1fr] lg:items-center h-full">
+                        class="mt-5 rounded-3xl border border-slate-200 bg-gradient-to-br from-white via-sky-50 to-indigo-50 p-4 sm:p-6 min-h-[12rem] lg:min-h-[15rem]">
+                        <div class="grid gap-4 sm:gap-5 lg:grid-cols-[220px_1fr] lg:items-center h-full">
                             <div
                                 class="presenter-figure hidden lg:block mx-auto rounded-3xl border border-sky-100 bg-white/90 w-[140px] h-[170px] relative shadow-sm scale-[1.2] origin-top">
                                 <div
@@ -185,8 +199,8 @@
                     </div>
                 </div>
 
-                <div class="p-6 sm:p-8 lg:p-10" x-data="{ showPassword: false }">
-                    <div class="max-w-md mx-auto rounded-3xl border border-slate-200 bg-white p-6 sm:p-7 shadow-sm">
+             <div class="p-4 sm:p-6 lg:p-10" x-data="{ showPassword: false }">
+                    <div class="max-w-md mx-auto rounded-3xl border border-slate-200 bg-white p-5 sm:p-7 shadow-sm">
                         <p class="text-xs uppercase tracking-[0.14em] text-slate-500">Account login</p>
                         <h2 class="mt-2 text-2xl font-bold text-slate-800">Sign in</h2>
                         <p class="mt-2 text-sm text-slate-600">Use your college email and password.</p>

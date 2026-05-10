@@ -126,6 +126,12 @@
                 display: none !important;
             }
         }
+
+        @media (max-width: 640px) {
+            .booking-calendar-shell {
+                min-width: 560px;
+            }
+        }
     </style>
 </head>
 
@@ -326,18 +332,23 @@
                                     <button id="calendar-next"
                                         class="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm hover:border-sky-200 hover:text-sky-700">→</button>
                                 </div>
-                                <div class="grid text-xs sm:text-sm bg-slate-100 text-slate-600"
-                                    style="grid-template-columns: repeat(7, minmax(0, 1fr));">
-                                    <div class="p-2 text-center font-semibold">Sun</div>
-                                    <div class="p-2 text-center font-semibold">Mon</div>
-                                    <div class="p-2 text-center font-semibold">Tue</div>
-                                    <div class="p-2 text-center font-semibold">Wed</div>
-                                    <div class="p-2 text-center font-semibold">Thu</div>
-                                    <div class="p-2 text-center font-semibold">Fri</div>
-                                    <div class="p-2 text-center font-semibold">Sat</div>
+                                <div class="overflow-x-auto">
+                                    <div class="booking-calendar-shell min-w-[560px]">
+                                        <div class="grid text-xs sm:text-sm bg-slate-100 text-slate-600"
+                                            style="grid-template-columns: repeat(7, minmax(0, 1fr));">
+                                            <div class="p-2 text-center font-semibold">Sun</div>
+                                            <div class="p-2 text-center font-semibold">Mon</div>
+                                            <div class="p-2 text-center font-semibold">Tue</div>
+                                            <div class="p-2 text-center font-semibold">Wed</div>
+                                            <div class="p-2 text-center font-semibold">Thu</div>
+                                            <div class="p-2 text-center font-semibold">Fri</div>
+                                            <div class="p-2 text-center font-semibold">Sat</div>
+                                        </div>
+                                        <div id="calendar-grid" class="grid"
+                                            style="grid-template-columns: repeat(7, minmax(0, 1fr));"></div>
+                                    </div>
                                 </div>
-                                <div id="calendar-grid" class="grid"
-                                    style="grid-template-columns: repeat(7, minmax(0, 1fr));"></div>
+
                             </div>
 
                             <aside class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
@@ -859,11 +870,11 @@
                         `min-h-24 sm:min-h-28 p-2 text-left border-r border-b border-slate-200 transition ${
                             isDisabledDate ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'hover:bg-sky-50'
                         }`;
-                    button.innerHTML = `
+                    button.innerHTML =
+                        `
                         <p class="font-semibold text-slate-700">${day}</p>
                          <span class="mt-2 inline-flex rounded-full border px-2 py-0.5 text-xs ${weekend ? 'text-slate-600 bg-slate-100 border-slate-200' : statusClass[previewStatus]}">${weekend ? 'Tutup' : previewStatus}</span>
-                       <p class="text-[11px] text-slate-500 mt-1">${isPastDate ? 'Tarikh lepas' : (weekend ? 'Cuti hujung minggu' : 'Klik untuk buka table')}</p>
-                    `;
+                       <p class="hidden sm:block text-[11px] text-slate-500 mt-1">${isPastDate ? 'Tarikh lepas' : (weekend ? 'Cuti hujung minggu' : 'Klik untuk buka table')}</p>                    `;
                     if (!isDisabledDate) {
                         button.addEventListener('click', () => openScheduleModal(cellDate));
                     } else {

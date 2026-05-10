@@ -199,9 +199,45 @@
         }
 
         .status-card {
-            border: 1px solid rgb(226 232 240);
-            background: linear-gradient(180deg, rgb(248 250 252 / 0.95) 0%, rgb(255 255 255 / 0.98) 100%);
-            box-shadow: 0 14px 36px rgb(15 23 42 / 0.08);
+            border: 1px solid rgb(186 230 253 / 0.95);
+            background:
+                radial-gradient(circle at 90% 10%, rgb(191 219 254 / 0.45), transparent 42%),
+                radial-gradient(circle at 8% 90%, rgb(224 242 254 / 0.7), transparent 46%),
+                linear-gradient(160deg, rgb(239 246 255 / 0.95) 0%, rgb(255 255 255 / 0.98) 52%, rgb(240 249 255 / 0.98) 100%);
+            box-shadow: 0 16px 38px rgb(2 132 199 / 0.14);
+        }
+
+        .status-metric {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .status-metric::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            opacity: 0.95;
+        }
+
+        .status-metric.active::before {
+            background: linear-gradient(130deg, rgb(224 242 254 / 0.95), rgb(239 246 255 / 0.8));
+        }
+
+        .status-metric.completed::before {
+            background: linear-gradient(130deg, rgb(209 250 229 / 0.9), rgb(236 253 245 / 0.78));
+        }
+
+        .status-metric.cancelled::before {
+            background: linear-gradient(130deg, rgb(254 226 226 / 0.82), rgb(255 241 242 / 0.78));
+        }
+
+        .status-metric.available::before {
+            background: linear-gradient(130deg, rgb(219 234 254 / 0.95), rgb(224 242 254 / 0.86));
+        }
+
+        .status-metric>* {
+            position: relative;
         }
 
         .calendar-collapsible {
@@ -228,6 +264,34 @@
             transform: rotate(180deg);
         }
 
+        @media (max-width: 1024px) {
+            .calendar-responsive-shell {
+                min-width: 560px;
+            }
+
+            #calendar-grid {
+                gap: 0.45rem;
+                padding: 0.45rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .calendar-responsive-shell {
+                min-width: 540px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .calendar-responsive-shell {
+                min-width: 510px;
+            }
+
+            #calendar-grid {
+                gap: 0.5rem;
+                padding: 0.5rem;
+            }
+        }
+
         .progress-fill {
             animation: progress-grow 850ms ease both;
             transform-origin: left;
@@ -245,10 +309,70 @@
             }
         }
 
+        
+        .dashboard-shell {
+            border-radius: 1.35rem;
+        }
+
+        .top-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .top-actions {
+            width: 100%;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .hero-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .hero-cta {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .quick-stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        @media (min-width: 640px) {
+            .dashboard-shell {
+                border-radius: 1.8rem;
+            }
+
+            .top-header {
+                align-items: center;
+                flex-direction: row;
+            }
+
+            .top-actions {
+                width: auto;
+                flex-wrap: nowrap;
+            }
+
+            .hero-header {
+                flex-direction: row;
+                align-items: flex-start;
+            }
+
+            .hero-cta {
+                width: auto;
+            }
+
+            .quick-stats-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
+
         @media (min-width: 1280px) {
             .home-shell {
                 flex-direction: row;
-                align-items: flex-start;
+                align-items: stretch;
             }
 
             .home-sidebar {
@@ -256,7 +380,8 @@
                 flex: 0 0 16rem;
                 position: sticky;
                 top: 1rem;
-                min-height: calc(150vh - 2rem);
+                align-self: stretch;
+                min-height: auto;
                 transform: none;
                 border-radius: 1rem;
                 z-index: auto;
@@ -306,9 +431,9 @@
                     $role === 'student' ? 'Pelajar' : ($role === 'teacher' ? 'Pensyarah' : ucfirst($role));
             @endphp
             <section
-                class="max-w-[96rem] mx-auto rounded-[2rem] border border-slate-200 bg-white/90 backdrop-blur-md shadow-xl overflow-hidden">
+                    class="max-w-[96rem] mx-auto dashboard-shell border border-slate-200 bg-white/90 backdrop-blur-md shadow-xl overflow-hidden">
                 <header
-                    class="px-5 sm:px-7 py-4 border-b border-slate-200/80 bg-white/80 flex items-center justify-between gap-4">
+                             class="px-5 sm:px-7 py-4 border-b border-slate-200/80 bg-white/80 top-header flex justify-between gap-4">
                     <div>
                         <p class="text-xs uppercase tracking-[0.14em] text-slate-500">CollegeCare</p>
                         <h1 class="text-xl sm:text-2xl font-bold text-slate-800">Session Dashboard
@@ -316,7 +441,7 @@
                         </h1>
                         <p class="text-sm text-slate-500 mt-1">Welcome, {{ $user->full_name ?: $user->name }}</p>
                     </div>
-                    <div class="flex items-center gap-2">
+                                      <div class="top-actions flex items-center gap-2">
 
 
                         <button type="button" id="sidebar-toggle"
@@ -458,7 +583,7 @@
                         class="home-main rounded-2xl border border-slate-200 bg-white/90 p-4 sm:p-6 shadow-sm space-y-5">
                         <div class="hero-gradient rounded-2xl p-5 sm:p-6 text-white shadow-lg">
                             <div class="relative z-10 flex flex-col gap-5">
-                                <div class="flex items-start justify-between gap-4">
+                                                              <div class="hero-header flex items-start justify-between gap-4">
                                     <div>
                                         <p class="text-xs uppercase tracking-[0.14em] text-sky-100">Wellbeing Hub</p>
                                         <h2 class="text-xl sm:text-2xl font-bold mt-1">Hi
@@ -467,10 +592,10 @@
                                             your booking, and stay updated in one place.</p>
                                     </div>
                                     <a href="{{ route('booking.index') }}"
-                                        class="shrink-0 inline-flex items-center rounded-xl bg-white px-4 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-50 transition">Book
+                                                                    class="hero-cta shrink-0 inline-flex items-center rounded-xl bg-white px-4 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-50 transition">Book
                                         Session</a>
                                 </div>
-                                <div class="grid gap-3 sm:grid-cols-3">
+                                                             <div class="quick-stats-grid grid gap-3">
                                     <div class="quick-stat rounded-xl px-4 py-3">
                                         <p class="text-xs uppercase tracking-wide text-sky-100/90">Role</p>
                                         <p class="text-base font-semibold">{{ $dashboardRoleLabel }}</p>
@@ -627,7 +752,7 @@
 
                             @if ($showStats)
                                 <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                                    <div class="glass-panel rounded-2xl p-4">
+                                    <div class="glass-panel status-metric active rounded-2xl p-4">
                                         <p class="text-xs uppercase tracking-[0.12em] text-slate-500">Active Booking
                                         </p>
                                         <p class="mt-2 text-2xl font-semibold text-slate-800">{{ $activeStatusTotal }}
@@ -636,7 +761,7 @@
                                             slots.
                                         </p>
                                     </div>
-                                    <div class="glass-panel rounded-2xl p-4">
+                                    <div class="glass-panel status-metric completed rounded-2xl p-4">
                                         <p class="text-xs uppercase tracking-[0.12em] text-slate-500">Completed Session
                                         </p>
                                         <p class="mt-2 text-2xl font-semibold text-emerald-700">
@@ -644,7 +769,7 @@
                                         </p>
                                         <p class="mt-1 text-sm text-slate-500">Sessions completed successfully.</p>
                                     </div>
-                                    <div class="glass-panel rounded-2xl p-4">
+                                    <div class="glass-panel status-metric cancelled rounded-2xl p-4">
                                         <p class="text-xs uppercase tracking-[0.12em] text-slate-500">Cancelled Request
                                         </p>
                                         <p class="mt-2 text-2xl font-semibold text-rose-700">
@@ -652,7 +777,7 @@
                                         </p>
                                         <p class="mt-1 text-sm text-slate-500">Requests cancelled or rejected.</p>
                                     </div>
-                                    <div class="glass-panel rounded-2xl p-4">
+                                    <div class="glass-panel status-metric available rounded-2xl p-4">
                                         <p class="text-xs uppercase tracking-[0.12em] text-slate-500">Available
                                             Counsellor
                                         </p>
@@ -664,7 +789,8 @@
                                 </div>
 
                                 <div class="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-                                    <div class="glass-panel rounded-2xl p-4">
+                                    <div
+                                        class="glass-panel rounded-2xl p-4 border-sky-100/90 bg-gradient-to-br from-sky-50 via-white to-blue-50">
                                         <h3 class="text-sm font-semibold text-slate-800">Next Session Forecast
                                             (Upcoming Appointment)</h3>
                                         @if ($nextBooking)
@@ -698,7 +824,8 @@
                                         @endif
                                     </div>
 
-                                    <div class="glass-panel rounded-2xl p-4">
+                                    <div
+                                        class="glass-panel rounded-2xl p-4 border-sky-100/90 bg-gradient-to-br from-blue-50 via-white to-sky-50">
                                         <h3 class="text-sm font-semibold text-slate-800">Booking Progress</h3>
                                         <div class="mt-3 space-y-3">
                                             @php
@@ -803,8 +930,8 @@
                                             <button id="calendar-next"
                                                 class="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm hover:border-sky-200 hover:text-sky-700">→</button>
                                         </div>
-                                        <div class="overflow-x-auto">
-                                            <div class="min-w-[640px]">
+                                        <div class="overflow-x-auto px-1 sm:px-0 pb-1">
+                                            <div class="calendar-responsive-shell min-w-[560px]">
                                                 <div class="text-xs uppercase tracking-wide bg-slate-100 text-slate-500"
                                                     style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));">
                                                     <div
@@ -1206,7 +1333,8 @@
 
                     for (let i = 0; i < startOffset; i++) {
                         const pad = document.createElement('div');
-                        pad.className = 'min-h-20 sm:min-h-24 bg-slate-50 rounded-xl border border-slate-200/70';
+                        pad.className =
+                            'min-h-14 sm:min-h-20 bg-slate-50 rounded-lg sm:rounded-xl border border-slate-200/70';
                         calendarGrid.appendChild(pad);
                     }
 
@@ -1221,12 +1349,12 @@
                         const button = document.createElement('button');
                         button.type = 'button';
                         button.className =
-                            `min-h-28 sm:min-h-32 p-2.5 text-left border border-slate-200 rounded-xl transition flex flex-col justify-between ${
+                            `min-h-20 sm:min-h-28 p-1.5 sm:p-2.5 text-left border border-slate-200 rounded-lg sm:rounded-xl transition flex flex-col justify-between ${
                                 isWeekend ? 'bg-slate-50 cursor-default' : 'bg-white hover:bg-sky-50'
                             }`;
                         button.innerHTML = `
-                             <p class="font-semibold text-sm leading-none ${isToday ? 'text-sky-700' : 'text-slate-700'}">${day}</p>
-                            ${status ? `<span class="mt-1.5 inline-flex rounded-full border px-2 py-0.5 text-[10px] ${statusClass[status]}">${status}</span>` : '<span class="mt-1.5 text-[10px] text-slate-400">Weekend</span>'}
+                         <p class="font-semibold text-xs sm:text-sm leading-none ${isToday ? 'text-sky-700' : 'text-slate-700'}">${day}</p>
+                            ${status ? `<span class="mt-1 inline-flex rounded-full border px-1.5 sm:px-2 py-0.5 text-[9px] sm:text-[10px] ${statusClass[status]}">${status}</span>` : '<span class="mt-1 text-[9px] sm:text-[10px] text-slate-400">Weekend</span>'}
                         `;
                         if (isToday) {
                             button.classList.add('ring-2', 'ring-sky-200', 'ring-inset');
@@ -1241,7 +1369,8 @@
                     const trailingPads = (7 - (totalCells % 7)) % 7;
                     for (let i = 0; i < trailingPads; i++) {
                         const pad = document.createElement('div');
-                        pad.className = 'min-h-28 sm:min-h-32 bg-slate-50 rounded-xl border border-slate-200/70';
+                        pad.className =
+                            'min-h-20 sm:min-h-28 bg-slate-50 rounded-lg sm:rounded-xl border border-slate-200/70';
                         calendarGrid.appendChild(pad);
                     }
                 };

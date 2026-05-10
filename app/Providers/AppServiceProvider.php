@@ -6,6 +6,7 @@ namespace App\Providers;
 use App\Models\InboxNotification;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -56,7 +57,9 @@ class AppServiceProvider extends ServiceProvider
                     ->where('user_id', Auth::id())
                     ->max('id');
 
-                $lastSeenNotificationId = (int) session('inbox_last_seen_notification_id', 0);
+                $sessionLastSeenNotificationId = (int) session('inbox_last_seen_notification_id', 0);
+                $cachedLastSeenNotificationId = (int) Cache::get('inbox_last_seen_notification_id_user_' . Auth::id(), 0);
+                $lastSeenNotificationId = max($sessionLastSeenNotificationId, $cachedLastSeenNotificationId);
                 $showInboxNotificationDot = $latestNotificationId !== null && (int) $latestNotificationId > $lastSeenNotificationId;
             }
 

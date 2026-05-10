@@ -77,6 +77,12 @@
             animation: searchFloat 3.2s ease-in-out infinite;
         }
 
+        @media (max-width: 640px) {
+            .sidebar-search-panel {
+                animation: none;
+            }
+        }
+
         @keyframes searchFloat {
 
             0%,
@@ -369,18 +375,19 @@
                     @endif
 
                     @if ($selectedUser)
-                        <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+                        <div
+                            class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-slate-200 pb-3">
                             <div>
                                 <p class="font-semibold text-slate-800">{{ $selectedUser->name }}</p>
                                 <p class="text-xs text-slate-500">{{ $selectedUser->email }}</p>
                             </div>
-                            <div class="flex items-center gap-2">
+                            <div class="flex w-full sm:w-auto items-center gap-2">
                                 <button type="button" id="open-profile-popup"
-                                    class="text-xs rounded-full border border-violet-200 bg-violet-50 px-3 py-1 font-semibold text-violet-700 hover:bg-violet-100 transition">
-                                    Booking Records
+                                    class="flex-1 sm:flex-none text-xs rounded-full border border-violet-200 bg-violet-50 px-3 py-1.5 font-semibold text-violet-700 hover:bg-violet-100 transition">
+                                    View Profile
                                 </button>
                                 <span
-                                    class="text-xs rounded-full border border-sky-200 bg-sky-50 px-2.5 py-1 text-sky-700">
+                                    class="flex-1 sm:flex-none text-center text-xs rounded-full border border-sky-200 bg-sky-50 px-2.5 py-1.5 text-sky-700">
                                     Conversation
                                 </span>
                             </div>
@@ -393,7 +400,7 @@
                                 @endphp
                                 <div class="flex {{ $isMine ? 'justify-end' : 'justify-start' }}">
                                     <div
-                                        class="max-w-[78%] rounded-2xl px-3 py-2 text-sm border {{ $isMine ? 'bg-sky-600 text-white border-sky-600' : 'bg-white text-slate-700 border-slate-200' }}">
+                                        class="max-w-[88%] sm:max-w-[78%] rounded-2xl px-3 py-2 text-sm border {{ $isMine ? 'bg-sky-600 text-white border-sky-600' : 'bg-white text-slate-700 border-slate-200' }}">
                                         <p class="whitespace-pre-wrap break-words">{{ $message->message }}</p>
                                         <p class="mt-1 text-[10px] {{ $isMine ? 'text-sky-100' : 'text-slate-400' }}">
                                             {{ $message->created_at->format('d M Y, h:i A') }}
@@ -439,42 +446,35 @@
 
             @if ($selectedUser)
                 <div id="profile-popup"
-                    class="fixed inset-0 z-[95] hidden items-center justify-center bg-slate-900/45 p-4">
-                    <div class="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-5 shadow-2xl">
+                    class="fixed inset-0 z-[95] hidden items-center justify-center bg-slate-900/45 p-3 sm:p-4">
+                    <div
+                        class="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-2xl max-h-[85vh] overflow-auto">
                         <div class="flex items-start justify-between gap-3">
                             <div>
-                                <p class="text-xs uppercase tracking-[0.14em] text-slate-500">Booking Overview</p>
+                                <p class="text-xs uppercase tracking-[0.14em] text-slate-500">Student / Lecturer
+                                    Profile</p>
                                 <h3 class="mt-1 text-lg font-semibold text-slate-800">{{ $selectedUser->name }}</h3>
+                                <p class="text-xs text-slate-500 mt-1">{{ $selectedUser->email }}</p>
                             </div>
                             <button type="button" id="close-profile-popup"
                                 class="rounded-lg border border-slate-200 px-2.5 py-1 text-sm text-slate-600 hover:border-slate-300 hover:text-slate-800">✕</button>
                         </div>
 
-                        <div class="mt-4 grid gap-3 md:grid-cols-2">
-                            <div class="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                                <p class="mb-2 text-xs uppercase tracking-wide text-slate-500">Record Booking</p>
-                                <div class="space-y-2 text-sm max-h-52 overflow-auto pr-1">
-                                    @forelse(($bookingRecords ?? []) as $record)
-                                        <button type="button"
-                                            class="record-booking-item w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-left hover:border-sky-300"
-                                            data-record-note="{{ $record['note'] ?? 'No note provided.' }}">
-                                            <p class="font-semibold text-slate-700">{{ $record['date'] }} •
-                                                {{ $record['time'] }}</p>
-                                            <p class="text-slate-600">{{ $record['topic'] }}</p>
-                                            <p class="text-xs text-slate-500">Status: {{ $record['status'] }}</p>
-                                        </button>
-                                    @empty
-                                        <p class="text-slate-500">No booking records yet.</p>
-                                    @endforelse
-                                </div>
+                        <div class="mt-4 space-y-3">
+                            <div class="rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm">
+                                <p class="text-xs uppercase tracking-wide text-slate-500 mb-1">Name</p>
+                                <p class="font-semibold text-slate-800">{{ $selectedUser->name }}</p>
+                                {{-- dasdafa --}}
+
                             </div>
-                            <div class="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                                <p class="mb-2 text-xs uppercase tracking-wide text-slate-500">Current Booking Notes
+                            <div class="rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm">
+                                <p class="text-xs uppercase tracking-wide text-slate-500 mb-1">Email</p>
+                                <p class="font-medium text-slate-700 break-all">{{ $selectedUser->email }}</p>
+                            </div>
+                            <div class="rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm">
+                                <p class="text-xs uppercase tracking-wide text-slate-500 mb-1">Session Contact</p>
+                                <p class="text-slate-700">Profile view only for student/lecturer session communication.
                                 </p>
-                                <div id="record-note-display"
-                                    class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600 whitespace-pre-wrap min-h-[7rem]">
-                                    {{ $bookingRecords[0]['note'] ?? 'Click a booking record on the left to view its notes.' }}
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -502,8 +502,7 @@
             const profilePopup = document.getElementById('profile-popup');
             const openProfilePopup = document.getElementById('open-profile-popup');
             const closeProfilePopup = document.getElementById('close-profile-popup');
-            const recordItems = Array.from(document.querySelectorAll('.record-booking-item'));
-            const recordNoteDisplay = document.getElementById('record-note-display');
+        
 
             const hideProfilePopup = () => {
                 if (!profilePopup) return;
@@ -552,17 +551,7 @@
                 });
             }
 
-            recordItems.forEach((item) => {
-                item.addEventListener('click', () => {
-                    recordItems.forEach((btn) => btn.classList.remove('border-sky-300',
-                        'bg-sky-50'));
-                    item.classList.add('border-sky-300', 'bg-sky-50');
-                    if (recordNoteDisplay) {
-                        recordNoteDisplay.textContent = item.dataset.recordNote ||
-                            'No note provided.';
-                    }
-                });
-            });
+
 
         });
     </script>
