@@ -113,13 +113,25 @@
                         {{ session('status') }}
                     </div>
                 @endif
+                <form method="GET" action="{{ route('counsellor.pending-requests') }}"
+                    class="mb-4 flex items-center justify-end gap-2">
+                    <label for="role-filter" class="text-sm font-medium text-slate-600">Filter role</label>
+                    <select id="role-filter" name="role"
+                        class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 focus:border-sky-500 focus:outline-none">
+                        <option value="all" @selected(($roleFilter ?? 'all') === 'all')>All</option>
+                        <option value="student" @selected(($roleFilter ?? '') === 'student')>Student</option>
+                        <option value="lecturer" @selected(($roleFilter ?? '') === 'lecturer')>Lecturer</option>
+                    </select>
+                    <button type="submit"
+                        class="rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-100">Apply</button>
+                </form>
                 <div
                     class="fade-up fade-up-delay-2 overflow-x-auto rounded-2xl border border-slate-200/90 bg-white shadow-inner shadow-slate-100/60">
 
                     <table class="w-full min-w-[680px] text-sm">
                         <thead class="bg-slate-100/90 text-left text-xs uppercase tracking-[0.08em] text-slate-500">
                             <tr>
-                                <th class="px-4 py-3 font-semibold">Student</th>
+                                <th class="px-4 py-3 font-semibold">Student/Lecturer</th>
                                 <th class="px-4 py-3 font-semibold">Date</th>
                                 <th class="px-4 py-3 font-semibold">Time</th>
                                 <th class="px-4 py-3 font-semibold">Status</th>

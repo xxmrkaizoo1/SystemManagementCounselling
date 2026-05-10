@@ -377,7 +377,7 @@
                             <div class="flex items-center gap-2">
                                 <button type="button" id="open-profile-popup"
                                     class="text-xs rounded-full border border-violet-200 bg-violet-50 px-3 py-1 font-semibold text-violet-700 hover:bg-violet-100 transition">
-                                    View Profile
+                                    Booking Records
                                 </button>
                                 <span
                                     class="text-xs rounded-full border border-sky-200 bg-sky-50 px-2.5 py-1 text-sky-700">
@@ -443,32 +443,38 @@
                     <div class="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-5 shadow-2xl">
                         <div class="flex items-start justify-between gap-3">
                             <div>
-                                <p class="text-xs uppercase tracking-[0.14em] text-slate-500">User Profile</p>
+                                <p class="text-xs uppercase tracking-[0.14em] text-slate-500">Booking Overview</p>
                                 <h3 class="mt-1 text-lg font-semibold text-slate-800">{{ $selectedUser->name }}</h3>
                             </div>
                             <button type="button" id="close-profile-popup"
                                 class="rounded-lg border border-slate-200 px-2.5 py-1 text-sm text-slate-600 hover:border-slate-300 hover:text-slate-800">✕</button>
                         </div>
 
-                        <div class="mt-4 flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
-                            <img src="{{ $selectedUser->profile_pic ?: '/images/default-profile.svg' }}"
-                                alt="{{ $selectedUser->name }} profile"
-                                class="h-14 w-14 rounded-full border border-slate-200 object-cover bg-white" />
-                            <div class="min-w-0">
-                                <p class="font-semibold text-slate-800 break-words">
-                                    {{ $selectedUser->full_name ?: $selectedUser->name }}</p>
-                                <p class="text-sm text-slate-500 break-words">{{ $selectedUser->email }}</p>
+                        <div class="mt-4 grid gap-3 md:grid-cols-2">
+                            <div class="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                                <p class="mb-2 text-xs uppercase tracking-wide text-slate-500">Record Booking</p>
+                                <div class="space-y-2 text-sm max-h-52 overflow-auto pr-1">
+                                    @forelse(($bookingRecords ?? []) as $record)
+                                        <button type="button"
+                                            class="record-booking-item w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-left hover:border-sky-300"
+                                            data-record-note="{{ $record['note'] ?? 'No note provided.' }}">
+                                            <p class="font-semibold text-slate-700">{{ $record['date'] }} •
+                                                {{ $record['time'] }}</p>
+                                            <p class="text-slate-600">{{ $record['topic'] }}</p>
+                                            <p class="text-xs text-slate-500">Status: {{ $record['status'] }}</p>
+                                        </button>
+                                    @empty
+                                        <p class="text-slate-500">No booking records yet.</p>
+                                    @endforelse
+                                </div>
                             </div>
-                        </div>
-
-                        <div class="mt-4 grid grid-cols-2 gap-2 text-sm">
-                            <div class="rounded-lg border border-slate-200 bg-white px-3 py-2">
-                                <p class="text-xs uppercase tracking-wide text-slate-500">Role</p>
-                                <p class="font-medium text-slate-700">{{ ucfirst($selectedUser->role ?? 'User') }}</p>
-                            </div>
-                            <div class="rounded-lg border border-slate-200 bg-white px-3 py-2">
-                                <p class="text-xs uppercase tracking-wide text-slate-500">Status</p>
-                                <p class="font-medium text-emerald-600">Available</p>
+                            <div class="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                                <p class="mb-2 text-xs uppercase tracking-wide text-slate-500">Current Booking Notes
+                                </p>
+                                <div id="record-note-display"
+                                    class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600 whitespace-pre-wrap min-h-[7rem]">
+                                    {{ $bookingRecords[0]['note'] ?? 'Click a booking record on the left to view its notes.' }}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -496,6 +502,8 @@
             const profilePopup = document.getElementById('profile-popup');
             const openProfilePopup = document.getElementById('open-profile-popup');
             const closeProfilePopup = document.getElementById('close-profile-popup');
+            const recordItems = Array.from(document.querySelectorAll('.record-booking-item'));
+            const recordNoteDisplay = document.getElementById('record-note-display');
 
             const hideProfilePopup = () => {
                 if (!profilePopup) return;
@@ -543,6 +551,19 @@
                     }
                 });
             }
+
+            recordItems.forEach((item) => {
+                item.addEventListener('click', () => {
+                    recordItems.forEach((btn) => btn.classList.remove('border-sky-300',
+                        'bg-sky-50'));
+                    item.classList.add('border-sky-300', 'bg-sky-50');
+                    if (recordNoteDisplay) {
+                        recordNoteDisplay.textContent = item.dataset.recordNote ||
+                            'No note provided.';
+                    }
+                });
+            });
+
         });
     </script>
 </body>

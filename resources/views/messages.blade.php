@@ -6,6 +6,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Messages • CollegeCare</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        @media (prefers-reduced-motion: no-preference) {
+            .enter-fade {
+                animation: enterFade .55s ease-out both;
+            }
+
+            .enter-slide-up {
+                animation: enterSlideUp .6s ease-out both;
+            }
+
+            .enter-delay-1 {
+                animation-delay: .08s;
+            }
+
+            .enter-delay-2 {
+                animation-delay: .16s;
+            }
+        }
+
+        @keyframes enterFade {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes enterSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(12px) scale(.985);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+    </style>
 </head>
 
 <body class="min-h-screen bg-slate-100 text-slate-800">
@@ -14,9 +55,9 @@
             class="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,_#e0f2fe_0%,_#eef2ff_40%,_#f8fafc_100%)]">
         </div>
 
-        <main class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+        <main class="enter-fade mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
             <section class="grid gap-6 lg:grid-cols-[18rem_1fr]">
-                <aside class="rounded-3xl border border-white/80 bg-white/90 p-5 shadow-xl backdrop-blur">
+                <aside class="enter-slide-up rounded-3xl border border-white/80 bg-white/90 p-5 shadow-xl backdrop-blur">
                     <div class="mb-6">
                         <p class="text-xs uppercase tracking-[0.15em] text-sky-600">CollegeCare</p>
                         <h1 class="mt-2 text-2xl font-bold text-slate-900">Messages Hub</h1>
@@ -45,8 +86,10 @@
                     </div>
                 </aside>
 
-                <section class="rounded-3xl border border-white/80 bg-white/90 shadow-xl backdrop-blur">
-                    <header class="flex items-center justify-between rounded-t-3xl bg-slate-950 px-6 py-5 text-white">
+                <section
+                    class="enter-slide-up enter-delay-1 rounded-3xl border border-white/80 bg-white/90 shadow-xl backdrop-blur">
+                    <header
+                        class="flex items-center justify-between rounded-t-3xl bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 px-6 py-5 text-white">
                         <div class="flex items-center gap-3">
                             <a id="messages-back" href="{{ route('home') }}"
                                 class="inline-flex items-center rounded-lg border border-slate-700 px-3 py-2 text-xs font-semibold text-slate-200 transition hover:bg-slate-800">←
@@ -70,7 +113,7 @@
                         <div id="message-list" class="grid gap-4 md:grid-cols-2">
                             @forelse ($messageCards as $card)
                                 <article data-category="{{ $card['category'] }}" data-search="{{ $card['search'] }}"
-                                    class="message-card rounded-2xl border border-slate-200 bg-white p-4 shadow-sm hover:shadow-md transition">
+                                    class="message-card enter-slide-up enter-delay-2 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-sky-200 hover:shadow-md">
                                     <div class="flex gap-3">
                                         <div
                                             class="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-100 font-bold text-indigo-700">

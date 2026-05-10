@@ -85,7 +85,7 @@
                                 <label for="email"
                                     class="block text-sm font-medium text-slate-700 mb-1.5">Email</label>
                                 <input id="email" type="email" name="email" value="{{ old('email') }}" required
-                                    autofocus placeholder="name@college.edu"
+                                    autofocus placeholder="name@gmail.com"
                                     class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition">
                                 @error('email')
                                     <p class="mt-1 text-xs text-rose-600">{{ $message }}</p>

@@ -130,6 +130,20 @@
                                         <option value="completed">Completed</option>
                                     </select>
                                 </label>
+
+                                <label class="block">
+                                    <span
+                                        class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                        Emergency Type
+                                    </span>
+                                    <select id="session-emergency-filter"
+                                        class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-sky-300 focus:ring-2 focus:ring-sky-100">
+                                        <option value="">All type</option>
+                                        <option value="emergency">Emergency only</option>
+                                        <option value="normal">Normal only</option>
+                                    </select>
+                                </label>
+
                                 <button id="session-clear-date" type="button"
                                     class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-600 transition-all duration-200 hover:-translate-y-0.5 hover:border-sky-200 hover:text-sky-700">
                                     Clear Date Filter
@@ -170,6 +184,7 @@
                             @forelse ($sessions as $session)
                                 <tr data-session-date="{{ $session['date'] }}"
                                     data-session-status="{{ $session['status_value'] }}"
+                                    data-session-emergency="{{ str_contains(strtolower((string) ($session['topic'] ?? '')), 'emergency') ? 'emergency' : 'normal' }}"
                                     class="transition hover:bg-sky-50/70">
                                     <td class="px-4 py-3 font-semibold text-slate-800">{{ $session['student'] }}</td>
                                     <td class="px-4 py-3 text-slate-600">{{ $session['date'] }}</td>
@@ -180,7 +195,17 @@
                                             {{ $session['status'] }}
                                         </span>
                                     </td>
-                                    <td class="px-4 py-3 text-slate-600">{{ $session['topic'] ?: 'General support' }}
+                                    <td class="px-4 py-3 text-slate-600">
+                                        <div class="flex items-center gap-2">
+                                            <span>{{ $session['topic'] ?: 'General support' }}</span>
+                                            <button type="button"
+                                                class="note-view-btn rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-[11px] font-semibold text-slate-600 hover:bg-slate-100"
+                                                data-note="{{ $session['notes'] ?? 'No note provided.' }}"
+                                                data-student="{{ $session['student'] }}"
+                                                data-topic="{{ $session['topic'] ?: 'General support' }}">
+                                                View Notes
+                                            </button>
+                                        </div>
                                     </td>
                                     <td class="px-4 py-3 text-center">
                                         @if ($session['status_value'] === 'approved')
@@ -225,6 +250,25 @@
         </section>
     </main>
 
+    <div id="session-note-popup" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/45 px-4">
+        <div class="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-5 shadow-xl">
+            <div class="flex items-start justify-between gap-3">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Booking Notes</p>
+                    <h2 id="session-note-student" class="mt-1 text-lg font-bold text-slate-800">-</h2>
+                </div>
+                <button id="close-session-note-popup" type="button"
+                    class="rounded-lg border border-slate-300 px-2 py-1 text-slate-600 hover:bg-slate-100">✕</button>
+            </div>
+            <p class="mt-3 text-sm text-slate-600"><span class="font-semibold text-slate-700">Topic:</span> <span
+                    id="session-note-topic">-</span></p>
+            <div class="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
+                <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Notes</p>
+                <p id="session-note-content" class="whitespace-pre-wrap text-slate-700">-</p>
+            </div>
+        </div>
+    </div>
+
     <script>
         (() => {
             const calendarTitle = document.getElementById('status-calendar-title');
@@ -233,6 +277,7 @@
             const calendarNext = document.getElementById('status-calendar-next');
             const dateFilter = document.getElementById('session-date-filter');
             const statusFilter = document.getElementById('session-status-filter');
+            const emergencyFilter = document.getElementById('session-emergency-filter');
             const clearDateButton = document.getElementById('session-clear-date');
             const tableBody = document.getElementById('session-table-body');
             const emptyRow = document.getElementById('empty-row');
@@ -240,6 +285,11 @@
             const visibleCount = document.getElementById('visible-count');
             const approvedCount = document.getElementById('approved-count');
             const completedCount = document.getElementById('completed-count');
+            const notePopup = document.getElementById('session-note-popup');
+            const notePopupClose = document.getElementById('close-session-note-popup');
+            const noteStudent = document.getElementById('session-note-student');
+            const noteTopic = document.getElementById('session-note-topic');
+            const noteContent = document.getElementById('session-note-content');
 
             if (!tableBody || !dateFilter || !statusFilter || !calendarTitle || !calendarGrid || !calendarPrev || !
                 calendarNext) {
@@ -317,6 +367,7 @@
 
             const updateRows = () => {
                 const selectedStatus = statusFilter.value;
+                const selectedEmergency = emergencyFilter?.value || '';
                 let visible = 0;
                 let approved = 0;
                 let completed = 0;
@@ -324,9 +375,12 @@
                 rows.forEach((row) => {
                     const rowDate = row.dataset.sessionDate || '';
                     const rowStatus = row.dataset.sessionStatus || '';
+                    const rowEmergency = row.dataset.sessionEmergency || 'normal';
                     const matchDate = !selectedDate || rowDate === selectedDate;
                     const matchStatus = !selectedStatus || rowStatus === selectedStatus;
                     const shouldShow = matchDate && matchStatus;
+                    const matchEmergency = !selectedEmergency || rowEmergency === selectedEmergency;
+                    const shouldShow = matchDate && matchStatus && matchEmergency;
 
                     row.classList.toggle('hidden', !shouldShow);
 
@@ -372,6 +426,7 @@
             };
 
             statusFilter.addEventListener('change', updateRows);
+            emergencyFilter?.addEventListener('change', updateRows);
             calendarPrev.addEventListener('click', () => {
                 currentMonthDate = new Date(currentMonthDate.getFullYear(), currentMonthDate.getMonth() - 1, 1);
                 renderCalendar();
@@ -384,6 +439,7 @@
                 clearDateButton.addEventListener('click', () => {
                     selectedDate = '';
                     dateFilter.value = '';
+                                    if (emergencyFilter) emergencyFilter.value = '';
                     updateRows();
                     renderCalendar();
                 });
@@ -392,6 +448,26 @@
             dateFilter.value = '';
             updateRows();
             renderCalendar();
+
+            document.querySelectorAll('.note-view-btn').forEach((button) => {
+                button.addEventListener('click', () => {
+                    if (!notePopup) return;
+                    noteStudent.textContent = button.dataset.student || '-';
+                    noteTopic.textContent = button.dataset.topic || '-';
+                    noteContent.textContent = button.dataset.note || 'No note provided.';
+                    notePopup.classList.remove('hidden');
+                    notePopup.classList.add('flex');
+                });
+            });
+
+            const closeNotePopup = () => {
+                notePopup?.classList.add('hidden');
+                notePopup?.classList.remove('flex');
+            };
+            notePopupClose?.addEventListener('click', closeNotePopup);
+            notePopup?.addEventListener('click', (event) => {
+                if (event.target === notePopup) closeNotePopup();
+            });
         })();
     </script>
 </body>

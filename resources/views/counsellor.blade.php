@@ -390,15 +390,25 @@
         </section>
     </main>
 
+    <button id="messages-mobile-trigger" type="button"
+        class="fixed bottom-4 right-4 z-40 inline-flex items-center gap-2 rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-xl ring-1 ring-slate-700/50 lg:hidden"
+        aria-controls="messages-widget" aria-expanded="false">
+        <span aria-hidden="true">🔔</span>
+        Notifications
+    </button>
+    <div id="messages-mobile-overlay" class="fixed inset-0 z-40 hidden bg-slate-900/50 lg:hidden"></div>
+
     <aside id="messages-widget"
-        class="fixed bottom-4 right-4 z-40 w-[calc(100%-2rem)] max-w-md overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-2xl ring-1 ring-slate-200/70 sm:bottom-6 sm:right-6">
+        class="fixed right-0 top-0 z-50 flex h-full w-80 max-w-[92vw] translate-x-full flex-col overflow-hidden border-l border-slate-200/90 bg-white shadow-2xl ring-1 ring-slate-200/70 transition-transform duration-200 lg:top-auto lg:bottom-6 lg:right-6 lg:h-auto lg:w-[calc(100%-2rem)] lg:max-w-md lg:translate-x-0 lg:rounded-2xl lg:border lg:border-slate-200/90">
         <div
             class="flex items-center justify-between bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 px-4 py-3 text-white">
             <h3 class="text-lg font-semibold">Notifications</h3>
             <div class="flex items-center gap-2">
                 <span
-                    class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-amber-400/20 text-amber-200"
+                    class="relative inline-flex h-6 w-6 items-center justify-center rounded-full bg-amber-400/20 text-amber-200"
                     aria-hidden="true">
+                    <span id="messages-bell-dot"
+                        class="absolute -right-0.5 -top-0.5 hidden h-2.5 w-2.5 rounded-full bg-rose-500 ring-2 ring-slate-900"></span>
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
@@ -447,6 +457,7 @@
                     @endphp
                     <button type="button" data-chat-item="true"
                         data-booking-request-id="{{ $item['booking_request_id'] ?? '' }}"
+                        data-notification-key="{{ $item['booking_request_id'] ?? 'idx-' . $index }}"
                         data-student-id="{{ $item['student_id'] ?? '' }}"
                         data-email="{{ $item['student_email'] ?? '' }}"
                         data-phone="{{ $item['student_phone'] ?? '' }}"
@@ -475,7 +486,7 @@
                                 <div class="flex items-center gap-2 pt-0.5">
                                     <span class="text-xs text-slate-400">{{ $displayDate }}</span>
                                     @if ($index === 0)
-                                        <span
+                                        <span data-unread-dot="true"
                                             class="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-pink-600 px-1 text-[10px] font-semibold text-white">1</span>
                                     @endif
                                 </div>
@@ -496,11 +507,11 @@
             </div>
         </div>
     </aside>
-    <div id="chat-popup-backdrop" class="fixed inset-0 z-40 hidden bg-slate-950/50 p-4">
+    <div id="chat-popup-backdrop" class="fixed inset-0 z-[95] hidden bg-slate-950/60 p-4 sm:p-6">
         <div id="chat-popup"
-            class="fixed left-1/2 top-20 z-50 w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 rounded-2xl border border-slate-200 bg-white shadow-2xl">
+            class="relative mx-auto mt-6 h-auto max-h-[88vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-2xl">
             <div id="chat-popup-header"
-                class="flex cursor-move items-center justify-between border-b border-slate-200 px-4 py-3">
+                class="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3">
                 <div>
                     <p class="text-sm text-slate-500">Counsellor Chatbox</p>
                     <h4 id="chat-popup-student" class="text-base font-semibold text-slate-900">Student</h4>
@@ -822,6 +833,8 @@
         (function() {
             const widget = document.getElementById('messages-widget');
             const toggleBtn = document.getElementById('messages-toggle');
+            const mobileTrigger = document.getElementById('messages-mobile-trigger');
+            const mobileOverlay = document.getElementById('messages-mobile-overlay');
             const body = document.getElementById('messages-body');
             const list = document.getElementById('chat-list');
             const searchInput = document.getElementById('chat-search');
@@ -844,6 +857,7 @@
             const popupMinBtn = document.getElementById('chat-popup-minimize');
             const reminderForm = document.getElementById('reminder-form');
             const popupOpenFull = document.getElementById('chat-popup-open-full');
+            const bellDot = document.getElementById('messages-bell-dot');
 
             if (!widget || !toggleBtn || !body || !list || !popupBackdrop || !popup || !popupCloseBtn || !
                 popupMinBtn) {
@@ -851,9 +865,8 @@
             }
 
             let collapsed = false;
-            let dragOffsetX = 0;
-            let dragOffsetY = 0;
-            let isDragging = false;
+            let mobileSidebarOpen = false;
+
 
             const escapeHtml = (str) => String(str || '')
                 .replaceAll('&', '&amp;')
@@ -871,13 +884,44 @@
                     `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`;
             };
 
-            toggleBtn.addEventListener('click', () => setCollapsed(!collapsed));
+            toggleBtn.addEventListener('click', () => {
+                if (isMobileViewport()) {
+                    setMobileSidebarOpen(false);
+                    return;
+                }
+                setCollapsed(!collapsed);
+            });
 
-            const setPopupPosition = (x, y) => {
-                popup.style.left = `${x}px`;
-                popup.style.top = `${y}px`;
-                popup.style.transform = 'translate(0, 0)';
+            const isMobileViewport = () => window.matchMedia('(max-width: 1023px)').matches;
+
+            const setMobileSidebarOpen = (value) => {
+                mobileSidebarOpen = Boolean(value);
+                if (!isMobileViewport()) {
+                    widget.classList.remove('translate-x-full');
+                    mobileOverlay?.classList.add('hidden');
+                    mobileTrigger?.setAttribute('aria-expanded', 'false');
+                    return;
+                }
+
+                widget.classList.toggle('translate-x-full', !mobileSidebarOpen);
+                mobileOverlay?.classList.toggle('hidden', !mobileSidebarOpen);
+                mobileTrigger?.setAttribute('aria-expanded', mobileSidebarOpen ? 'true' : 'false');
+                document.body.classList.toggle('overflow-hidden', mobileSidebarOpen);
             };
+
+            mobileTrigger?.addEventListener('click', () => setMobileSidebarOpen(!mobileSidebarOpen));
+            mobileOverlay?.addEventListener('click', () => setMobileSidebarOpen(false));
+
+            window.addEventListener('resize', () => {
+                if (!isMobileViewport()) {
+                    document.body.classList.remove('overflow-hidden');
+                }
+                setMobileSidebarOpen(false);
+            });
+
+            setMobileSidebarOpen(false);
+
+
 
             const openPopup = (button) => {
                 const student = button.dataset.studentName || 'Student';
@@ -913,21 +957,54 @@
                 popup.dataset.topic = topic;
                 popup.dataset.date = date;
                 popup.dataset.slot = button.dataset.requestTime || '-';
+                setMobileSidebarOpen(false);
+
                 popupBackdrop.classList.remove('hidden');
-                setPopupPosition(window.innerWidth / 2 - popup.offsetWidth / 2, 80);
+
                 popupMessageInput.focus();
             };
 
             const closePopup = () => {
                 popupBackdrop.classList.add('hidden');
+
+            };
+            const readNotificationStorageKey = 'counsellor_read_notification_keys';
+            const readNotificationKeys = new Set(JSON.parse(localStorage.getItem(
+                readNotificationStorageKey) || '[]'));
+            const refreshBellDot = () => {
+                if (!bellDot) return;
+                const hasUnread = list.querySelectorAll('[data-unread-dot="true"]').length > 0;
+                bellDot.classList.toggle('hidden', !hasUnread);
             };
 
+            const markNotificationAsRead = (button) => {
+                const notificationKey = button.dataset.notificationKey || '';
+                if (notificationKey) {
+                    readNotificationKeys.add(notificationKey);
+                    localStorage.setItem(readNotificationStorageKey, JSON.stringify(Array.from(
+                        readNotificationKeys)));
+                }
+                button.querySelectorAll('[data-unread-dot="true"]').forEach((dot) => dot.remove());
+                refreshBellDot();
+            };
+
+
             list.querySelectorAll('[data-chat-item="true"]').forEach((button) => {
-                button.addEventListener('click', () => openPopup(button));
+                const notificationKey = button.dataset.notificationKey || '';
+                if (notificationKey && readNotificationKeys.has(notificationKey)) {
+                    button.querySelectorAll('[data-unread-dot="true"]').forEach((dot) => dot.remove());
+                }
+
+                button.addEventListener('click', () => {
+                    markNotificationAsRead(button);
+                    openPopup(button);
+                });
             });
+            refreshBellDot();
 
             popupCloseBtn.addEventListener('click', closePopup);
-            popupMinBtn.addEventListener('click', closePopup);
+            popupMinBtn.addEventListener('click',
+                closePopup);
             popupBackdrop.addEventListener('click', (event) => {
                 if (event.target === popupBackdrop) closePopup();
             });
@@ -961,34 +1038,7 @@
                     popupMessageInput.focus();
                 });
             }
-            const popupHeader = document.getElementById('chat-popup-header');
 
-            if (popupHeader) {
-                popupHeader.addEventListener('mousedown', (event) => {
-                    isDragging = true;
-                    const rect = popup.getBoundingClientRect();
-                    dragOffsetX = event.clientX - rect.left;
-                    dragOffsetY = event.clientY - rect.top;
-                    popupHeader.classList.add('cursor-grabbing');
-                });
-
-                window.addEventListener('mousemove', (event) => {
-                    if (!isDragging) return;
-                    const x = Math.max(8, Math.min(window.innerWidth - popup.offsetWidth - 8, event
-                        .clientX -
-                        dragOffsetX));
-                    const y = Math.max(8, Math.min(window.innerHeight - popup.offsetHeight - 8, event
-                        .clientY -
-                        dragOffsetY));
-                    setPopupPosition(x, y);
-                });
-
-                window.addEventListener('mouseup', () => {
-                    isDragging = false;
-                    popupHeader.classList.remove('cursor-grabbing');
-                });
-
-            }
             const applyNotificationFilters = () => {
                 const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
                 const filterValue = notificationFilter ? notificationFilter.value : 'all';

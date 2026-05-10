@@ -97,9 +97,18 @@
                 <section class="mt-6 grid gap-6 lg:grid-cols-2">
                     <article class="rounded-3xl border border-indigo-200/80 bg-white p-6 shadow-sm">
                         <div class="mb-4 flex items-center justify-between">
-                            <h3 class="text-lg font-semibold text-indigo-800">Top Students by Name</h3>
-                            <span class="rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-700">Top
-                                {{ count($topStudents) }}</span>
+                            <h3 class="text-lg font-semibold text-indigo-800">Top Students/Lecturers  List </h3>
+                            <div class="flex items-center gap-2">
+                                <select id="student-role-filter"
+                                    class="rounded-lg border border-indigo-200 px-3 py-1.5 text-xs font-semibold text-indigo-700">
+                                    <option value="all">All</option>
+                                    <option value="student">Student</option>
+                                    <option value="lecturer">Lecturer</option>
+                                </select>
+                                <span id="top-students-count"
+                                    class="rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-700">Top
+                                    {{ count($topStudents) }}</span>
+                            </div>
                         </div>
                         <div class="relative overflow-visible rounded-2xl border border-slate-100">
                             <table class="min-w-full divide-y divide-slate-100 text-sm">
@@ -111,7 +120,8 @@
                                 </thead>
                                 <tbody class="divide-y divide-slate-100 bg-white">
                                     @forelse($topStudents as $item)
-                                        <tr>
+                                        <tr data-student-role="{{ $item['user_info']['role'] ?? 'student' }}"
+                                            class="top-student-row">
                                             <td class="px-4 py-3">
                                                 <div class="relative inline-block student-popup-wrap">
                                                     <button type="button"
@@ -142,7 +152,8 @@
                                                                 <h4 class="font-bold text-slate-800">
                                                                     {{ $item['user_info']['name'] ?? 'N/A' }}</h4>
                                                                 <p class="text-sm font-semibold text-indigo-500">
-                                                                    Lecturer</p>
+                                                                    {{ ($item['user_info']['role'] ?? 'student') === 'lecturer' ? 'Lecturer' : 'Student' }}
+                                                                </p>
                                                             </div>
                                                             <div class="grid gap-3 px-6 pb-6 sm:grid-cols-2">
 
@@ -195,7 +206,7 @@
                     </article>
 
                     <article class="rounded-3xl border border-sky-200/80 bg-white p-6 shadow-sm">
-                        <div class="mb-4 flex items-center justify-between">
+                        <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
                             <h3 class="text-lg font-semibold text-sky-800">Top Topics by Name</h3>
                             <span class="rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold text-sky-700">Top
                                 {{ count($topTopics) }}</span>
@@ -417,6 +428,28 @@
 
         renderTopics();
         renderEmergency();
+
+        const studentRoleFilter = document.getElementById('student-role-filter');
+        const studentRows = Array.from(document.querySelectorAll('.top-student-row'));
+        const topStudentsCount = document.getElementById('top-students-count');
+
+        const renderTopStudentsByRole = () => {
+            const selectedRole = studentRoleFilter?.value || 'all';
+            let visibleCount = 0;
+
+            studentRows.forEach((row) => {
+                const rowRole = row.dataset.studentRole || 'student';
+                const visible = selectedRole === 'all' || rowRole === selectedRole;
+                row.classList.toggle('hidden', !visible);
+                if (visible) visibleCount += 1;
+            });
+
+            if (topStudentsCount) topStudentsCount.textContent = `Top ${visibleCount}`;
+        };
+
+        studentRoleFilter?.addEventListener('change', renderTopStudentsByRole);
+        renderTopStudentsByRole();
+
 
         const hideAllStudentPopups = () => {
             document.querySelectorAll('.student-popup').forEach((item) => item.classList.add('hidden'));

@@ -176,6 +176,8 @@ class ChatController extends Controller
 
         $selectedUser = null;
         $messages = collect();
+        $bookingRecords = collect();
+        $currentBookingNotes = collect();
 
         if ($selectedUserId) {
             $selectedUser = User::query()
@@ -198,6 +200,36 @@ class ChatController extends Controller
                     ->get()
                     ->reverse()
                     ->values();
+
+                if ($role === 'counsellor') {
+                    $counsellorName = trim((string) ($user->full_name ?: $user->name));
+                    $selectedUserBookings = BookingRequest::query()
+                        ->where('user_id', $selectedUser->id)
+                        ->where('counsellor_name', $counsellorName)
+                        ->latest('booking_date')
+                        ->latest('booking_time')
+                        ->limit(10)
+                        ->get();
+
+                    $bookingRecords = $selectedUserBookings->map(static function (BookingRequest $booking): array {
+                        return [
+                            'date' => (string) $booking->booking_date,
+                            'time' => (string) $booking->booking_time,
+                            'topic' => (string) ($booking->topic ?: 'General support'),
+                            'status' => ucfirst((string) ($booking->status ?: 'pending')),
+                        ];
+                    });
+
+                    $currentBookingNotes = $selectedUserBookings
+                        ->where('status', 'pending')
+                        ->take(5)
+                        ->map(static fn(BookingRequest $booking): array => [
+                            'date' => (string) $booking->booking_date,
+                            'time' => (string) $booking->booking_time,
+                            'note' => (string) ($booking->note ?: 'No note provided.'),
+                        ])
+                        ->values();
+                }
             }
         }
 
@@ -209,6 +241,8 @@ class ChatController extends Controller
             'conversationUsers' => $conversationUsers,
             'selectedUser' => $selectedUser,
             'messages' => $messages,
+            'bookingRecords' => $bookingRecords,
+            'currentBookingNotes' => $currentBookingNotes,
         ]);
     }
 

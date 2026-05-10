@@ -1173,7 +1173,7 @@ Route::middleware('auth')->group(function () {
         ]);
     })->name('counsellor.dashboard');
 
-    Route::get('/counsellor/pending-requests', function () {
+    Route::get('/counsellor/pending-requests', function (Request $request) {
         $user = request()->user();
         $role = $user?->roles()->value('name');
 
@@ -1189,6 +1189,12 @@ Route::middleware('auth')->group(function () {
             $counsellorNames
         )));
 
+        $roleFilter = strtolower(trim((string) $request->query('role', 'all')));
+        if (!in_array($roleFilter, ['all', 'student', 'lecturer'], true)) {
+            $roleFilter = 'all';
+        }
+
+
         $pendingRequests = BookingRequest::query()
             ->with(['user:id,name,full_name,email', 'user.roles:id,name'])
             ->whereIn(DB::raw("LOWER(REPLACE(TRIM(counsellor_name), ' ', ''))"), $normalizedCounsellorNames)
@@ -1197,6 +1203,8 @@ Route::middleware('auth')->group(function () {
             ->latest('booking_time')
             ->get()
             ->map(static function (BookingRequest $booking): array {
+                $roles = $booking->user?->roles?->pluck('name')->map(static fn(string $name): string => strtolower(trim($name)))->all() ?? [];
+                $resolvedRole = in_array('teacher', $roles, true) || in_array('lecturer', $roles, true) ? 'lecturer' : 'student';
                 return [
                     'id' => $booking->id,
                     'student' => $booking->user?->full_name ?: $booking->user?->name ?: 'Pelajar',
@@ -1205,13 +1213,17 @@ Route::middleware('auth')->group(function () {
                     'topic' => $booking->topic ?: 'General support',
                     'status' => $booking->status,
                     'notes' => $booking->note,
+                    'role' => $resolvedRole,
                 ];
             })
+            ->filter(static fn(array $item): bool => $roleFilter === 'all' || ($item['role'] ?? 'student') === $roleFilter)
+            ->values()
             ->all();
 
         return view('counsellor-pending-requests', [
             'user' => $user,
             'pendingRequests' => $pendingRequests,
+            'roleFilter' => $roleFilter,
         ]);
     })->name('counsellor.pending-requests');
 
@@ -1348,7 +1360,7 @@ Route::middleware('auth')->group(function () {
         )));
 
         $bookings = BookingRequest::query()
-            ->with(['user:id,name,full_name,email,phone,years,programme,profile_pic'])
+            ->with(['user:id,name,full_name,email,phone,years,programme,profile_pic', 'user.roles:id,name'])
             ->whereIn(DB::raw("LOWER(REPLACE(TRIM(counsellor_name), ' ', ''))"), $normalizedCounsellorNames)
             ->get();
 
@@ -1364,6 +1376,7 @@ Route::middleware('auth')->group(function () {
                     'years' => $items->first()?->user?->years ?: 'N/A',
                     'programme' => $items->first()?->user?->programme ?: 'N/A',
                     'profile_pic' => $items->first()?->user?->profile_pic ?: '/images/default-profile.svg',
+                    'role' => in_array('teacher', $items->first()?->user?->roles?->pluck('name')->map(static fn(string $name): string => strtolower(trim($name)))->all() ?? [], true) ? 'lecturer' : 'student',
                 ],
             ])
             ->sortByDesc('total')
@@ -1476,8 +1489,8 @@ Route::middleware('auth')->group(function () {
                     'time' => $booking->booking_time,
                     'status' => $statusLabel($booking->status),
                     'status_value' => $booking->status,
-                    'topic' => $booking->note,
                     'topic' => $booking->topic ?: 'General support',
+                    'notes' => $booking->note ?: 'No note provided.',
 
                 ];
             })

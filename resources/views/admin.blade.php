@@ -536,6 +536,7 @@
                                     <p class="text-sm text-slate-500">No role assignments found yet.</p>
                                 @endforelse
                             </div>
+
                         </article>
 
                         <article id="users"
