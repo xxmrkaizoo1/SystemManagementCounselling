@@ -468,27 +468,7 @@
                 });
             }
 
-            noteButtons.forEach((button) => {
-                button.addEventListener('click', () => {
-                    if (!noteModal || !noteContent) return;
-                    noteContent.textContent = button.dataset.note || 'No note provided.';
-                    noteModal.classList.remove('hidden');
-                    noteModal.classList.add('flex');
-                });
-            });
 
-            if (closeNoteModal && noteModal) {
-                closeNoteModal.addEventListener('click', () => {
-                    noteModal.classList.add('hidden');
-                    noteModal.classList.remove('flex');
-                });
-                noteModal.addEventListener('click', (event) => {
-                    if (event.target === noteModal) {
-                        noteModal.classList.add('hidden');
-                        noteModal.classList.remove('flex');
-                    }
-                });
-            }
 
             dateFilter.value = '';
             updateRows();
