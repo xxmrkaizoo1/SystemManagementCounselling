@@ -270,7 +270,7 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        const initializeSessionStatusPage = () => {
             const calendarTitle = document.getElementById('status-calendar-title');
             const calendarGrid = document.getElementById('status-calendar-grid');
             const calendarPrev = document.getElementById('status-calendar-prev');
@@ -470,8 +470,14 @@
             notePopup?.addEventListener('click', (event) => {
                 if (event.target === notePopup) closeNotePopup();
             });
-        });
-        </script>
+        };
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeSessionStatusPage);
+        } else {
+            initializeSessionStatusPage();
+        }
+    </script>
 </body>
 
 </html>
