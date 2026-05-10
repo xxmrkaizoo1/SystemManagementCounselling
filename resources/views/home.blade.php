@@ -269,11 +269,50 @@
         }
 
         .status-card {
-            border: 1px solid rgb(186 230 253 / 0.95);
-            background:
-                radial-gradient(circle at 90% 10%, rgb(191 219 254 / 0.45), transparent 42%),
-                radial-gradient(circle at 8% 90%, rgb(224 242 254 / 0.7), transparent 46%),
-                linear-gradient(160deg, rgb(239 246 255 / 0.95) 0%, rgb(255 255 255 / 0.98) 52%, rgb(240 249 255 / 0.98) 100%);
+            border: 1px solid transparent;
+            background: linear-gradient(180deg, rgb(248 250 252 / 0.95) 0%, rgb(255 255 255 / 0.98) 100%);
+            box-shadow: 0 14px 36px rgb(15 23 42 / 0.08);
+            position: relative;
+            overflow: hidden;
+            transition: transform 260ms ease, box-shadow 260ms ease;
+        }
+
+        .status-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            padding: 1px;
+            border-radius: inherit;
+            background: linear-gradient(120deg, rgb(56 189 248), rgb(99 102 241), rgb(20 184 166), rgb(56 189 248));
+            background-size: 300% 300%;
+            animation: status-border-rgb 7s linear infinite;
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .status-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 18px 40px rgb(14 116 144 / 0.16);
+        }
+
+        @keyframes status-border-rgb {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+
+            background: radial-gradient(circle at 90% 10%, rgb(191 219 254 / 0.45), transparent 42%),
+            radial-gradient(circle at 8% 90%, rgb(224 242 254 / 0.7), transparent 46%),
+            linear-gradient(160deg, rgb(239 246 255 / 0.95) 0%, rgb(255 255 255 / 0.98) 52%, rgb(240 249 255 / 0.98) 100%);
             box-shadow: 0 16px 38px rgb(2 132 199 / 0.14);
         }
 
@@ -946,8 +985,14 @@
                                                     );
                                                     $nextBookingTime =
                                                         $nextBooking['booking_time'] ?? ($nextBooking['time'] ?? null);
-                                                     $nextBookingIsEmergency = str_contains(
-                                                        strtoupper(trim((string) (($nextBooking['topic'] ?? '') . ' ' . ($nextBooking['note'] ?? '')))),
+                                                    $nextBookingIsEmergency = str_contains(
+                                                        strtoupper(
+                                                            trim(
+                                                                (string) (($nextBooking['topic'] ?? '') .
+                                                                    ' ' .
+                                                                    ($nextBooking['note'] ?? '')),
+                                                            ),
+                                                        ),
                                                         'EMERGENCY',
                                                     );
                                                 @endphp
