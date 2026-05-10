@@ -163,6 +163,7 @@
                                 <th class="px-4 py-3 font-semibold">Time</th>
                                 <th class="px-4 py-3 font-semibold">Status</th>
                                 <th class="px-4 py-3 font-semibold">Topic</th>
+                                <th class="px-4 py-3 font-semibold text-center">Notes</th>
                                 <th class="px-4 py-3 font-semibold text-center">Action</th>
                             </tr>
                         </thead>
@@ -170,6 +171,7 @@
                             @forelse ($sessions as $session)
                                 <tr data-session-date="{{ $session['date'] }}"
                                     data-session-status="{{ $session['status_value'] }}"
+                                    data-session-emergency="{{ str_contains(strtolower((string) ($session['topic'] ?? '')), 'emergency') ? '1' : '0' }}"
                                     class="transition hover:bg-sky-50/70">
                                     <td class="px-4 py-3 font-semibold text-slate-800">{{ $session['student'] }}</td>
                                     <td class="px-4 py-3 text-slate-600">{{ $session['date'] }}</td>
@@ -181,6 +183,12 @@
                                         </span>
                                     </td>
                                     <td class="px-4 py-3 text-slate-600">{{ $session['topic'] ?: 'General support' }}
+                                    </td>
+                                    <td class="px-4 py-3 text-center">
+                                        <button type="button" data-note="{{ $session['notes'] }}"
+                                            class="view-note-button rounded-lg border border-sky-200 bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-sky-100">
+                                            View Notes
+                                        </button>
                                     </td>
                                     <td class="px-4 py-3 text-center">
                                         @if ($session['status_value'] === 'approved')
@@ -201,7 +209,7 @@
                                 </tr>
                             @empty
                                 <tr id="empty-row">
-                                    <td colspan="6" class="px-4 py-10 text-center text-slate-500">
+                                    <td colspan="7" class="px-4 py-10 text-center text-slate-500">
                                         <div class="mx-auto flex max-w-sm flex-col items-center gap-2">
                                             <span
                                                 class="inline-flex h-14 w-14 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-2xl">📅</span>
@@ -214,7 +222,7 @@
                                 </tr>
                             @endforelse
                             <tr id="no-results-row" class="hidden">
-                                <td colspan="6" class="px-4 py-8 text-center text-slate-500">No sessions match the
+                                <td colspan="7" class="px-4 py-8 text-center text-slate-500">No sessions match the
                                     selected date/status
                                     filter.</td>
                             </tr>
@@ -244,6 +252,8 @@
                                     <th class="px-4 py-3 font-semibold">Time</th>
                                     <th class="px-4 py-3 font-semibold">Status</th>
                                     <th class="px-4 py-3 font-semibold">Topic</th>
+                                    <th class="px-4 py-3 font-semibold text-center">Notes</th>
+                                    <th class="px-4 py-3 font-semibold text-center">Action</th>
                                 </tr>
                             </thead>
                             <tbody id="emergency-table-body" class="divide-y divide-rose-100 bg-white">
@@ -263,15 +273,37 @@
                                         </td>
                                         <td class="px-4 py-3 text-slate-600">
                                             {{ $session['topic'] ?: 'General support' }}</td>
+                                        <td class="px-4 py-3 text-center">
+                                            <button type="button" data-note="{{ $session['notes'] }}"
+                                                class="view-note-button rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-rose-100">
+                                                View Notes
+                                            </button>
+                                        </td>
+                                        <td class="px-4 py-3 text-center">
+                                            @if ($session['status_value'] === 'approved')
+                                                <form method="POST"
+                                                    action="{{ route('counsellor.booking-request.status', $session['id']) }}">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <input type="hidden" name="status" value="completed">
+                                                    <button type="submit"
+                                                        class="rounded-lg border border-violet-200 bg-violet-50 px-3 py-1.5 text-xs font-semibold text-violet-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-violet-100">
+                                                        Mark Completed
+                                                    </button>
+                                                </form>
+                                            @else
+                                                <span class="text-xs text-slate-400">-</span>
+                                            @endif
+                                        </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="px-4 py-6 text-center text-slate-500">No emergency
+                                        <td colspan="7" class="px-4 py-6 text-center text-slate-500">No emergency
                                             sessions available.</td>
                                     </tr>
                                 @endforelse
                                 <tr id="emergency-no-results-row" class="hidden">
-                                    <td colspan="5" class="px-4 py-6 text-center text-slate-500">No emergency
+                                    <td colspan="7" class="px-4 py-6 text-center text-slate-500">No emergency
                                         sessions match the selected filters.</td>
                                 </tr>
                             </tbody>
@@ -281,6 +313,17 @@
             </div>
         </section>
     </main>
+
+    <div id="notes-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 p-4">
+        <div class="w-full max-w-lg rounded-2xl bg-white p-5 shadow-2xl">
+            <div class="mb-3 flex items-center justify-between">
+                <h3 class="text-base font-semibold text-slate-800">Booking Notes</h3>
+                <button id="notes-modal-close" type="button"
+                    class="rounded-lg border border-slate-200 px-2 py-1 text-xs font-semibold text-slate-600 hover:bg-slate-100">Close</button>
+            </div>
+            <p id="notes-modal-content" class="whitespace-pre-wrap text-sm text-slate-700">No note provided.</p>
+        </div>
+    </div>
 
     <script>
         (() => {
@@ -299,6 +342,10 @@
             const visibleCount = document.getElementById('visible-count');
             const approvedCount = document.getElementById('approved-count');
             const completedCount = document.getElementById('completed-count');
+            const notesModal = document.getElementById('notes-modal');
+            const notesModalContent = document.getElementById('notes-modal-content');
+            const notesModalClose = document.getElementById('notes-modal-close');
+            const noteButtons = document.querySelectorAll('.view-note-button');
 
             if (!tableBody || !dateFilter || !statusFilter || !calendarTitle || !calendarGrid || !calendarPrev || !
                 calendarNext) {
@@ -385,9 +432,10 @@
                 rows.forEach((row) => {
                     const rowDate = row.dataset.sessionDate || '';
                     const rowStatus = row.dataset.sessionStatus || '';
+                    const isEmergency = row.dataset.sessionEmergency === '1';
                     const matchDate = !selectedDate || rowDate === selectedDate;
                     const matchStatus = !selectedStatus || rowStatus === selectedStatus;
-                    const shouldShow = matchDate && matchStatus;
+                    const shouldShow = matchDate && matchStatus && !isEmergency;
 
                     row.classList.toggle('hidden', !shouldShow);
 
@@ -467,6 +515,30 @@
                     renderCalendar();
                 });
             }
+
+            noteButtons.forEach((button) => {
+                button.addEventListener('click', () => {
+                    if (!notesModal || !notesModalContent) {
+                        return;
+                    }
+                    notesModalContent.textContent = button.dataset.note || 'No note provided.';
+                    notesModal.classList.remove('hidden');
+                    notesModal.classList.add('flex');
+                });
+            });
+            if (notesModalClose && notesModal) {
+                notesModalClose.addEventListener('click', () => {
+                    notesModal.classList.add('hidden');
+                    notesModal.classList.remove('flex');
+                });
+                notesModal.addEventListener('click', (event) => {
+                    if (event.target === notesModal) {
+                        notesModal.classList.add('hidden');
+                        notesModal.classList.remove('flex');
+                    }
+                });
+            }
+
 
 
 
