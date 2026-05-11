@@ -7,6 +7,23 @@
     <title>Inbox Notification Center • CollegeCare</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
+        :root {
+            --sky-ink: #0f3b63;
+            --card-shadow: 0 20px 45px -28px rgba(15, 23, 42, 0.42);
+        }
+
+        body {
+            background:
+                radial-gradient(circle at 4% 6%, rgba(14, 165, 233, 0.18), transparent 28%),
+                radial-gradient(circle at 90% 2%, rgba(59, 130, 246, 0.15), transparent 26%),
+                #eff5fb;
+        }
+
+        #loginLoader.is-hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
         .home-shell {
             display: flex;
             flex-direction: column;
@@ -44,7 +61,7 @@
             z-index: 70;
             overflow-y: auto;
             border-radius: 0;
-             background: #d8ecf7;
+            background: linear-gradient(180deg, #def0fb 0%, #cae7f8 100%);
         }
 
         .home-sidebar.is-open {
@@ -76,6 +93,31 @@
 
         .notifications-list[data-density='compact'] .notification-message {
             display: none;
+        }
+
+        .glass-card {
+            border: 1px solid rgba(148, 163, 184, 0.24);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(248, 252, 255, 0.92));
+            box-shadow: var(--card-shadow);
+        }
+
+        .menu-item {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-item::after {
+            content: "";
+            position: absolute;
+            inset: auto -10% -18px -10%;
+            height: 36px;
+            background: radial-gradient(circle at center, rgba(14, 165, 233, 0.16), transparent 70%);
+            opacity: 0;
+            transition: opacity .25s ease;
+        }
+
+        .menu-item:hover::after {
+            opacity: 1;
         }
 
 
@@ -117,7 +159,7 @@
     </style>
 </head>
 
-<body class="bg-slate-100 min-h-screen text-slate-700">
+<body class="min-h-screen text-slate-700">
 
 
 
@@ -134,9 +176,9 @@
     </div>
     <div id="loginContent"
         class="max-w-6xl mx-auto px-3 sm:px-5 py-5 sm:py-7 opacity-0 translate-y-2 transition-all duration-700">
-        <div class="rounded-3xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+        <div class="glass-card rounded-3xl overflow-hidden">
             <header
-                class="px-5 sm:px-7 py-4 border-b border-slate-200/80 bg-white/80 flex items-center justify-between gap-4">
+                class="px-5 sm:px-7 py-4 border-b border-slate-200/80 bg-gradient-to-r from-white via-sky-50/60 to-white flex items-center justify-between gap-4">
                 <div>
                     <p class="text-xs uppercase tracking-[0.14em] text-slate-500">CollegeCare</p>
                     <h1 class="text-xl sm:text-2xl font-bold text-slate-800">Student & Lecturer Inbox</h1>
@@ -177,7 +219,7 @@
 
             <div class="p-5 sm:p-7 home-shell">
                 <aside id="home-sidebar"
-                    class="home-sidebar rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm">
+                    class="home-sidebar rounded-2xl border border-slate-100 bg-white/90 p-4 shadow-sm">
                     <div class="flex justify-end xl:hidden mb-2">
                         <button type="button" id="sidebar-close"
                             class="sidebar-close-btn rounded-lg border border-slate-200 px-2.5 py-1 text-sm text-slate-600 hover:text-sky-700 hover:border-sky-200">
@@ -200,7 +242,7 @@
                     </p>
                     <nav class="space-y-3 text-sm">
                         <a href="{{ route('inbox') }}" title="Inbox" aria-label="Inbox"
-                            class="relative flex w-full items-center gap-3 rounded-xl border border-sky-200 bg-sky-50 px-3 py-2.5 text-sky-700 transition">
+                            class="menu-item relative flex w-full items-center gap-3 rounded-xl border border-sky-200 bg-sky-50 px-3 py-2.5 text-sky-700 transition">
                             <span
                                 class="inline-flex h-12 w-12 items-center justify-center rounded-xl border border-sky-200 bg-white">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24"
@@ -216,7 +258,7 @@
                         </a>
 
                         <a href="{{ route('chat.index') }}" title="Chat Box" aria-label="Chat Box"
-                            class="flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">
+                            class="menu-item flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">
                             <span
                                 class="inline-flex h-12 w-12 items-center justify-center rounded-xl border border-slate-200 bg-slate-50">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24"
@@ -229,7 +271,7 @@
                         </a>
 
                         <a href="{{ route('booking.index') }}" title="Booking" aria-label="Booking"
-                            class="flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">
+                            class="menu-item flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">
                             <span
                                 class="inline-flex h-12 w-12 items-center justify-center rounded-xl border border-slate-200 bg-slate-50">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24"
@@ -243,7 +285,7 @@
                         </a>
 
                         <a href="{{ route('booking.history') }}" title="Booking History" aria-label="Booking History"
-                            class="flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">
+                            class="menu-item flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">
                             <span
                                 class="inline-flex h-12 w-12 items-center justify-center rounded-xl border border-slate-200 bg-slate-50">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24"
@@ -258,7 +300,7 @@
                         </a>
 
                         <a href="{{ route('profile.edit') }}" title="Edit Profile" aria-label="Edit Profile"
-                            class="flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">
+                            class="menu-item flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-slate-600 hover:border-sky-200 hover:text-sky-700 transition">
                             <span
                                 class="inline-flex h-12 w-12 items-center justify-center rounded-xl border border-slate-200 bg-slate-50">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24"
@@ -274,7 +316,7 @@
                 </aside>
 
                 <section
-                    class="home-main rounded-2xl border border-slate-200 bg-white/90 p-5 sm:p-6 shadow-sm min-h-[26rem]">
+                    class="home-main rounded-2xl border border-slate-200/90 bg-gradient-to-b from-white to-slate-50/70 p-5 sm:p-6 shadow-sm min-h-[26rem]">
                     @if (session('status'))
                         <div
                             class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-700">
