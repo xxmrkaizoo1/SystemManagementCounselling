@@ -31,6 +31,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Schema;
 
 
 Route::prefix('_local/testing-time')
@@ -249,10 +250,15 @@ Route::get('/', function () {
         ->values()
         ->all();
 
-    $landingAnnouncements = Announcement::query()
-        ->where('is_active', true)
-        ->orderBy('sort_order')
-        ->orderBy('id')
+    $announcementQuery = Announcement::query()->orderBy('id');
+    if (Schema::hasColumn('announcements', 'is_active')) {
+        $announcementQuery->where('is_active', true);
+    }
+    if (Schema::hasColumn('announcements', 'sort_order')) {
+        $announcementQuery->orderBy('sort_order');
+    }
+
+    $landingAnnouncements = $announcementQuery
         ->limit(10)
         ->pluck('message')
         ->filter()
