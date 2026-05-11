@@ -250,7 +250,7 @@ Route::get('/', function () {
         ->values()
         ->all();
 
-     $landingAnnouncements = [];
+    $landingAnnouncements = [];
     if (Schema::hasTable('announcements') && Schema::hasColumn('announcements', 'message')) {
         $announcementQuery = Announcement::query()->orderBy('id');
         if (Schema::hasColumn('announcements', 'is_active')) {
@@ -260,7 +260,7 @@ Route::get('/', function () {
             $announcementQuery->orderBy('sort_order');
         }
 
-     $landingAnnouncements = $announcementQuery
+        $landingAnnouncements = $announcementQuery
             ->limit(10)
             ->pluck('message')
             ->filter()
@@ -613,8 +613,20 @@ Route::middleware('auth')->group(function () {
 
         abort_unless($role === 'admin', 403);
 
+        if (!Schema::hasTable('announcements')) {
+            return view('admin.announcements', [
+                'announcements' => collect(),
+            ])->with('status', 'Announcements table not found yet. Please run migrations.');
+        }
+
+        $announcementQuery = Announcement::query()->orderBy('id');
+        if (Schema::hasColumn('announcements', 'sort_order')) {
+            $announcementQuery->orderBy('sort_order');
+        }
+
+
         return view('admin.announcements', [
-            'announcements' => Announcement::query()->orderBy('sort_order')->orderBy('id')->get(),
+            'announcements' => $announcementQuery->get(),
         ]);
     })->name('admin.announcements.edit');
 
@@ -644,15 +656,32 @@ Route::middleware('auth')->group(function () {
             ->filter(static fn(array $row): bool => $row['message'] !== '')
             ->values();
 
+        if (!Schema::hasTable('announcements')) {
+            return redirect()->route('admin.announcements.edit')->with('status', 'Announcements table not found.');
+        }
+
+        $hasImageUrl = Schema::hasColumn('announcements', 'image_url');
+        $hasSortOrder = Schema::hasColumn('announcements', 'sort_order');
+        $hasIsActive = Schema::hasColumn('announcements', 'is_active');
+
         Announcement::query()->delete();
 
         foreach ($messages as $index => $row) {
-            Announcement::query()->create([
+            $payload = [
                 'message' => $row['message'],
-                'image_url' => $row['image'] !== '' ? $row['image'] : null,
-                'sort_order' => $index,
-                'is_active' => true,
-            ]);
+            ];
+
+            if ($hasImageUrl) {
+                $payload['image_url'] = $row['image'] !== '' ? $row['image'] : null;
+            }
+            if ($hasSortOrder) {
+                $payload['sort_order'] = $index;
+            }
+            if ($hasIsActive) {
+                $payload['is_active'] = true;
+            }
+
+            Announcement::query()->create($payload);
         }
 
         return redirect()->route('admin.announcements.edit')->with('status', 'Announcements updated successfully.');
@@ -667,14 +696,29 @@ Route::middleware('auth')->group(function () {
             'announcement_message' => ['required', 'string', 'max:400'],
         ]);
 
-        $nextSortOrder = (int) Announcement::query()->max('sort_order');
+        if (!Schema::hasTable('announcements')) {
+            return redirect()->route('home')->with('status', 'Announcements table not found.');
+        }
 
-        Announcement::query()->create([
+        $hasSortOrder = Schema::hasColumn('announcements', 'sort_order');
+        $hasImageUrl = Schema::hasColumn('announcements', 'image_url');
+        $hasIsActive = Schema::hasColumn('announcements', 'is_active');
+        $nextSortOrder = $hasSortOrder ? (int) Announcement::query()->max('sort_order') : 0;
+
+        $payload = [
             'message' => trim((string) $validated['announcement_message']),
-            'image_url' => null,
-            'sort_order' => $nextSortOrder + 1,
-            'is_active' => true,
-        ]);
+        ];
+        if ($hasImageUrl) {
+            $payload['image_url'] = null;
+        }
+        if ($hasSortOrder) {
+            $payload['sort_order'] = $nextSortOrder + 1;
+        }
+        if ($hasIsActive) {
+            $payload['is_active'] = true;
+        }
+
+        Announcement::query()->create($payload);
 
         return redirect()->route('home')->with('status', 'Announcement added.');
     })->name('admin.announcements.quick-add');
