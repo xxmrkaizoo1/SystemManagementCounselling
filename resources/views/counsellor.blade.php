@@ -8,8 +8,46 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         .modern-shell {
+            position: relative;
+            isolation: isolate;
             background: linear-gradient(140deg, rgba(255, 255, 255, 0.9), rgba(238, 242, 255, 0.86));
         }
+
+        .modern-shell::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: inherit;
+            background: linear-gradient(120deg, #22d3ee, #3b82f6, #8b5cf6, #ec4899, #f59e0b, #22d3ee);
+            background-size: 300% 300%;
+            animation: counsellor-shell-rgb 7s linear infinite;
+            z-index: -2;
+            filter: saturate(1.1);
+        }
+
+        .modern-shell::after {
+            content: '';
+            position: absolute;
+            inset: 1px;
+            border-radius: inherit;
+            background: linear-gradient(140deg, rgba(255, 255, 255, 0.93), rgba(238, 242, 255, 0.9));
+            z-index: -1;
+        }
+
+        @keyframes counsellor-shell-rgb {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
 
         .modern-header-card {
             background: linear-gradient(130deg, rgba(255, 255, 255, 0.95), rgba(224, 242, 254, 0.75), rgba(237, 233, 254, 0.7));
@@ -58,7 +96,7 @@
 
         <section
             class="modern-shell overflow-hidden rounded-[2rem] border border-slate-200/80 shadow-2xl ring-1 ring-white/70 backdrop-blur-xl">
-            <header class="border-b border-slate-200/90 bg-white/85 px-4 py-4 sm:px-6 sm:py-5 lg:px-8 lg:py-6">
+            <header class="px-4 py-4 sm:px-6 sm:py-5 lg:px-8 lg:py-6">
                 <div class="modern-header-card rounded-3xl border border-white/70 p-4 sm:p-6">
                     <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-4">
                         <div class="flex min-w-0 flex-1 items-center gap-3 sm:gap-4">
@@ -167,7 +205,7 @@
                     </div>
                 </div>
             </header>
-            <div class="px-4 pb-6 pt-6 sm:px-6 sm:pb-8 lg:px-8 lg:pb-10 lg:pt-8">
+            <div class="px-4 pb-6 pt-0 sm:px-6 sm:pb-8 lg:px-8 lg:pb-10 lg:pt-0">
                 <section
                     class="mb-6 overflow-hidden rounded-3xl border border-slate-200/90 bg-gradient-to-r from-slate-900 via-sky-900 to-violet-900 shadow-xl">
                     <div class="relative h-64 sm:h-72 lg:h-80">
