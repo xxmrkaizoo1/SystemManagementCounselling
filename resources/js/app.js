@@ -64,11 +64,15 @@ window.addEventListener('load', () => {
     if (circle && loader && logoText) {
         const isAdminLoader = loader.dataset.adminLoader === 'true';
         const shouldShowAdminLoader = window.sessionStorage.getItem('showAdminLoader') === '1';
-        if (isAdminLoader && !shouldShowAdminLoader) {
+        const hasSeenAdminLoader = window.sessionStorage.getItem('hasSeenAdminLoader') === '1';
+        const shouldSkipAdminLoader = isAdminLoader && hasSeenAdminLoader && !shouldShowAdminLoader;
+
+        if (shouldSkipAdminLoader || (isAdminLoader && !shouldShowAdminLoader)) {
             loader.style.display = 'none';
         } else {
             if (isAdminLoader) {
                 window.sessionStorage.removeItem('showAdminLoader');
+                window.sessionStorage.setItem('hasSeenAdminLoader', '1');
             }
             circle.style.transition = 'transform 1.2s ease-in-out';
             loader.style.transition = 'opacity 0.8s ease';

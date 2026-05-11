@@ -32,9 +32,12 @@ class CounsellorController extends Controller
 
         $validated = $request->validate([
             'full_name' => ['required', 'string', 'max:255'],
-            'phone' => ['nullable', 'string', 'max:30'],
+            'phone' => ['required', 'regex:/^\d{11,12}$/'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'confirmed', 'min:8'],
+
+        ], [
+            'phone.regex' => 'Phone number must be 11 or 12 digits.',
 
         ]);
         $plainPassword = $validated['password'];
