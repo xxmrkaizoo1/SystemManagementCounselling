@@ -820,11 +820,19 @@ Route::middleware('auth')->group(function () {
             'active_users' => User::query()->whereDate('updated_at', '>=', $startDate)->count(),
         ];
 
+        $reportRows = (clone $reportQuery)
+            ->with(['user:id,name,full_name,no_matriks'])
+            ->orderByDesc('created_at')
+            ->limit(50)
+            ->get();
+
+
         return view('admin.generate-report', [
             'user' => $user,
             'reportStats' => $reportStats,
             'startDate' => $startDate,
             'endDate' => $endDate,
+            'reportRows' => $reportRows,
         ]);
     })->name('admin.reports.generate');
 
