@@ -792,10 +792,12 @@
                     const status = computedStatus(date, time, counsellor);
                     const key = slotKey(date, time, counsellor);
                     const userBooking = userBookingsByKey.get(key);
+                    const isPastSlot = isSlotInPast(date, time);
+                    const effectiveStatus = (status === 'Available' && isPastSlot) ? 'Booked' : status;
                     const counsellorLabel = status === 'Available' ? '-' : counsellor;
                     const tr = document.createElement('tr');
 
-                    const actionButton = status === 'Available' ?
+                    const actionButton = status === 'Available' && !isPastSlot ?
                         `<button type="button" data-action="request" data-slot-key="${key}" data-time="${time}" data-counsellor="${counsellor}" class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700 shadow-sm hover:bg-emerald-100 hover:border-emerald-300 transition">Buat Request</button>` :
                         (userBooking ?
                             `<button type="button" data-action="cancel-booking" data-booking-id="${userBooking.id}" data-slot-key="${key}" class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-700 shadow-sm hover:bg-rose-100 hover:border-rose-300 transition">Cancel Booking</button>` :
@@ -807,7 +809,7 @@
                         <td class="px-6 py-4 whitespace-nowrap font-semibold text-slate-700 bg-white border-y border-l border-slate-200 rounded-l-xl group-hover:border-sky-200 transition">${time}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-slate-700 bg-white border-y border-slate-200 group-hover:border-sky-200 transition">${counsellorLabel}</td>
                         <td class="px-6 py-4 text-center bg-white border-y border-slate-200 group-hover:border-sky-200 transition">
-                            <span class="inline-flex min-w-[104px] justify-center rounded-full border px-3 py-1 text-sm font-semibold ${statusClass[status]}">${status}</span>
+                                   <span class="inline-flex min-w-[104px] justify-center rounded-full border px-3 py-1 text-sm font-semibold ${isPastSlot && status === 'Available' ? 'text-slate-600 bg-slate-100 border-slate-200' : statusClass[effectiveStatus]}">${isPastSlot && status === 'Available' ? 'Closed' : effectiveStatus}</span>
                         </td>
                         <td class="px-6 py-4 text-center bg-white border-y border-r border-slate-200 rounded-r-xl group-hover:border-sky-200 transition">${actionButton}</td>
                     `;
@@ -918,6 +920,10 @@
                     const key = target.dataset.slotKey;
 
                     if (!time || !counsellor || !key || !selectedScheduleDate) return;
+                    if (isSlotInPast(selectedScheduleDate, time)) {
+                        showToast('Masa slot telah lepas. Sila pilih slot yang belum bermula.', 'warning');
+                        return;
+                    }
                     openRequestModal(selectedScheduleDate, time, counsellor);
                 });
             }
@@ -1009,6 +1015,11 @@
                         `${isEmergency ? '[EMERGENCY] ' : ''}[Sebab sesi: ${resolvedReason}] ${note}`;
 
                     const requestDateValue = formatDateForApi(selectedScheduleDate);
+                    if (isSlotInPast(selectedScheduleDate, selectedRequestTime)) {
+                        showToast('Masa slot telah lepas. Sila pilih slot yang belum bermula.',
+                            'warning');
+                        return;
+                    }
                     if (selectedScheduleDate < todayStart) {
                         showToast(
                             'Tarikh lepas tidak boleh dibuat booking. Sila pilih hari ini atau tarikh akan datang.',
