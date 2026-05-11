@@ -248,11 +248,30 @@ Route::get('/', function () {
         })
         ->values()
         ->all();
+
+    $landingAnnouncements = Announcement::query()
+        ->where('is_active', true)
+        ->orderBy('sort_order')
+        ->orderBy('id')
+        ->limit(10)
+        ->pluck('message')
+        ->filter()
+        ->values()
+        ->all();
+
+    if (empty($landingAnnouncements)) {
+        $landingAnnouncements = [
+            'Counselling sessions available Monday – Friday.',
+            'Emergency booking priority available.',
+            'Please cancel 24 hours before session.',
+        ];
+    }
     return view('index', [
         'liveCalendarStatus' => $todayCalendarStatus,
         'liveOpenSlots' => $openTodaySlots,
         'liveSupportStatus' => $supportStatus,
         'landingCounsellors' => $landingCounsellors,
+        'landingAnnouncements' => $landingAnnouncements,
     ]);
 })->name('home');
 
@@ -629,6 +648,27 @@ Route::middleware('auth')->group(function () {
 
         return redirect()->route('admin.announcements.edit')->with('status', 'Announcements updated successfully.');
     })->name('admin.announcements.update');
+
+    Route::post('/admin/announcements/quick-add', function (Request $request) {
+        $user = $request->user();
+        $role = $user?->roles()->value('name');
+        abort_unless($role === 'admin', 403);
+
+        $validated = $request->validate([
+            'announcement_message' => ['required', 'string', 'max:400'],
+        ]);
+
+        $nextSortOrder = (int) Announcement::query()->max('sort_order');
+
+        Announcement::query()->create([
+            'message' => trim((string) $validated['announcement_message']),
+            'image_url' => null,
+            'sort_order' => $nextSortOrder + 1,
+            'is_active' => true,
+        ]);
+
+        return redirect()->route('home')->with('status', 'Announcement added.');
+    })->name('admin.announcements.quick-add');
 
     Route::get('/messages', [ChatController::class, 'messagesHub'])->name('messages.index');
 

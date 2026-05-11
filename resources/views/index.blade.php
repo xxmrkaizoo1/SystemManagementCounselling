@@ -290,11 +290,34 @@
                             class="bg-white/70 backdrop-blur-xl border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
                             <h2 class="text-xl font-semibold text-slate-800 mb-4">Announcements</h2>
                             <div class="space-y-4 text-sm text-slate-600">
-                                <p>📌 Counselling sessions available Monday – Friday.</p>
-                                <p>📌 Emergency booking priority available.</p>
-                                <p>📌 Please cancel 24 hours before session.</p>
+                                @foreach ($landingAnnouncements ?? [] as $announcement)
+                                    <p>📌 {{ $announcement }}</p>
+                                @endforeach
                             </div>
+
+                            @if (request()->user()?->roles()->value('name') === 'admin')
+                                <form method="POST" action="{{ route('admin.announcements.quick-add') }}"
+                                    class="mt-5 rounded-2xl border border-slate-200 bg-white/80 p-4">
+                                    @csrf
+                                    <label for="announcement_message"
+                                        class="block text-sm font-medium text-slate-700">
+                                        Add Announcement
+                                    </label>
+                                    <div class="mt-2 flex flex-col gap-2 sm:flex-row">
+                                        <input id="announcement_message" name="announcement_message" type="text"
+                                            maxlength="400" required
+                                            placeholder="Type announcement for landing page..."
+                                            class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100">
+                                        <button type="submit"
+                                            class="rounded-xl bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700">
+                                            Save
+                                        </button>
+                                    </div>
+                                </form>
+                            @endif
                         </div>
+
+
 
                         <div
                             class="bg-white/70 backdrop-blur-xl border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
