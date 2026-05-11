@@ -708,6 +708,18 @@
 
                 return `${year}-${month}-${day}`;
             };
+            const isSlotInPast = (date, timeRange) => {
+                if (!(date instanceof Date) || Number.isNaN(date.getTime()) || !timeRange) return false;
+
+                const [startTime] = String(timeRange).split(' - ');
+                const [hours, minutes] = startTime.split(':').map(Number);
+                if (Number.isNaN(hours) || Number.isNaN(minutes)) return false;
+
+                const slotStart = new Date(date);
+                slotStart.setHours(hours, minutes, 0, 0);
+
+                return slotStart.getTime() < Date.now();
+            };
 
             const slotKey = (date, time, counsellor) => `${formatDateForApi(date)}|${time}|${counsellor}`;
 
