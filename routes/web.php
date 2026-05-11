@@ -250,20 +250,23 @@ Route::get('/', function () {
         ->values()
         ->all();
 
-    $announcementQuery = Announcement::query()->orderBy('id');
-    if (Schema::hasColumn('announcements', 'is_active')) {
-        $announcementQuery->where('is_active', true);
-    }
-    if (Schema::hasColumn('announcements', 'sort_order')) {
-        $announcementQuery->orderBy('sort_order');
-    }
+     $landingAnnouncements = [];
+    if (Schema::hasTable('announcements') && Schema::hasColumn('announcements', 'message')) {
+        $announcementQuery = Announcement::query()->orderBy('id');
+        if (Schema::hasColumn('announcements', 'is_active')) {
+            $announcementQuery->where('is_active', true);
+        }
+        if (Schema::hasColumn('announcements', 'sort_order')) {
+            $announcementQuery->orderBy('sort_order');
+        }
 
-    $landingAnnouncements = $announcementQuery
-        ->limit(10)
-        ->pluck('message')
-        ->filter()
-        ->values()
-        ->all();
+     $landingAnnouncements = $announcementQuery
+            ->limit(10)
+            ->pluck('message')
+            ->filter()
+            ->values()
+            ->all();
+    }
 
     if (empty($landingAnnouncements)) {
         $landingAnnouncements = [
