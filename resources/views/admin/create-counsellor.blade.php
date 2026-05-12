@@ -95,8 +95,7 @@
                     <p class="mt-1 text-sm text-slate-600">Create a new counsellor account with suggested details in one
                         step.</p>
                 </div>
-                <a href="{{ route('admin.dashboard') }}"
-                    class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">
+                <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:text-sky-700 hover:border-sky-200 transition">
 
                     <!-- Curved Back Icon -->
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
@@ -107,6 +106,11 @@
 
 
                 </a>
+
+
+
+
+
             </header>
 
             <div class="p-6 sm:p-8 space-y-5">

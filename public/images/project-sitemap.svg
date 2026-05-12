@@ -1,0 +1,83 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='1000' height='760' viewBox='0 0 1000 760'>
+<defs><marker id='arr' markerWidth='10' markerHeight='10' refX='9' refY='3' orient='auto'><path d='M0,0 L0,6 L9,3 z' fill='#1f4e79'/></marker></defs>
+<style>.bg{fill:#d9d9d9}.home{fill:#000}.blue{fill:#3274e6}.green{fill:#08a000}.t1{font:700 34px sans-serif;fill:#fff}.t2{font:700 18px sans-serif;fill:#fff}.t3{font:700 16px sans-serif;fill:#fff}.line{stroke:#3274e6;stroke-width:5;fill:none}.line2{stroke:#0a8f00;stroke-width:4;fill:none}</style>
+<rect class='bg' width='100%' height='100%'/>
+<rect x='410' y='40' width='180' height='70' class='home'/>
+<text x='500.0' y='85' text-anchor='middle' class='t2'>Home</text>
+<rect x='20' y='160' width='160' height='90' class='blue'/>
+<text x='100.0' y='212' text-anchor='middle' class='t2'>/admin</text>
+<rect x='215' y='160' width='160' height='90' class='blue'/>
+<text x='295.0' y='212' text-anchor='middle' class='t2'>/booking</text>
+<rect x='410' y='160' width='160' height='90' class='blue'/>
+<text x='490.0' y='212' text-anchor='middle' class='t2'>/counsellor</text>
+<rect x='605' y='160' width='160' height='90' class='blue'/>
+<text x='685.0' y='212' text-anchor='middle' class='t2'>/profile</text>
+<rect x='800' y='160' width='160' height='90' class='blue'/>
+<text x='880.0' y='212' text-anchor='middle' class='t2'>/signup</text>
+<path d='M 500.0 110 V 145 H 100.0 H 880.0' class='line'/>
+<path d='M 100.0 145 V 160' class='line'/>
+<path d='M 295.0 145 V 160' class='line'/>
+<path d='M 490.0 145 V 160' class='line'/>
+<path d='M 685.0 145 V 160' class='line'/>
+<path d='M 880.0 145 V 160' class='line'/>
+<path d='M 100.0 250 V 276' class='line2'/>
+<rect x='30' y='290' width='140' height='80' class='green'/>
+<text x='100.0' y='336' text-anchor='middle' class='t3'>[GET] /admin</text>
+<rect x='30' y='386' width='140' height='80' class='green'/>
+<text x='100.0' y='432' text-anchor='middle' class='t3'>[POST] /admin/an..</text>
+<path d='M 100.0 370 V 386' class='line2'/>
+<rect x='30' y='482' width='140' height='80' class='green'/>
+<text x='100.0' y='528' text-anchor='middle' class='t3'>[GET] /admin/ann..</text>
+<path d='M 100.0 466 V 482' class='line2'/>
+<rect x='30' y='578' width='140' height='80' class='green'/>
+<text x='100.0' y='624' text-anchor='middle' class='t3'>[POST] /admin/an..</text>
+<path d='M 100.0 562 V 578' class='line2'/>
+<path d='M 295.0 250 V 276' class='line2'/>
+<rect x='225' y='290' width='140' height='80' class='green'/>
+<text x='295.0' y='336' text-anchor='middle' class='t3'>[GET] /booking</text>
+<rect x='225' y='386' width='140' height='80' class='green'/>
+<text x='295.0' y='432' text-anchor='middle' class='t3'>[POST] /booking</text>
+<path d='M 295.0 370 V 386' class='line2'/>
+<rect x='225' y='482' width='140' height='80' class='green'/>
+<text x='295.0' y='528' text-anchor='middle' class='t3'>[DELETE] /bookin..</text>
+<path d='M 295.0 466 V 482' class='line2'/>
+<rect x='225' y='578' width='140' height='80' class='green'/>
+<text x='295.0' y='624' text-anchor='middle' class='t3'>[POST] /booking/..</text>
+<path d='M 295.0 562 V 578' class='line2'/>
+<path d='M 490.0 250 V 276' class='line2'/>
+<rect x='420' y='290' width='140' height='80' class='green'/>
+<text x='490.0' y='336' text-anchor='middle' class='t3'>[GET] /counsellor</text>
+<rect x='420' y='386' width='140' height='80' class='green'/>
+<text x='490.0' y='432' text-anchor='middle' class='t3'>[POST] /counsell..</text>
+<path d='M 490.0 370 V 386' class='line2'/>
+<rect x='420' y='482' width='140' height='80' class='green'/>
+<text x='490.0' y='528' text-anchor='middle' class='t3'>[PATCH] /counsel..</text>
+<path d='M 490.0 466 V 482' class='line2'/>
+<rect x='420' y='578' width='140' height='80' class='green'/>
+<text x='490.0' y='624' text-anchor='middle' class='t3'>[GET] /counsello..</text>
+<path d='M 490.0 562 V 578' class='line2'/>
+<path d='M 685.0 250 V 276' class='line2'/>
+<rect x='615' y='290' width='140' height='80' class='green'/>
+<text x='685.0' y='336' text-anchor='middle' class='t3'>[GET] /profile</text>
+<rect x='615' y='386' width='140' height='80' class='green'/>
+<text x='685.0' y='432' text-anchor='middle' class='t3'>[PATCH] /profile</text>
+<path d='M 685.0 370 V 386' class='line2'/>
+<rect x='615' y='482' width='140' height='80' class='green'/>
+<text x='685.0' y='528' text-anchor='middle' class='t3'>[DELETE] /profile</text>
+<path d='M 685.0 466 V 482' class='line2'/>
+<rect x='615' y='578' width='140' height='80' class='green'/>
+<text x='685.0' y='624' text-anchor='middle' class='t3'>[POST] /profile/..</text>
+<path d='M 685.0 562 V 578' class='line2'/>
+<path d='M 880.0 250 V 276' class='line2'/>
+<rect x='810' y='290' width='140' height='80' class='green'/>
+<text x='880.0' y='336' text-anchor='middle' class='t3'>[POST] /signup</text>
+<rect x='810' y='386' width='140' height='80' class='green'/>
+<text x='880.0' y='432' text-anchor='middle' class='t3'>[GET] /signup</text>
+<path d='M 880.0 370 V 386' class='line2'/>
+<rect x='810' y='482' width='140' height='80' class='green'/>
+<text x='880.0' y='528' text-anchor='middle' class='t3'>[GET] /signup/no..</text>
+<path d='M 880.0 466 V 482' class='line2'/>
+<rect x='810' y='578' width='140' height='80' class='green'/>
+<text x='880.0' y='624' text-anchor='middle' class='t3'>[GET] /signup/otp</text>
+<path d='M 880.0 562 V 578' class='line2'/>
+</svg>
