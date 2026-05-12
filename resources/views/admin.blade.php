@@ -83,7 +83,7 @@
 
 <body class="min-h-screen bg-slate-100 text-slate-700 overflow-x-hidden">
 
-
+{{--
     <!-- LOADER -->
     <div id="loader" data-admin-loader="true" class="fixed inset-0 bg-purple-800 flex items-center justify-center z-50">
         <div id="circle"
@@ -92,7 +92,12 @@
             <span class="mt-1 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Welcome to admin</span>
 
         </div>
-    </div>
+    </div> --}}
+
+
+
+
+
 
     <div class="fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
         <div
